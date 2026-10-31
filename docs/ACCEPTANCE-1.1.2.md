@@ -1,72 +1,68 @@
-# 1.1.2 · 验证记录
+# 1.1.2 · Bản ghi xác minh
 
-> 改动见 [CHANGES-1.1.2](CHANGES-1.1.2.md)。结论：单测 402/402；1.1.2 浏览器专项 40/40（真实隔离酒馆 + 模拟模型）；1.1.1 的各专项和旧回归全部复跑，结果与 1.1.1 一致，没有新增失败。**没有用真实模型、实体手机验收。**
+> Chi tiết thay đổi xem tại [CHANGES-1.1.2](CHANGES-1.1.2.md). Kết luận: kiểm thử đơn vị đạt 402/402; chuyên đề trình duyệt 1.1.2 đạt 40/40 (SillyTavern cô lập thực tế + mô hình mô phỏng); toàn bộ chuyên đề của 1.1.1 và hồi quy cũ đều đã chạy lại, kết quả đồng nhất với 1.1.1, không phát sinh thất bại mới. **Chưa nghiệm thu bằng mô hình thực tế hay điện thoại vật lý.**
 
-## 环境与口径
+## Môi trường & Quy chuẩn
 
-- 基线：1.1.1（main `bfa4807` + 未推送的 1.1.1 改动）。
-- 日期：2026-10-06。隔离 SillyTavern 1.19.0（官方 tag 源码包）+ Chromium/Playwright，端口 8019。只用验收角色，没碰任何用户的酒馆和数据。
-- 模型回复全部是确定性模拟（`tests/qa/mock_model.py` 和页面内拦截），只证明插件逻辑，不代表真实模型会怎么写。聊天保存、变量保存、重载都走真实的隔离酒馆服务器。
+- Cơ sở: 1.1.1 (main `bfa4807` + các thay đổi 1.1.1).
+- Ngày: 2026-10-06. SillyTavern 1.19.0 cô lập (gói mã nguồn tag chính thức) + Chromium/Playwright, cổng 8019. Chỉ dùng nhân vật nghiệm thu, không chạm tới bất kỳ SillyTavern hay dữ liệu người dùng nào.
+- Phản hồi mô hình toàn bộ là mô phỏng tất định (`tests/qa/mock_model.py` và chặn trong trang), chỉ chứng minh logic của plugin chứ không đại diện cho cách viết của mô hình thực tế. Lưu cuộc trò chuyện, lưu biến số và tải lại trang đều đi qua máy chủ SillyTavern cô lập thực sự.
 
-## 结果
+## Kết quả
 
-| 检查 | 结果与范围 |
+| Kiểm tra | Kết quả & Phạm vi |
 |---|---|
-| `npm test` | **402/402**：1.1.1 的 381 项 + `tests/v112.test.js` 21 项。改了 2 个旧测试的期望值：版本号；`v110.test.js` 羁绊列表不再含群员（1.1.2 的新规则） |
-| `npm run check` | JS 语法检查、vendor 提取与来源哈希全部通过 |
-| `npm run filelist:check` | 与交付文件树一致 |
-| `tests/native_v112.py --isolated-test-only` | **40/40**，1.1.2 专项（见下）；与 1.1.1 专项交替连跑也都是全过（测试开始时把抽卡模式恢复为默认，结束时复原） |
-| `tests/native_v111.py` | 32/32。盲盒那几项测的是十抽一结算，现在测试里先切到「十抽一结算」，结束后恢复默认 |
+| `npm test` | **402/402**: 381 mục của 1.1.1 + `tests/v112.test.js` 21 mục. Cập nhật giá trị kỳ vọng của 2 bài kiểm thử cũ: số phiên bản; danh sách gắn kết trong `v110.test.js` không còn mặc định chứa thành viên nhóm (quy tắc mới của 1.1.2) |
+| `npm run check` | Kiểm tra cú pháp JS, trích xuất vendor và mã băm nguồn đều đạt |
+| `npm run filelist:check` | Đồng nhất với cây thư mục tệp bàn giao |
+| `tests/native_v112.py --isolated-test-only` | **40/40**, chuyên đề 1.1.2 (xem bên dưới); chạy xen kẽ liên tiếp với chuyên đề 1.1.1 cũng đều đạt toàn bộ (khi bắt đầu kiểm thử đưa chế độ rút thẻ về mặc định, khi kết thúc khôi phục lại) |
+| `tests/native_v111.py` | 32/32. Các hạng mục hộp mù kiểm thử chế độ 10 lượt 1 lần quyết toán, hiện trong bài kiểm thử chuyển sang 「10 lượt 1 lần quyết toán」 trước rồi khôi phục mặc định sau khi kết thúc |
 | `tests/native_v111_audit.py` | 34/34 |
 | `tests/native_v111_mobile.py` | 12/12 |
-| `tests/native_v080.py` | 33/33（共跑 7 次，6 次全过，1 次见下方注）。「设置 → 管理员控制台」现在先打开终端新页面，测试改为再点「打开原版面板」，原版面板的保存、引擎不重载等断言不变 |
+| `tests/native_v080.py` | 33/33 (chạy tổng cộng 7 lần, 6 lần đạt toàn bộ). 「Cài đặt → Bảng điều khiển Quản trị viên」 hiện mở trang mới của thiết bị đầu cuối trước, bài kiểm thử được cập nhật bấm thêm 「Mở bảng nguyên bản」, các khẳng định về lưu bảng nguyên bản và không tải lại động cơ giữ nguyên |
 | `tests/native_v110.py` | 37/37 |
 | `tests/native_v100.py` | 28/28 |
 | `tests/native_v090.py` | 24/24 |
 | `tests/native_v110_patch3.py` | 19/19 |
 | `tests/native_group060.py` | 44/44 |
 | `tests/native_world070.py` | 40/40 |
-| `tests/native_v110_review.py` | 11/12，和 1.1.1、基线一样的 1 项旧脚本问题（把故意抛出的「终端页面已失效」算成页面异常） |
-| `tests/native_terminal050.py` | 49/58。这次又用 `bfa4807` 原样跑了一遍对照，**9 项失败的名称完全相同**（0.5.0 时代的旧商城 / 导航断言），没有新增 |
-| 浏览器未捕获异常 | 专项和回归都没有 pageerror |
+| `tests/native_v110_review.py` | 11/12, giống 1.1.1 và cơ sở (1 mục do kịch bản cũ tính lỗi cố ý ném ra là ngoại lệ trang) |
+| `tests/native_terminal050.py` | 49/58. Đợt này đã chạy đối chiếu lại trên `bfa4807` nguyên bản, **tên của 9 mục thất bại giống hệt nhau** (khẳng định thương thành / điều hướng cũ thời 0.5.0), không có thất bại mới |
+| Ngoại lệ chưa bắt được trên trình duyệt | Cả chuyên đề lẫn hồi quy đều có 0 pageerror |
 
-> 注：`native_v080` 有 1 次在开头的准备步骤（重载引擎后马上群签到）中断：那次写入读回核对不一致，插件按设计冻结了这个聊天的账本写入（「写入状态不明…请重载核对」），没有重复记账。之后单独跑 2 次、按「v112 → v080」同样顺序再跑 2 次，都是 33/33，没能复现。这段代码 1.1.2 没有改动，记为残留风险：遇到时重载聊天核对即可。
->
-> 注：中途一次 `native_v100` 是 27/28，原因是做截图的脚本把「演出」设成了关闭，而这个设置会在共享的测试酒馆里保留。恢复默认后复跑 28/28。
+## Tóm tắt chuyên đề 1.1.2 (`native_v112`, 40 hạng mục)
 
-## 1.1.2 专项（native_v112，40 项）摘要
+**Chế độ rút thẻ**
+- Khi chưa từng cài đặt, mặc định là Gộp cổ điển; trong nút chuyển đổi cạnh nút hộp mù, chế độ Gộp cổ điển đang ở trạng thái được chọn.
+- Rút 30 lượt: quyết toán 1 lần, chi phí chính xác, không gộp.
+- Rút 60 lượt: Phàm phẩm gộp thành một dòng 「Tạp vật Phàm phẩm ×N」, Σsố lượng = 60, chỉ trừ phí 1 lần; không gửi Phàm phẩm cho mô hình, mỗi yêu cầu không vượt quá 20 món.
+- Rút 120 lượt: Phàm phẩm và Linh phẩm mỗi loại gộp thành một dòng, Tiên phẩm tạo từng món; bảo hiểm và tổng số lượt rút tích lũy vẫn tính như bình thường; thông báo ghi rõ đã gộp những gì.
+- Sau khi bấm 「Giữ lại」 dòng đã gộp, túi đồ nhận được 「Tạp vật Phàm phẩm ×N」.
+- Chuyển sang 10 lượt 1 lần quyết toán: rút 60 lượt = 6 lần quyết toán, tạo từng món, không gộp.
+- Trang tùy chỉnh hàng hóa có cùng nút chuyển đổi này và đồng bộ ở cả hai nơi.
 
-**抽卡模式**
-- 没设置过时默认是经典折叠；盲盒按钮旁的切换按钮里，经典折叠处于按下状态。
-- 30 抽：一次结算、费用准确、不折叠。
-- 60 抽：凡品合成一行「凡品杂物 ×N」，Σ数量 = 60，只扣一次费；没有凡品发给模型，每次请求不超过 20 件。
-- 120 抽：凡品、灵品各折叠成一行，仙品逐件生成；保底和累计抽数照常计算；提示里写明合并了什么。
-- 「保留」折叠行后，背包得到「凡品杂物 ×N」。
-- 切到十抽一结算：60 抽 = 6 次结算，逐件生成，不折叠。
-- 商品定制页有同一个切换，两处同步。
+**Gắn kết**
+- Mặc định mở bộ lọc 「Thế giới này」, thành viên nhóm không xuất hiện; trong bộ lọc 「Tất cả」, người của thế giới này được xếp lên trước.
+- Ở trang Thành viên nhóm, mỗi người đều có nút 「Đưa vào Gắn kết」. Sau khi đưa vào, quan hệ là Bạn cùng nhóm, độ hảo cảm lấy từ hảo cảm trong nhóm, trang tự động nhảy tới người đó và phần chi tiết hiển thị trạng thái trong nhóm.
+- Thành viên nhóm cùng tên cùng thế giới được liên kết với nhân vật đã có, không bị nhân đôi.
+- Đồ phổ quan hệ: thành viên nhóm đã đưa vào Gắn kết chỉ vẽ một lần; nút 「Đưa vào Gắn kết」 trên nút đồ phổ hoạt động tốt.
+- Nút 「Đưa ra khỏi Gắn kết」 chỉ xóa người bạn cùng nhóm được đưa vào, người trong nhóm chat vẫn còn nguyên; mục tiêu công lược hiện tại không có nút 「Đưa ra」.
+- Dưới màn hình hẹp không bị tràn ngang.
 
-**羁绊**
-- 默认打开「本世界」筛选，群员不出现；「全部」里本世界的人排在前面。
-- 群员页每人都有「拉入羁绊」。拉入后关系是群友，好感取群内好感，页面跳转到他，详情显示群内状态。
-- 同名同世界的群员关联到已有人物，不会重复。
-- 关系图：已拉入的群员只画一次；节点「拉入羁绊」可用。
-- 「移出羁绊」只删拉入的群友，群里的人还在；当前攻略目标没有「移出」按钮。
-- 窄屏下没有横向溢出。
+**Bảng điều khiển Quản trị viên**
+- Lối vào trong Cài đặt mở trang thiết bị đầu cuối, đầy đủ 7 nhóm, hiển thị tiến độ bảo hiểm.
+- Ô nhập liệu đã sửa đổi được tô sáng và hiển thị bộ đếm; 5 mục sửa đổi được ghi trong một lần (bao gồm đồng bộ mục tiêu hiện tại sang mục tiêu tình yêu và hảo cảm thành viên nhóm).
+- Sửa đổi tài nguyên độc quyền được đồng bộ vào bản chụp nhanh tầng; sau khi ghi để lại bản ghi thao tác và trang tự đọc lại dữ liệu mới.
+- Sổ cái có thay đổi trước khi ghi → từ chối ghi; giá trị vượt ngưỡng → báo rõ tên trường và phạm vi hợp lệ; chuyển cuộc trò chuyện rồi bấm lưu → đọc lại dữ liệu mới chứ không ghi đè.
+- Độ thuần thục công pháp được ghi thông qua logic đồng bộ nguyên bản và không ghi đè mất tài nguyên độc quyền trong bản chụp nhanh tầng.
+- Nút 「Mở bảng nguyên bản」 mở được hộp thoại quản trị viên nguyên bản.
 
-**管理员控制台**
-- 设置入口打开终端页面，7 个分组齐全，显示保底进度。
-- 改动的输入框高亮，显示计数；5 项改动一次写入（含当前目标同步到恋爱目标、群员好感）。
-- 专属资源的改动同步到楼层快照；写入后留有操作记录，页面重新读取。
-- 写入前账本有变化 → 拒写；越界值 → 报出字段名和范围；切换聊天后保存 → 重新读取，不写入。
-- 功法熟练度通过原版同步逻辑写入，且不会覆盖楼层快照里的专属资源。
-- 「打开原版面板」能进入原版弹窗。
+## Kiểm tra thị giác
 
-## 视觉检查
+Ngoài ra đã chụp ảnh màn hình trang Gắn kết, trang Thành viên nhóm và Bảng điều khiển Quản trị viên ở chế độ toàn màn hình máy tính (1280×860) và màn hình hẹp (390×844). Đã sửa hai chỗ: nhãn 「Nhân vật / Thành viên nhóm」 ở trang Quản trị viên bị ép thành hàng dọc; tiêu đề nhóm dưới màn hình hẹp bị tách làm hai dòng.
 
-另外截了桌面全屏（1280×860）和窄屏（390×844）下的羁绊页、群员页、管理员控制台。修了两处：管理员页「人物 / 群员」标签被挤成竖排；窄屏下分组标题被拆成两行。
+## Những phần chưa xác minh
 
-## 没验证的
-
-- 真实模型下经典折叠「每次 20 件」的输出质量和截断频率。截断时会自动减半，这一点模拟模型已覆盖。
-- 实体手机触控。
-- 真实存档里大量羁绊（上百人）时的列表性能。
+- Chất lượng đầu ra và tần suất bị cắt cụt của chế độ Gộp cổ điển dưới mô hình thực tế. Khi bị cắt cụt sẽ tự động giảm một nửa, điểm này đã được mô hình mô phỏng bao phủ.
+- Cảm ứng trên điện thoại vật lý.
+- Hiệu năng danh sách khi trong bản lưu thực tế có lượng lớn mối gắn kết (hàng trăm người).

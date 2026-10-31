@@ -1,29 +1,27 @@
-// 一键接管旧版 — switch off the v1.1 pieces this plugin now replaces, reversibly.
+// Tiếp quản bản cũ một chạm — switch off the v1.1 pieces this plugin now replaces, reversibly.
 // v1.1 consisted of: the external worldbook (kept: the plugin installs/binds the identical book), four regex scripts
 // and one Tavern Helper script. Nothing is deleted: regexes get `disabled: true`, Tavern Helper scripts get
-// `enabled: false`, and every change is written to settings.takeoverLog so 恢复旧版 can undo exactly those items.
-// Global items live in extension_settings (regex / tavern_helper.script.scripts); character-scoped items are written
-// back through writeExtensionField. Tavern Helper keeps its own in-memory copy, so the page is reloaded afterwards.
+// `enabled: false`, and every change is written to settings.takeoverLog so Khôi phục bản cũ can undo exactly those items.
 import { LEGACY_SCRIPT_ID } from './contracts.js';
 
 export const LEGACY_REGEX = Object.freeze({
-    'bd2a75db-7ddd-4311-9f5b-db21afec623a': '莉莉丝专属语音框',
-    '47b6bdaf-f89c-4cc0-bb12-617286788c94': '诸天万界最强系统状态栏 3.1',
-    '5c57f2cf-1bfd-4d5e-9c7d-65d792b893ac': '诸天状态栏 · 旧楼层不发给AI',
-    'add53830-bdf6-49ad-9ecb-eecd7be41eb9': '诸天状态栏 · 旧楼层精简显示',
+    'bd2a75db-7ddd-4311-9f5b-db21afec623a': 'Khung thoại độc quyền của Lilith',
+    '47b6bdaf-f89c-4cc0-bb12-617286788c94': 'Thanh trạng thái Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới 3.1',
+    '5c57f2cf-1bfd-4d5e-9c7d-65d792b893ac': 'Thanh trạng thái Chư Thiên · Tầng cũ không gửi cho AI',
+    'add53830-bdf6-49ad-9ecb-eecd7be41eb9': 'Thanh trạng thái Chư Thiên · Hiển thị rút gọn tầng cũ',
 });
 export function isLegacyRegex(r) {
     if (!r || typeof r !== 'object') return false;
     if (Object.hasOwn(LEGACY_REGEX, r.id)) return true;
     const name = String(r.scriptName || ''), find = String(r.findRegex || ''), rep = String(r.replaceString || '');
-    if (/ZhuTianPanel/.test(find) && /诸天/.test(name)) return true;                      // re-imported copies with new ids
-    return /莉莉丝/.test(name) && /data-lilith-voice/.test(rep);
+    if (/ZhuTianPanel/.test(find) && /诸天|Chư Thiên/i.test(name)) return true;                      // re-imported copies with new ids
+    return /莉莉丝|Lilith/i.test(name) && /data-lilith-voice/.test(rep);
 }
 export function isLegacyScript(s) {
     if (!s || typeof s !== 'object' || (s.type && s.type !== 'script')) return false;
     if (s.id === LEGACY_SCRIPT_ID) return true;
     const name = String(s.name || ''), content = String(s.content || '');
-    return /诸天系统|莉莉丝契约空间|独立记忆助手/.test(name) && /zt-memory-assistant-v1|ZhuTianMemoryCore|ZhuTianLilith/.test(content.slice(0, 400000));
+    return /诸天系统|莉莉丝契约空间|独立记忆助手|Hệ Thống Chư Thiên|Không Gian Khế Ước Lilith|Trợ Lý Ký Ức/i.test(name) && /zt-memory-assistant-v1|ZhuTianMemoryCore|ZhuTianLilith/.test(content.slice(0, 400000));
 }
 /** Walks a Tavern Helper script tree (scripts and folders). */
 export function* walkScripts(list) {

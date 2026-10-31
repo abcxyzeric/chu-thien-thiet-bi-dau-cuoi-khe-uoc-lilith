@@ -1,4 +1,4 @@
-/* 诸天终端 0.7.0 · 图谱 (事件线 / 羁绊图 / 星图 / 能力树). Colours come from the theme variables. */
+/* Thiết Bị Đầu Cuối Chư Thiên 0.7.0 · Đồ giám (Dòng sự kiện / Sơ đồ gắn kết / Tinh đồ / Cây năng lực). Colours come from the theme variables. */
 .zt-atlas-page{height:100%}
 .zt-atlas{display:flex;flex-direction:column;gap:12px}
 .zt-atlas-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -60,8 +60,8 @@
 .zt-node[data-type=fail] rect{stroke:#e07a7a;fill:#e07a7a1a}
 .zt-node[data-type=pending] rect{stroke:var(--zt-gold);stroke-dasharray:4 3}
 .zt-node[data-type=reward] rect{stroke-dasharray:2 4}
-.zt-node[data-state=已完成] rect{stroke:var(--zt-gold)}
-.zt-node[data-state=已失败] rect{stroke:#e07a7a}
+.zt-node[data-state=已完成] rect,.zt-node[data-state="Đã hoàn thành"] rect{stroke:var(--zt-gold)}
+.zt-node[data-state=已失败] rect,.zt-node[data-state="Đã thất bại"] rect{stroke:#e07a7a}
 .zt-node[data-type=host] circle{fill:color-mix(in srgb,var(--zt-accent) 20%,var(--zt-panel2));stroke:var(--zt-accent);stroke-width:2}
 .zt-node[data-type=lilith] circle{stroke:var(--zt-sel-bar)}
 .zt-node[data-type=love] circle{stroke:#f08ab8}
@@ -89,7 +89,7 @@ dialog[data-compact=true] .zt-atlas-head b{font-size:17px}
 dialog[data-compact=true] .zt-atlas[data-atlas=events] .zt-atlas-svg,dialog[data-compact=true] .zt-atlas[data-atlas=tree] .zt-atlas-svg{min-width:540px}
 dialog[data-compact=true] .zt-atlas[data-atlas=bonds] .zt-atlas-svg,dialog[data-compact=true] .zt-atlas[data-atlas=stars] .zt-atlas-svg{min-width:460px}
 dialog[data-compact=true] .zt-atlas .zt-atlas-canvas{overflow:auto!important;-webkit-overflow-scrolling:touch}
-/* 0.9.3 星图 → 更正 */
+/* 0.9.3 Tinh đồ → Đính chính */
 .zt-atlas-fix{margin-top:10px;border-top:1px dashed #ffffff1f;padding-top:8px}
 .zt-atlas-fix summary{cursor:pointer;color:var(--zt-gold);font-size:12px;min-height:28px;display:flex;align-items:center}
 .zt-atlas-fix .zt-sub{font-size:11px;margin:4px 0}

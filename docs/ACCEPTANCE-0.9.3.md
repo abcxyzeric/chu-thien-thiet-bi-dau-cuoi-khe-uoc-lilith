@@ -1,84 +1,84 @@
-# 0.9.3 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.9.3
 
-## 环境
+## Môi trường
 
-- **宿主**：SillyTavern 1.19.0（官方 tag 全新安装，commit `7e8663c`），使用隔离的数据目录。
-- **两轮测试**：
-  - **装了酒馆助手**（JS-Slash-Runner 4.11.2，GitHub 官方 tag，未改动）：跑全部套件。
-  - **没装酒馆助手**：跑 `native_v093`、`native_v092`、`native_v084`、`native_v082`、`native_terminal050`。
-- **浏览器**：Playwright Chromium（无头），手机 390×844 触摸模拟（Android 14 / Chrome UA）；世界书一段用电脑 1280×860。
-- **模拟模型**：5001 端口正常返回，5002 端口不发 CORS 头。
+- **Máy chủ**: SillyTavern 1.19.0 (cài đặt mới hoàn toàn theo tag chính thức, commit `7e8663c`), sử dụng thư mục dữ liệu cô lập.
+- **Hai lượt kiểm thử**:
+  - **Có cài đặt Tavern Helper** (JS-Slash-Runner 4.11.2, tag GitHub chính thức, không chỉnh sửa): chạy toàn bộ các bộ kiểm thử.
+  - **Không cài đặt Tavern Helper**: chạy `native_v093`, `native_v092`, `native_v084`, `native_v082`, `native_terminal050`.
+- **Trình duyệt**: Playwright Chromium (headless), mô phỏng cảm ứng điện thoại 390×844 (UA Android 14 / Chrome); đoạn Sách Thế Giới dùng máy tính 1280×860.
+- **Mô hình mô phỏng**: cổng 5001 trả về bình thường, cổng 5002 không gửi tiêu đề CORS.
 
-全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。
+Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1.
 
-## 用户复测
+## Người dùng kiểm thử lại
 
-**待补。**
+**Chờ bổ sung.**
 
-- **TauriTavern**：请更新到 0.9.3 后，在 莉莉丝 → 规则 → 额外世界背景 点「读取书目」，确认能看到自己的世界书，选一本后点「读取这本书」。插件在 TauriTavern 上走的是和 SillyTavern 相同的前端接口，但本轮没有 TauriTavern 实机。
-- **星图**：在当前世界被识别错的聊天里，打开星图 → 点当前世界 →「识别错了？更正这个世界」，改类型或名称后保存。
+- **TauriTavern**: Vui lòng cập nhật lên bản 0.9.3, sau đó vào Lilith → Quy tắc → Bối cảnh thế giới bổ sung bấm 「Đọc danh mục sách」, xác nhận nhìn thấy được Sách Thế Giới của mình, chọn một quyển rồi bấm 「Đọc quyển sách này」. Trên TauriTavern, plugin đi theo cùng giao diện frontend như SillyTavern, nhưng đợt này không có máy TauriTavern thực tế.
+- **Bản đồ sao**: Trong cuộc trò chuyện mà thế giới hiện tại bị nhận diện sai, hãy mở Bản đồ sao → bấm vào thế giới hiện tại → 「Nhận diện sai? Đính chính thế giới này」, đổi loại hoặc tên rồi lưu lại.
 
-## 复现：0.9.2 与 0.9.3 对比（`native_v093.py`）
+## Tái hiện: So sánh 0.9.2 và 0.9.3 (`native_v093.py`)
 
-| 场景 | 0.9.2 | 0.9.3 |
+| Kịch bản | 0.9.2 | 0.9.3 |
 | --- | --- | --- |
-| 规则 → 额外世界背景 →「读取书目」 | ❌ 提示“当前助手缺少世界书读取接口，仍可使用内置规则”（与用户截图一致），列表为空 | ✅ 列出全部世界书 |
-| 「读取这本书」 | ❌ 同上 | ✅ 快照里 2 条已启用条目，禁用条目被跳过；规则搜索能找到；原世界书没有被修改 |
-| 宿主没有 `getWorldInfoNames` / `getContext().loadWorldInfo` | — | ✅ 改用 world-info 模块和 `/api/worldinfo/get`；不存在的书给出明确提示 |
-| 星图：「灵笼」被猜成仙侠 | ❌ 节点显示「仙侠」，没有更正入口 | ✅ 节点显示「仙侠?」；更正框默认展开，已填好当前名称 |
-| 更正类型（末世） | — | ✅ 写入 `世界类型`，足迹不加次数，不播放演出；节点显示「末世」，与顶栏主题一致 |
-| 更正名称 | — | ✅ `当前世界` 和足迹一起改名，不播放演出 |
-| 从足迹删除 / 记录穿越填当前世界名 | ❌ 后者报“已经在这个世界了” | ✅ 删除成功；后者变成更正类型 |
-| 新手引导 | ❌ 没有这个功能 | ✅ 见下 |
+| Quy tắc → Bối cảnh thế giới bổ sung → 「Đọc danh mục sách」 | ❌ Báo “Trợ lý hiện tại thiếu giao diện đọc Sách Thế Giới, vẫn có thể dùng quy tắc tích hợp sẵn” (khớp với ảnh chụp màn hình của người dùng), danh sách trống | ✅ Liệt kê toàn bộ Sách Thế Giới |
+| 「Đọc quyển sách này」 | ❌ Giống trên | ✅ Trong bản chụp nhanh có 2 mục từ đang bật, mục từ bị tắt được bỏ qua; tìm kiếm quy tắc tìm thấy được; Sách Thế Giới gốc không bị sửa đổi |
+| Máy chủ không có `getWorldInfoNames` / `getContext().loadWorldInfo` | — | ✅ Chuyển sang dùng mô-đun world-info và `/api/worldinfo/get`; sách không tồn tại đưa ra thông báo rõ ràng |
+| Bản đồ sao: 「Linh Lung」 bị đoán nhầm thành Tiên hiệp | ❌ Nút hiển thị 「Tiên hiệp」, không có lối vào đính chính | ✅ Nút hiển thị 「Tiên hiệp?」; khung đính chính mặc định mở rộng và điền sẵn tên hiện tại |
+| Đính chính loại (Tận thế) | — | ✅ Ghi vào `世界类型`, dấu chân không cộng thêm số lần, không phát trình diễn; nút hiển thị 「Tận thế」, khớp với chủ đề trên thanh đỉnh |
+| Đính chính tên | — | ✅ `当前世界` và dấu chân cùng đổi tên, không phát trình diễn |
+| Xóa khỏi dấu chân / Ghi nhận xuyên không điền tên thế giới hiện tại | ❌ Trường hợp sau báo lỗi “Đã ở trong thế giới này rồi” | ✅ Xóa thành công; trường hợp sau chuyển thành đính chính loại |
+| Hướng dẫn tân thủ | ❌ Không có tính năng này | ✅ Xem bên dưới |
 
-0.9.2 在 10 项中只通过 1 项（“原世界书没有被修改”），之后 3 段都因为缺少接口或元素中途停止。0.9.3 的 29 项全部通过。
+Bản 0.9.2 chỉ đạt 1 trên 10 hạng mục (“Sách Thế Giới gốc không bị sửa đổi”), 3 đoạn sau đó đều dừng giữa chừng vì thiếu giao diện hoặc phần tử. Bản 0.9.3 đạt toàn bộ 29/29 hạng mục.
 
-新手引导的验收项（都在手机模拟下）：
+Các hạng mục nghiệm thu của Hướng dẫn tân thủ (đều dưới mô phỏng điện thoại):
 
-- 用指定页面（星图）打开终端时，引导不会打断。
-- 第一次直接打开终端时，引导自动出现，三步都显示未完成。
-- 页面没有内容伸出屏幕，没有横向滚动，没有过小的点按目标。
-- 第 1 步装好世界书并绑定到当前聊天。
-- 第 2 步「用酒馆当前的主模型」保存成功。「修改」会跳到连接页，页顶的「回到新手引导」能回来。
-- 第 3 步通过原版保存按钮打开莉莉丝记忆，三步全部打勾。
-- 点「完成」后会被记住，导航里的「引导」按钮隐藏。之后直接打开终端不会再出现引导。
-- 设置 → 上手 → 新手引导能重新打开，三步仍显示已完成。
+- Khi mở thiết bị đầu cuối bằng trang chỉ định (Bản đồ sao), hướng dẫn sẽ không làm gián đoạn.
+- Lần đầu tiên mở trực tiếp thiết bị đầu cuối, hướng dẫn tự động xuất hiện, cả ba bước đều hiển thị chưa hoàn thành.
+- Trang không có nội dung tràn ra ngoài màn hình, không cuộn ngang, không có mục tiêu chạm quá nhỏ.
+- Bước 1 cài đặt xong Sách Thế Giới và gắn kết vào cuộc trò chuyện hiện tại.
+- Bước 2 「Dùng mô hình chính hiện tại của SillyTavern」 lưu thành công. Bấm 「Sửa đổi」 sẽ nhảy tới trang Kết nối, nút 「Quay lại hướng dẫn tân thủ」 ở đầu trang có thể quay về lại.
+- Bước 3 thông qua nút lưu nguyên bản bật ký ức Lilith, cả ba bước đều được đánh dấu tích.
+- Sau khi bấm 「Hoàn tất」 sẽ được ghi nhớ, nút 「Hướng dẫn」 trên thanh điều hướng ẩn đi. Sau đó mở trực tiếp thiết bị đầu cuối sẽ không còn tự hiện hướng dẫn nữa.
+- Cài đặt → Làm quen → Hướng dẫn tân thủ có thể mở lại, cả ba bước vẫn hiển thị đã hoàn thành.
 
-截图（未放进 `docs/evidence/`）：
+Ảnh chụp màn hình (không đưa vào `docs/evidence/`):
 
-- 0.9.3：`/var/tmp/qa/shots093/v093-W-rules.png`、`v093-S-fix-open.png`、`v093-S-after.png`、`v093-G-start.png`、`v093-G-done.png`
-- 0.9.2 对照：`/var/tmp/qa/shots093-base/`
+- 0.9.3: `/var/tmp/qa/shots093/v093-W-rules.png`, `v093-S-fix-open.png`, `v093-S-after.png`, `v093-G-start.png`, `v093-G-done.png`
+- Đối chiếu 0.9.2: `/var/tmp/qa/shots093-base/`
 
-人工看图：更正框在手机上完整显示，输入框字号 16 px；引导三步卡片在手机上排版正常。
+Kiểm tra ảnh thủ công: khung đính chính hiển thị đầy đủ trên điện thoại, cỡ chữ ô nhập liệu 16 px; thẻ ba bước hướng dẫn dàn trang bình thường trên điện thoại.
 
-## 结果总览（1.19）
+## Tổng quan kết quả (1.19)
 
-| 套件 | 装酒馆助手 | 不装酒馆助手 |
+| Bộ kiểm thử | Có cài Tavern Helper | Không cài Tavern Helper |
 | --- | --- | --- |
-| `native_v093.py`（0.9.3 新增） | 29/29 | 29/29 |
-| `native_v092.py` | 17/17 | 14/14（D 跳过） |
+| `native_v093.py` (Mới thêm bản 0.9.3) | 29/29 | 29/29 |
+| `native_v092.py` | 17/17 | 14/14 (bỏ qua D) |
 | `native_v091.py` | 35/35 | — |
 | `native_v090.py` | 24/24 | — |
 | `native_v085.py` | 20/20 | — |
-| `native_v084.py` | 29/29（注 1） | 29/29 |
+| `native_v084.py` | 29/29 (Ghi chú 1) | 29/29 |
 | `native_v083.py` | 13/13 | — |
-| `native_v082.py` | 25/25（含真实酒馆助手一段） | 24/24（该段跳过） |
+| `native_v082.py` | 25/25 (gồm đoạn Tavern Helper thực tế) | 24/24 (bỏ qua đoạn đó) |
 | `native_v081.py` | 20/20 | — |
 | `native_v080.py` | 33/33 | — |
 | `native_group060.py` | 44/44 | — |
 | `native_world070.py` | 40/40 | — |
 | `native_terminal050.py` | 58/58 | 58/58 |
-| `native_guards.py` | ✅（`docs/evidence/guards.json` 重新生成为 0.9.3） | — |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | |
+| `native_guards.py` | ✅ (`docs/evidence/guards.json` tạo lại cho bản 0.9.3) | — |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | |
 | `npm run check` | ✅ | |
-| `npm test` | 203/203（0.9.2 为 186；新增 `v093.test.js` 17 项） | |
+| `npm test` | 203/203 (bản 0.9.2 là 186; thêm mới `v093.test.js` 17 hạng mục) | |
 | `npm run filelist:check` | ✅ | |
 
-注 1：第一次跑时有 1 项失败（“请求以流式发送”）。原因是测试环境里 5002 模拟模型的日志写到了别的文件，测试读不到请求记录。日志路径改正后重跑，29/29 通过。插件代码没有改动。
+Ghi chú 1: Lần chạy đầu tiên có 1 hạng mục thất bại (“yêu cầu được gửi đi dưới dạng luồng”). Nguyên nhân là nhật ký của mô hình mô phỏng cổng 5002 trong môi trường kiểm thử ghi sang tệp khác nên bài kiểm thử không đọc được bản ghi yêu cầu. Sau khi sửa lại đường dẫn nhật ký rồi chạy lại thì đạt 29/29. Mã nguồn plugin không thay đổi.
 
-## 未验证
+## Chưa xác minh
 
-- TauriTavern 实机（见上）。
-- SillyTavern 1.16 / 1.17 / 1.18 本轮没有跑。世界书读取在 1.19 以下会用 world-info 模块或接口这条路，这条路只在 1.19 上用模拟缺接口的方式测过。
-- 新手引导第 2 步「填写独立 API」只验证了跳转和返回，表单本身用的是 0.8.5 的验收。
-- AI 之后如果又把 `当前世界` / `世界类型` 写错，需要用户再更正一次。插件不会锁定用户的更正。
+- Máy thật TauriTavern (xem ở trên).
+- SillyTavern 1.16 / 1.17 / 1.18 đợt này không chạy. Việc đọc Sách Thế Giới trên các bản dưới 1.19 sẽ đi theo nhánh mô-đun world-info hoặc giao diện HTTP, nhánh này mới chỉ được kiểm thử trên bản 1.19 bằng cách mô phỏng thiếu giao diện.
+- Bước 2 「Điền API độc lập」 của Hướng dẫn tân thủ mới chỉ xác minh chuyển trang và quay lại, còn bản thân biểu mẫu sử dụng kết quả nghiệm thu của bản 0.8.5.
+- Nếu sau đó AI lại viết sai `当前世界` / `世界类型`, người dùng sẽ cần đính chính lại lần nữa. Plugin không khóa cứng kết quả đính chính của người dùng.

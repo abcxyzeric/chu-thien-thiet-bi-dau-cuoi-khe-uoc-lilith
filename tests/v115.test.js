@@ -23,7 +23,7 @@ const settings = (stored = {}) => { const store = { [ID]: stored }; return { s: 
 
 test('1.1.5 persona: default is Lilith and every helper is the identity', () => {
     const p = resolvePersona(null);
-    assert.equal(p.lilith, true); assert.equal(p.name, '莉莉丝');
+    assert.equal(p.lilith, true); assert.equal(p.name, 'Lilith');
     assert.equal(storyRule(p), null); assert.equal(chatPersona(p), null);
     assert.equal(renameText('莉莉丝说 LILITH', p), '莉莉丝说 LILITH');
     const msgs = [{ role: 'system', content: LILITH_PERSONA_HEAD + '…' }];
@@ -36,28 +36,28 @@ test('1.1.5 persona: default is Lilith and every helper is the identity', () => 
 
 test('1.1.5 persona: numbered orb preset and custom persona', () => {
     const orb = resolvePersona({ preset: 'orb', code: '0 0-7x!' });
-    assert.equal(orb.lilith, false); assert.equal(orb.code, '00-7x'); assert.equal(orb.name, '系统00-7x'); assert.equal(orb.call, '宿主');
+    assert.equal(orb.lilith, false); assert.equal(orb.code, '00-7x'); assert.equal(orb.name, 'Hệ thống 00-7x'); assert.equal(orb.call, 'Ký chủ');
     assert.match(orb.avatar, /^data:image\/svg\+xml;base64,/);
     assert.match(Buffer.from(orb.avatar.split(',')[1], 'base64').toString(), /00-7/);
     const c = resolvePersona({ preset: 'custom', name: '小九', call: '老大', personality: '毒舌护短', style: '自称本座' });
     assert.equal(c.name, '小九');
     const rule = storyRule(c);
-    assert.match(rule, /【小九】：“具体的说话内容”/); assert.match(rule, /称呼\{\{user\}\}为「老大」/); assert.match(rule, /毒舌护短/); assert.match(rule, /自称本座/);
+    assert.match(rule, /【小九】：“Nội dung lời nói cụ thể”/); assert.match(rule, /Xưng hô với \{\{user\}\} là 「老大」/); assert.match(rule, /毒舌护短/); assert.match(rule, /自称本座/);
     const chat = chatPersona(c);
-    for (const must of ['你是小九', '不是主剧情', '不要声称自己执行了游戏操作', '不要角色前缀', '不代表接取任务']) assert.ok(chat.includes(must), must);
-    assert.ok(storyRule({ ...c, story: 'OWN' }).startsWith('OWN\n【称呼对照】')); assert.equal(chatPersona({ ...c, chat: 'OWNC' }), 'OWNC');
+    for (const must of ['Bạn là 小九', 'không phải cốt truyện chính', 'đừng tuyên bố mình đã thực thi thao tác trò chơi', 'không thêm tiền tố tên nhân vật', 'không đồng nghĩa với việc nhận nhiệm vụ']) assert.ok(chat.includes(must), must);
+    assert.ok(storyRule({ ...c, story: 'OWN' }).startsWith('OWN\n【Đối chiếu danh xưng】')); assert.equal(chatPersona({ ...c, chat: 'OWNC' }), 'OWNC');
     assert.equal(resolvePersona({ preset: 'weird' }).lilith, true);
     assert.equal(cleanCode(''), '001');
 });
 
 test('1.1.5 persona: rename text / messages / worldbook entries (copies only)', () => {
     const p = resolvePersona({ preset: 'orb', code: '007' });
-    assert.equal(renameText('莉莉丝和莉莉絲 · LILITH · Lilith', p), '系统007和系统007 · SYSTEM-007 · SYSTEM-007');
+    assert.equal(renameText('莉莉丝和莉莉絲 · LILITH · Lilith', p), 'Hệ thống 007和Hệ thống 007 · SYSTEM-007 · Hệ thống 007');
     // a persona whose name contains 莉莉丝 is not renamed (no runaway replacement)
     assert.equal(renameText('莉莉丝', resolvePersona({ preset: 'custom', name: '小莉莉丝' })), '莉莉丝');
     const msgs = [{ role: 'system', content: LILITH_PERSONA_HEAD + '，也是…' }, { role: 'system', content: '你是诸天系统的独立助手莉莉丝。' }, { role: 'user', content: '莉莉丝你好' }];
     const out = rewriteMessages(msgs, p);
-    assert.equal(out[0].content, chatPersona(p)); assert.equal(out[1].content, '你是诸天系统的独立助手系统007。');
+    assert.equal(out[0].content, chatPersona(p)); assert.equal(out[1].content, '你是诸天系统的独立助手Hệ thống 007。');
     assert.equal(out[2].content, '莉莉丝你好', 'user text is never rewritten'); assert.equal(msgs[0].content.startsWith(LILITH_PERSONA_HEAD), true, 'input untouched');
     const lists = { globalLore: [
         { world: ZT_BOOK, comment: LILITH_RULE_COMMENT, content: '莉莉丝专属', key: ['莉莉丝'] },
@@ -65,7 +65,7 @@ test('1.1.5 persona: rename text / messages / worldbook entries (copies only)', 
         { world: 'Other', comment: 'x', content: '莉莉丝在别的书里', key: ['莉莉丝'] },
     ], chatLore: [] };
     assert.equal(rewriteEntries(lists, p, ZT_BOOK), 2);
-    assert.equal(lists.globalLore[0].content, storyRule(p)); assert.equal(lists.globalLore[1].content, '系统007播报');
+    assert.equal(lists.globalLore[0].content, storyRule(p)); assert.equal(lists.globalLore[1].content, 'Hệ thống 007播报');
     assert.equal(lists.globalLore[2].content, '莉莉丝在别的书里', 'other books are not touched');
 });
 
@@ -84,7 +84,7 @@ test('1.1.5 persona: avatars are small inline images only', () => {
 test('1.1.5 persona: the voice box follows the persona name', () => {
     try {
         setVoicePersona(resolvePersona({ preset: 'orb', code: '001' }));
-        const r = extractVoices('正文\n【系统001】：“检测到宿主突破。”\n【莉莉丝】：“不该被抽出”');
+        const r = extractVoices('正文\n【Hệ thống 001】：“检测到宿主突破。”\n【莉莉丝】：“不该被抽出”');
         assert.deepEqual(r.voices.map(v => v.text), ['检测到宿主突破。']);
         setVoicePersona(null);
         assert.deepEqual(extractVoices('【莉莉丝】：“回来了”').voices.map(v => v.text), ['回来了']);
@@ -102,7 +102,7 @@ test('1.1.5 persona: assistant requests are classified first, then rewritten', a
         const body = { model: 'm', messages: [{ role: 'system', content: LILITH_PERSONA_HEAD + '…' }, { role: 'user', content: 'hi' }] };
         await f('http://127.0.0.1:5001/v1/chat/completions', { method: 'POST', body: JSON.stringify(body) }).catch(() => {});
         assert.ok(sent.length >= 1);
-        assert.ok(sent[0].messages[0].content.startsWith('你是系统009'), sent[0].messages[0].content.slice(0, 20));
+        assert.ok(sent[0].messages[0].content.startsWith('Bạn là Hệ thống 009'), sent[0].messages[0].content.slice(0, 20));
         who = resolvePersona(null); sent.length = 0;
         await f('http://127.0.0.1:5001/v1/chat/completions', { method: 'POST', body: JSON.stringify(body) }).catch(() => {});
         assert.ok(sent[0].messages[0].content.startsWith(LILITH_PERSONA_HEAD));
@@ -160,19 +160,19 @@ test('1.1.5 聊天群 × 世界书: search, keys and the summon prompt', () => {
     assert.deepEqual(entryKeys(BOOK[4]), [], 'regex keys and 1-char keys are skipped');
     assert.equal(entryTitle(BOOK[4]), '/re.+gex/i');
     const p = summonPrompt(BOOK[0], '三生三世', { tiers: '1=凡人', maxTier: 3 });
-    assert.match(p, /世界书「三生三世」/); assert.match(p, /青丘白浅/); assert.match(p, /名称\|出处世界\|实力档数字/);
+    assert.match(p, /Sách Thế Giới 「三生三世」/); assert.match(p, /青丘白浅/); assert.match(p, /Tên\|Thế giới xuất xứ\|Con số bậc thực lực/);
     assert.deepEqual(parseRecruit('白浅|青丘|6|清冷护短|桃花醉'), { 名称: '白浅', 世界: '青丘', 档: 6, 性格: '清冷护短', 特产: '桃花醉' });
 });
 
 test('1.1.5 聊天群 × 世界书: group block within budget, keyword background', () => {
     const m = { id: 'm1', 名称: '白浅', 来源: { book: '三生三世', uid: 0, comment: '白浅' } };
-    assert.match(memberSourceLine(m, BOOK[0]), /白浅（世界书「三生三世」·白浅）：青丘白浅/);
+    assert.match(memberSourceLine(m, BOOK[0]), /白浅 \(Sách Thế Giới 「三生三世」·白浅\): 青丘白浅/);
     assert.equal(memberSourceLine({ 名称: 'x' }, BOOK[0]), '');
     const bg = matchKeys(BOOK, '今天去狐狸洞找太子', new Set(['0']));
     assert.deepEqual(bg.map(e => e.uid), [1, 2]);
     const block = groupWorldBlock([{ m, entry: BOOK[0] }], bg.map(e => ({ book: '三生三世', entry: e })), 2000);
-    assert.match(block, /^【世界书资料（只读参考）】/); assert.match(block, /夜华/);
-    const tiny = groupWorldBlock([{ m, entry: BOOK[0] }], bg.map(e => ({ book: '三生三世', entry: e })), 60);
+    assert.match(block, /^【Tư liệu Sách Thế Giới \(chỉ đọc tham khảo\)】/); assert.match(block, /夜华/);
+    const tiny = groupWorldBlock([{ m, entry: BOOK[0] }], bg.map(e => ({ book: '三生三世', entry: e })), 75);
     assert.ok(!/天族太子/.test(tiny) && /青丘白浅/.test(tiny), 'budget respected');
     assert.equal(groupWorldBlock([], [], 100), '');
 });
@@ -185,7 +185,7 @@ test('1.1.5 聊天群 × 世界书: 群员记忆注入 only for summoned members
     assert.equal(worldMemoryPrompt(g, '叶清寒拔剑。', entryOf), '', 'non-worldbook members are not recalled');
     assert.equal(worldMemoryPrompt(g, '风吹过山岗。', entryOf), '', 'not in the scene → nothing');
     const viaKey = worldMemoryPrompt(g, '“姑姑！”有人喊道。', entryOf);
-    assert.match(viaKey, /群员记忆/); assert.match(viaKey, /白浅（好感 60/); assert.match(viaKey, /桃花醉收到了吗/); assert.match(viaKey, /（私聊）：在。/); assert.match(viaKey, /桃花醉×1（赠礼）/);
+    assert.match(viaKey, /Ký ức thành viên nhóm/); assert.match(viaKey, /白浅 \(Hảo cảm 60/); assert.match(viaKey, /桃花醉收到了吗/); assert.match(viaKey, /\(Trò chuyện riêng\): 在。/); assert.match(viaKey, /桃花醉×1 \(赠礼\)/);
     assert.ok(mentions('白浅来了', g.成员[0], null)); assert.ok(!mentions('', g.成员[0], BOOK[0]));
 });
 
@@ -215,7 +215,7 @@ test('1.1.5 说明书: title version, persona / switches chapters and the worldb
     assert.match(md.split('\n')[0], /1\.1\.5/);
     const { html, toc } = renderManual(md);
     assert.ok(toc.length >= 19);
-    for (const k of ['系统助手人设', '系统光球', '功能开关', '从世界书召唤', '群员记忆', '换回莉莉丝', '刷新后生效']) assert.ok(html.includes(k), k);
+    for (const k of ['Thiết lập nhân vật Trợ lý hệ thống', 'Quả Cầu Ánh Sáng Hệ Thống', 'Công tắc tính năng', 'Triệu hồi từ Sách Thế Giới', 'Ký ức thành viên nhóm', 'Đổi lại về Lilith', 'Có hiệu lực sau khi làm mới']) assert.ok(html.includes(k), k);
 });
 
 // ---------- 1.1.5 self-check fixes ----------
@@ -235,15 +235,15 @@ test('1.1.5 self-check: a "$" in the persona name stays literal in the voice pat
     } finally { setVoicePersona(null); }
 });
 test('1.1.5 self-check: one-character names are refused (they would hijack 「我说：“…”」 narration)', () => {
-    assert.throws(() => personaFromForm({ preset: 'custom', name: '我' }), /至少 2 个字/);
-    assert.throws(() => personaFromForm({ preset: 'orb', name: ' 零 ' }), /至少 2 个字/);
+    assert.throws(() => personaFromForm({ preset: 'custom', name: '我' }), /ít nhất 2 ký tự/);
+    assert.throws(() => personaFromForm({ preset: 'orb', name: ' 零 ' }), /ít nhất 2 ký tự/);
     assert.equal(personaFromForm({ preset: 'custom', name: '' }).name, '', 'empty = default name');
     assert.equal(personaFromForm({ preset: 'lilith', name: '我' }).preset, 'lilith', '莉莉丝 ignores the name field');
     assert.equal(personaFromForm({ preset: 'custom', name: '零号' }).name, '零号');
 });
 test('1.1.5 self-check: every persona rule tells the story model that old 「莉莉丝」 lines mean the persona', () => {
     const orb = resolvePersona({ preset: 'orb', code: '007' });
-    assert.ok(storyRule(orb).includes(aliasNote(orb)) && aliasNote(orb).includes('系统007'));
+    assert.ok(storyRule(orb).includes(aliasNote(orb)) && aliasNote(orb).includes('Hệ thống 007'));
     const own = resolvePersona({ preset: 'custom', name: '零号', story: '我自己的规则' });
     assert.ok(storyRule(own).startsWith('我自己的规则') && storyRule(own).includes(aliasNote(own)), 'also after a full replacement');
     assert.equal(storyRule(resolvePersona(null)), null);
@@ -279,7 +279,7 @@ test('1.1.5 self-check: a group round is marked busy BEFORE the worldbook read (
         assert.ok(seenBusy, 'busy is already set while the worldbook is being read');
         assert.ok(g.busy, 'the UI sees the group as busy during the read');
         release(); await run;
-        assert.ok(prompt.includes('【世界书资料（只读参考）】') && prompt.includes('天族太子'), 'the entry reaches the prompt');
+        assert.ok(prompt.includes('【Tư liệu Sách Thế Giới (chỉ đọc tham khảo)】') && prompt.includes('天族太子'), 'the entry reaches the prompt');
         assert.equal(g.busy, '', 'busy cleared afterwards');
         assert.deepEqual(disk.variables.诸天系统.聊天群.消息.map(m => m.text), ['在']);
     } finally { for (const [k, d] of keep) d ? Object.defineProperty(globalThis, k, d) : delete globalThis[k]; }

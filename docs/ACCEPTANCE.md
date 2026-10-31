@@ -1,56 +1,56 @@
-# 0.2.0 开发检查点验收
+# Nghiệm thu điểm kiểm tra phát triển 0.2.0
 
-2026-09-29。原生扩展继续迁移，**不是全功能正式版**。
+2026-09-29. Tiện ích mở rộng nguyên bản tiếp tục di chuyển chức năng, **chưa phải bản chính thức đầy đủ tính năng**.
 
-## 环境
+## Môi trường
 
-独立 SillyTavern 1.19.0，源码接口固定于 `06bde939fb1e9c4c8d8641d810f0a916b5bce127`。没有用户真实存档，没有 Tavern Helper，没有模型密钥。只使用标记为“隔离验收 / 结算 QA”的测试角色、余额和程序构造的回复；它们不是模型输出。
+SillyTavern 1.19.0 độc lập, giao diện mã nguồn cố định tại commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127`. Không có bản lưu thật của người dùng, không có Tavern Helper, không có khóa mô hình. Chỉ sử dụng nhân vật thử nghiệm, số dư và phản hồi dựng bằng chương trình được đánh dấu là “Nghiệm thu cô lập / QA kết toán”; chúng không phải đầu ra của mô hình.
 
-该一次性宿主为 Arena 预览调整了 iframe 响应头和 HTTPS e2b 分区会话 Cookie，保留 CSRF；不改变聊天保存 API。这些宿主预览调整不在扩展包内，不能作为生产安全配置使用。
+Máy chủ dùng một lần này đã điều chỉnh tiêu đề phản hồi iframe và Cookie phiên phân vùng HTTPS e2b cho bản xem trước Arena, giữ nguyên CSRF; không làm thay đổi API lưu trò chuyện. Những điều chỉnh xem trước máy chủ này không nằm trong gói tiện ích mở rộng và không thể dùng làm cấu hình bảo mật môi trường sản xuất.
 
-## 自动化结果
+## Kết quả tự động hóa
 
-- `npm run check`：通过。
-- `npm test`：**27/27** 通过。
-- 原五文件 SHA256 不变；两个原结算内核由提取脚本从原源文件生成。
-- 原生主流程、发送防护和手机 UI 回归结果保存在 `docs/evidence/`。Git 安装路径上的重测结果另见安装报告。
+- `npm run check`: Đạt.
+- `npm test`: **27/27** đạt.
+- Mã băm SHA256 của 5 tệp gốc không đổi; hai nhân kết toán gốc được tạo từ tệp nguồn gốc thông qua kịch bản trích xuất.
+- Kết quả hồi quy luồng chính nguyên bản, bảo vệ gửi tin và giao diện điện thoại được lưu tại `docs/evidence/`. Kết quả kiểm tra lại trên đường dẫn cài đặt Git xem riêng tại báo cáo cài đặt.
 
-### 新结算流程：17组，真实宿主通过
+### Quy trình kết toán mới: 17 nhóm, vượt qua trên máy chủ thật
 
-原始记录 `native-ledger.json`：
+Bản ghi gốc `native-ledger.json`:
 
-默认关闭、备份/停旧引擎确认、旧实例检测、执行前确认、原任务点数与实物奖励、原名望折扣、商品售出防重、单件消耗、消耗后不补发、原回收价格、正文系统卡片、其他系统变量不受影响、重载持久化、历史改写冻结、回读失败冻结、重载确认只提交一次、手机交易视图不横向溢出。
+Mặc định tắt, xác nhận sao lưu/dừng engine cũ, phát hiện thực thể cũ, xác nhận trước khi thực thi, điểm nhiệm vụ gốc & phần thưởng hiện vật, chiết khấu Danh vọng gốc, chống bán trùng lặp hàng hóa, tiêu hao từng món, không phát bù sau khi đã tiêu hao, giá thu hồi gốc, thẻ hệ thống trong chính văn, biến của hệ thống khác không bị ảnh hưởng, lưu bền vững sau khi tải lại, đóng băng khi sửa lịch sử, đóng băng khi đọc lại thất bại, xác nhận tải lại chỉ cam kết một lần, khung nhìn giao dịch trên điện thoại không bị tràn ngang.
 
-测试账本：1000 初始测试点 → 任务 +100 → 折后购买 -98 → 两次使用各消耗一件奖励 → 回收 +9 → 第二笔购买 -194。最终 **817 点、6份服务器凭据**。
+Sổ cái thử nghiệm: 1000 điểm thử nghiệm ban đầu → Nhiệm vụ +100 → Mua sau chiết khấu -98 → Hai lần sử dụng mỗi lần tiêu hao 1 món phần thưởng → Thu hồi +9 → Giao dịch mua thứ hai -194. Cuối cùng còn **817 điểm, 6 chứng từ máy chủ**.
 
-故障注入只在真实保存已成功后的第二次 `/api/chats/get` 返回 503。扩展没有虚报成功或自动重试；重载后读取到唯一的已提交记录。
+Tiêm lỗi chỉ trả về mã 503 ở lần gọi `/api/chats/get` thứ hai sau khi lưu thật đã thành công. Tiện ích không báo khống thành công hay tự động thử lại; sau khi tải lại trang đọc được đúng bản ghi duy nhất đã cam kết.
 
-### 并发与切换：3组，真实宿主通过
+### Đồng thời và chuyển đổi: 3 nhóm, vượt qua trên máy chủ thật
 
-原始记录 `native-ledger-guards.json`：
+Bản ghi gốc `native-ledger-guards.json`:
 
-1. 同一浏览器两个标签：持有 Web Lock 时另一标签被拒绝，不写入。
-2. 两个标签预览同一快照：第一个提交后，第二个因服务器快照不同而拒绝，不能覆盖前一凭据。
-3. 保存请求已经执行、响应尚未交给扩展时，真实切换到另一角色聊天：保存目标仍是捕获的原聊天，新聊天没有收到旧账本或结算消息。返回原聊天可读回凭据。
+1. Hai thẻ trong cùng một trình duyệt: khi một thẻ đang giữ Web Lock thì thẻ kia bị từ chối, không ghi dữ liệu.
+2. Hai thẻ cùng xem trước một ảnh chụp nhanh: sau khi thẻ thứ nhất cam kết, thẻ thứ hai bị từ chối do ảnh chụp nhanh trên máy chủ đã khác đi, không thể ghi đè lên chứng từ trước đó.
+3. Khi yêu cầu lưu đã thực thi nhưng phản hồi chưa kịp trả về cho tiện ích mà chuyển thật sang cuộc trò chuyện của nhân vật khác: mục tiêu lưu vẫn là cuộc trò chuyện gốc đã bắt cố định, cuộc trò chuyện mới không nhận sổ cái cũ hay tin nhắn kết toán cũ. Khi quay lại cuộc trò chuyện gốc vẫn đọc lại được chứng từ.
 
-该测试通过 route.fetch 执行真实保存，只延迟响应以制造时序条件，不模拟 getContext、账本或模型。
+Bài kiểm tra này thực thi lưu thật thông qua `route.fetch`, chỉ làm trễ phản hồi để tạo điều kiện thời gian chứ không giả lập `getContext`, sổ cái hay mô hình.
 
-新增结算及并发测试均 **0 pageerror，未调用模型**。
+Tất cả các bài kiểm tra kết toán và đồng thời mới đều đạt **0 pageerror, không gọi mô hình**.
 
-## 明确的保护与非目标
+## Bảo vệ rõ ràng và những mục không hướng tới
 
-- 原始交易逻辑在克隆变量上预计算，任何奖励证据错误都不会先把点数写入宿主。
-- 稳定任务实物凭据不以当前背包是否还存在物品判断是否发奖。
-- 原生来源哈希和凭据保留在聊天元数据；历史变更时冻结，而不是猜测如何退款或回滚。
-- 系统消息使用宿主 `isSmallSys` 标记，避免渲染器自动补 swipe 数据造成客户端与磁盘快照不一致。
-- 单次显式保存同时携带变量、凭据和正文系统消息；不使用 `force:true` 覆盖存档完整性检查。
-- **不是分布式事务或服务端 CAS**。同源锁无法约束其他浏览器、设备或不合作扩展。后置快照检查也不能消除所有竞态，禁止并发写同一聊天。
-- 状态不明时请停止聊天操作，重载并人工核对，不能理解成“失败所以一定没扣款”。
+- Logic giao dịch gốc được tính toán trước trên bản sao biến, bất kỳ lỗi bằng chứng phần thưởng nào cũng sẽ không ghi điểm vào máy chủ trước.
+- Chứng từ hiện vật nhiệm vụ ổn định không dựa vào việc trong túi đồ hiện tại còn vật phẩm hay không để phán đoán phát thưởng.
+- Mã băm nguồn nguyên bản và chứng từ được lưu giữ trong siêu dữ liệu trò chuyện; khi lịch sử thay đổi sẽ đóng băng chứ không đoán mò cách hoàn tiền hay hoàn tác.
+- Tin nhắn hệ thống sử dụng cờ `isSmallSys` của máy chủ để tránh việc trình kết xuất tự động bổ sung dữ liệu swipe gây lệch giữa trình khách và ảnh chụp nhanh trên đĩa.
+- Một lần lưu tường minh mang theo đồng thời biến, chứng từ và tin nhắn hệ thống trong chính văn; không dùng `force:true` để ghi đè kiểm tra tính toàn vẹn của bản lưu.
+- **Không phải giao dịch phân tán hay CAS phía máy chủ**. Khóa cùng nguồn không thể ràng buộc trình duyệt khác, thiết bị khác hoặc tiện ích mở rộng không hợp tác. Kiểm tra ảnh chụp nhanh sau khi lưu cũng không loại bỏ được mọi điều kiện tranh chấp (race conditions), nghiêm cấm ghi đồng thời vào cùng một cuộc trò chuyện.
+- Khi trạng thái không rõ ràng, vui lòng dừng thao tác trò chuyện, tải lại trang và kiểm tra thủ công, không được hiểu là “báo thất bại nghĩa là chắc chắn chưa trừ tiền”.
 
-## 尚未验收
+## Chưa nghiệm thu
 
-实体手机 GPU/帧率/耗电、其他酒馆版本、真实模型与付费请求、AI 进货/抽卡/许愿、完整工作台/自动记忆、全量生产旧存档、跨设备并发、群聊。
+GPU/tốc độ khung hình/mức tiêu thụ pin trên điện thoại thật, các phiên bản quán rượu khác, mô hình thật và yêu cầu trả phí, AI nhập hàng/rút thẻ/ước nguyện, toàn bộ Bàn làm việc/tự động chỉnh lý ký ức, toàn bộ bản lưu cũ trong thực tế, đồng thời xuyên thiết bị, trò chuyện nhóm của quán rượu.
 
-主流程动画回归使用软件 WebGL；本轮经济测试关闭 WebGL以隔离逻辑验收。不能把软件渲染器帧率冒充实体设备表现。
+Kiểm tra hồi quy hoạt ảnh luồng chính sử dụng WebGL phần mềm; vòng kiểm tra kinh tế này tắt WebGL để cô lập nghiệm thu logic. Không được lấy tốc độ khung hình của trình kết xuất phần mềm giả làm hiệu năng trên thiết bị vật lý.
 
-截图：`commerce-desktop.png`、`commerce-mobile.png`、`ledger-body.png`，均来自实际隔离酒馆。旧版验收记录保留在 `ACCEPTANCE-0.1.0.md`。
+Ảnh chụp màn hình: `commerce-desktop.png`, `commerce-mobile.png`, `ledger-body.png`, đều lấy từ quán rượu cô lập thực tế. Hồ sơ nghiệm thu bản cũ được lưu giữ tại `ACCEPTANCE-0.1.0.md`.

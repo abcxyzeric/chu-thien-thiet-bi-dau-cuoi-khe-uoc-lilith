@@ -1,59 +1,59 @@
-# 0.8.0 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.8.0
 
-## 环境
+## Môi trường
 
-与 [0.7.0](ACCEPTANCE-0.7.0.md) 相同：一次性的 SillyTavern 实例（官方仓库按 tag 全新安装，扩展以符号链接加载仓库工作区），Playwright Chromium 无头 + swiftshader，本地模拟模型 `tests/qa/mock_model.py`。所有测试聊天都是明确标记的隔离测试聊天，不是真实存档。
+Giống với [0.7.0](ACCEPTANCE-0.7.0.md): các thực thể SillyTavern dùng một lần (cài đặt mới hoàn toàn theo tag từ kho lưu trữ chính thức, tiện ích mở rộng tải không gian làm việc kho lưu trữ qua liên kết tượng trưng), Playwright Chromium headless + swiftshader, mô hình mô phỏng cục bộ `tests/qa/mock_model.py`. Tất cả các cuộc trò chuyện kiểm thử đều là cuộc trò chuyện kiểm thử cô lập được đánh dấu rõ ràng, không phải bản lưu thật.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.17 | 1.18 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.17 | 1.18 | 1.19 |
 | --- | --- | --- | --- | --- |
-| `native_v080.py`（0.8.0 新增，33 项） | 33/33 | 本轮未运行 | 本轮未运行 | 33/33 |
-| `native_world070.py`（0.7.0 回归，40 项） | 40/40 | 本轮未运行 | 本轮未运行 | 40/40 |
-| `native_terminal050.py`（0.5.0 终端回归，58 项） | 本轮未运行 | 本轮未运行 | 本轮未运行 | 58/58 |
-| `native_group060.py`（0.6.0 聊天群回归，44 项） | 本轮未运行 | 本轮未运行 | 本轮未运行 | 44/44 |
-| `native_guards.py`（发送保护） | 本轮未运行 | 本轮未运行 | 本轮未运行 | ✅ |
-| `native_replace040.py`（v1.1 整体替代，70 项） | **本轮未运行** | **本轮未运行** | **本轮未运行** | **本轮未运行** |
-| `node --test tests/*.test.js`（纯逻辑，与宿主版本无关） | 92/92 | 92/92 | 92/92 | 92/92 |
+| `native_v080.py` (Mới thêm bản 0.8.0, 33 hạng mục) | 33/33 | Đợt này không chạy | Đợt này không chạy | 33/33 |
+| `native_world070.py` (Hồi quy 0.7.0, 40 hạng mục) | 40/40 | Đợt này không chạy | Đợt này không chạy | 40/40 |
+| `native_terminal050.py` (Hồi quy thiết bị đầu cuối 0.5.0, 58 hạng mục) | Đợt này không chạy | Đợt này không chạy | Đợt này không chạy | 58/58 |
+| `native_group060.py` (Hồi quy nhóm chat 0.6.0, 44 hạng mục) | Đợt này không chạy | Đợt này không chạy | Đợt này không chạy | 44/44 |
+| `native_guards.py` (Bảo vệ gửi tin) | Đợt này không chạy | Đợt này không chạy | Đợt này không chạy | ✅ |
+| `native_replace040.py` (Thay thế toàn diện v1.1, 70 hạng mục) | **Đợt này không chạy** | **Đợt này không chạy** | **Đợt này không chạy** | **Đợt này không chạy** |
+| `node --test tests/*.test.js` (Thuần logic, không phụ thuộc phiên bản máy chủ) | 92/92 | 92/92 | 92/92 | 92/92 |
 
-- 本轮只在支持范围的两端（1.16、1.19）跑了浏览器验收。1.17 / 1.18 没有实测；0.8.0 没有使用新的宿主接口（仍只用 0.7.0 已在四个版本上验收过的接口），但这是推断，**不是实测**。
-- `native_replace040.py` 需要 v1.1 原版导入文件（`--legacy-dir`），这些文件按约定不进仓库、不上传，本轮没有跑。
-- `docs/evidence/guards.json` 是本轮 1.19 上最后一次 `native_guards.py` 的输出。
+- Đợt này chỉ chạy nghiệm thu trình duyệt ở hai đầu phạm vi hỗ trợ (1.16, 1.19). Bản 1.17 / 1.18 chưa kiểm thử thực tế; bản 0.8.0 không sử dụng giao diện máy chủ mới (vẫn chỉ dùng các giao diện của bản 0.7.0 đã được nghiệm thu trên cả bốn phiên bản), nhưng đây là suy luận, **không phải kiểm thử thực tế**.
+- `native_replace040.py` cần các tệp nhập nguyên bản v1.1 (`--legacy-dir`), những tệp này theo quy ước không đưa vào kho lưu trữ và không tải lên, nên đợt này không chạy.
+- `docs/evidence/guards.json` là đầu ra của lần chạy `native_guards.py` cuối cùng trên bản 1.19 trong đợt này.
 
-## `native_v080.py` 覆盖项
+## Các hạng mục bao phủ của `native_v080.py`
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 1 | 打开终端后基础概览显示账本里的系统点（不是楼层面板里的旧值） |
-| 2–3 | 聊天群「签到」写入账本并读回；顶栏和基础概览同时显示新值（修复截图 4 的问题） |
-| 4 | 还没有任何 AI 数据块时，基础概览显示账本系统点（100），不是空面板的 0 |
-| 5 | 终端里不再显示原状态栏的「莉莉丝」那一行 |
-| 6 | 数据块里的「系统播报」在立绘气泡里说出来 |
-| 7 | 点立绘空白处出现剧情式台词，连续点击内容不同 |
-| 8–10 | 仙侠主题下工作台卡片使用玉简底色（不再是紫色），底部状态行使用主题栏色；默认主题保持原版紫色 |
-| 11–14 | 设置 → 管理员控制台打开原版管理员面板；面板打开时引擎不重载；保存后系统点写入账本，顶栏与引擎同时显示新值 |
-| 15–19 | 「能力」导航里有「自拟」；「＋ 自拟外挂」打开编辑器并聚焦名称；发动时经账本扣 777 系统点，并盖 `界面记账时间`；行动文本进入输入框 |
-| 20–29 | 功法实效提示带阶段效果注入；剧情里用到但「功法修炼」漏写的功法 +2 实战积累（受品阶上限约束）；阶段提升排队给模型播报；凭据写入功法记录；没用到的功法不变；同一楼层重新渲染不会重复加；修行条与功法页显示阶段、距离下一阶段和来源 |
-| 30–36 | 从角色卡 / 聊天变量导入功法：新增独孤九剑（仙品 600/2000）；已有的只升不降（青云诀保持 200）；记录到 `角色卡功法同步` 和 `功法记录`；角色卡自身变量不被修改 |
-| 37 | 手机布局（390×800）：立绘舞台收起时，播报改用提示条（toast）显示 |
-| 38 | 无页面错误 |
+| 1 | Sau khi mở thiết bị đầu cuối, Tổng quan cơ bản hiển thị Điểm Hệ Thống trong sổ cái (không phải giá trị cũ trong bảng của tầng) |
+| 2–3 | 「Điểm danh」 trong nhóm chat ghi vào sổ cái và đọc lại; thanh đỉnh và Tổng quan cơ bản hiển thị giá trị mới cùng lúc (sửa lỗi ở ảnh chụp 4) |
+| 4 | Khi chưa có bất kỳ khối dữ liệu AI nào, Tổng quan cơ bản hiển thị Điểm Hệ Thống trong sổ cái (100), không phải số 0 của bảng trống |
+| 5 | Trong thiết bị đầu cuối không còn hiển thị dòng 「Lilith」 ở đáy thanh trạng thái gốc |
+| 6 | 「Thông báo hệ thống」 trong khối dữ liệu được nói ra trong bong bóng thoại của tranh đứng |
+| 7 | Bấm vào khoảng trống trên tranh đứng xuất hiện lời thoại theo cốt truyện, bấm liên tiếp nội dung khác nhau |
+| 8–10 | Dưới chủ đề Tiên hiệp, thẻ Bàn làm việc sử dụng màu nền thẻ ngọc (không còn là màu tím), dòng trạng thái dưới cùng sử dụng màu thanh chủ đề; chủ đề mặc định giữ nguyên màu tím nguyên bản |
+| 11–14 | Cài đặt → Bảng điều khiển Quản trị viên mở bảng quản trị viên nguyên bản; khi bảng đang mở thì động cơ không tải lại; sau khi lưu, Điểm Hệ Thống được ghi vào sổ cái, thanh đỉnh và động cơ hiển thị giá trị mới cùng lúc |
+| 15–19 | Trong điều hướng 「Năng lực」 có mục 「Tự tạo」; 「＋ Ngoại quải tự tạo」 mở trình chỉnh sửa và đặt tiêu điểm vào ô tên; khi phát động trừ 777 Điểm Hệ Thống qua sổ cái và đóng dấu `界面记账时间`; văn bản hành động đi vào ô nhập liệu |
+| 20–29 | Lời nhắc hiệu quả thực tế của công pháp được tiêm kèm hiệu quả giai đoạn; công pháp được dùng trong cốt truyện nhưng bị quên ghi ở dòng 「功法修炼」 được +2 tích lũy thực chiến (chịu ràng buộc trần phẩm giai); việc thăng giai đoạn được xếp hàng chờ mô hình phát báo; chứng từ ghi vào bản ghi công pháp; công pháp không dùng tới giữ nguyên; cùng một tầng kết xuất lại không cộng lặp; thanh tu hành và trang công pháp hiển thị giai đoạn, khoảng cách tới giai đoạn tiếp theo và nguồn gốc |
+| 30–36 | Nhập công pháp từ thẻ nhân vật / biến trò chuyện: thêm mới Độc Cô Cửu Kiếm (Tiên phẩm 600/2000); công pháp đã có chỉ tăng không giảm (Thanh Vân Quyết giữ nguyên 200); ghi vào `角色卡功法同步` và `功法记录`; biến của chính thẻ nhân vật không bị sửa đổi |
+| 37 | Bố cục điện thoại (390×800): khi sân khấu tranh đứng thu gọn, phát báo chuyển sang hiển thị bằng thanh thông báo (toast) |
+| 38 | Không có lỗi trang |
 
-（表中编号按测试日志顺序归组，合计 33 项断言。）
+(Số thứ tự trong bảng được nhóm theo thứ tự nhật ký kiểm thử, tổng cộng 33 khẳng định.)
 
-## 人工看图
+## Kiểm tra ảnh chụp thủ công
 
-- 立绘气泡与剧情台词的位置、换行、遮挡：在 1.19 截图上人工看过。
-- 仙侠 / 赛博 / 诡异 / 默认四套主题下，莉莉丝工作台与终端状态栏的观感是否统一：人工看图。自动断言只覆盖仙侠与默认两套的关键颜色。
-- 手机布局：立绘舞台收起，播报走 toast；这是有意的退化，不是气泡。
+- Vị trí, ngắt dòng, độ che khuất của bong bóng thoại tranh đứng và lời thoại cốt truyện: đã xem thủ công trên ảnh chụp bản 1.19.
+- Cảm quan đồng nhất giữa Bàn làm việc Lilith và thanh trạng thái thiết bị đầu cuối dưới bốn bộ chủ đề Tiên hiệp / Cyber / Quỷ dị / Mặc định: đã xem ảnh thủ công. Khẳng định tự động chỉ bao phủ các màu sắc then chốt của hai bộ Tiên hiệp và Mặc định.
+- Bố cục điện thoại: sân khấu tranh đứng thu gọn, phát báo đi qua toast; đây là cơ chế rút gọn có chủ đích, không phải bong bóng thoại.
 
-## 未验证
+## Chưa xác minh
 
-- **真实模型**：所有 AI 链路只用本地模拟模型。真实模型是否遵守「功法实效」提示、是否会播报阶段提升，没有验证。
-- **1.17 / 1.18** 上的 0.8.0 浏览器验收。
-- **读取角色卡功法**：只用测试里构造的角色卡变量和聊天变量结构验证过；不同作者的角色卡字段写法千差万别，未识别的结构不会导入（不会报错，也不会改角色卡）。
-- 0.7.0 已列出的未验证项不变：莉莉丝 Live2D 模型、部分神通 / 外挂按钮、图谱 → 定位聊天楼层、`native_replace040.py`。
+- **Mô hình thực tế**: Toàn bộ chuỗi AI chỉ dùng mô hình mô phỏng cục bộ. Việc mô hình thực tế có tuân thủ lời nhắc 「Hiệu quả thực tế của công pháp」 và có phát báo thăng giai đoạn hay không vẫn chưa được xác minh.
+- Nghiệm thu trình duyệt 0.8.0 trên **1.17 / 1.18**.
+- **Đọc công pháp thẻ nhân vật**: Mới chỉ xác minh bằng cấu trúc biến thẻ nhân vật và biến trò chuyện tạo sẵn trong bài kiểm thử; cách đặt tên trường thẻ nhân vật của các tác giả khác nhau muôn hình vạn trạng, những cấu trúc chưa nhận diện sẽ không được nhập vào (không báo lỗi, cũng không sửa thẻ nhân vật).
+- Các mục chưa xác minh đã liệt kê ở bản 0.7.0 không đổi: mô hình Live2D Lilith, một số nút Thần thông / Ngoại quải, Đồ phổ → định vị tầng trò chuyện, `native_replace040.py`.

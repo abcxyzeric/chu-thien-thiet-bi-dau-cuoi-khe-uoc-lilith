@@ -1,62 +1,62 @@
-# 0.6.0 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.6.0
 
-## 环境
+## Môi trường
 
-与 [0.5.0](ACCEPTANCE-0.5.0.md) 相同：四个一次性的 SillyTavern 实例（官方仓库按 tag 全新安装，扩展以符号链接加载仓库工作区），Playwright Chromium 无头 + swiftshader，本地模拟模型 `tests/qa/mock_model.py`，不使用任何真实密钥或用户存档。
+Giống với [0.5.0](ACCEPTANCE-0.5.0.md): bốn thực thể SillyTavern dùng một lần (cài đặt mới hoàn toàn theo tag từ kho lưu trữ chính thức, tiện ích mở rộng tải không gian làm việc kho lưu trữ qua liên kết tượng trưng), Playwright Chromium headless + swiftshader, mô hình mô phỏng cục bộ `tests/qa/mock_model.py`, không sử dụng bất kỳ khóa thực tế hay bản lưu người dùng nào.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.17.0 | `e3f41666c69db032e17e079fcddcf40cf47e8593` |
 | 1.18.0 | `51ad27fb86d39a3daca3adaa970375c9670c12df` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.17 | 1.18 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.17 | 1.18 | 1.19 |
 | --- | --- | --- | --- | --- |
-| `native_group060.py`（0.6.0 聊天群，44 项） | 44/44 | 44/44 | 44/44 | 44/44 |
-| `native_terminal050.py`（0.5.0 终端回归，58 项） | 58/58 | 58/58 | 58/58 | 58/58 |
-| `native_replace040.py`（v1.1 整体替代，兼容模式，70 项） | 70/70 | 70/70 | 70/70 | 70/70 |
-| `native_guards.py`（发送保护） | ✅ | ✅ | ✅ | ✅ |
-| `node --test tests/*.test.js`（纯逻辑，与宿主版本无关） | 67/67 | 67/67 | 67/67 | 67/67 |
+| `native_group060.py` (Nhóm chat 0.6.0, 44 hạng mục) | 44/44 | 44/44 | 44/44 | 44/44 |
+| `native_terminal050.py` (Hồi quy thiết bị đầu cuối 0.5.0, 58 hạng mục) | 58/58 | 58/58 | 58/58 | 58/58 |
+| `native_replace040.py` (Thay thế toàn diện v1.1, chế độ tương thích, 70 hạng mục) | 70/70 | 70/70 | 70/70 | 70/70 |
+| `native_guards.py` (Bảo vệ gửi tin) | ✅ | ✅ | ✅ | ✅ |
+| `node --test tests/*.test.js` (Thuần logic, không phụ thuộc phiên bản máy chủ) | 67/67 | 67/67 | 67/67 | 67/67 |
 
-## `native_group060.py` 覆盖项
+## Các hạng mục bao phủ của `native_group060.py`
 
-**入口与招募**
-- 终端导航「万界」组里有「聊天群」；空群页面说明怎么开始。
-- 招募令扣 200 点，模型给出的角色卡（名称/世界/实力档/性格/特产）被解析；指定世界招募可用。
-- 邀请入群按实力档收入群费（武道宗师 10,000、城市级 1,000,000），账本读回核对；第三位群员入群。
+**Lối vào & Chiêu mộ**
+- Trong nhóm điều hướng 「Vạn Giới」 của thiết bị đầu cuối có mục 「Nhóm chat」; trang nhóm trống hướng dẫn cách bắt đầu.
+- Lệnh Chiêu Mộ trừ 200 điểm, thẻ nhân vật do mô hình đưa ra (Tên/Thế giới/Bậc thực lực/Tính cách/Đặc sản) được phân tích; chiêu mộ chỉ định thế giới hoạt động tốt.
+- Mời vào nhóm thu phí vào nhóm theo bậc thực lực (Võ đạo tông sư 10.000, Cấp thành phố 1.000.000), đọc lại sổ cái để đối chiếu; thành viên thứ ba vào nhóm.
 
-**群聊**
-- 宿主发一条 = 模型请求一次；请求里带群员、群规和品阶上限。
-- 1–6 位群员回话，非群员说的话被丢掉。
+**Trò chuyện nhóm**
+- Ký chủ gửi 1 tin = yêu cầu mô hình 1 lần; trong yêu cầu mang theo danh sách thành viên, nội quy nhóm và giới hạn phẩm giai.
+- Từ 1–6 thành viên trả lời, lời nói của người không ở trong nhóm bị loại bỏ.
 
-**红包与赠礼（全部先入账、读回，再提示）**
-- 群员发系统点红包（3,000 · 3 份）；物品红包超出商城等级时自动降到允许的最高品阶（仙品 → 灵品，商城 Lv2）；赠礼 神品 → 灵品 进入「待领取」。
-- 抢红包：份额写入系统点并读回后才提示「已入库」；其他群员抢完剩余份额；抢过后不再显示「抢」。
-- 物品红包入包带来源「白浅@青丘」；赠礼领取入包并清掉待领取。
-- 宿主发系统点红包扣 1,000，群员好感上升；发物品红包 2 株灵草离开背包。
+**Lì xì & Quà tặng (toàn bộ đều ghi sổ trước, đọc lại xác nhận rồi mới hiện thông báo)**
+- Thành viên phát lì xì Điểm Hệ Thống (3.000 · 3 phần); lì xì vật phẩm vượt quá cấp độ thương thành sẽ tự động hạ xuống phẩm giai cao nhất được phép (Tiên phẩm → Linh phẩm, Thương thành Lv2); quà tặng Thần phẩm → Linh phẩm đi vào mục 「Chờ nhận」.
+- Giật lì xì: phần chia được ghi vào Điểm Hệ Thống và đọc lại xong mới báo 「Đã nhập kho」; các thành viên khác giật hết phần còn lại; sau khi đã giật không còn hiển thị nút 「Giật」.
+- Lì xì vật phẩm vào túi đồ mang theo nguồn gốc 「Bạch Thiển@Thanh Khâu」; nhận quà tặng đưa vào túi đồ và xóa khỏi danh sách chờ nhận.
+- Ký chủ phát lì xì Điểm Hệ Thống trừ 1.000, độ hảo cảm của thành viên nhóm tăng lên; phát lì xì vật phẩm làm 2 cây Linh Thảo rời khỏi túi đồ.
 
-**群务**
-- 签到（100×连签 + 10×群员）入账，当天按钮禁用。
-- 求助生成「待接取」任务进入 `任务库`，在任务页可见。
-- 群直播、私聊（宿主和群员的话都保存）、禁言（模型被告知）、踢人、设管理员、公告。
-- 降临：按实力档价格的 1/10 扣费，注入剧情提示词，3 次剧情回复后结束。
-- 集市：每位群员一件挂单且不超过品阶底线；买下扣点入包带来源；超过原估值 130% 的挂单被拒；撤单退回；按估值挂单卖出 +300。
-- 扩建 5 → 10 人扣 10,000。
-- 群摘要（群员 + 最近聊天）注入剧情，可关闭；每轮剧情后自动闲聊一次（可关）。
-- 顶栏、群页头和账本 `商城等级` 三处一致（Lv2）；刷新后群数据还在（聊天变量）。
+**Công việc nhóm**
+- Điểm danh (100×chuỗi liên tiếp + 10×thành viên) vào sổ, nút điểm danh trong ngày bị vô hiệu hóa.
+- Cầu viện tạo ra nhiệm vụ 「Chờ nhận」 đi vào `任务库`, nhìn thấy được ở trang Nhiệm vụ.
+- Phát sóng trực tiếp nhóm, trò chuyện riêng (lưu cả lời của Ký chủ lẫn thành viên), cấm chat (mô hình được thông báo), trục xuất, đặt làm quản trị viên, thông báo nhóm.
+- Giáng lâm: trừ phí bằng 1/10 giá bậc thực lực, tiêm lời nhắc vào cốt truyện, kết thúc sau 3 lần phản hồi cốt truyện.
+- Chợ nhóm: mỗi thành viên treo bán một món và không vượt quá giới hạn phẩm giai; mua xong trừ điểm đưa vào túi đồ kèm nguồn gốc; đơn treo bán vượt quá 130% định giá gốc bị từ chối; rút đơn hoàn trả vật phẩm; treo bán theo định giá thu về +300.
+- Mở rộng nhóm từ 5 → 10 người trừ 10.000.
+- Tóm tắt nhóm (thành viên + trò chuyện gần đây) tiêm vào cốt truyện, có thể tắt; sau mỗi lượt cốt truyện tự động tán gẫu một lần (có thể tắt).
+- Thanh đỉnh, tiêu đề trang nhóm và `商城等级` trong sổ cái khớp nhau ở cả ba nơi (Lv2); sau khi làm mới trang, dữ liệu nhóm vẫn còn nguyên (biến trò chuyện).
 
-**手机（390×800）**
-- 聊天记录和输入框都在屏幕内；没有页面错误。
+**Điện thoại (390×800)**
+- Lịch sử trò chuyện và ô nhập liệu đều nằm gọn trong màn hình; không có lỗi trang.
 
-## 截图
+## Ảnh chụp màn hình
 
-`docs/evidence/g060-chat.png`（桌面群聊：红包、按群规降级的赠礼、待领取条）、`g060-chat-end.png`、`g060-members.png`、`g060-market.png`、`g060-mobile.png`。
+`docs/evidence/g060-chat.png` (trò chuyện nhóm trên máy tính: lì xì, quà tặng bị hạ cấp theo nội quy nhóm, thanh chờ nhận), `g060-chat-end.png`, `g060-members.png`, `g060-market.png`, `g060-mobile.png`.
 
-## 已知边界
+## Ranh giới đã biết
 
-- **真实模型**：仍未验证，群聊、招募、红包的模型输出只用模拟模型跑过；真实模型不按格式输出时，对应的红包/赠礼会被丢弃而不会入账。
-- **酒馆群聊（ST group chat）**：未测试，聊天群只在单角色聊天里使用。
-- **旧版 0.4.0 楼层凭据标签**、**触觉反馈**：同 0.5.0。
+- **Mô hình thực tế**: Vẫn chưa xác minh, đầu ra mô hình cho trò chuyện nhóm, chiêu mộ, lì xì mới chỉ chạy với mô hình mô phỏng; khi mô hình thực tế không xuất đúng định dạng, lì xì/quà tặng tương ứng sẽ bị bỏ qua chứ không ghi sổ.
+- **Trò chuyện nhóm của SillyTavern (ST group chat)**: Chưa kiểm thử, Nhóm chat Chư Thiên chỉ sử dụng trong cuộc trò chuyện đơn nhân vật.
+- **Nhãn chứng từ tầng bản cũ 0.4.0**, **Phản hồi xúc giác**: Giống bản 0.5.0.

@@ -81,11 +81,11 @@ test('buildBackup: format marker, ledger + memory, host-only keys and API keys l
     assert.deepEqual(Object.keys(noMem.chat.variables), ['诸天系统']);
 });
 test('parseBackup: readable errors; refuses newer file formats and newer ledger structures', () => {
-    assert.throws(() => parseBackup('{oops'), /不是有效的 JSON/);
-    assert.throws(() => parseBackup('{"a":1}'), /不是诸天终端的存档/);
-    assert.throws(() => parseBackup({ format: BACKUP_FORMAT, formatVersion: BACKUP_FORMAT_VERSION + 1 }), /更新的插件/);
-    assert.throws(() => parseBackup({ format: BACKUP_FORMAT, formatVersion: 1, chat: { ledgerSchema: LEDGER_SCHEMA + 1, variables: {} } }), /结构版本/);
-    assert.throws(() => parseBackup({ format: BACKUP_FORMAT, formatVersion: 1, chat: { variables: { 诸天系统: [] } } }), /账本格式不对/);
+    assert.throws(() => parseBackup('{oops'), /Không phải tệp JSON hợp lệ/);
+    assert.throws(() => parseBackup('{"a":1}'), /không phải tệp bản lưu của Thiết Bị Đầu Cuối Chư Thiên/);
+    assert.throws(() => parseBackup({ format: BACKUP_FORMAT, formatVersion: BACKUP_FORMAT_VERSION + 1 }), /phiên bản tiện ích mới hơn/);
+    assert.throws(() => parseBackup({ format: BACKUP_FORMAT, formatVersion: 1, chat: { ledgerSchema: LEDGER_SCHEMA + 1, variables: {} } }), /Phiên bản cấu trúc/);
+    assert.throws(() => parseBackup({ format: BACKUP_FORMAT, formatVersion: 1, chat: { variables: { 诸天系统: [] } } }), /Định dạng sổ cái Chư Thiên trong bản lưu không đúng/);
     const ok = buildBackup({ variables: { 诸天系统: LEDGER } });
     assert.deepEqual(parseBackup(JSON.stringify(ok)).chat.variables.诸天系统, LEDGER);
 });
@@ -97,15 +97,15 @@ test('migrateLedger 0 → current repairs types on a copy; a newer structure thr
     assert.equal(bad.背包, 'x', 'input not mutated');
     assert.deepEqual(migrateLedger(LEDGER, 0).ledger, { ...LEDGER, 羁绊库: [] }, 'healthy old fields preserved; multi-person catalog added');
     assert.deepEqual(migrateLedger(LEDGER, LEDGER_SCHEMA).steps, []);
-    assert.throws(() => migrateLedger(LEDGER, LEDGER_SCHEMA + 1), /更新插件/);
+    assert.throws(() => migrateLedger(LEDGER, LEDGER_SCHEMA + 1), /cập nhật tiện ích/);
 });
 test('backupPreview: readable before / after rows and the number of changed settings', () => {
     const file = buildBackup({ settings: { hud: false, fx: { mode: 'off' } }, variables: { 诸天系统: { ...LEDGER, 系统点: 50, 背包: [] } } });
     const p = backupPreview({ variables: { 诸天系统: LEDGER }, settings: { hud: true, fx: { mode: 'off' } } }, file);
     const row = l => p.rows.find(r => r[0] === l);
-    assert.deepEqual(row('系统点').slice(1), ['1,200', '50']);
-    assert.deepEqual(row('背包物品').slice(1), ['1', '0']);
-    assert.deepEqual(row('当前世界').slice(1), ['斗罗大陆', '斗罗大陆']);
+    assert.deepEqual(row('Điểm Hệ Thống').slice(1), ['1,200', '50']);
+    assert.deepEqual(row('Vật phẩm túi đồ').slice(1), ['1', '0']);
+    assert.deepEqual(row('Thế giới hiện tại').slice(1), ['斗罗大陆', '斗罗大陆']);
     assert.equal(p.settingsChanged, 1); assert.ok(p.hasLedger);
     assert.deepEqual(backupPreview({}, file).rows[0].slice(1), ['—', '50']);
 });
@@ -117,8 +117,8 @@ test('mergeKeepingSecrets: an imported key-less config never wipes a stored key'
 });
 test('import / schema wiring: forced backup first, read-back compare, schema in chat metadata, not in the ledger', () => {
     const s = src('src/data-io.js');
-    assert.ok(s.indexOf("snapshot?.('导入前')") < s.indexOf('updateVariablesWith(v =>'), 'backup before the write');
-    assert.match(s, /读回不一致/); assert.match(s, /meta\.ledgerSchema = v/);
+    assert.ok(s.indexOf("snapshot?.('Trước khi nhập')") < s.indexOf('updateVariablesWith(v =>'), 'backup before the write');
+    assert.match(s, /Đọc lại sau khi nhập không khớp/); assert.match(s, /meta\.ledgerSchema = v/);
     assert.match(src('index.js'), /new DataIO\(this\)\.start\(\)/);
     assert.match(src('src/features.js'), /case 'export': case 'import': app\.dataIO\?\.open\(\)/);
 });
@@ -126,7 +126,7 @@ test('th-bridge: a newer ledger structure makes the chat read-only; rollback alw
     const s = src('src/th-bridge.js');
     assert.match(s, /schema > LEDGER_SCHEMA\) throw Error/);
     const r = s.slice(s.indexOf('async restoreBackup'), s.indexOf('// ---------- messages ----------'));
-    assert.ok(r.indexOf("snapshot('回滚前')") > 0 && r.indexOf("snapshot('回滚前')") < r.indexOf('updateVariablesWith'));
+    assert.ok(r.indexOf("snapshot('Trước khi hoàn tác')") > 0 && r.indexOf("snapshot('Trước khi hoàn tác')") < r.indexOf('updateVariablesWith'));
     assert.match(r, /x\.at < at \|\| \(pre && x\.at === pre\.at\)/);
     assert.match(s, /async snapshot\(reason = ''\)/);
 });
@@ -137,14 +137,14 @@ test('/zt init no longer falls through into the worldbook popup', () => {
 
 // ---------- unified error lines ----------
 test('errorLine: what happened · ledger · next step', () => {
-    assert.equal(errorLine(Error('聊天已经切换，取消写入。')), '聊天已经切换，取消写入。 账本：没有改动。 下一步：回到原来的聊天再试一次。');
-    assert.match(errorLine(Error('导入后读回不一致（诸天系统）')), /账本：可能已经写入。 下一步：.*回滚/);
-    assert.match(errorLine(Error('请求超时（120 秒）')), /费用已退回/);
-    assert.match(errorLine(Error('HTTP 401 Unauthorized')), /API 密钥/);
-    assert.match(errorLine(Error('系统点不足：需要 300')), /攒够系统点/);
-    assert.equal(errorLine(Error('奇怪的错误')), '奇怪的错误。', 'unknown errors get no ledger claim');
-    assert.equal(errorLine('已经写好 账本：x 下一步：y'), '已经写好 账本：x 下一步：y。');
-    assert.equal(explain(null).what, '未知错误');
+    assert.equal(errorLine(Error('聊天已经切换，取消写入。')), '聊天已经切换，取消写入。 Sổ cái: Không thay đổi. Bước tiếp theo: Quay lại cuộc trò chuyện ban đầu rồi thử lại.');
+    assert.match(errorLine(Error('导入后读回不一致（诸天系统）')), /Sổ cái: Có thể đã ghi\. Bước tiếp theo:.*Hoàn tác/);
+    assert.match(errorLine(Error('请求超时（120 秒）')), /đã hoàn trả chi phí/);
+    assert.match(errorLine(Error('HTTP 401 Unauthorized')), /khóa API/);
+    assert.match(errorLine(Error('系统点不足：需要 300')), /tích lũy đủ Điểm Hệ Thống/);
+    assert.equal(errorLine(Error('奇怪的错误')), '奇怪的错误.', 'unknown errors get no ledger claim');
+    assert.equal(errorLine('已经写好 账本：x 下一步：y'), '已经写好 账本：x 下一步：y.');
+    assert.equal(explain(null).what, 'Lỗi không xác định');
 });
 test('errorLine is used by the settings actions, 聊天群, popups and the takeover toasts', () => {
     for (const f of ['src/hub-settings.js', 'src/hub-group.js', 'src/features.js', 'src/portrait.js', 'src/onboarding.js', 'index.js']) assert.match(src(f), /errorLine\(/, f);
@@ -178,16 +178,16 @@ test('1.0 docs: README ≤ 150 lines, history in CHANGELOG, LICENSE forbids redi
     assert.ok(src('README.md').split('\n').length <= 150);
     const cl = src('CHANGELOG.md'); for (const v of ['1.0.0', '0.9.4', '0.9.0', '0.2.0']) assert.match(cl, new RegExp(`## ${v.replace(/\./g, '\\.')}`), v);
     const lic = src('LICENSE');
-    assert.match(lic, /再分发/); assert.match(lic, /商业使用/); assert.match(lic, /训练、微调/); assert.match(lic, /无法在技术上阻止/);
+    assert.match(lic, /Phân phối lại/i); assert.match(lic, /Sử dụng thương mại/i); assert.match(lic, /huấn luyện, tinh chỉnh/i); assert.match(lic, /không thể ngăn chặn.*về mặt kỹ thuật/i);
     assert.match(lic, /vendor\/original/); assert.equal(JSON.parse(src('package.json')).license, 'SEE LICENSE IN LICENSE');
-    assert.match(src('docs/UNINSTALL.md'), /导出存档/);
-    assert.match(src('README.md'), /实验性/);
+    assert.match(src('docs/UNINSTALL.md'), /Xuất tệp bản lưu/);
+    assert.match(src('README.md'), /Thử nghiệm/);
 });
 test('AI capabilities are 实验性 (experimental), the rollback capability is implemented, 1.0 capabilities listed', async () => {
     const { CAPABILITIES } = await import('../src/contracts.js');
     const st = n => CAPABILITIES.find(c => c.name === n)?.state;
-    for (const n of ['原版自动记忆整理、补读及独立 API', '原版工作台完整工具与建议接续', 'AI 商城进货、许愿、抽取、外挂与神通支付动作', '私聊 API 与真实模型生成', 'AI 自动写入 当前世界 / 世界类型']) assert.equal(st(n), 'experimental', n);
-    assert.equal(st('旧存档迁移、账本备份与回滚'), 'implemented');
+    for (const n of ['Tự động chỉnh lý ký ức, đọc bù & API độc lập nguyên bản', 'Bộ công cụ bàn làm việc đầy đủ & nối tiếp đề xuất nguyên bản', 'Thao tác thanh toán AI: nhập hàng Thương Thành, ước nguyện, rút thưởng, phụ trợ & thần thông', 'API Trò chuyện riêng & tạo bằng mô hình thật', 'AI tự động ghi Thế giới hiện tại / Loại thế giới']) assert.equal(st(n), 'experimental', n);
+    assert.equal(st('Di chuyển bản lưu cũ, sao lưu & hoàn tác sổ cái'), 'implemented');
     assert.ok(!CAPABILITIES.some(c => c.state === 'pending'), 'no plain pending left');
-    for (const n of ['悬浮莉莉丝抠图立绘', '导出 / 导入存档', '账本结构版本', '设置分层与搜索', '统一错误提示', '手机横屏导航精简', '动态效果自动降级']) assert.equal(st(n), 'implemented', n);
+    for (const n of ['Ảnh đứng Lilith nổi tách nền', 'Xuất / Nhập bản lưu', 'Phiên bản cấu trúc sổ cái', 'Phân tầng & tìm kiếm trong Cài đặt', 'Thông báo lỗi thống nhất', 'Tinh giản thanh điều hướng ngang trên điện thoại', 'Tự động giảm cấp hiệu ứng động']) assert.equal(st(n), 'implemented', n);
 });

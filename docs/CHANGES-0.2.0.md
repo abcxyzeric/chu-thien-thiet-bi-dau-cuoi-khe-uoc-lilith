@@ -1,17 +1,17 @@
-# 0.2.0 完整文件变更
+# Thay đổi tệp đầy đủ 0.2.0
 
-新功能文件：
-- `src/ledger-plan.js`：原规则克隆试算、强来源哈希、历史校验。
-- `src/ledger-service.js`：显式预览、Web Locks、前置服务器对照、固定目标保存、回读及歧义冻结。
-- `vendor/original/ledger-kernel.js`、`reward-kernel.js`、`ledger-provenance.json`：可追溯的原内核提取产物。
-- `tools/extract-ledger.mjs`：基于 Acorn AST 选择函数，不运行旧 DOM 绑定器。
-- `tests/ledger.test.js`、`native_ledger.py`、`native_ledger_guards.py`：纯逻辑、真实账本、故障、同源并发及聊天切换测试。
+Các tệp tính năng mới:
+- `src/ledger-plan.js`: Tính thử trên bản sao theo quy tắc gốc, mã băm nguồn mạnh, kiểm tra lịch sử.
+- `src/ledger-service.js`: Xem trước tường minh, Web Locks, đối chiếu máy chủ trước khi thực thi, lưu vào mục tiêu cố định, đọc lại và đóng băng khi mơ hồ.
+- `vendor/original/ledger-kernel.js`, `reward-kernel.js`, `ledger-provenance.json`: Sản phẩm trích xuất hạt nhân gốc có thể truy xuất nguồn gốc.
+- `tools/extract-ledger.mjs`: Chọn hàm dựa trên Acorn AST, không chạy bộ gắn kết DOM cũ.
+- `tests/ledger.test.js`, `native_ledger.py`, `native_ledger_guards.py`: Kiểm thử thuần logic, sổ cái thực tế, tiêm lỗi, đồng thời cùng nguồn và chuyển cuộc trò chuyện.
 
-完整更新：
-- `manifest.json`、`package.json`、新增 `package-lock.json`：0.2.0、实际仓库 URL、开发工具依赖。
-- `src/host-adapter.js`、`src/terminal.js`、`src/contracts.js`：七视图、真实开关、操作确认、正文系统凭据、准确能力矩阵。
-- `styles/host.css`、`styles/shell.css`：万界交易、原库存卡片、结算预览和正文凭据。
-- 三个原生回归脚本：支持真实 Git 仓库安装后的目录名；手机覆盖七视图。
-- README、功能矩阵、验收记录、来源说明和截图。
+Cập nhật đầy đủ:
+- `manifest.json`, `package.json`, thêm mới `package-lock.json`: 0.2.0, URL kho lưu trữ thực tế, các phụ thuộc công cụ phát triển.
+- `src/host-adapter.js`, `src/terminal.js`, `src/contracts.js`: Bảy khung nhìn, công tắc thực tế, xác nhận thao tác, chứng từ hệ thống trong chính văn, ma trận năng lực chính xác.
+- `styles/host.css`, `styles/shell.css`: Giao dịch Vạn Giới, thẻ kho hàng gốc, xem trước quyết toán và chứng từ chính văn.
+- Ba kịch bản hồi quy gốc: hỗ trợ tên thư mục sau khi cài đặt từ kho lưu trữ Git thực tế; thiết bị di động bao phủ bảy khung nhìn.
+- README, ma trận tính năng, bản ghi nghiệm thu, thuyết minh nguồn gốc và ảnh chụp màn hình.
 
-原五文件未改动，旧本地导入 JSON 未包含、未上传。原项目 Git 仓库未改写。新仓库与旧工程分开。
+Năm tệp gốc giữ nguyên cấu trúc, hai tệp JSON nhập cục bộ cũ không đưa vào gói và không tải lên. Kho lưu trữ Git của dự án gốc không bị ghi đè. Kho lưu trữ mới tách biệt với dự án cũ.

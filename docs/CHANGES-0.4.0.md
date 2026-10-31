@@ -1,82 +1,82 @@
-# 0.4.0 变更记录：插件整体取代原版 v1.1
+# Bản ghi thay đổi 0.4.0: Plugin thay thế toàn diện bản gốc v1.1
 
-基线：0.3.0（`84ed96f`，基于上游 `main` @ `486b28b`）。
-目标：**只装本插件，就能取代「诸天万界最强系统」v1.1 的全部安装内容**：
-- 外挂世界书；
-- 4 个正则脚本；
-- 1 个酒馆助手脚本；
-- 状态栏的全部 AI 功能；
-- 莉莉丝助手、私聊、触摸互动，以及可开关的语音美化。
+Cơ sở: 0.3.0 (`84ed96f`, dựa trên `main` @ `486b28b` thượng nguồn).
+Mục tiêu: **Chỉ cần cài đặt plugin này là có thể thay thế toàn bộ nội dung cài đặt của 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 v1.1**:
+- Sách Thế Giới ngoại vi;
+- 4 kịch bản biểu thức chính quy (regex);
+- 1 kịch bản Tavern Helper;
+- Toàn bộ tính năng AI của thanh trạng thái;
+- Trợ lý Lilith, trò chuyện riêng, tương tác chạm, cùng tính năng làm đẹp giọng nói có thể bật/tắt.
 
-验收结果见 [ACCEPTANCE-0.4.0](ACCEPTANCE-0.4.0.md)。
+Kết quả nghiệm thu xem tại [ACCEPTANCE-0.4.0](ACCEPTANCE-0.4.0.md).
 
-## v1.1 安装内容 → 插件内的替代
+## Nội dung cài đặt v1.1 → Sự thay thế bên trong plugin
 
-| v1.1 安装内容 | 插件内替代 | 模块 |
+| Nội dung cài đặt v1.1 | Sự thay thế bên trong plugin | Mô-đun |
 |---|---|---|
-| 世界书「诸天万界最强系统」（35 条） | 打开诸天聊天时**自动安装并绑定**为聊天世界书；已存在的不覆盖；绑定了别的聊天世界书时不抢占。新增**世界书预算检查与一键调整**，见下方说明 | `src/features.js` |
-| 正则「诸天万界最强系统状态栏 3.1 通用版」 | 原版状态栏在消息内原生渲染：最新楼层显示完整状态栏，旧楼层显示精简卡 | `src/statusbar-host.js` |
-| 正则「莉莉丝专属语音框」 | 原生语音卡片。**可开关**：设置 → 莉莉丝语音美化。不显示情绪词；关闭后恢复纯文本 | `src/voice-box.js` |
-| 正则「诸天状态栏-旧楼层不发给 AI」 | 生成拦截器只从**发给模型的提示词**中剥离旧楼层的面板，聊天记录本身不改。保留深度可调，默认 2 | `src/prompt-filter.js` |
-| 正则「诸天状态栏-旧楼层精简显示」 | 精简卡，点开可展开完整状态栏；也可关闭，改为“历史”按钮 | `src/statusbar-host.js` |
-| 酒馆助手脚本「莉莉丝契约空间 v1.1」 | 原版莉莉丝助手原生运行，**不需要酒馆助手**。包括工作台、记忆档案、规则藏书、连接设置、运行状态、私聊（左上角头像）、自动记忆整理和剧情语音框 | `src/assistant-host.js` |
-| 酒馆助手的变量宏 `{{get_chat_variable::…}}` 等 | 仿 TH `macro_like` 实现：同时替换发送前的提示词和显示用的 HTML。1.16 走旧宏路径，新宏引擎走 `macros.register` | `src/macro-like.js` |
-| 状态栏 ⚙ 和助手「连接设置」两处 API 配置 | **API 中心**。可选独立 OpenAI 兼容接口，或直接使用酒馆当前主 API。配置同时写回原版的三处存储，原版界面读到的是同一份 | `src/api-center.js` |
-| 原版立绘点触 | 在点击之外新增**抚摸**（连续抚摸会逐级升温）、**长按**、触觉反馈；移动端可用 | `src/touch.js` |
+| Sách Thế Giới 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 (35 mục) | Khi mở cuộc trò chuyện Chư Thiên sẽ **tự động cài đặt và gắn kết** làm Sách Thế Giới trò chuyện; nếu đã tồn tại thì không ghi đè; khi đã gắn kết Sách Thế Giới trò chuyện khác thì không chiếm quyền. Thêm mới **kiểm tra ngân sách Sách Thế Giới & điều chỉnh 1 chạm**, xem thuyết minh bên dưới | `src/features.js` |
+| Biểu thức chính quy 「Thanh trạng thái Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới 3.1 Bản thông dụng」 | Thanh trạng thái nguyên bản kết xuất gốc ngay trong tin nhắn: tầng mới nhất hiển thị thanh trạng thái đầy đủ, tầng cũ hiển thị thẻ rút gọn | `src/statusbar-host.js` |
+| Biểu thức chính quy 「Khung thoại độc quyền của Lilith」 | Thẻ giọng nói gốc. **Có thể bật/tắt**: Cài đặt → Làm đẹp giọng nói Lilith. Không hiển thị từ chỉ cảm xúc; sau khi tắt sẽ khôi phục văn bản thuần | `src/voice-box.js` |
+| Biểu thức chính quy 「Thanh trạng thái Chư Thiên - Tầng cũ không gửi cho AI」 | Bộ chặn tạo phản hồi chỉ bóc tách bảng của các tầng cũ ra khỏi **lời nhắc gửi cho mô hình**, bản thân lịch sử trò chuyện không bị sửa đổi. Độ sâu giữ lại có thể điều chỉnh, mặc định là 2 | `src/prompt-filter.js` |
+| Biểu thức chính quy 「Thanh trạng thái Chư Thiên - Hiển thị rút gọn tầng cũ」 | Thẻ rút gọn, bấm vào có thể mở rộng thanh trạng thái đầy đủ; cũng có thể tắt để đổi thành nút “Lịch sử” | `src/statusbar-host.js` |
+| Kịch bản Tavern Helper 「Không Gian Khế Ước Lilith v1.1」 | Trợ lý Lilith nguyên bản chạy gốc, **không cần Tavern Helper**. Bao gồm Bàn làm việc, Hồ sơ ký ức, Kho quy tắc, Cài đặt kết nối, Trạng thái vận hành, Trò chuyện riêng (ảnh đại diện góc trên bên trái), tự động chỉnh lý ký ức và khung thoại cốt truyện | `src/assistant-host.js` |
+| Macro biến số của Tavern Helper `{{get_chat_variable::…}}`, v.v. | Triển khai mô phỏng `macro_like` của TH: đồng thời thay thế lời nhắc trước khi gửi và HTML dùng để hiển thị. Bản 1.16 đi theo đường dẫn macro cũ, động cơ macro mới đi theo `macros.register` | `src/macro-like.js` |
+| Hai nơi cấu hình API ở ⚙ Thanh trạng thái và 「Cài đặt kết nối」 của Trợ lý | **Trung tâm API**. Có thể chọn cổng tương thích OpenAI độc lập, hoặc sử dụng trực tiếp API chính hiện tại của SillyTavern. Cấu hình được ghi đồng thời về cả ba nơi lưu trữ nguyên bản, giao diện nguyên bản đọc được cùng một bản | `src/api-center.js` |
+| Chạm tranh đứng nguyên bản | Ngoài thao tác bấm đơn, thêm mới **vuốt ve** (vuốt ve liên tiếp sẽ tăng dần cấp độ phản ứng), **nhấn giữ**, phản hồi xúc giác; hoạt động tốt trên thiết bị di động | `src/touch.js` |
 
-世界书预算说明：ST 默认只把上下文的 25% 分给世界书，8k 上下文装不下 11 条常驻规则（约 11.7k token），ST 会直接全部丢弃，原版也有同样的问题。现在：
-- 预算不足时会弹出提示；
-- 诊断面板里有“世界书预算”一行，并提供“一键调整”按钮。
+Thuyết minh ngân sách Sách Thế Giới: Mặc định ST chỉ phân bổ 25% ngữ cảnh cho Sách Thế Giới, ngữ cảnh 8k không chứa nổi 11 quy tắc thường trực (khoảng 11.7k token), dẫn tới ST loại bỏ toàn bộ, bản gốc cũng gặp đúng vấn đề này. Hiện tại:
+- Khi ngân sách không đủ sẽ bật thông báo nhắc nhở;
+- Trong bảng chẩn đoán có dòng “Ngân sách Sách Thế Giới” và cung cấp nút “Điều chỉnh 1 chạm”.
 
-## 一键接管和恢复旧版
+## Tiếp quản 1 chạm và Khôi phục bản cũ
 
-- 诊断面板会列出仍在启用的旧正则和旧酒馆助手脚本。
-- 点「一键接管」会停用它们，只停用、不删除。接管前会弹窗确认。
-- **写盘之后**才刷新页面：酒馆助手在内存里有一份旧脚本的副本，所以必须刷新。E2E 会从服务器读回设置，确认刷新前已经落盘。
-- 「恢复旧版」只会重新启用被本插件停用过的那几项。
-- 接管前如果旧正则还开着、也没装酒馆助手，插件仍然正常原生渲染，不会出现双重语音框。
+- Bảng chẩn đoán sẽ liệt kê các biểu thức chính quy cũ và kịch bản Tavern Helper cũ vẫn đang bật.
+- Bấm 「Tiếp quản 1 chạm」 sẽ tắt chúng đi (chỉ tắt chứ không xóa). Trước khi tiếp quản sẽ bật hộp thoại xác nhận.
+- **Sau khi ghi xuống đĩa xong** mới làm mới trang: Tavern Helper giữ một bản sao kịch bản cũ trong bộ nhớ nên bắt buộc phải làm mới trang. E2E sẽ đọc lại cài đặt từ máy chủ để xác nhận đã lưu xuống đĩa trước khi làm mới.
+- 「Khôi phục bản cũ」 sẽ chỉ bật lại đúng những mục từng bị plugin này tắt đi.
+- Trước khi tiếp quản, nếu biểu thức chính quy cũ vẫn đang bật và chưa cài Tavern Helper, plugin vẫn kết xuất gốc bình thường, không xuất hiện khung thoại kép.
 
-## 状态栏的全部 AI 功能
+## Toàn bộ tính năng AI của Thanh trạng thái
 
-原版状态栏的所有模型请求都走同一个函数 `sysFetchAPI`，共 8 处调用。0.4.0 让它们都能在两种接法下工作：
-- 独立 API；
-- 酒馆当前主 API，走 `generateRaw`，不经过任何伪造的网址。
+Tất cả yêu cầu mô hình của thanh trạng thái nguyên bản đều đi qua cùng một hàm `sysFetchAPI`, tổng cộng 8 nơi gọi. Bản 0.4.0 giúp cả 8 nơi hoạt động tốt dưới cả hai phương thức kết nối:
+- API độc lập;
+- API chính hiện tại của SillyTavern, đi qua `generateRaw`, không đi qua bất kỳ địa chỉ giả lập nào.
 
-在真实 ST 上配合本地模拟模型，8 处都完整跑通：点按钮 → 发出请求 → 解析结果 → 写回账本 → 界面刷新。
+Trên ST thực tế kết hợp với mô hình mô phỏng cục bộ, cả 8 nơi đều chạy thông suốt trọn vẹn: bấm nút → gửi yêu cầu → phân tích kết quả → ghi về sổ cái → làm mới giao diện.
 
-| 分页 | 功能 | E2E 检查 |
+| Trang | Tính năng | Kiểm tra E2E |
 |---|---|---|
-| 商城 | AI 进货 | 请求参数正确（max_tokens 1500、temperature 0.7），按商店等级过滤商品，扣除 500 点 |
-| 商城 | 许愿报价 | 报价解析正确（20,000 点） |
-| 商城 | 单抽 | 扣除 10,000 点 → 奖励生成器 → 待领取 → 收下后进入背包 |
-| 背包 | AI 背包整理 | 每件物品都按模型输出重新分类，并补上效果 |
-| 外挂 | 诸天打手召唤 | 招募官生成打手卡（名称、出处、评级） |
-| 外挂 | 万物熔炉 | 两件材料熔炼成模型命名的新物品 |
-| 神通 | AI 评估实力档 | 模型给出的档位写回下拉框 |
-| ⚙ | 测试连接 | 返回“连接成功” |
+| Thương thành | AI Nhập hàng | Tham số yêu cầu chính xác (max_tokens 1500, temperature 0.7), lọc hàng hóa theo cấp độ cửa hàng, trừ 500 điểm |
+| Thương thành | Báo giá ước nguyện | Phân tích báo giá chính xác (20.000 điểm) |
+| Thương thành | Rút đơn | Trừ 10.000 điểm → Trình tạo phần thưởng → Chờ nhận → Sau khi nhận đi vào túi đồ |
+| Túi đồ | AI Sắp xếp túi đồ | Mỗi vật phẩm đều được phân loại lại theo đầu ra mô hình và bổ sung mô tả hiệu quả |
+| Ngoại quải | Triệu hồi Đả Thủ Chư Thiên | Quan chiêu mộ tạo thẻ đả thủ (Tên, Xuất xứ, Đánh giá) |
+| Ngoại quải | Lò Nung Vạn Vật | Hai nguyên liệu dung luyện thành vật phẩm mới do mô hình đặt tên |
+| Thần thông | AI Đánh giá bậc thực lực | Bậc thực lực do mô hình đưa ra được ghi vào hộp chọn thả xuống |
+| ⚙ | Kiểm tra kết nối | Trả về “Kết nối thành công” |
 
-## 修复
+## Sửa lỗi
 
-- **可选的终端入口按钮与莉莉丝入口重叠**：在某些视口（例如 1500×1000）下，两者会盖在一起，按钮点不到。现在终端按钮始终停靠在莉莉丝入口正上方，入口被拖动或窗口缩放后也会跟随。
-- **世界书没有进入提示词**：原因是预算不足，见上方预算说明。
+- **Nút lối vào thiết bị đầu cuối tùy chọn bị chồng lấp với lối vào Lilith**: Ở một số khung nhìn (ví dụ 1500×1000), hai nút đè lên nhau khiến không bấm được. Hiện nút thiết bị đầu cuối luôn neo ngay phía trên lối vào Lilith, khi kéo lối vào hoặc thu phóng cửa sổ cũng tự động đi theo.
+- **Sách Thế Giới không đi vào lời nhắc**: Nguyên nhân là ngân sách không đủ, xem thuyết minh ngân sách ở trên.
 
-## 素材
+## Tài nguyên
 
-新增 AI 姿势「抱臂」「侧坐」：
-- 参考图是原版脸部裁切，加上“比心”姿势垫绿底，以锁定角色和服装；
-- 生成后抠像，绿色溢边像素为 0，人物上下贴边、没有空白；
-- 叠在静止的原版背景上显示。
+Thêm mới tư thế AI 「Khoanh tay」 và 「Ngồi nghiêng」:
+- Ảnh tham chiếu là phần cắt khuôn mặt nguyên bản kết hợp với tư thế “Thả tim” lót phông xanh lá để khóa nhân vật và trang phục;
+- Sau khi tạo xong thực hiện tách nền, số điểm ảnh tràn viền xanh lá bằng 0, nhân vật sát mép trên dưới không có khoảng trắng;
+- Xếp chồng lên phông nền nguyên bản tĩnh để hiển thị.
 
-来源和哈希见 `assets/lilith/variants/PROVENANCE.md`。
+Nguồn gốc và mã băm xem tại `assets/lilith/variants/PROVENANCE.md`.
 
-## 测试
+## Kiểm thử
 
-- `tests/native_replace040.py`：真实 ST 加本地模拟模型的端到端验收，共 70 项，覆盖上面所有替代项。
-- `tests/qa/`：可复现的验收环境：
-  - `setup_isolated_st.py`：配置一次性宿主；
-  - `mock_model.py`：模拟模型，按原版提示词路由，记录每个请求；
-  - `run_matrix.sh`：四个宿主依次测试。
-- 5 套 0.2/0.3 旧验收脚本：
-  - 统一使用 `launcher(page)` 进入“仅终端”模式：只在当前页面卸载莉莉丝和原生状态栏，不写入设置。这是因为 0.3.0 起，状态栏是唯一的结算引擎，莉莉丝负责注入记忆。
-  - 报告中不再写死 “SillyTavern 1.19.0 / 0.2.0”，改为从 `/version` 和 `manifest.json` 读取真实值（`tests/qa_host.py`）。
-- 单元测试：`tests/replace040.test.js`，是纯逻辑测试。
+- `tests/native_replace040.py`: Nghiệm thu đầu-cuối trên ST thực tế cộng mô hình mô phỏng cục bộ, tổng cộng 70 hạng mục, bao phủ toàn bộ các mục thay thế nêu trên.
+- `tests/qa/`: Môi trường nghiệm thu có thể tái hiện:
+  - `setup_isolated_st.py`: cấu hình máy chủ dùng một lần;
+  - `mock_model.py`: mô hình mô phỏng, định tuyến theo lời nhắc nguyên bản và ghi lại mọi yêu cầu;
+  - `run_matrix.sh`: kiểm thử lần lượt bốn máy chủ.
+- 5 bộ kịch bản nghiệm thu cũ 0.2/0.3:
+  - Thống nhất sử dụng `launcher(page)` để đi vào chế độ “Chỉ thiết bị đầu cuối”.
+  - Trong báo cáo không còn gán cứng “SillyTavern 1.19.0 / 0.2.0” mà đọc giá trị thực tế từ `/version` và `manifest.json` (`tests/qa_host.py`).
+- Kiểm thử đơn vị: `tests/replace040.test.js`, là bài kiểm thử thuần logic.

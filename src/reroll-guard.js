@@ -1,15 +1,11 @@
-// 1.1.1 audit #7 · 重roll（swipe / 重新生成）不再叠加非系统点资产.
+// 1.1.1 audit #7 · Reroll (swipe / tạo lại) không còn cộng dồn tài sản ngoài Điểm Hệ Thống.
 // The engine books every AI floor once and keeps the state BEFORE that floor in 面板账本[floor].snap (专属资源, 功法…,
 // plus the previous values of 变量更新 module variables in snap.__vars). It rolls a floor back only when the NEW reply's
 // block arrives — but the new reply was already written from a prompt that showed the rolled-away reply's numbers
 // (数据块模板「专属资源: {{资源行}}」, 世界书「实时数据」, 模块变量). The model then added its gains on top of gains that were
 // about to be undone, so every reroll stacked them again (天命印记 / 因果筹码 / 名望 / 模块货币 …, and 持有金额).
 // Fix: when SillyTavern starts a swipe / regenerate generation (GENERATION_STARTED is awaited before the prompt is
-// built) the floor's own snapshot is restored first — exactly what the engine does later anyway. The floor's booking
-// hash is NOT touched then: the old reply's status-bar frame stays alive while the new one streams and would re-book
-// itself. Only after the generation is over (old frame re-rendered) and no new reply was booked (failed / stopped
-// swipe, a reply without a block, an identical block) is the hash cleared, so what is on screen is booked again. 持有金额 / 当前货币 are not in the engine snapshot; they go back to the previous floor's block
-// value, but only while the ledger still holds the value of the reply being replaced (a manual edit is never reverted).
+// built) the floor's own snapshot is restored first — exactly what the engine does later anyway.
 import { repairMessage, fieldOf } from './panel-guard.js';
 
 /** vendor ZT_SNAP_KEYS (statusbar-v3.1-part2.js / ledger-kernel.js; a test keeps both equal). */
@@ -26,7 +22,7 @@ function setPath(o, path, v) {
     if (v === undefined) delete cur[keys.at(-1)]; else cur[keys.at(-1)] = v;
 }
 const norm = v => String(v ?? '').trim().replace(/^[「『《"“]|[」』》"”]$/g, '').replace(/[,，\s]/g, '');
-/** 字段 → 值 of the (repaired) data block in a reply ({} when there is none). */
+/** Trường → Giá trị of the (repaired) data block in a reply ({} when there is none). */
 export function panelValues(text) {
     const panel = repairMessage(String(text || '')).panel || '', out = {};
     for (const line of panel.split(/\r?\n/)) { const f = fieldOf(line); if (f && !(f in out)) out[f] = line.slice(line.search(/[:：]/) + 1).trim(); }
@@ -121,9 +117,9 @@ export class RerollGuard {
             if (!restored.length) return;
             this.stats.rolled++; this.stats.last = { floor: t.idx, type, restored, at: Date.now() };
             this.pending = { id, idx: t.idx, h, chat: c.chat };
-        } catch (e) { console.warn('[诸天] 重roll 前回滚本层记账失败（不影响生成）', e); }
+        } catch (e) { console.warn('[Chư Thiên] Hoàn tác sổ cái tầng này trước khi reroll thất bại (không ảnh hưởng việc tạo)', e); }
     }
-    scheduleSettle(ms = 2000) { if (!this.pending || this.dead) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.settle().catch(e => console.warn('[诸天] 重roll 后补记账失败', e)), ms); }
+    scheduleSettle(ms = 2000) { if (!this.pending || this.dead) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.settle().catch(e => console.warn('[Chư Thiên] Ghi bù sổ cái sau khi reroll thất bại', e)), ms); }
     /** After the generation: the floor still carries the rolled-back reply's hash → nothing new was booked; let the
      *  engine book what is on screen again (from the restored snapshot). */
     async settle() {

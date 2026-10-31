@@ -1,6 +1,6 @@
 // Exports the original layered Lilith art as a real layered PSD (RGB 8-bit, raw channels, Unicode layer names) so it can be
 // opened in Live2D Cubism Editor, cut into ArtMeshes and rigged into a genuine .moc3 model. Pure browser code, no deps.
-const loadImage = src => new Promise((resolve, reject) => { const im = new Image(); im.onload = () => resolve(im); im.onerror = () => reject(Error('图层解码失败')); im.src = src; });
+const loadImage = src => new Promise((resolve, reject) => { const im = new Image(); im.onload = () => resolve(im); im.onerror = () => reject(Error('Giải mã lớp ảnh thất bại')); im.src = src; });
 
 function trimmed(canvas) {
     const ctx = canvas.getContext('2d'), { width: w, height: h } = canvas, data = ctx.getImageData(0, 0, w, h).data;
@@ -55,7 +55,7 @@ export function encodePsd(width, height, layers, composite) {
     return out.blob();
 }
 export async function buildLayers(original) {
-    const data = original.ZhuTianLilithLayers; if (!data) throw Error('原版分层素材缺失');
+    const data = original.ZhuTianLilithLayers; if (!data) throw Error('Thiếu tài nguyên phân lớp nguyên bản');
     const [W, H] = data.size, canvas = document.createElement('canvas'); canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const layer = async (name, src, clip, hidden = false, rect = null) => {
@@ -67,10 +67,10 @@ export async function buildLayers(original) {
     // boxes are in logical portrait units (424×632) while the layer art is data.size (636×948): scale the clips.
     const [LW, LH] = data.logical || data.size, sx = W / LW, sy = H / LH;
     const b = Object.fromEntries(Object.entries(data.boxes || {}).map(([k, [x0, y0, x1, y1]]) => [k, [x0 * sx, y0 * sy, x1 * sx, y1 * sy]])), out = [];
-    out.push(await layer('背景（静止）', data.plate));
-    out.push(await layer('左翼', data.wings, b.wingL)); out.push(await layer('右翼', data.wings, b.wingR));
-    out.push(await layer('尾巴', data.tail)); out.push(await layer('身体', data.body));
-    for (const [name, face] of Object.entries(data.faces || {})) out.push(await layer('表情_' + name, face.src, null, true, face.rect));
+    out.push(await layer('Nền (Tĩnh)', data.plate));
+    out.push(await layer('Cánh trái', data.wings, b.wingL)); out.push(await layer('Cánh phải', data.wings, b.wingR));
+    out.push(await layer('Đuôi', data.tail)); out.push(await layer('Cơ thể', data.body));
+    for (const [name, face] of Object.entries(data.faces || {})) out.push(await layer('Biểu_cảm_' + name, face.src, null, true, face.rect));
     ctx.clearRect(0, 0, W, H);
     for (const L of out.filter(x => x && !x.hidden)) { const id = new ImageData(new Uint8ClampedArray(L.pixels), L.right - L.left, L.bottom - L.top); const c2 = document.createElement('canvas'); c2.width = id.width; c2.height = id.height; c2.getContext('2d').putImageData(id, 0, 0); ctx.drawImage(c2, L.left, L.top); }
     return { W, H, layers: out.filter(Boolean), composite: ctx.getImageData(0, 0, W, H).data };
@@ -78,6 +78,6 @@ export async function buildLayers(original) {
 export async function exportLayeredPsd(original) {
     const { W, H, layers, composite } = await buildLayers(original);
     const blob = encodePsd(W, H, layers, composite), url = URL.createObjectURL(blob), a = document.createElement('a');
-    a.href = url; a.download = '莉莉丝-分层-用于CubismEditor.psd'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
+    a.href = url; a.download = 'Lilith-PhanLop-CubismEditor.psd'; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000);
     return layers.length;
 }

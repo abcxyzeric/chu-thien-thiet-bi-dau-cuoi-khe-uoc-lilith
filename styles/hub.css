@@ -1,4 +1,4 @@
-/* 诸天终端 · one window. Loaded inside the Lilith window's shadow root (or the fallback shell). */
+/* Thiết Bị Đầu Cuối Chư Thiên · one window. Loaded inside the Lilith window's shadow root (or the fallback shell). */
 :host{--zt-accent:var(--accent,#c59bee);--zt-gold:var(--gold,#d2b992);--zt-ink:var(--ink,#f3edf7);--zt-line:var(--line,#ffffff14);--zt-muted:var(--muted,#ac9bbd);--zt-panel:var(--panel,#20182c);--zt-bg2:#171021;
   /* 0.7.0: every surface colour is a variable so styles/world.css can re-theme without touching layout */
   --zt-surface:#2a1d36;--zt-surface-h:#3a2749;--zt-input:#0f0a16;--zt-top-a:#221730;--zt-top-b:#1a1224;--zt-bar:#1c1427;--zt-primary-a:#8d5fc0;--zt-primary-b:#b36aa6;--zt-nav:#a996ba;--zt-ink2:#eddef7;--zt-text2:#d9cbe5;--zt-panel2:#241a30;--zt-sel:#b986d3;--zt-sel-bar:#d1a2ed;--zt-switch:#9b6fc7;--zt-switch-off:#3a2c49}
@@ -85,7 +85,7 @@ dialog.zt-closing{animation:zt-out .15s ease-in forwards;pointer-events:none}
 .zt-toast[hidden]{display:none}
 .zt-toast{display:flex;align-items:center;gap:4px;position:absolute;left:50%;bottom:52px;transform:translateX(-50%);background:#2b1f38;border:1px solid color-mix(in srgb,var(--zt-sel) 33%,transparent);color:#f3e8fa;border-radius:10px;padding:8px 14px;font-size:12.5px;z-index:50;box-shadow:0 8px 30px #0008;max-width:80%}
 
-/* ---- 外挂 strip on the engine's 外挂 page ---- */
+/* ---- Phụ trợ strip on the engine's Phụ trợ page ---- */
 .zt-plug-strip{display:flex;flex-wrap:wrap;gap:8px;align-items:center;width:100%}
 .zt-plug-strip .zt-plug-title{font-size:12px;color:var(--zt-muted);margin-right:4px}
 .zt-plug-card{display:inline-flex;align-items:center;gap:8px;border:1px solid #d2b99244;border-radius:10px;padding:4px 6px 4px 10px;background:#2a2133;font-size:12.5px;color:#f1e6d4}
@@ -94,7 +94,7 @@ dialog.zt-closing{animation:zt-out .15s ease-in forwards;pointer-events:none}
 .zt-plug-list .zt-plug-item:first-child{border-top:0}
 .zt-plug-item b{color:var(--zt-ink);font-size:13.5px}.zt-plug-item p{margin:2px 0 0;color:var(--zt-muted);font-size:11.5px;line-height:1.6}
 .zt-grade{font-size:10.5px;padding:1px 7px;border-radius:6px;border:1px solid #ffffff22;color:var(--zt-text2);margin-left:6px}
-.zt-grade[data-g=灵品]{border-color:#34d39966;color:#8ff0c6}.zt-grade[data-g=仙品]{border-color:#60a5fa77;color:#a9cdfd}.zt-grade[data-g=神品]{border-color:#f5b94277;color:#ffd98a}.zt-grade[data-g=禁忌]{border-color:#ef444488;color:#ff9a9a}
+.zt-grade[data-g=灵品],.zt-grade[data-g="Linh phẩm"]{border-color:#34d39966;color:#8ff0c6}.zt-grade[data-g=仙品],.zt-grade[data-g="Tiên phẩm"]{border-color:#60a5fa77;color:#a9cdfd}.zt-grade[data-g=神品],.zt-grade[data-g="Thần phẩm"]{border-color:#f5b94277;color:#ffd98a}.zt-grade[data-g=禁忌],.zt-grade[data-g="Cấm kỵ"]{border-color:#ef444488;color:#ff9a9a}
 
 /* ---- mobile ---- */
 /* phones and any narrow window (the original sets data-compact when the window is <=700 wide or <560 tall) */
@@ -125,7 +125,7 @@ dialog.zt-fb .main{display:flex;flex-direction:column;min-height:0}
 dialog.zt-fb .page-scroll{flex:1;overflow:auto;padding:22px}
 @media (max-width:720px){dialog.zt-fb{inset:0;border-radius:0}dialog.zt-fb .shell{display:flex;flex-direction:column}}
 
-/* ---- 诸天万界聊天群 (0.6.0) ---- */
+/* ---- Nhóm Chat Chư Thiên Vạn Giới (0.6.0) ---- */
 .zt-g{display:flex;flex-direction:column;flex:1;min-height:0;height:100%}
 .zt-g-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px;border-bottom:1px solid var(--zt-line);flex-wrap:wrap}
 .zt-g-head b{font-size:15px;color:var(--zt-ink)}.zt-g-head small{display:block;color:var(--zt-muted);font-size:11px;margin-top:2px}
@@ -141,7 +141,7 @@ dialog.zt-fb .page-scroll{flex:1;overflow:auto;padding:22px}
 .zt-g-sys.typing{font-style:italic}
 .zt-g-msg{display:flex;gap:8px;align-items:flex-start;max-width:86%}
 .zt-g-msg.me{align-self:flex-end;flex-direction:row-reverse}
-/* 1.1.4 群聊「🗑 管理」: per-message delete */
+/* 1.1.4 Trò chuyện nhóm 「🗑 Quản lý」: per-message delete */
 .zt-g-del{flex:none;align-self:center;padding:2px 7px;min-height:0;line-height:1.4;opacity:.85}
 .zt-g-sys .zt-g-del{margin-left:8px;font-size:11px}
 .zt-g-tools [data-g=manage][aria-pressed=true]{border-color:var(--zt-sel)}
@@ -192,15 +192,15 @@ dialog[data-compact=true] .zt-g-head>div:first-child{display:flex;align-items:ba
 dialog[data-compact=true] .zt-g-head small{display:inline;margin-top:0}
 
 
-/* 0.8.4: 连接 = API 中心. The original v1.1 connection form stays in the DOM (untouched) but hidden; it wrote only the
+/* 0.8.4: Kết nối = Trung tâm API. The original v1.1 connection form stays in the DOM (untouched) but hidden; it wrote only the
    Lilith copy of the API config, so having both made the two drift apart. */
 #page-api.zt-api-unified > :not(.zt-api-inline){display:none!important}
 #page-api .zt-api-inline{max-width:640px}
 #page-api .zt-api-inline label{display:grid;gap:4px}
 #page-api .zt-api-inline label:has(> input[type=radio]),#page-api .zt-api-inline label:has(> input[type=checkbox]){display:flex}
 
-/* ---- 0.9.0 手机端适配 ----
-   src/mobile.js sets dialog[data-zt-mobile=port|land] on phones (setting 手机上的终端窗口). The original window manager
+/* ---- 0.9.0 Thích ứng di động ----
+   src/mobile.js sets dialog[data-zt-mobile=port|land] on phones (setting Cửa sổ thiết bị đầu cuối trên điện thoại). The original window manager
    keeps writing its floating-window box inline; these rules win over it (!important) without touching vendor code.
    --zt-vv* = the visible area (visualViewport), so the window shrinks above the on-screen keyboard. */
 dialog[data-zt-mobile]{left:var(--zt-vvl,0px)!important;top:var(--zt-vvt,0px)!important;right:auto!important;bottom:auto!important;width:var(--zt-vvw,100vw)!important;height:var(--zt-vvh,100dvh)!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;box-sizing:border-box!important;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)!important;overscroll-behavior:contain}
@@ -237,7 +237,7 @@ dialog[data-zt-mobile=land] .zt-hub-nav .nav-button{width:100%;flex-direction:co
 dialog[data-zt-mobile=land] #drag-handle{padding-top:2px!important;padding-bottom:2px!important}
 dialog[data-zt-mobile=land][data-zt-kb] #drag-handle{display:none!important}
 dialog[data-zt-mobile=land] .main{min-height:0}
-/* 私聊 on a phone: a full-screen sheet over the terminal (same visible-area numbers on the shadow host); the drag grip
+/* Trò chuyện riêng on a phone: a full-screen sheet over the terminal (same visible-area numbers on the shadow host); the drag grip
    and resize edges go, the close-up band steps aside in landscape and while the keyboard is up */
 :host([data-zt-mobile]) #lc-panel:not([hidden]){left:var(--zt-vvl,0px)!important;top:var(--zt-vvt,0px)!important;right:auto!important;bottom:auto!important;width:var(--zt-vvw,100vw)!important;height:var(--zt-vvh,100dvh)!important;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)!important}
 :host([data-zt-mobile][data-zt-kb]) #lc-panel:not([hidden]){padding-bottom:0!important}
@@ -250,7 +250,7 @@ dialog[data-zt-mobile=land] .main{min-height:0}
   input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=button]):not([type=submit]),select,textarea{font-size:16px!important}
   .zt-btn.small{min-height:36px}
 }
-/* 0.9.3 新手引导 */
+/* 0.9.3 Hướng dẫn tân thủ */
 .zt-guide-steps{list-style:none;margin:12px 0 0;padding:0}
 .zt-guide-step h3 small{margin-left:auto}
 .zt-guide-mark{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:1px solid var(--zt-line);font-size:12px;flex:0 0 auto}
@@ -261,7 +261,7 @@ dialog[data-zt-mobile=land] .main{min-height:0}
 .zt-guide-note{margin:4px 0 10px;padding:8px 12px;border-radius:10px;background:#ffffff08;border:1px solid var(--zt-line);font-size:12.5px;color:var(--zt-ink2)}
 .zt-guide-foot{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
 .zt-guide-back{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between;margin:0 0 10px;padding:8px 12px;border-radius:10px;border:1px solid var(--zt-line);background:#ffffff08;font-size:12.5px}
-/* 1.0 设置页：常用 / 进阶 / 诊断 + 搜索 */
+/* 1.0 Trang Cài đặt: Thường dùng / Nâng cao / Chẩn đoán + Tìm kiếm */
 .zt-set-search{margin:4px 0 12px}
 .zt-set-search input{width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1px solid var(--zt-line,#ffffff1f);background:#0000002e;color:var(--zt-text,#eee);font-size:14px}
 .zt-set-group+.zt-set-group{margin-top:12px}
@@ -273,14 +273,14 @@ details.zt-set-group>summary small{font-weight:400;color:var(--zt-text2,#aaa);ma
 details.zt-set-group[open]>.zt-grid2{margin-top:12px}
 .zt-set-none{color:var(--zt-text2,#aaa);text-align:center;padding:18px 0}
 .zt-row[hidden],.zt-card[hidden],.zt-set-group[hidden]{display:none!important}
-/* 1.0 横屏导航：常用 6 个 + 「更多」 */
+/* 1.0 Điều hướng màn hình ngang: 6 mục thường dùng + 「Thêm」 */
 .zt-hub-nav .zt-nav-more{display:none!important}
 dialog[data-zt-mobile=land] .zt-hub-nav .zt-nav-more{display:flex!important}
 dialog[data-zt-mobile=land] nav.zt-hub-nav:not(.zt-more-open) .nav-button[data-page]:not([data-pin]):not([aria-selected=true]){display:none!important}
 dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:#ffffff10}
 :host([data-zt-lite]) dialog[open],:host([data-zt-lite]) dialog.zt-closing{animation:none}
 
-/* ---- 1.1.2 多人羁绊 (two panes; one column in narrow windows) ---- */
+/* ---- 1.1.2 Gắn kết nhiều người (two panes; one column in narrow windows) ---- */
 .zt-bd{container-type:inline-size;display:flex;flex-direction:column;gap:12px}
 .zt-bd-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .zt-bd-head h3{margin:0;font:600 20px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink)}
@@ -336,7 +336,7 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 .zt-bd-form label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--zt-muted)}
 .zt-bd-form input,.zt-bd-form textarea{background:var(--zt-input);border:1px solid #ffffff1c;color:var(--zt-ink);border-radius:8px;padding:6px 8px;font:inherit;font-size:12.5px}
 
-/* ---- 1.1.2 管理员控制台 ---- */
+/* ---- 1.1.2 Bảng điều khiển Quản trị viên ---- */
 .zt-adm{display:flex;flex-direction:column;gap:2px;padding-bottom:4px}
 .zt-adm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
 .zt-adm-head h3{margin:0 0 4px;font:600 20px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink)}
@@ -353,7 +353,7 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 .zt-adm-bar [data-count]{flex:1;font-size:12px;color:var(--zt-text2)}
 .zt-adm-sec h3{display:block;white-space:normal}
 .zt-adm-sec h3 small{margin-left:8px;font-weight:400}
-/* 1.1.4 说明书 */
+/* 1.1.4 Sách hướng dẫn */
 .zt-man{max-width:920px;margin:0 auto;color:var(--zt-ink);font-size:13.5px;line-height:1.75}
 .zt-man-bar{position:sticky;top:0;z-index:2;display:flex;gap:10px;align-items:center;padding:8px 0;background:var(--zt-panel2,#14161c)}
 .zt-man-q{flex:1;min-width:0;border:1px solid var(--zt-line);background:var(--zt-input,#0d0f14);color:var(--zt-ink);border-radius:10px;padding:8px 12px;font:inherit}
@@ -376,7 +376,7 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 .zt-man-body th,.zt-man-body td{border:1px solid var(--zt-line);padding:5px 8px;text-align:left;vertical-align:top}
 .zt-man-body th{background:#ffffff0a;white-space:nowrap}
 @media (max-width:640px){.zt-man-toc ul{columns:1}}
-/* 1.1.5 系统助手人设页 */
+/* 1.1.5 Trang Thiết lập nhân vật Trợ lý hệ thống */
 .zt-persona-presets{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
 .zt-persona-preset{display:flex;flex-direction:column;gap:3px;border:1px solid #ffffff1a;border-radius:12px;padding:10px 12px;cursor:pointer;background:#ffffff05}
 .zt-persona-preset.on{border-color:var(--zt-sel);background:color-mix(in srgb,var(--zt-sel) 12%,transparent)}
@@ -390,13 +390,13 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 .zt-persona-bar{margin:12px 0 4px}
 .zt-persona-adv summary,.zt-persona-page details>summary{cursor:pointer;font-size:12.5px;margin:6px 0}
 @media (max-width:560px){.zt-persona-id{grid-template-columns:1fr}}
-/* 1.1.5 聊天群 · 从世界书召唤 */
+/* 1.1.5 Nhóm chat · Triệu hồi từ Sách Thế Giới */
 .zt-g-wblist{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow:auto;margin-top:8px}
 .zt-g-wbhit{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid #ffffff12;border-radius:10px;padding:8px 10px;background:#ffffff04}
 .zt-g-wbhit>div{min-width:0}
 .zt-g-wbhit small{color:var(--zt-muted);font-size:11px}
 .zt-g-wbhit p{margin:2px 0 0;font-size:11.5px;color:var(--zt-muted);overflow-wrap:anywhere}
-/* 1.1.5 功能开关 */
+/* 1.1.5 Công tắc tính năng */
 .zt-sw-table{width:100%;border-collapse:collapse;font-size:12.5px}
 .zt-sw-table th,.zt-sw-table td{padding:7px 6px;border-top:1px dashed #ffffff10;text-align:left;vertical-align:middle}
 .zt-sw-table th{color:var(--zt-muted);font-weight:500;font-size:11.5px}

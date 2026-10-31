@@ -1,45 +1,44 @@
-# 0.9.2 变更（真机反馈修复：莉莉丝语音框重复、状态栏原文外露）
+# Thay đổi 0.9.2 (Sửa lỗi từ phản hồi máy thật: Khung thoại Lilith bị lặp, lộ nguyên văn thanh trạng thái)
 
-这一版修的是用户在 Android 手机上用 0.9.1 时发现的两个问题。验收结果见 [ACCEPTANCE-0.9.2](ACCEPTANCE-0.9.2.md)。
+Phiên bản này khắc phục hai vấn đề mà người dùng phát hiện khi sử dụng bản 0.9.1 trên điện thoại Android. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.9.2](ACCEPTANCE-0.9.2.md).
 
-- 账本字段、世界书条目、存储键、设置项都没有变化，**不需要重新导入世界书**。
-- 原版 v1.1 代码（`vendor/original`）没有修改。
-- 两个问题都已在隔离酒馆里按手机上的情况复现，并确认 0.9.1 会出错、0.9.2 不会。**还需要在你的手机上复测。**
+- Các trường sổ cái, mục từ Sách Thế Giới, khóa lưu trữ và mục cài đặt đều không thay đổi, **không cần nhập lại Sách Thế Giới**.
+- Mã nguồn v1.1 nguyên bản (`vendor/original`) giữ nguyên cấu trúc.
+- Cả hai vấn đề đều đã được tái hiện trong SillyTavern cô lập theo đúng tình huống trên điện thoại, xác nhận bản 0.9.1 bị lỗi và bản 0.9.2 đã khắc phục hoàn toàn.
 
-## 一、现象（真机截图）
+## I. Hiện tượng (Ảnh chụp màn hình máy thật)
 
-1. **【莉莉丝】台词出现两遍、位置不对**：先是原文 `【莉莉丝】："主人，……"`（带着别的扩展加的虚线下划线），紧跟着一张内容一样的莉莉丝语音框；在有角色卡状态栏的楼层，原文留在状态栏上面，语音框却跑到了状态栏下面。
-2. **状态栏原文露出来**：楼层里有 `系统点: 6600 / 子系统: 0 / 子嗣: 0 / 绑定目标: 暂无 / 好感度: 0 / 黑化值: 0 / 悔意值: 0 …` 这样的原始行，下面同时还有「✧ 系统已记录」小标签。
+1. **Lời thoại 【Lilith】 xuất hiện hai lần và sai vị trí**: Đầu tiên là nguyên văn `【Lilith】: "Chủ nhân, ……"` (kèm đường gạch chân nét đứt do tiện ích mở rộng khác thêm vào), ngay theo sau là một khung thoại Lilith có nội dung y hệt; ở những tầng có thanh trạng thái thẻ nhân vật, nguyên văn nằm phía trên thanh trạng thái, còn khung thoại lại chạy xuống phía dưới thanh trạng thái.
+2. **Lộ nguyên văn thanh trạng thái**: Trong tầng hiển thị các dòng thô như `系统点: 6600 / 子系统: 0 / 子嗣: 0 / 绑定目标: Chưa có / 好感度: 0 / 黑化值: 0 / 悔意值: 0 …`, đồng thời bên dưới vẫn có nhãn nhỏ 「✧ Hệ thống đã ghi nhận」.
 
-## 二、原因
+## 二. Nguyên nhân
 
-插件处理每个楼层时，会用自己的渲染结果替换酒馆画出来的内容：把台词换成语音框，把 `<ZhuTianPanel>` 数据块换成小标签。
+Khi xử lý từng tầng, plugin sẽ thay thế nội dung do SillyTavern vẽ ra bằng kết quả kết xuất của chính mình: đổi lời thoại thành khung thoại, đổi khối dữ liệu `<ZhuTianPanel>` thành nhãn nhỏ.
 
-0.8.4 起，为了不把别的扩展的美化弄丢，插件会对照「酒馆本来会画成什么样」：楼层里**对不上**的节点被当成别的扩展加的，原样保留。问题在于，下面两种情况也会让酒馆自己画的内容对不上：
+Từ bản 0.8.4 trở đi, để không làm mất hiệu ứng làm đẹp của các tiện ích mở rộng khác, plugin sẽ đối chiếu với 「những gì SillyTavern vốn sẽ vẽ ra」: những nút DOM trong tầng **không khớp** sẽ được coi là do tiện ích mở rộng khác thêm vào và giữ nguyên. Vấn đề nằm ở chỗ hai trường hợp dưới đây cũng làm cho nội dung do chính SillyTavern vẽ ra bị lệch đối chiếu:
 
-- **别的扩展原地改过段落**：比如截图里给「少主」「灵根」「元婴期」加虚线下划线的关键词高亮，如果在插件处理之前就动了手，台词那一段就对不上了。结果原文被保留，语音框又插了一张，于是出现两遍。
-- **消息在酒馆画完之后又被改了**：比如变量类扩展（截图底部有「重新处理变量」「重试额外模型解析」）往消息后面追加了更新块，但没有重画楼层。屏幕上旧的那一段（含数据块原文）对不上新的消息，于是被保留下来，状态栏原文就露了出来。
+- **Tiện ích mở rộng khác đã sửa đoạn văn tại chỗ**: Ví dụ tiện ích tô sáng từ khóa thêm gạch chân nét đứt cho các từ như 「Thiếu chủ」, 「Linh căn」, 「Nguyên Anh kỳ」 trong ảnh chụp màn hình; nếu tiện ích đó can thiệp trước khi plugin xử lý thì đoạn văn chứa lời thoại sẽ không còn khớp nữa. Kết quả là nguyên văn được giữ lại, đồng thời plugin lại chèn thêm một khung thoại nữa, làm xuất hiện hai bản.
+- **Tin nhắn bị sửa đổi sau khi SillyTavern đã vẽ xong**: Ví dụ tiện ích mở rộng dạng biến số nối thêm khối cập nhật vào sau tin nhắn nhưng không vẽ lại tầng. Đoạn cũ trên màn hình (chứa nguyên văn khối dữ liệu) không khớp với tin nhắn mới nên được giữ lại, làm lộ nguyên văn thanh trạng thái ra ngoài.
 
-## 三、修复
+## III. Cách sửa
 
-- **判断“别的扩展加的”更严格**（`src/statusbar-host.js`：`stText`、`consumedSnippets`）。一个对不上的旧节点，满足下面任一条就认定为酒馆自己的文字，不再保留，插件的渲染里已经有正确的版本：
-  - 它的文字和酒馆渲染里某一段完全相同（只是标记被改过）；
-  - 它的文字出现在酒馆渲染的正文里（不算代码块，所以从代码块渲染出来的卡片仍算别的扩展的）；
-  - 它含有插件这次替换掉的内容：某句莉莉丝台词，或数据块里至少两行 `字段: 值`。
-  - 里面有 iframe 的节点（酒馆助手 / 小白X 的前端卡、角色卡状态栏）**一律保留**，和以前一样不会重新加载。
-- **前端卡回到原来的位置**（`swapContent` 的排位）：酒馆助手 / 小白X 把代码块换成 iframe 卡片后，插件以前把这张卡片排在“上一个对得上的节点”后面。台词刚好在代码块前面时，卡片就跑到了台词上面，看起来像“语音框跑到状态栏底下”。现在卡片放在它替换掉的那个代码块的位置，消息里的先后顺序不变。
-- **代码里的 `莉莉丝：…` 不再变成语音框**（`src/voice-box.js`：`splitCode`）：围栏代码块（```` ``` ```` / `~~~`）和 `<script>`、`<style>`、`<textarea>`、`<pre>` 里的内容保持原样。角色卡前端状态栏的代码里如果写了莉莉丝的话，不会被改坏，语音框也不会跑到别处去。
+- **Phán đoán “nút do tiện ích mở rộng khác thêm vào” chặt chẽ hơn** (`src/statusbar-host.js`: `stText`, `consumedSnippets`). Một nút cũ không khớp nếu thỏa mãn bất kỳ điều kiện nào dưới đây sẽ được xác định là văn bản của chính SillyTavern và không giữ lại nữa (vì trong bản kết xuất của plugin đã có phiên bản đúng):
+  - Văn bản của nó giống hệt một đoạn nào đó trong bản kết xuất của SillyTavern (chỉ có thẻ đánh dấu bị sửa đổi);
+  - Văn bản của nó xuất hiện trong phần chính văn kết xuất của SillyTavern (không tính khối mã, nên các thẻ được kết xuất từ khối mã vẫn được tính là của tiện ích mở rộng khác);
+  - Nó có chứa nội dung được plugin thay thế trong lần này: một câu thoại Lilith, hoặc ít nhất hai dòng `Trường: Giá trị` trong khối dữ liệu.
+  - Các nút có chứa iframe bên trong (thẻ giao diện của Tavern Helper / Tiểu Bạch X, thanh trạng thái thẻ nhân vật) **nhất loạt được giữ nguyên**, không bị tải lại giống như trước đây.
+- **Đưa thẻ giao diện về đúng vị trí ban đầu** (sắp xếp vị trí trong `swapContent`): Sau khi Tavern Helper / Tiểu Bạch X đổi khối mã thành thẻ iframe, trước đây plugin xếp thẻ này vào sau “nút khớp gần nhất phía trước”. Khi lời thoại nằm ngay trước khối mã, thẻ iframe sẽ nhảy lên trên lời thoại, nhìn giống như “khung thoại bị tụt xuống dưới thanh trạng thái”. Hiện tại thẻ được đặt vào đúng vị trí của khối mã mà nó thay thế, thứ tự trước sau trong tin nhắn được giữ nguyên.
+- **Câu `Lilith: …` nằm trong mã nguồn không còn bị biến thành khung thoại** (`src/voice-box.js`: `splitCode`): Nội dung bên trong khối mã có rào chắn (```` ``` ```` / `~~~`) và các thẻ `<script>`, `<style>`, `<textarea>`, `<pre>` được giữ nguyên trạng. Nếu trong mã thanh trạng thái giao diện của thẻ nhân vật có viết lời của Lilith thì cũng sẽ không bị sửa hỏng, và khung thoại cũng không bị nhảy sang chỗ khác.
 
-仍然保留的美化（0.8.4 的验收项照常通过）：
+Các hiệu ứng làm đẹp vẫn được bảo toàn (các hạng mục nghiệm thu của bản 0.8.4 vẫn đạt bình thường):
 
-- 插件处理之后才执行的原地美化（给段落套样式、包词）照常保留；
-- iframe 卡片照常保留，而且不会重新加载；
-- 酒馆正则做的显示美化照常显示。
+- Làm đẹp tại chỗ thực thi sau khi plugin xử lý (gắn kiểu dáng cho đoạn văn, bọc từ) vẫn được giữ nguyên;
+- Thẻ iframe vẫn được giữ nguyên và không bị tải lại;
+- Làm đẹp hiển thị bằng biểu thức chính quy của SillyTavern vẫn hiển thị bình thường.
 
-**会有的变化**：如果某个美化扩展在插件处理**之前**改了“含有莉莉丝台词或数据块”的那一段，这一段会显示插件的版本（语音框 / 小标签），那一段上的美化（例如虚线下划线）会消失。其他段落上的美化不受影响。
+**Thay đổi sẽ có**: Nếu một tiện ích mở rộng làm đẹp sửa đổi đoạn văn “có chứa lời thoại Lilith hoặc khối dữ liệu” **trước khi** plugin xử lý, đoạn văn đó sẽ hiển thị phiên bản của plugin (khung thoại / nhãn nhỏ), và phần làm đẹp trên riêng đoạn đó (ví dụ gạch chân nét đứt) sẽ mất đi. Phần làm đẹp trên tất cả các đoạn văn khác không bị ảnh hưởng.
 
-## 四、其他
+## IV. Khác
 
-- 版本号 0.9.2：contracts、manifest、package.json、package-lock（两处）、README、功能矩阵。
-- 路线图：原来排在 0.9.2 的“真实模型验收”顺延到 0.9.3，后面的版本依次顺延。
-- 新增测试：`tests/v092.test.js`（6 项）、`tests/native_v092.py`（装了酒馆助手时 17 项，没装时 14 项；按上面的情况复现，0.9.1 在其中 10 项上失败）。
+- Số phiên bản 0.9.2: contracts, manifest, package.json, package-lock (hai nơi), README, ma trận tính năng.
+- Thêm bài kiểm thử mới: `tests/v092.test.js` (6 hạng mục), `tests/native_v092.py` (17 hạng mục khi cài Tavern Helper, 14 hạng mục khi không cài; tái hiện đúng các tình huống trên, bản 0.9.1 thất bại 10 hạng mục còn bản 0.9.2 đạt toàn bộ).

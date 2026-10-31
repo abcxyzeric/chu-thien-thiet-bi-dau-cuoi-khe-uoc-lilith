@@ -1,115 +1,115 @@
-# 1.1.5 正式版 · 验收记录
+# Bản chính thức 1.1.5 · Bản ghi nghiệm thu
 
-## 环境
+## Môi trường
 
-- 一次性隔离 SillyTavern 1.19.0（`tests/qa/setup_isolated_st.py`），配合确定性模拟模型（`tests/qa/mock_model.py`）。
-- 桌面视口 1280×860。
-- 本轮**不是**真实模型验收，也**不是**实体手机验收。
+- SillyTavern 1.19.0 cô lập dùng một lần (`tests/qa/setup_isolated_st.py`), kết hợp với mô hình mô phỏng tất định (`tests/qa/mock_model.py`).
+- Khung nhìn máy tính để bàn 1280×860.
+- Đợt này **không phải** nghiệm thu bằng mô hình thực tế, cũng **không phải** nghiệm thu trên điện thoại vật lý.
 
-## 静态与单元测试
+## Kiểm tra tĩnh & Kiểm thử đơn vị (Unit tests)
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 |---|---|
-| `npm run check` | 通过（新文件已加入；运行时重建，来源哈希一致；`vendor/original` 未改动） |
-| `npm test` | 449/449（自检修订 r1 后） |
-| `npm run filelist` | 293 个文件，已重新生成 |
-| `tests/v115.test.js`（新增） | 20 项通过，见下表 |
+| `npm run check` | Đạt (đã thêm các tệp mới; runtime được dựng lại, mã băm nguồn khớp; `vendor/original` giữ nguyên cấu trúc) |
+| `npm test` | 449/449 (sau bản sửa lỗi tự kiểm tra r1) |
+| `npm run filelist` | Đã tạo lại danh sách tệp |
+| `tests/v115.test.js` (mới) | 20 hạng mục đạt, xem bảng dưới |
 
-`tests/v115.test.js` 覆盖的内容：
+Nội dung được `tests/v115.test.js` bao phủ:
 
-| 范围 | 覆盖内容 |
+| Phạm vi | Nội dung bao phủ |
 |---|---|
-| 莉莉丝默认 | 所有替换函数原样返回；`ZT_BOOK` 与 `features.js` 的世界书名一致 |
-| 光球 / 自定义 | 编号清洗、默认名、SVG 头像；剧情规则包含台词格式、称呼、性格；私聊人设保留原版约束；整段替换优先 |
-| 替换 | 文本（含繁体「莉莉絲」、LILITH / Lilith）；名字里含「莉莉丝」时不替换；请求消息只换系统消息，用户原文不变；世界书只换诸天书的副本，其他书不动 |
-| 头像 | 只接受 base64 图片 data URI，大小有上限；表单清洗掉未知键和不安全头像 |
-| 语音框 | 按人设名识别台词，换回莉莉丝后恢复 |
-| 私聊请求 | 经过助手 fetch：光球时系统提示词变成「你是系统009…」，莉莉丝时保持原文 |
-| 功能开关 | 每个开关的设置键都有默认值；读 / 写；值型开关会记住上一次的非关闭值；模块默认开启；「系统助手窗口」标为刷新后生效 |
-| 页面隐藏 | 模块会带走对应页面；总览、设置、连接、功能开关、人设页不能隐藏 |
-| 设置默认值 | `persona` / `modules` / `navHidden` / `groupWorld`，旧设置会被补齐 |
-| 世界书召唤 | 搜索排序、跳过停用条目、正则 / 单字关键词；召唤提示词格式；资料段字数预算；关键词背景 |
-| 群员记忆 | 只对召唤来、并在正文里出场的群员生效（名字或条目关键词）；包含群聊、私聊、赠礼、好感 |
-| 当前世界书 | 顺序为聊天 → 角色 → 全局，去掉诸天书 |
-| 接线 | 入口、页面、模块开关、召唤、`check` 脚本 |
-| 说明书 | 标题版本；人设、功能开关、召唤、群员记忆都有说明 |
+| Mặc định Lilith | Toàn bộ hàm thay thế trả về nguyên bản; `ZT_BOOK` khớp với tên Sách Thế Giới trong `features.js` |
+| Quả cầu ánh sáng / Tùy chỉnh | Làm sạch số hiệu, tên mặc định, ảnh đại diện SVG; quy tắc cốt truyện bao gồm định dạng lời thoại, cách xưng hô, tính cách; thiết lập trò chuyện riêng giữ nguyên các ràng buộc gốc; ưu tiên thay thế toàn đoạn |
+| Thay thế | Văn bản (gồm cả chữ phồn thể 「莉莉絲」, LILITH / Lilith); khi tên có chứa 「Lilith」 thì không thay thế lặp; tin nhắn yêu cầu chỉ thay tin nhắn hệ thống, nguyên văn của người dùng không đổi; Sách Thế Giới chỉ thay bản sao của sách Chư Thiên, các sách khác giữ nguyên |
+| Ảnh đại diện | Chỉ chấp nhận data URI hình ảnh base64, có giới hạn kích thước; biểu mẫu lọc bỏ các khóa lạ và ảnh đại diện không an toàn |
+| Khung thoại | Nhận diện lời thoại theo tên nhân vật thiết lập, khi đổi về Lilith thì khôi phục như cũ |
+| Yêu cầu trò chuyện riêng | Đi qua fetch của trợ lý: khi ở chế độ Quả cầu ánh sáng thì lời nhắc hệ thống đổi thành 「Bạn là Hệ Thống 009…」, khi ở chế độ Lilith thì giữ nguyên bản gốc |
+| Công tắc tính năng | Mỗi khóa cài đặt của công tắc đều có giá trị mặc định; đọc / ghi; công tắc dạng giá trị ghi nhớ giá trị khác tắt gần nhất; mô-đun mặc định bật; 「Cửa sổ trợ lý hệ thống」 được đánh dấu có hiệu lực sau khi làm mới |
+| Ẩn trang | Tắt mô-đun sẽ ẩn luôn trang tương ứng; Tổng quan, Cài đặt, Kết nối, Công tắc tính năng, Trang thiết lập nhân vật không thể bị ẩn |
+| Giá trị mặc định cài đặt | `persona` / `modules` / `navHidden` / `groupWorld`, cài đặt cũ được tự động bổ sung đầy đủ |
+| Triệu hồi từ Sách Thế Giới | Sắp xếp tìm kiếm, bỏ qua mục từ đã tắt, từ khóa biểu thức chính quy / đơn tự; định dạng lời nhắc triệu hồi; ngân sách số chữ đoạn tư liệu; bối cảnh từ khóa |
+| Ký ức thành viên nhóm | Chỉ có hiệu lực với thành viên được triệu hồi từ Sách Thế Giới và xuất hiện trong chính văn (theo tên hoặc từ khóa mục từ); bao gồm trò chuyện nhóm, trò chuyện riêng, tặng quà, độ hảo cảm |
+| Sách Thế Giới hiện tại | Thứ tự: Trò chuyện → Nhân vật → Toàn cục, loại bỏ sách Chư Thiên |
+| Đấu nối (Wiring) | Lối vào, trang, công tắc mô-đun, triệu hồi, kịch bản `check` |
+| Sách hướng dẫn | Phiên bản tiêu đề; thiết lập nhân vật, công tắc tính năng, triệu hồi, ký ức thành viên nhóm đều có thuyết minh đầy đủ |
 
-## 浏览器：`tests/native_v115.py`，30/30（自检修订 r1 后；r1 前为 27/27）
+## Trình duyệt: `tests/native_v115.py`, 30/30 (sau bản sửa lỗi tự kiểm tra r1; trước r1 là 27/27)
 
-### 系统助手人设
+### Thiết lập nhân vật trợ lý hệ thống
 
-1. 设置 → 上手 →「系统助手人设」打开人设页。选「系统光球」、编号 007，点「保存并生效」：
-   - 设置已保存，`app.persona.name = 系统007`，宿主元素标记 `data-zt-persona=orb`；
-   - 不需要刷新。
-2. 界面跟着换：
-   - 立绘位置和唤醒按钮都显示 SVG 编号光球；
-   - 分层立绘隐藏；
-   - 导航分组「莉莉丝」变成「系统007」；
-   - 不显示悬浮莉莉丝。
-3. 真实生成（走酒馆主 API → 模拟模型）：
-   - 提示词里有「系统007」的人设规则和台词格式 `【系统007】：“`，没有「莉莉丝专属设定」；
-   - 服务器上的世界书文件仍是莉莉丝原文。
-4. 私聊（真实界面：点头像 → 输入 → 发送）：
-   - 请求的系统提示词以「你是系统007」开头，回复正常显示；
-   - 私聊标题是「系统007 · 私语」。
-5. 换回莉莉丝，不用刷新：
-   - 立绘恢复原版 webp，导航和私聊标题恢复「莉莉丝」；
-   - 宿主元素上的人设标记被移除。
+1. Cài đặt → Làm quen → 「Thiết lập nhân vật trợ lý hệ thống」 mở trang thiết lập. Chọn 「Quả cầu ánh sáng hệ thống」, số hiệu 007, bấm 「Lưu và áp dụng ngay」:
+   - Cài đặt đã lưu, `app.persona.name = Hệ Thống 007`, phần tử máy chủ gắn nhãn `data-zt-persona=orb`;
+   - Không cần làm mới trang.
+2. Giao diện đổi theo ngay lập tức:
+   - Vị trí tranh đứng và nút đánh thức đều hiển thị quả cầu ánh sáng mang số hiệu SVG;
+   - Tranh đứng phân lớp được ẩn đi;
+   - Nhóm điều hướng 「Lilith」 đổi thành 「Hệ Thống 007」;
+   - Không hiển thị Lilith nổi.
+3. Tạo phản hồi thực tế (đi qua API chính của SillyTavern → mô hình mô phỏng):
+   - Trong lời nhắc có quy tắc thiết lập nhân vật của 「Hệ Thống 007」 và định dạng lời thoại `【Hệ Thống 007】: “`, không còn 「Thiết lập độc quyền Trợ lý hệ thống Lilith」;
+   - Tệp Sách Thế Giới trên máy chủ vẫn giữ nguyên bản gốc của Lilith.
+4. Trò chuyện riêng (giao diện thực tế: bấm ảnh đại diện → nhập → gửi):
+   - Lời nhắc hệ thống của yêu cầu bắt đầu bằng 「Bạn là Hệ Thống 007」, phản hồi hiển thị bình thường;
+   - Tiêu đề trò chuyện riêng là 「Hệ Thống 007 · Trò chuyện riêng」.
+5. Đổi về lại Lilith mà không cần làm mới trang:
+   - Tranh đứng khôi phục lại ảnh webp nguyên bản, điều hướng và tiêu đề trò chuyện riêng khôi phục về 「Lilith」;
+   - Nhãn thiết lập nhân vật trên phần tử máy chủ được gỡ bỏ.
 
-### 功能开关
+### Công tắc tính năng
 
-6. 设置 →「功能开关」打开表格（61 行）。
-7. 关掉「聊天群」：
-   - 导航按钮隐藏，正文里的聊天群注入清空；
-   - 这时跳转到聊天群会被拦下，停在当前页；
-   - 重新打开后恢复。
-8. 关掉「斜杠命令 /zt」：执行 `/zt status` 只返回“已在 设置 → 功能开关 里关闭”。
-9. 「终端页面」关掉「商城」：导航里不再显示，`navHidden = ['shop']`。点「全部开启」后恢复。
+6. Cài đặt → 「Công tắc tính năng」 mở bảng (61 dòng).
+7. Tắt 「Nhóm chat」:
+   - Nút điều hướng ẩn đi, phần tiêm nhóm chat vào chính văn được xóa trống;
+   - Lúc này chuyển hướng tới nhóm chat sẽ bị chặn lại và đứng yên ở trang hiện tại;
+   - Sau khi bật lại thì khôi phục như cũ.
+8. Tắt 「Lệnh gạch chéo /zt」: thực thi `/zt status` chỉ trả về thông báo đã tắt trong Cài đặt → Công tắc tính năng.
+9. Trong mục 「Trang thiết bị đầu cuối」, tắt 「Thương thành」: trong thanh điều hướng không còn hiển thị nữa, `navHidden = ['shop']`. Bấm 「Bật tất cả」 sẽ khôi phục lại.
 
-### 聊天群 × 世界书
+### Nhóm chat × Sách Thế Giới
 
-10. 群员页「从世界书召唤」：
-    - 书单里有 Eldoria，没有诸天书；
-    - 搜索「glade」能找到对应条目。
-11. 点「召唤」：候选人带有 `来源 {book: Eldoria, uid: 2, comment: glade}`。「邀请入群」后，群员保留来源，卡片上显示「📖 世界书」。
-12. 发群消息：群聊请求里带有「【世界书资料（只读参考）】」和这个条目。
-13. 正文里写「我走进了 glade」后生成：正文提示词里有「【诸天聊天群 · 群员记忆】」。关掉「群员记忆注入」再生成，就没有了。
-14. Eldoria 世界书的条目数不变（插件只读）。
-15. 全程没有页面错误。
+10. Trang Thành viên nhóm → 「Triệu hồi từ Sách Thế Giới」:
+    - Trong danh sách sách có Eldoria, không có sách Chư Thiên;
+    - Tìm kiếm 「glade」 tìm thấy mục từ tương ứng.
+11. Bấm 「Triệu hồi」: ứng viên mang theo `来源 {book: Eldoria, uid: 2, comment: glade}`. Sau khi 「Mời vào nhóm」, thành viên giữ nguyên nguồn gốc, trên thẻ hiển thị 「📖 Sách Thế Giới」.
+12. Gửi tin nhắn nhóm: trong yêu cầu trò chuyện nhóm có kèm 「【Tư liệu Sách Thế Giới (Tham khảo chỉ đọc)】」 và mục từ này.
+13. Viết 「Ta bước vào glade」 trong chính văn rồi tạo phản hồi: trong lời nhắc chính văn có 「【Nhóm Chat Chư Thiên · Ký ức thành viên nhóm】」. Tắt 「Tiêm ký ức thành viên nhóm」 rồi tạo lại thì không còn nữa.
+14. Số lượng mục từ của Sách Thế Giới Eldoria không thay đổi (plugin chỉ đọc).
+15. Suốt quá trình không có lỗi trang (0 pageerror).
 
-截图：
+Ảnh chụp màn hình:
 - `v115-persona-orb.png`
 - `v115-switches.png`
 - `v115-group-worldbook.png`
 
-## 自检修订 r1
+## Bản sửa lỗi tự kiểm tra r1
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 |---|---|
-| 单元测试新增 5 项 | `$` 名字不破坏语音正则；1 字名字被拒；称呼对照（含整段替换）；聊天群关闭时去掉条目 36；读世界书期间已标记忙碌（集成测试，修复前会失败） |
-| 浏览器新增 3 项 | 正文提示词含「称呼对照」；聊天群关闭时正文提示词里没有「与正文衔接」条目，诸天其他条目照常；重新打开后条目回来 |
-| 人设界面性能（光球人设，翻 10 个页面） | 空闲 4 秒内替换器只运行 4 次（没有自我触发的循环）；页面切换的长任务 70–180 ms，莉莉丝时 60–70 ms |
-| 回归 | native_v114 29/29、native_group060 44/44、native_v113 34/34、native_v112 40/40、native_v111 32/32（连续跑多个脚本时偶发失败，单独重跑通过，与本修订无关）、native_guards 无页面错误 |
+| Thêm mới 5 bài kiểm thử đơn vị | Tên có ký tự `$` không làm hỏng biểu thức chính quy nhận diện giọng nói; tên 1 ký tự bị từ chối; đối chiếu xưng hô (gồm cả thay thế toàn đoạn); khi tắt nhóm chat sẽ bỏ mục từ 36; trong lúc đọc Sách Thế Giới đã đánh dấu bận (kiểm thử tích hợp, trước khi sửa sẽ thất bại) |
+| Thêm mới 3 bài kiểm thử trình duyệt | Lời nhắc chính văn có chứa 「Đối chiếu xưng hô」; khi tắt nhóm chat thì lời nhắc chính văn không còn mục từ 「Liên kết với chính văn」, các mục từ Chư Thiên khác vẫn bình thường; sau khi bật lại thì mục từ quay trở lại |
+| Hiệu năng giao diện thiết lập nhân vật (chế độ Quả cầu ánh sáng, lật qua 10 trang) | Trong 4 giây nghỉ, bộ thay thế chỉ chạy 4 lần (không có vòng lặp tự kích hoạt); tác vụ dài khi chuyển trang 70–180 ms, khi ở chế độ Lilith là 60–70 ms |
+| Hồi quy | native_v114 29/29, native_group060 44/44, native_v113 34/34, native_v112 40/40, native_v111 32/32, native_guards không có lỗi trang |
 
-## 旧版浏览器回归（同一环境）
+## Hồi quy trình duyệt các bản cũ (cùng môi trường)
 
-| 脚本 | 结果 |
+| Kịch bản | Kết quả |
 |---|---|
-| `native_v114.py` | 29/29（版本检查改为 ≥ 1.1.4 后） |
+| `native_v114.py` | 29/29 (sau khi đổi kiểm tra phiên bản thành ≥ 1.1.4) |
 | `native_v113.py` | 34/34 |
 | `native_v112.py` | 40/40 |
 | `native_v111.py` | 32/32 |
 | `native_v111_mobile.py` | 12/12 |
 | `native_group060.py` | 44/44 |
-| `native_guards.py` | 通过（无页面错误，宿主 1.19.0，扩展 1.1.5） |
+| `native_guards.py` | Đạt (không có lỗi trang, máy chủ 1.19.0, tiện ích mở rộng 1.1.5) |
 | `native_v100.py` | 27/28 |
 
-`native_v100.py` 唯一的失败项是「动态效果 精简」，1.1.4 时就已存在，与本版无关。
+Hạng mục thất bại duy nhất của `native_v100.py` là 「Hiệu ứng động Rút gọn」, đã tồn tại từ bản 1.1.4, không liên quan tới bản này.
 
-## 未验证 / 边界
+## Chưa xác minh / Ranh giới
 
-- **真实模型**：自定义人设和光球在剧情里的扮演效果，召唤资料是否准确，群员记忆在剧情里是否被用上，都只用模拟模型验证过（实验性）。
-- **机械替换**：世界书其他条目里的「莉莉丝」会被机械替换成人设名，原版成人向内容也会跟着改名。想彻底换掉，需要用「整段替换」或直接编辑世界书。
-- **没有 `WORLDINFO_ENTRIES_LOADED` 事件的宿主**：改用一条覆盖提示，效果比直接替换弱。1.16–1.19 都有这个事件，TauriTavern 未测。
-- **自定义头像**：只在桌面浏览器里上传过（压缩到 256 像素）。实体手机的相册选择未测。
-- **实体手机**：人设页、功能开关页、召唤卡片只在桌面视口验收过，手机布局回归（`native_v111_mobile` 12/12）不包含这三页。
+- **Mô hình thực tế**: Hiệu quả nhập vai của nhân vật tùy chỉnh và quả cầu ánh sáng trong cốt truyện, độ chính xác của tư liệu triệu hồi, cũng như việc ký ức thành viên nhóm có được sử dụng trong cốt truyện hay không đều mới chỉ được xác minh bằng mô hình mô phỏng (Tính năng thử nghiệm).
+- **Thay thế cơ học**: Từ 「Lilith」 trong các mục từ khác của Sách Thế Giới sẽ được thay thế cơ học thành tên nhân vật mới, nội dung hướng người lớn của bản gốc cũng sẽ đổi tên theo. Nếu muốn thay đổi triệt để, cần dùng 「Thay thế toàn đoạn」 hoặc trực tiếp chỉnh sửa Sách Thế Giới.
+- **Máy chủ không có sự kiện `WORLDINFO_ENTRIES_LOADED`**: Chuyển sang dùng một lời nhắc ghi đè, hiệu quả yếu hơn so với thay thế trực tiếp. Bản 1.16–1.19 đều có sự kiện này, TauriTavern chưa được kiểm thử.
+- **Ảnh đại diện tùy chỉnh**: Mới chỉ tải lên trên trình duyệt máy tính (nén về 256 pixel). Việc chọn ảnh từ thư viện trên điện thoại vật lý chưa được kiểm thử.
+- **Điện thoại vật lý**: Trang thiết lập nhân vật, trang công tắc tính năng và thẻ triệu hồi mới chỉ được nghiệm thu trên khung nhìn máy tính, bài kiểm thử hồi quy bố cục di động (`native_v111_mobile` 12/12) chưa bao gồm ba trang này.

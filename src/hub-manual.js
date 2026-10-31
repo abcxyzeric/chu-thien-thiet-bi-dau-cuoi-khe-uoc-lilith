@@ -1,6 +1,6 @@
-// 1.1.4: 说明书 — the full manual (docs/MANUAL.md, shipped with the extension) inside the terminal.
-// Read-only: it fetches the file from the extension folder, renders a small, safe Markdown subset (every piece of
-// text is escaped first; no raw HTML from the file reaches the page), and offers a table of contents and a search.
+// 1.1.4: Sách hướng dẫn — toàn bộ tài liệu hướng dẫn (docs/MANUAL.md, đi kèm với tiện ích) nằm ngay trong thiết bị đầu cuối.
+// Chỉ đọc: tải tệp từ thư mục tiện ích, hiển thị một tập hợp con Markdown an toàn, nhỏ gọn (mọi đoạn
+// văn bản đều được escape trước; không có HTML thô nào từ tệp đi thẳng ra trang), kèm theo mục lục và thanh tìm kiếm.
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 
 /** Inline Markdown on an ALREADY escaped line: `code`, **bold**, [text](#anchor | https://…). */
@@ -75,7 +75,7 @@ export class HubManual {
     get hub() { return this.app.hub; }
     start() {
         const hub = this.hub; if (!hub) return this;
-        hub.addNav('终端', 'man', '说明书', 'book', { title: '说明书', render: el => this.render(el) });
+        hub.addNav('Thiết bị đầu cuối', 'man', 'Sách hướng dẫn', 'book', { title: 'Sách hướng dẫn', render: el => this.render(el) });
         return this;
     }
     dispose() { /* the hub removes its pages and buttons */ }
@@ -83,19 +83,19 @@ export class HubManual {
     async load() {
         if (this.md != null) return this.md;
         const r = await fetch(this.url(), { cache: 'no-cache' });
-        if (!r.ok) throw new Error(`读取说明书失败（HTTP ${r.status}）`);
+        if (!r.ok) throw new Error(`Đọc sách hướng dẫn thất bại (HTTP ${r.status})`);
         this.md = await r.text(); return this.md;
     }
     async render(el) {
         if (!el) return;
-        if (this.md == null) el.innerHTML = '<div class="zt-card"><h3>说明书</h3><p class="zt-muted">正在读取 docs/MANUAL.md …</p></div>';
+        if (this.md == null) el.innerHTML = '<div class="zt-card"><h3>Sách hướng dẫn</h3><p class="zt-muted">Đang đọc docs/MANUAL.md …</p></div>';
         let md;
         try { md = await this.load(); this.error = ''; }
-        catch (e) { this.error = e.message; el.innerHTML = `<div class="zt-card"><h3>说明书</h3><p>${esc(e.message)}</p><p class="zt-muted">说明书文件随插件一起安装，在插件文件夹的 docs/MANUAL.md，也可以直接用文本编辑器打开。</p></div>`; return; }
+        catch (e) { this.error = e.message; el.innerHTML = `<div class="zt-card"><h3>Sách hướng dẫn</h3><p>${esc(e.message)}</p><p class="zt-muted">Tệp sách hướng dẫn được cài đặt kèm theo tiện ích, nằm tại docs/MANUAL.md trong thư mục tiện ích, bạn cũng có thể mở trực tiếp bằng trình soạn thảo văn bản.</p></div>`; return; }
         const { html, toc } = renderManual(md);
         el.innerHTML = `<div class="zt-man">
-            <div class="zt-man-bar"><input type="search" class="zt-man-q" placeholder="搜索功能 / 按钮，例如：重roll、解冻、红包" aria-label="搜索说明书"><span class="zt-man-hit"></span></div>
-            <details class="zt-man-toc" open><summary>目录（${toc.length} 章）</summary><ul>${toc.map(t => `<li><a href="#man-${esc(t.id)}" data-anchor="${esc(t.id)}">${esc(t.text)}</a></li>`).join('')}</ul></details>
+            <div class="zt-man-bar"><input type="search" class="zt-man-q" placeholder="Tìm kiếm tính năng / nút bấm, ví dụ: roll lại, mở băng, lì xì" aria-label="Tìm kiếm sách hướng dẫn"><span class="zt-man-hit"></span></div>
+            <details class="zt-man-toc" open><summary>Mục lục (${toc.length} chương)</summary><ul>${toc.map(t => `<li><a href="#man-${esc(t.id)}" data-anchor="${esc(t.id)}">${esc(t.text)}</a></li>`).join('')}</ul></details>
             <article class="zt-man-body">${html}</article></div>`;
         const body = el.querySelector('.zt-man-body'), q = el.querySelector('.zt-man-q'), hit = el.querySelector('.zt-man-hit');
         el.addEventListener('click', e => {
@@ -109,7 +109,7 @@ export class HubManual {
                 const yes = !words.length || words.every(w => s.textContent.toLowerCase().includes(w));
                 s.hidden = !yes; if (yes && words.length && s.dataset.sec !== '-1') n++;
             });
-            hit.textContent = words.length ? (n ? `${n} 章相关` : '没有找到，换个词试试') : '';
+            hit.textContent = words.length ? (n ? `${n} chương liên quan` : 'Không tìm thấy, hãy thử từ khóa khác') : '';
         });
     }
 }

@@ -30,14 +30,14 @@ for(const action of ['help','privateSay','live','round']) test(`patch3: delayed 
   let release;group.ask=()=>new Promise(r=>release=r);
   const pending=action==='help'?group.help('A的任务','same'):action==='privateSay'?group.privateSay('same','A的私聊'):action==='live'?group.live('same'):group.round('A的群聊');
   assert.equal(typeof release,'function');const b=copy(f.chats.b.chatMetadata);f.switch();release(action==='help'?'旧任务|只属于A|100点':action==='round'?'@群员: A的回复':'A的回复');
-  await assert.rejects(pending,/变化|切换/);assert.deepEqual(f.chats.b.chatMetadata,b);assert.equal(f.saves,0);
+  await assert.rejects(pending,/thay đổi|đã chuyển/);assert.deepEqual(f.chats.b.chatMetadata,b);assert.equal(f.saves,0);
  }finally{f.restore();}
 });
 for(const phase of ['核验期间替换','异步更新器期间','核验期间原地改动']) test(`patch3: ${phase} preserves external 100→200, retry gives 190 not 90`,async()=>{
  const f=fixture();try {
   const oldFetch=globalThis.fetch;let changed=false;
   if(phase!=='异步更新器期间')globalThis.fetch=async(...args)=>{const res=await oldFetch(...args);if(!changed){changed=true;if(phase==='核验期间替换')f.chats.a.chatMetadata.variables=copy(f.chats.a.chatMetadata.variables);f.chats.a.chatMetadata.variables.诸天系统.系统点=200;}return res;};
-  await assert.rejects(()=>f.bridge.updateVariablesWith(async v=>{if(phase==='异步更新器期间')f.chats.a.chatMetadata.variables.诸天系统.系统点=200;await Promise.resolve();v.诸天系统.系统点-=10;return v;},{verify:true}),/变化|不同/);
+  await assert.rejects(()=>f.bridge.updateVariablesWith(async v=>{if(phase==='异步更新器期间')f.chats.a.chatMetadata.variables.诸天系统.系统点=200;await Promise.resolve();v.诸天系统.系统点-=10;return v;},{verify:true}),/đã thay đổi|khác nhau/);
   assert.equal(f.saves,0);assert.equal(f.adapter.ledger().系统点,200);assert.equal(f.adapter.transactions.uncertain.size,0);
   globalThis.fetch=oldFetch;f.disk.a=copy(f.chats.a.chatMetadata);
   await f.bridge.updateVariablesWith(v=>{v.诸天系统.系统点-=10;return v;},{verify:true});assert.equal(f.adapter.ledger().系统点,190);
@@ -57,12 +57,12 @@ test('patch3: later shop acquisition does not merge into an appraised story lot'
 });
 function device(secure,protocol,locks=true){return {isSecureContext:secure,location:{protocol,hostname:'example.invalid',port:'8000'},navigator:{userAgent:'test',language:'zh',...(locks?{locks:{request:async(_n,_o,f)=>f()}}:{})},innerWidth:390,innerHeight:844,screen:{width:390,height:844},devicePixelRatio:1};}
 for(const [secure,protocol,locks] of [[true,'http:',true],[false,'http:',false],[true,'https:',false]])test(`patch3: diagnostics separate context/protocol/locks ${secure}/${protocol}/${locks}`,()=>{
- const restore=globals(device(secure,protocol,locks));try{const r=buildReport({});assert.match(r,new RegExp('安全上下文：'+(secure?'是':'否')));assert.match(r,new RegExp('连接协议：'+protocol.replace(':','')));assert.match(r,new RegExp('Web Locks：'+(locks?'可用':'不可用')));assert.doesNotMatch(r,/HTTPS：是/);}finally{restore();}
+ const restore=globals(device(secure,protocol,locks));try{const r=buildReport({});assert.match(r,new RegExp('Ngữ cảnh an toàn：'+(secure?'Có':'Không')));assert.match(r,new RegExp('Giao thức kết nối：'+protocol.replace(':','')));assert.match(r,new RegExp('Web Locks：'+(locks?'Khả dụng':'Không khả dụng')));assert.doesNotMatch(r,/HTTPS：Có/);}finally{restore();}
 });
 test('patch3: insecure settings fail before mutation, explain localhost versus phone HTTPS, and log failure',()=>{
  const restore=globals(device(false,'http:',false)),log=new ErrorLog(),old=console.warn;console.warn=(...a)=>log.push('warn',a);
  try{let saved=0;const settings=new Settings({context:()=>({extensionSettings:store,saveSettingsDebounced(){saved++;}})}),store={};const before=settings.get('palette');
- assert.throws(()=>settings.set('palette','lilith'),/当前环境无法保存.*localhost.*HTTPS/);assert.equal(saved,0);assert.equal(settings.get('palette'),before);assert.ok(log.items.length>0);assert.match(buildReport({settings,errorLog:log}),/诸天保存/);
+ assert.throws(()=>settings.set('palette','lilith'),/Môi trường hiện tại không thể lưu.*localhost.*HTTPS/);assert.equal(saved,0);assert.equal(settings.get('palette'),before);assert.ok(log.items.length>0);assert.match(buildReport({settings,errorLog:log}),/Chư Thiên Lưu Trữ/);
  }finally{console.warn=old;restore();}
 });
 for(const action of ['help','privateSay','live','round']) test(`patch3: unchanged chat ${action} still commits`,async()=>{
@@ -75,16 +75,16 @@ test('patch3: global variable save still works (chat guard never leaks into sett
  const f=fixture();try{await f.bridge.updateVariablesWith(v=>{v.test='ok';return v;},{type:'global'});assert.equal(f.bridge.getVariables({type:'global'}).test,'ok');}finally{f.restore();}
 });
 test('patch3: chat switches while waiting for Web Lock; writer never runs on destination',async()=>{
- const f=fixture();try{navigator.locks.request=async(_n,_o,fn)=>{f.switch();return fn();};let calls=0;await assert.rejects(()=>f.bridge.updateVariablesWith(v=>{calls++;v.诸天系统.系统点=1;return v;},{verify:true}),/切换/);assert.equal(calls,0);assert.equal(f.saves,0);assert.equal(f.adapter.ledger().系统点,100);}finally{f.restore();}
+ const f=fixture();try{navigator.locks.request=async(_n,_o,fn)=>{f.switch();return fn();};let calls=0;await assert.rejects(()=>f.bridge.updateVariablesWith(v=>{calls++;v.诸天系统.系统点=1;return v;},{verify:true}),/đã chuyển/);assert.equal(calls,0);assert.equal(f.saves,0);assert.equal(f.adapter.ledger().系统点,100);}finally{f.restore();}
 });
 test('patch3: settings failure is logged and rolled back without logging config values',async()=>{
  const f=fixture(),log=new ErrorLog(),old=console.warn;console.warn=(...a)=>log.push('warn',a);try{f.chats.a.saveSettingsDebounced=async()=>{throw Error('do-not-log-private-settings');};await assert.rejects(()=>f.bridge.updateVariablesWith(v=>{v.secret='private-value';return v;},{type:'global'}));assert.deepEqual(f.bridge.getVariables({type:'global'}),{});assert.equal(log.items.length,1);assert.doesNotMatch(JSON.stringify(log.items),/private-value|do-not-log/);}finally{console.warn=old;f.restore();}
 });
 test('patch3: secure context without working locks rejects script saves and explains browser support',async()=>{
- const f=fixture();try{navigator.locks={};await assert.rejects(()=>f.bridge.updateVariablesWith(v=>v,{type:'script'}),/安全上下文.*Web Locks 不可用.*浏览器/);assert.equal(f.saves,0);}finally{f.restore();}
+ const f=fixture();try{navigator.locks={};await assert.rejects(()=>f.bridge.updateVariablesWith(v=>v,{type:'script'}),/ngữ cảnh bảo mật.*Web Locks không khả dụng.*trình duyệt/);assert.equal(f.saves,0);}finally{f.restore();}
 });
 test('patch3: legacy ambiguous item key refuses to select the wrong duplicate',()=>{
- const z=lots();z.背包.push({...z.背包[0],收纳凭据:'other'});assert.throws(()=>regrade(z,{kind:'item',key:'同名古剑|凡品',name:'同名古剑'},'灵品'),/来源不唯一/);assert.equal(z.背包[0].品级,'凡品');
+ const z=lots();z.背包.push({...z.背包[0],收纳凭据:'other'});assert.throws(()=>regrade(z,{kind:'item',key:'同名古剑|凡品',name:'同名古剑'},'灵品'),/nguồn gốc không duy nhất/);assert.equal(z.背包[0].品级,'凡品');
 });
 test('patch3: guarded purchase planner also keeps story and shop lots separate',async()=>{
  const z=lots();z.系统点=2e7;z.背包.pop();regrade(z,candidates(z).items[0],'仙品');z.商城库存=[{名称:'同名古剑',品阶:'仙品',价格:10000000}];

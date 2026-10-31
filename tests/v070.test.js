@@ -57,7 +57,7 @@ test('stillBooked: a rolled-back change never plays', () => {
 test('describe gives a clear result line for every kind', () => {
     assert.match(describe({ kind: 'task', name: '引气入体', points: 5000 }).detail, /引气入体.*5,000/);
     assert.match(describe({ kind: 'travel', from: 'A', to: 'B' }).detail, /A → B/);
-    assert.equal(describe({ kind: 'fail', name: 'X' }).title, '任务失败');
+    assert.equal(describe({ kind: 'fail', name: 'X' }).title, 'Nhiệm vụ thất bại');
     for (const k of Object.keys(FX_KINDS)) assert.ok(describe({ kind: k, name: 'n', to: 't', items: [], n: 1 }).title);
 });
 
@@ -79,7 +79,7 @@ test('world: footprints count visits, keep newest last, cap 40, strip markup', (
     assert.deepEqual(l.map(x => x.名称), ['Bx', 'A']); assert.equal(l[1].次数, 2); assert.equal(l[1].首次楼层, 1); assert.equal(l[1].最近楼层, 5);
     for (let i = 0; i < 50; i++) l = recordFootprint(l, { name: 'W' + i });
     assert.equal(l.length, 40);
-    assert.match(worldPrompt({ 当前世界: '夜之城' }), /当前世界=世界名；世界类型=/);
+    assert.match(worldPrompt({ 当前世界: '夜之城' }), /当前世界=Tên_thế_giới；世界类型=/);
 });
 
 const rich = () => ({
@@ -109,11 +109,11 @@ test('atlas 羁绊图 / 星图 / 能力树 are built from records only', () => {
     assert.equal(s.edges.length, 1);
     assert.ok(buildStars({ 当前世界: '新世界' }).nodes[0].current, 'current world shows even without a footprint');
     const t = buildTree(rich(), { off: ['万物熔炉'], custom: [{ id: 'p-1', name: '自拟', grade: '灵品' }] });
-    assert.equal(t.nodes.find(n => n.id === 'skill:青云诀').sub, '熟练 · 主修');
+    assert.equal(t.nodes.find(n => n.id === 'skill:青云诀').sub, 'Thuần Thục · Chủ tu');
     assert.ok(t.nodes.find(n => n.id === 'plug:万物熔炉').dim);
     assert.ok(t.nodes.find(n => n.id === 'plug:c:p-1'));
-    assert.equal(stageOf({ 熟练度: 2000, 上限: 2000 }), '精通·圆满');
-    assert.equal(stageOf({ 入道: true }), '入道');
+    assert.equal(stageOf({ 熟练度: 2000, 上限: 2000 }), 'Tinh Thông·Viên Mãn');
+    assert.equal(stageOf({ 入道: true }), 'Nhập Đạo');
 });
 test('Lilith reactions only use original zones', () => {
     const zones = new Set(['wing', 'horn', 'cheek', 'chest', 'lower', 'thigh']);
@@ -130,5 +130,5 @@ test('version files agree and 0.7.0 capabilities are still declared', () => {
     const m = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url))), p = JSON.parse(readFileSync(new URL('../package.json', import.meta.url))), l = JSON.parse(readFileSync(new URL('../package-lock.json', import.meta.url)));
     assert.match(VERSION, /^(?:0\.(?:[7-9]|\d{2,})|[1-9]\d*\.\d+)\.\d+$/); assert.equal(m.version, VERSION); assert.equal(p.version, VERSION); assert.equal(l.version, VERSION); assert.equal(l.packages[''].version, VERSION);
     for (const f of ['world.js', 'fx.js', 'hub-atlas.js', 'lilith-stage.js']) assert.match(p.scripts.check, new RegExp('src/' + f.replace('.', '\\.')));
-    assert.ok(CAPABILITIES.some(c => c.name.startsWith('演出')) && CAPABILITIES.some(c => c.name.startsWith('图谱')));
+    assert.ok(CAPABILITIES.some(c => c.name.startsWith('Hiệu ứng diễn xuất')) && CAPABILITIES.some(c => c.name.startsWith('Đồ phổ')));
 });

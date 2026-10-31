@@ -1,107 +1,107 @@
-# 0.8.5 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.8.5
 
-## 环境
+## Môi trường
 
-与 [0.8.4](ACCEPTANCE-0.8.4.md) 相同：
+Giống với [0.8.4](ACCEPTANCE-0.8.4.md):
 
-- SillyTavern 1.16.0 / 1.19.0，官方 tag 全新安装，隔离数据目录；
-- 1.19 实例装有酒馆助手 4.11.2；
-- Playwright Chromium，手机用 390×844 触摸模拟；
-- 模拟模型：5001 普通，5002 不发 CORS 头。
+- SillyTavern 1.16.0 / 1.19.0, cài đặt mới hoàn toàn theo tag chính thức, thư mục dữ liệu cô lập;
+- Thực thể 1.19 có cài đặt Tavern Helper 4.11.2;
+- Playwright Chromium, điện thoại dùng mô phỏng cảm ứng 390×844;
+- Mô hình mô phỏng: cổng 5001 thông thường, cổng 5002 không gửi tiêu đề CORS.
 
-全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。
+Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.19 |
 | --- | --- | --- |
-| `native_v085.py`（0.8.5 新增，20 项） | 20/20 | 20/20 |
-| `native_v084.py` | 29/29 | 29/29（见下方「测试中发现并修正的问题」第 2 条） |
+| `native_v085.py` (Mới thêm bản 0.8.5, 20 hạng mục) | 20/20 | 20/20 |
+| `native_v084.py` | 29/29 | 29/29 (xem mục số 2 trong phần 「Các vấn đề phát hiện và sửa chữa trong quá trình kiểm thử」 bên dưới) |
 | `native_v083.py` | 13/13 | 13/13 |
-| `native_v082.py` | 20/20（跳过酒馆助手、停用钩子两段，同 0.8.2） | 25/25 |
+| `native_v082.py` | 20/20 (bỏ qua hai đoạn Tavern Helper và hook vô hiệu hóa, giống 0.8.2) | 25/25 |
 | `native_v081.py` | 20/20 | 20/20 |
 | `native_v080.py` | 33/33 | 33/33 |
 | `native_group060.py` | 44/44 | 44/44 |
 | `native_world070.py` | 40/40 | 40/40 |
 | `native_terminal050.py` | 58/58 | 58/58 |
-| `native_guards.py` | ✅ 无页面错误、无模型请求、生成期间拒绝发送 | ✅ 无页面错误、无模型请求、生成期间拒绝发送（`docs/evidence/guards.json`） |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | **未运行** |
+| `native_guards.py` | ✅ Không có lỗi trang, không có yêu cầu mô hình, từ chối gửi trong khi đang tạo phản hồi | ✅ Không có lỗi trang, không có yêu cầu mô hình, từ chối gửi trong khi đang tạo phản hồi (`docs/evidence/guards.json`) |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | **Không chạy** |
 | `npm run check` | ✅ | ✅ |
 | `node --test tests/*.test.js` | 152/152 | 152/152 |
 
-1.17 / 1.18 本轮没有测。
+Bản 1.17 / 1.18 đợt này không kiểm thử.
 
-## 修复确认（临时撤掉修复后重跑）
+## Xác nhận sửa lỗi (Tạm gỡ bản sửa lỗi rồi chạy lại)
 
-把 `src/host-adapter.js`、`src/statusbar-host.js` 换回 0.8.4 版本后，在 1.19 上跑 `native_v085.py`，结果 16/20。失败的四项正好是用户报告的现象：
+Sau khi đổi `src/host-adapter.js` và `src/statusbar-host.js` về lại phiên bản 0.8.4 rồi chạy `native_v085.py` trên bản 1.19, kết quả là 16/20. Bốn hạng mục thất bại trùng khớp hoàn toàn với hiện tượng người dùng báo cáo:
 
-| 项目 | 0.8.4 代码 | 0.8.5 代码 |
+| Hạng mục | Mã 0.8.4 | Mã 0.8.5 |
 | --- | --- | --- |
-| 手机：「生成结束」事件丢失后，最新一层 | **原始文字**（`raw:true`），插件仍认为在生成（`gen:true`） | 正常显示为诸天数据标签 |
-| 手机：「编辑 → ✔」后 | **仍是原始文字** | 重新渲染 |
-| 过期的「正在生成」 | 一直保留 | 停止按钮消失后自动清除 |
-| 兼容诊断「最新楼层」 | 无 | ✅ 第 6 层已正常显示 |
+| Điện thoại: Sau khi sự kiện 「Kết thúc tạo phản hồi」 bị thất lạc, tầng mới nhất | **Văn bản thô** (`raw:true`), plugin vẫn tưởng đang tạo phản hồi (`gen:true`) | Hiển thị bình thường thành nhãn dữ liệu Chư Thiên |
+| Điện thoại: Sau khi bấm 「Chỉnh sửa → ✔」 | **Vẫn là văn bản thô** | Kết xuất lại bình thường |
+| Trạng thái 「Đang tạo phản hồi」 quá hạn | Giữ nguyên mãi | Tự động xóa sau khi nút dừng biến mất |
+| Chẩn đoán tương thích mục 「Tầng mới nhất」 | Không có | ✅ Tầng thứ 6 đã hiển thị bình thường |
 
-恢复后 20/20。
+Sau khi khôi phục đạt 20/20.
 
-模拟方式与酒馆一致：发出「生成开始」事件，把 `#mes_stop` 设为 `display:flex`（酒馆 `deactivateSendButtons()` 的做法），加入带 `<ZhuTianPanel>` 的楼层，再设回 `display:none`，**不发**「生成结束」事件。
+Cách mô phỏng nhất quán với SillyTavern: phát sự kiện 「Bắt đầu tạo phản hồi」, đặt `#mes_stop` thành `display:flex` (cách làm của `deactivateSendButtons()` trong SillyTavern), thêm tầng có chứa `<ZhuTianPanel>`, sau đó đặt lại thành `display:none`, **không phát** sự kiện 「Kết thúc tạo phản hồi」.
 
-## 测试中发现并修正的问题
+## Các vấn đề phát hiện và sửa chữa trong quá trình kiểm thử
 
-1. **发送锁（插件代码问题，已修正）。**
-   - 第一版的判断是「停止按钮隐藏 = 没在生成」，`native_guards.py` 的「生成期间拒绝发送」随即失败。
-   - 原因：酒馆先发「生成开始」事件，之后才设置 `is_send_press` 并显示停止按钮；后台静默生成则根本不显示停止按钮。按第一版的判断，这段时间里插件会误以为可以发送。
-   - 改为：只有本次生成中停止按钮**出现过、然后又隐藏**，才算生成结束；从没出现过则不解锁。
-   - `native_v085.py` 新增「生成开始后、停止按钮出现前仍算生成中」一项，单元测试覆盖三种情况。改后 guards 在两个版本上都通过。
-2. **`native_v084.py` 测试隔离问题（测试代码问题，插件代码未改）。**
-   - 在同一个 1.19 实例上第二次及以后运行时，「新装世界书默认关闭神豪挥霍 / 诸天打手」一项失败。
-   - 原因：测试用原始请求删除世界书，绕过了酒馆的世界书缓存，读到的是上一轮结束时（全部开启）的旧数据。第一次运行通过，只是因为当时残留的世界书刚好符合预期。
-   - 在新页面上手动检查：删除后重新安装，世界书文件和插件读回的状态都正确（两条关闭）。
-   - 修正：测试删除后同时清除酒馆缓存 `worldInfoCache`，用同样的残留状态重跑，29/29。用户在酒馆界面删除世界书时，酒馆会自己清缓存，不受影响。
+1. **Khóa gửi tin (Vấn đề mã nguồn plugin, đã sửa).**
+   - Phán đoán ở bản đầu tiên là 「nút dừng đang ẩn = không tạo phản hồi」, khiến hạng mục 「từ chối gửi trong khi đang tạo phản hồi」 của `native_guards.py` thất bại ngay lập tức.
+   - Nguyên nhân: SillyTavern phát sự kiện 「Bắt đầu tạo phản hồi」 trước, sau đó mới đặt `is_send_press` và hiển thị nút dừng; còn tạo phản hồi tĩnh chạy ngầm thì hoàn toàn không hiển thị nút dừng. Theo phán đoán của bản đầu tiên, trong khoảng thời gian này plugin sẽ tưởng nhầm là có thể gửi tin.
+   - Đổi thành: Chỉ khi trong lần tạo phản hồi này nút dừng **đã từng xuất hiện rồi sau đó mới ẩn đi**, mới tính là kết thúc tạo phản hồi; nếu chưa từng xuất hiện thì không mở khóa.
+   - `native_v085.py` thêm mới hạng mục 「sau khi bắt đầu tạo phản hồi và trước khi nút dừng xuất hiện vẫn tính là đang tạo phản hồi」, kiểm thử đơn vị bao phủ cả ba trường hợp. Sau khi sửa, `guards` đạt trên cả hai phiên bản.
+2. **Vấn đề cô lập kiểm thử của `native_v084.py` (Vấn đề mã kiểm thử, mã plugin không đổi).**
+   - Khi chạy lần thứ hai trở đi trên cùng một thực thể 1.19, hạng mục 「Sách Thế Giới mới cài đặt mặc định tắt Thần Hào Tiêu Xài / Đả Thủ Chư Thiên」 bị thất bại.
+   - Nguyên nhân: Bài kiểm thử dùng yêu cầu thô để xóa Sách Thế Giới, đi vòng qua bộ nhớ đệm Sách Thế Giới của SillyTavern nên đọc phải dữ liệu cũ lúc kết thúc lượt trước (đang bật toàn bộ). Lần chạy đầu tiên đạt chỉ vì Sách Thế Giới còn sót lại lúc đó tình cờ khớp với kỳ vọng.
+   - Kiểm tra thủ công trên trang mới: sau khi xóa rồi cài đặt lại, tệp Sách Thế Giới và trạng thái plugin đọc lại đều chính xác (hai mục tắt).
+   - Cách sửa: Sau khi bài kiểm thử xóa Sách Thế Giới sẽ xóa luôn bộ nhớ đệm `worldInfoCache` của SillyTavern, chạy lại với cùng trạng thái còn sót lại thì đạt 29/29. Khi người dùng xóa Sách Thế Giới trên giao diện SillyTavern, SillyTavern sẽ tự xóa bộ nhớ đệm nên không bị ảnh hưởng.
 
-## `native_v085.py` 覆盖项
+## Các hạng mục bao phủ của `native_v085.py`
 
-### AI 接口设置
+### Cài đặt cổng AI
 
-| # | 项目 | 桌面 | 手机 |
+| # | Hạng mục | Máy tính | Điện thoại |
 | --- | --- | --- | --- |
-| 1 | 单选框正常大小（≤24px），紧挨文字、同一行；两张选项卡间距 ≤16px | ✅ | ✅ |
-| 2 | 标题「连接 · AI 接口设置」，编号 1、2、3，高级设置默认收起，「保存到…」在高级设置里 | ✅ | ✅ |
-| 3 | 两处配置不同 → 「⚠ 两处用的 API 不一致」，分别写出状态栏 AI 功能 / 莉莉丝私聊用的什么 | ✅ | |
-| 4 | 保存后 → 「✓ 已设置」 + 地址 + 模型 | ✅ | |
-| 5 | 选「直接用酒馆正在用的模型」→ 隐藏填写接口一步，编号变为 1、2 | ✅ | |
+| 1 | Nút chọn đơn (radio) có kích thước bình thường (≤24px), nằm sát chữ trên cùng một dòng; khoảng cách giữa hai thẻ tùy chọn ≤16px | ✅ | ✅ |
+| 2 | Tiêu đề 「Kết nối · Cài đặt cổng AI」, đánh số 1, 2, 3, cài đặt nâng cao mặc định thu gọn, mục 「Lưu vào…」 nằm trong cài đặt nâng cao | ✅ | ✅ |
+| 3 | Cấu hình hai nơi khác nhau → 「⚠ API dùng ở hai nơi không đồng nhất」, ghi rõ từng nơi (tính năng AI thanh trạng thái / trò chuyện riêng Lilith) đang dùng gì | ✅ | |
+| 4 | Sau khi lưu → 「✓ Đã cài đặt」 + địa chỉ + mô hình | ✅ | |
+| 5 | Chọn 「Dùng trực tiếp mô hình SillyTavern đang dùng」 → ẩn bước điền cổng kết nối, đánh số đổi thành 1, 2 | ✅ | |
 
-### 账本核验
+### Kiểm nghiệm sổ cái
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 6 | 「立即核验最新正文」下方有说明（要勾哪两个开关、要点哪个按钮） |
-| 7 | 未勾选时点按钮：两个开关和「保存当前聊天设置」高亮 |
-| 8 | 同时，状态行和弹出提示给出白话说明，不再出现原句「请先启用当前聊天与账本核验；未写入。」 |
-| 9 | 已勾选未保存：状态行提示「还没保存」 |
-| 10 | 保存后：原版核验照常执行 |
+| 6 | Phía dưới nút 「Kiểm nghiệm ngay chính văn mới nhất」 có thuyết minh (cần tích hai công tắc nào, cần bấm nút nào) |
+| 7 | Khi chưa tích chọn mà bấm nút: hai công tắc và nút 「Lưu cài đặt trò chuyện hiện tại」 sẽ sáng nổi bật |
+| 8 | Đồng thời, dòng trạng thái và thông báo bật lên đưa ra hướng dẫn dễ hiểu, không còn hiện câu cứng nhắc cũ |
+| 9 | Đã tích chọn nhưng chưa lưu: dòng trạng thái nhắc 「Vẫn chưa lưu」 |
+| 10 | Sau khi lưu: việc kiểm nghiệm nguyên bản thực thi bình thường |
 
-### 手机楼层渲染
+### Kết xuất tầng trên điện thoại
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 11 | 「生成结束」事件丢失后，最新一层仍渲染为诸天数据标签（不再是原始文字） |
-| 12 | 过期的「正在生成」在停止按钮消失后自动清除 |
-| 13 | 停止按钮可见（流式输出中）时，最后一层不动 |
-| 14 | 发送锁：生成开始后、停止按钮出现前，仍算生成中 |
-| 15 | 真实点按酒馆「编辑」：编辑框里是原文（酒馆正常行为）；点 ✔ 后重新渲染 |
-| 16 | 兼容诊断：「最新楼层：✅」，并有「重新渲染楼层」按钮 |
+| 11 | Sau khi sự kiện 「Kết thúc tạo phản hồi」 bị thất lạc, tầng mới nhất vẫn kết xuất thành nhãn dữ liệu Chư Thiên (không còn là văn bản thô) |
+| 12 | Trạng thái 「Đang tạo phản hồi」 quá hạn tự động được xóa sau khi nút dừng biến mất |
+| 13 | Khi nút dừng đang hiển thị (đang xuất dạng luồng), tầng cuối cùng giữ nguyên không chạm tới |
+| 14 | Khóa gửi tin: sau khi bắt đầu tạo phản hồi và trước khi nút dừng xuất hiện, vẫn tính là đang tạo phản hồi |
+| 15 | Bấm thực tế vào nút 「Chỉnh sửa」 của SillyTavern: trong ô chỉnh sửa là nguyên văn (hành vi bình thường của SillyTavern); sau khi bấm ✔ sẽ kết xuất lại |
+| 16 | Chẩn đoán tương thích: 「Tầng mới nhất: ✅」, và có nút 「Kết xuất lại tầng」 |
 
-另有桌面 / 手机「无页面错误」等合计 20 项。截图：`01-api-inconsistent`、`02-api-main-mode`、`03-ledger-guide`、`04-phone-api`、`05-phone-floor-rendered`、`06-phone-diagnostics`。
+Ngoài ra còn có 「Không có lỗi trang」 trên máy tính / điện thoại, tổng cộng 20 hạng mục. Ảnh chụp màn hình: `01-api-inconsistent`, `02-api-main-mode`, `03-ledger-guide`, `04-phone-api`, `05-phone-floor-rendered`, `06-phone-diagnostics`.
 
-## 未验证
+## Chưa xác minh
 
-- 真实手机浏览器（只用了 Chromium 手机模拟）。
-- 真实「漏掉生成结束事件」的具体机型、浏览器、模型没有逐个复现。只模拟了酒馆的事件和停止按钮，原因分析依据酒馆源码和用户截图。
-- 真实 API 服务商的连接页（只测了模拟模型）。
-- 1.17 / 1.18。
+- Trình duyệt điện thoại thực tế (chỉ dùng mô phỏng điện thoại Chromium).
+- Các dòng máy, trình duyệt, mô hình cụ thể bị 「bỏ sót sự kiện kết thúc tạo phản hồi」 trong thực tế chưa được tái hiện từng cái một. Mới chỉ mô phỏng sự kiện và nút dừng của SillyTavern, việc phân tích nguyên nhân dựa trên mã nguồn SillyTavern và ảnh chụp màn hình của người dùng.
+- Trang kết nối với nhà cung cấp API thực tế (chỉ kiểm thử với mô hình mô phỏng).
+- Bản 1.17 / 1.18.

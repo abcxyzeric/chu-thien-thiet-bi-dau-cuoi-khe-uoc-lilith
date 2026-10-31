@@ -1,153 +1,153 @@
-# 0.8.4 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.8.4
 
-## 环境
+## Môi trường
 
-与 [0.8.3](ACCEPTANCE-0.8.3.md) 相同：
+Giống với [0.8.3](ACCEPTANCE-0.8.3.md):
 
-- SillyTavern 1.16.0 / 1.19.0，官方 tag 全新安装，隔离数据目录；
-- 1.19 实例装有酒馆助手 4.11.2；
-- Playwright Chromium；
-- 模拟模型：5001 普通，5002 不发 CORS 头（模拟拦截浏览器的服务商）。
+- SillyTavern 1.16.0 / 1.19.0, cài đặt mới hoàn toàn theo tag chính thức, thư mục dữ liệu cô lập;
+- Thực thể 1.19 có cài đặt Tavern Helper 4.11.2;
+- Playwright Chromium;
+- Mô hình mô phỏng: cổng 5001 thông thường, cổng 5002 không gửi tiêu đề CORS (mô phỏng nhà cung cấp chặn trình duyệt).
 
-全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。
+Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-**模拟模型新增慢速模式**：消息里含「慢速测试」时，每 9 秒流出一小段，共约 72 秒；非流式请求则等 66 秒再回。两种都比原版写死的 60 秒长。
+**Mô hình mô phỏng thêm chế độ chậm**: Khi trong tin nhắn có chứa 「慢速测试」, cứ mỗi 9 giây sẽ truyền ra một đoạn nhỏ, tổng cộng khoảng 72 giây; yêu cầu không phân luồng (non-streaming) sẽ đợi 66 giây rồi mới trả về. Cả hai đều dài hơn mức 60 giây cứng của bản gốc.
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.19 |
 | --- | --- | --- |
-| `native_v084.py`（0.8.4 新增，29 项） | 29/29 | 29/29 |
+| `native_v084.py` (Mới thêm bản 0.8.4, 29 hạng mục) | 29/29 | 29/29 |
 | `native_v083.py` | 13/13 | 13/13 |
-| `native_v082.py` | 20/20（跳过酒馆助手、停用钩子两段，同 0.8.2） | 25/25 |
+| `native_v082.py` | 20/20 (bỏ qua hai đoạn Tavern Helper và hook vô hiệu hóa, giống 0.8.2) | 25/25 |
 | `native_v081.py` | 20/20 | 20/20 |
-| `native_v080.py` | 33/33 | 33/33（见下方「旧断言更新」） |
+| `native_v080.py` | 33/33 | 33/33 (xem mục 「Cập nhật khẳng định cũ」 bên dưới) |
 | `native_group060.py` | 44/44 | 44/44 |
 | `native_world070.py` | 40/40 | 40/40 |
 | `native_terminal050.py` | 58/58 | 58/58 |
-| `native_guards.py` | ✅ 无页面错误，无模型请求 | ✅（`docs/evidence/guards.json`） |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | **未运行** |
+| `native_guards.py` | ✅ Không có lỗi trang, không có yêu cầu mô hình | ✅ (`docs/evidence/guards.json`) |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | **Không chạy** |
 | `npm run check` | ✅ | ✅ |
 | `node --test tests/*.test.js` | 144/144 | 144/144 |
 
-1.17 / 1.18 本轮没有测。
+Bản 1.17 / 1.18 đợt này không kiểm thử.
 
-## 修复确认（临时撤掉修复后重跑）
+## Xác nhận sửa lỗi (Tạm gỡ bản sửa lỗi rồi chạy lại)
 
-| 撤掉的代码 | `native_v084.py` 结果 | 失败表现 |
+| Đoạn mã tạm gỡ | Kết quả `native_v084.py` | Biểu hiện thất bại |
 | --- | --- | --- |
-| `src/assistant-host.js` 私聊包装里的 `collapseWorkbench: () => {}`（恢复原版「打开私聊先关工作台」） | 26/28 | 手机上 5 次点私聊全部失败：私聊打开了，**终端被关闭**（`hub:false`），复现了用户描述的问题 |
-| `src/statusbar-host.js` 的 `keepEdited`（原地修改保留） | 同一轮 26/28 | 插件重建楼层后，JS 美化脚本对段落的修改丢失（`beauty: 0`） |
+| `collapseWorkbench: () => {}` trong lớp bọc trò chuyện riêng của `src/assistant-host.js` (khôi phục hành vi nguyên bản 「mở trò chuyện riêng thì đóng bàn làm việc trước」) | 26/28 | Trên điện thoại cả 5 lần bấm vào trò chuyện riêng đều thất bại: trò chuyện riêng mở ra, nhưng **thiết bị đầu cuối bị đóng mất** (`hub:false`), tái hiện đúng vấn đề người dùng mô tả |
+| `keepEdited` (giữ nguyên sửa đổi tại chỗ) trong `src/statusbar-host.js` | Cùng lượt đạt 26/28 | Sau khi plugin dựng lại tầng, các sửa đổi của kịch bản JS làm đẹp trên đoạn văn bị mất (`beauty: 0`) |
 
-恢复后两项都通过。
+Sau khi khôi phục cả hai mục đều đạt.
 
-## 测试中发现并修正的问题
+## Các vấn đề phát hiện và sửa chữa trong quá trình kiểm thử
 
-1. **美化顺序**：第一版 `keepEdited` 在读取旧节点列表之前就把被修改的段落移走了，导致外来 iframe 卡片失去定位，被排到段落前面（`order: [1,0,2,3]`）。改为先读旧节点列表再移动后，顺序正确，并把「重建后顺序不变」加进了断言。
-2. **模拟模型 bug**：慢速模式第一版切片写错，流出的是重叠片段，私聊里看到的回复重复。修正后，断言改为「回复逐字一致、只出现一次」；直连流式那一项也加了逐字检查。插件的流式拼接代码没有问题。
+1. **Thứ tự làm đẹp**: Bản đầu tiên của `keepEdited` đã di chuyển đoạn văn được sửa đổi đi trước khi đọc danh sách nút cũ, dẫn tới thẻ iframe bên ngoài bị mất định vị và bị xếp lên trước đoạn văn (`order: [1,0,2,3]`). Sau khi đổi thành đọc danh sách nút cũ trước rồi mới di chuyển, thứ tự đã chính xác, đồng thời bổ sung khẳng định 「thứ tự không đổi sau khi dựng lại」.
+2. **Lỗi mô hình mô phỏng**: Chế độ chậm ở bản đầu tiên viết sai lát cắt (slice), truyền ra các đoạn chồng lấp khiến phản hồi nhìn thấy trong trò chuyện riêng bị lặp chữ. Sau khi sửa, khẳng định được nâng lên thành 「phản hồi khớp từng chữ, chỉ xuất hiện một lần」; hạng mục kết nối trực tiếp phân luồng cũng được bổ sung kiểm tra từng chữ. Mã ghép luồng của plugin không có vấn đề gì.
 
-## 旧断言更新
+## Cập nhật khẳng định cũ
 
-仙侠主题改为墨玉金后，`native_v080.py` 里两条写死旧绿色数值的断言在 1.19 上失败（31/33）：
+Sau khi đổi chủ đề Tiên hiệp sang màu Vàng Mặc Ngọc, hai khẳng định gán cứng giá trị màu xanh lá cũ trong `native_v080.py` bị thất bại trên bản 1.19 (31/33):
 
-- 工作台卡片背景，旧值 `rgb(24, 48, 42)`；
-- 底部状态行，旧值 `rgb(18, 33, 27)`。
+- Màu nền thẻ Bàn làm việc, giá trị cũ `rgb(24, 48, 42)`;
+- Dòng trạng thái dưới cùng, giá trị cũ `rgb(18, 33, 27)`.
 
-已改成新主题变量 `--zt-surface:#1f2222` 和 `--zt-bar:#151718` 的值，断言的含义（「跟随主题，不是紫色」）不变。重跑结果：1.19 33/33，1.16 33/33。
+Đã cập nhật sang giá trị của biến chủ đề mới `--zt-surface:#1f2222` và `--zt-bar:#151718`, ý nghĩa của khẳng định (「đi theo chủ đề, không phải màu tím」) không đổi. Kết quả chạy lại: 1.19 đạt 33/33, 1.16 đạt 33/33.
 
-## `native_v084.py` 覆盖项
+## Các hạng mục bao phủ của `native_v084.py`
 
-### API（桌面）
+### API (Máy tính)
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 1 | 终端「连接」页显示 API 中心表单（状态栏 + 莉莉丝） |
-| 2 | 原版 v1.1 连接表单不再显示 |
-| 3 | 不发 CORS 头的服务商：「拉取模型」成功（经酒馆服务器转发，共 2 个模型） |
-| 4 | 「测试连接」成功，显示「经酒馆服务器转发」 |
-| 5 | 「保存」后两份配置一致，没有「不一致」提示 |
-| 6 | 原版莉莉丝代码使用的请求通道：不发 CORS 头的服务商经转发拿到普通 JSON 回复 |
-| 7 | ……模拟模型收到的是 `stream: true` |
-| 8 | 直连服务商：同样流式发送；拼回的回复逐字完整、无重复 |
-| 9 | 连不上的地址：返回 502 和可读原因，而不是抛出浏览器网络错误 |
-| 10 | 状态栏齿轮 → API：进入同一张表单 |
+| 1 | Trang 「Kết nối」 của thiết bị đầu cuối hiển thị biểu mẫu Trung tâm API (Thanh trạng thái + Lilith) |
+| 2 | Biểu mẫu kết nối v1.1 nguyên bản không còn hiển thị nữa |
+| 3 | Nhà cung cấp không gửi tiêu đề CORS: 「Lấy mô hình」 thành công (chuyển tiếp qua máy chủ SillyTavern, tổng cộng 2 mô hình) |
+| 4 | 「Kiểm tra kết nối」 thành công, hiển thị 「chuyển tiếp qua máy chủ SillyTavern」 |
+| 5 | Sau khi bấm 「Lưu」, hai bản cấu hình đồng nhất, không có thông báo 「không đồng nhất」 |
+| 6 | Kênh yêu cầu do mã nguồn Lilith nguyên bản sử dụng: nhà cung cấp không gửi tiêu đề CORS đi qua chuyển tiếp nhận được phản hồi JSON thông thường |
+| 7 | ……mô hình mô phỏng nhận được `stream: true` |
+| 8 | Nhà cung cấp kết nối trực tiếp: cũng gửi dạng luồng (stream); phản hồi ghép lại đầy đủ từng chữ, không bị lặp |
+| 9 | Địa chỉ không kết nối được: trả về 502 và nguyên nhân dễ đọc, thay vì ném lỗi mạng trình duyệt |
+| 10 | Bánh răng thanh trạng thái → API: đi vào cùng một biểu mẫu |
 
-### 私聊超时（桌面，真实私聊界面）
+### Thời gian chờ trò chuyện riêng (Máy tính, giao diện trò chuyện riêng thực tế)
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 11 | 超时设为 180 秒，发送「慢速测试」：75 秒后回复完整到达，逐字一致（原版会在 60 秒取消） |
+| 11 | Đặt thời gian chờ là 180 giây, gửi 「慢速测试」: sau 75 giây phản hồi tới nơi đầy đủ, khớp từng chữ (bản gốc sẽ hủy ở giây thứ 60) |
 
-测试时没有勾选「附带当前剧情」。模拟模型回复多慢与提示长短无关，所以走的超时路径相同。
+Khi kiểm thử không tích chọn 「Đính kèm cốt truyện hiện tại」. Tốc độ phản hồi chậm của mô hình mô phỏng không phụ thuộc độ dài lời nhắc, nên đi qua cùng một nhánh thời gian chờ.
 
-### 强力模块
+### Mô-đun mạnh
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 12 | 删除后重新安装世界书：神豪挥霍、诸天打手为关，其余四个为开 |
-| 13 | 模拟旧书（全开）：外挂管理显示强力模块开关和「一键平衡：关闭 神豪挥霍、诸天打手」 |
-| 14 | 一键平衡后，两条在世界书里变为关闭（从服务器读回确认） |
-| 15 | 在外挂管理里打开神豪挥霍 → 世界书条目 `disable=false` |
-| 16 | 模块关闭时，引擎页的神豪卡片隐藏 |
-| 17 | 外挂提示里告诉 AI：「宿主当前关闭了：神豪挥霍、诸天打手」 |
+| 12 | Xóa rồi cài đặt lại Sách Thế Giới: Thần Hào Tiêu Xài và Đả Thủ Chư Thiên ở trạng thái tắt, bốn mô-đun còn lại ở trạng thái bật |
+| 13 | Mô phỏng sách cũ (bật toàn bộ): quản lý ngoại quải hiển thị công tắc mô-đun mạnh và nút 「Cân bằng 1 chạm: Tắt Thần Hào Tiêu Xài, Đả Thủ Chư Thiên」 |
+| 14 | Sau khi bấm cân bằng 1 chạm, hai mục từ trong Sách Thế Giới chuyển sang tắt (đọc lại từ máy chủ để xác nhận) |
+| 15 | Bật Thần Hào Tiêu Xài trong quản lý ngoại quải → mục từ Sách Thế Giới có `disable=false` |
+| 16 | Khi mô-đun đang tắt, thẻ Thần Hào trên trang động cơ được ẩn đi |
+| 17 | Trong lời nhắc ngoại quải báo cho AI biết: 「Ký chủ hiện đã tắt: Thần Hào Tiêu Xài, Đả Thủ Chư Thiên」 |
 
-### 配色方案
+### Phương án phối màu
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 18 | 设置页有「配色方案」，8 个选项（跟随世界 + 7 套） |
-| 19 | 仙侠世界默认强调色是金色 `#d4b46c`，不再是绿色 |
-| 20 | 绯樱 / 青瓷 / 霜蓝 / 墨金：终端、引擎页的颜色变量都切换，世界装饰保持仙侠 |
-| 21 | 默认世界上同样生效 |
+| 18 | Trang Cài đặt có mục 「Phương án phối màu」 với 8 tùy chọn (Theo thế giới + 7 bộ) |
+| 19 | Màu nhấn mặc định của thế giới Tiên hiệp là màu vàng kim `#d4b46c`, không còn là màu xanh lá |
+| 20 | Anh Đào Đỏ / Men Ngọc / Xanh Sương / Đen Vàng: các biến màu của thiết bị đầu cuối và trang động cơ đều chuyển đổi theo, họa tiết trang trí thế giới vẫn giữ nguyên Tiên hiệp |
+| 21 | Trên thế giới mặc định cũng có hiệu lực tương tự |
 
-### 美化兼容
+### Tương thích làm đẹp giao diện
 
-1.19 上另有 `native_v082.py` 用真实酒馆助手渲染角色卡状态栏。本套件用三种模拟美化，按 SillyTavern 的新消息流程（`addOneMessage` → `CHARACTER_MESSAGE_RENDERED`）测试：
+Trên bản 1.19 đã có `native_v082.py` dùng Tavern Helper thực tế để kết xuất thanh trạng thái thẻ nhân vật. Bộ kiểm thử này dùng ba kiểu làm đẹp mô phỏng, kiểm thử theo luồng tin nhắn mới của SillyTavern (`addOneMessage` → `CHARACTER_MESSAGE_RENDERED`):
 
-- 一个把代码块替换成 iframe 卡片的渲染器；
-- 一个 300 毫秒后才给段落包 span 的 JS 美化脚本（晚于插件的楼层渲染）；
-- 一条只作用于显示的 SillyTavern 正则（「」→ 带类名的 span）。
+- Một bộ kết xuất thay thế khối mã bằng thẻ iframe;
+- Một kịch bản JS làm đẹp đợi sau 300 mili-giây mới bọc `span` vào đoạn văn (muộn hơn thời điểm kết xuất tầng của plugin);
+- Một biểu thức chính quy SillyTavern chỉ tác động tới hiển thị (đổi dấu `「」` thành thẻ `span` có tên lớp).
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 22 | 插件首次渲染：iframe 卡片 1 个，原始代码块不重复 |
-| 23 | JS 美化后的段落保留，只有 1 段 |
-| 24 | 正则美化生效（SillyTavern 把类名清洗为 `custom-qa-quote`） |
-| 25 | 顺序与原文一致，莉莉丝台词卡在原位 |
-| 26 | 插件再次重建：iframe 卡片是同一个节点，没有重新加载（`loads=0`，页面内标记仍在）；美化、正则、台词卡各 1 个；顺序不变 |
+| 22 | Plugin kết xuất lần đầu: 1 thẻ iframe, khối mã gốc không bị lặp |
+| 23 | Đoạn văn sau khi JS làm đẹp được giữ nguyên, chỉ có 1 đoạn |
+| 24 | Làm đẹp bằng biểu thức chính quy có hiệu lực (SillyTavern làm sạch tên lớp thành `custom-qa-quote`) |
+| 25 | Thứ tự khớp với nguyên văn, thẻ lời thoại của Lilith nằm đúng vị trí |
+| 26 | Plugin dựng lại lần nữa: thẻ iframe vẫn là cùng một nút DOM, không bị tải lại (`loads=0`, dấu hiệu bên trong trang vẫn còn); làm đẹp JS, biểu thức chính quy và thẻ lời thoại mỗi thứ 1 cái; thứ tự không đổi |
 
-### 页面错误与手机
+### Lỗi trang & Điện thoại
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 27 | 桌面：无页面错误 |
-| 28 | 手机 390×844，真实触摸点按：终端开着时点标题栏左上角的「莉莉丝 · 点击进入私聊」，私聊盖在终端上方（中心点命中私聊面板），终端保持打开；点输入框不关闭；点「返回」回到终端。连续 5 次 |
-| 29 | 手机：无页面错误 |
+| 27 | Máy tính: Không có lỗi trang |
+| 28 | Điện thoại 390×844, chạm cảm ứng thực: khi thiết bị đầu cuối đang mở, bấm vào 「Lilith · Bấm để vào trò chuyện riêng」 ở góc trên bên trái thanh tiêu đề, khung trò chuyện riêng phủ lên phía trên thiết bị đầu cuối (tâm điểm trúng bảng trò chuyện riêng), thiết bị đầu cuối vẫn mở; bấm vào ô nhập liệu không bị đóng; bấm 「Quay lại」 sẽ trở về thiết bị đầu cuối. Thực hiện liên tiếp 5 lần |
+| 29 | Điện thoại: Không có lỗi trang |
 
-## 截图
+## Ảnh chụp màn hình
 
-本地 `/var/tmp/qa/run-80xx/shots-native_v084/`，未上传。
+Lưu cục bộ tại `/var/tmp/qa/run-80xx/shots-native_v084/`, không tải lên.
 
-| 截图 | 内容 |
+| Ảnh chụp | Nội dung |
 | --- | --- |
-| 01 | 拉取模型 |
-| 02 | 保存后 |
-| 03 | 75 秒慢回复 |
-| 04 / 05 | 强力模块 |
-| 06 | 仙侠墨玉金 |
-| 07 / 08 / 09 | 绯樱 / 青瓷 / 默认世界 + 墨金 |
-| 10 | 美化楼层 |
-| 11 | 手机私聊 |
+| 01 | Lấy mô hình |
+| 02 | Sau khi lưu |
+| 03 | Phản hồi chậm 75 giây |
+| 04 / 05 | Mô-đun mạnh |
+| 06 | Tiên hiệp Vàng Mặc Ngọc |
+| 07 / 08 / 09 | Anh Đào Đỏ / Men Ngọc / Thế giới mặc định + Đen Vàng |
+| 10 | Tầng có làm đẹp giao diện |
+| 11 | Trò chuyện riêng trên điện thoại |
 
-## 没有验证的
+## Chưa xác minh
 
-- 真实服务商和真实代理链路（cloudflare、nginx 等）下的 502 / 超时。本轮只用模拟模型证明：请求以流式发出，超过 60 秒的回复能到达。
-- 具体的第三方美化扩展（小白X 等）没有逐个安装实测，用的是行为相同的模拟渲染器。
-- 真实手机浏览器（只测了 Chromium 手机模拟 + 真实触摸事件）。
-- SillyTavern 1.17 / 1.18。
-- `native_replace040.py`（缺 v1.1 原版文件，按约定不上传）。
+- Lỗi 502 / hết thời gian chờ dưới nhà cung cấp thực tế và chuỗi proxy thực tế (cloudflare, nginx, v.v.). Đợt này chỉ dùng mô hình mô phỏng để chứng minh: yêu cầu được gửi đi dưới dạng luồng (stream), và phản hồi dài quá 60 giây vẫn tới nơi trọn vẹn.
+- Các tiện ích mở rộng làm đẹp bên thứ ba cụ thể (như Tiểu Bạch X, v.v.) chưa được cài đặt kiểm thử từng cái một, mà dùng bộ kết xuất mô phỏng có hành vi tương đương.
+- Trình duyệt điện thoại thực tế (chỉ kiểm thử mô phỏng điện thoại Chromium + sự kiện cảm ứng thực).
+- SillyTavern 1.17 / 1.18.
+- `native_replace040.py` (thiếu tệp nguyên bản v1.1, theo quy ước không tải lên).

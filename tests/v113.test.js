@@ -19,7 +19,7 @@ test('关闭 hides the avatar too; 切换 keeps it — two different settings va
     assert.match(f, /this\.hideOriginalEntry\(on \|\| this\.settings\.get\('floatLilith'\) === 'none'\)/);
     assert.match(f, /app\.settings\.set\('floatLilith', 'none'\)/);
     assert.match(f, /const mode = target === 'avatar' \? 'off'/);
-    assert.match(CLOSE_TEXT(), /头像都不再显示/); assert.match(CLOSE_TEXT(), /切换/); assert.match(CLOSE_TEXT(), /「扩展」面板/);
+    assert.match(CLOSE_TEXT(), /ảnh đại diện đều không hiển thị nữa/); assert.match(CLOSE_TEXT(), /Chuyển đổi/); assert.match(CLOSE_TEXT(), /bảng 「Tiện ích mở rộng」/);
 });
 test('closeFloats asks first and only closes on yes', async () => {
     const set = []; const app = { settings: { set: (k, v) => set.push([k, v]) } };
@@ -27,12 +27,12 @@ test('closeFloats asks first and only closes on yes', async () => {
     assert.equal(await closeFloats(app, { ask: async () => true }), true); assert.deepEqual(set, [['floatLilith', 'none']]);
 });
 test('drag targets: 切换 first, 关闭 second, for Lilith and for the avatar', () => {
-    const lil = binHtml('换成头像'), ava = binHtml('换成莉莉丝', 'zt-entry-bin', 'zt-entry-bin');
-    assert.match(lil, /data-t="swap"[\s\S]*换成头像[\s\S]*data-t="close"[\s\S]*关闭悬浮窗/);
-    assert.match(ava, /id="zt-entry-bin"[\s\S]*换成莉莉丝[\s\S]*关闭悬浮窗/);
+    const lil = binHtml('đổi thành ảnh đại diện'), ava = binHtml('đổi thành Lilith', 'zt-entry-bin', 'zt-entry-bin');
+    assert.match(lil, /data-t="swap"[\s\S]*đổi thành ảnh đại diện[\s\S]*data-t="close"[\s\S]*đóng cửa sổ nổi/);
+    assert.match(ava, /id="zt-entry-bin"[\s\S]*đổi thành Lilith[\s\S]*đóng cửa sổ nổi/);
     const w = src('src/window-controls.js');
     assert.match(w, /swapFloat\(this\.app, 'lilith'\)/); assert.match(w, /void closeFloats\(this\.app\)/);
-    assert.match(src('src/lilith-float.js'), /data-m="swap">切换成头像<\/button>[\s\S]{0,120}data-m="close">关闭悬浮窗…/);
+    assert.match(src('src/lilith-float.js'), /data-m="swap">Chuyển thành ảnh đại diện<\/button>[\s\S]{0,120}data-m="close">Đóng cửa sổ nổi…/);
 });
 test('sizes go down to 20 % for Lilith and the avatar; defaults unchanged', () => {
     assert.equal(FLOAT_SIZES.p20, 0.2);
@@ -40,15 +40,15 @@ test('sizes go down to 20 % for Lilith and the avatar; defaults unchanged', () =
     assert.deepEqual(floatDims(undefined), floatDims('m'));
     const s = src('src/settings.js'); assert.match(s, /floatSize: 'm'/); assert.match(s, /avatarSize: 'xl'/);
     const h = src('src/hub-settings.js');
-    assert.match(h, /sel\('floatSize', [^\n]*\['p20', '20%（最小）'\]/); assert.match(h, /sel\('avatarSize', [^\n]*\['p20', '20%（最小）'\]/);
+    assert.match(h, /sel\('floatSize', [^\n]*\['p20', '20% \(Nhỏ nhất\)'\]/); assert.match(h, /sel\('avatarSize', [^\n]*\['p20', '20% \(Nhỏ nhất\)'\]/);
     assert.match(src('src/window-controls.js'), /scale:\$\{k\};transform-origin:0 0/);
     assert.match(src('src/window-controls.js'), /\(p\.x - x\) \/ k/, 'translate is divided by the scale so the box lands where it should');
 });
 test('设置: the select is the 切换 (four values), 关闭悬浮窗 is its own button; 扩展面板 has 显示头像', () => {
     const h = src('src/hub-settings.js');
-    assert.match(h, /sel\('floatLilith', '悬浮窗（切换样子）', \[\['auto'[^\n]*\['on', '悬浮莉莉丝'\], \['off', '头像（原版唤醒按钮）'\], \['none', '已关闭/);
-    assert.match(h, /act\('float-close', '关闭悬浮窗…'/); assert.match(h, /'float-close': \(\) => closeFloats\(app\)/);
-    assert.match(src('src/settings.js'), /data-act="avatar"[^\n]*显示头像/);
+    assert.match(h, /sel\('floatLilith', 'Cửa sổ nổi \(chuyển đổi kiểu dáng\)', \[\['auto'[^\n]*\['on', 'Lilith nổi'\], \['off', 'Ảnh đại diện \(nút đánh thức gốc\)'\], \['none', 'Đã đóng/);
+    assert.match(h, /act\('float-close', 'Đóng cửa sổ nổi…'/); assert.match(h, /'float-close': \(\) => closeFloats\(app\)/);
+    assert.match(src('src/settings.js'), /data-act="avatar"[^\n]*Hiện ảnh đại diện/);
     assert.match(src('index.js'), /avatar:\(\)=>\{this\.settings\.set\('floatLilith','off'\)/);
 });
 test('终端 × is the original close (no floatLilith change on close)', () => {

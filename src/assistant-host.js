@@ -42,13 +42,13 @@ export function proxiedFetch(bridge, persona = () => null) {
             const defaultCap = Number(bridge.getVariables?.({ type: 'global' })?.诸天系统_API?.maxTokens);
             const cap = Number(over?.maxTokens) || defaultCap;
             if (body && Number.isInteger(cap) && cap >= 64 && cap <= 65536) body.max_tokens = cap;
-            else if (body?.messages?.length === 1 && /^(只回复|回复两个字)：成功$/.test(body.messages[0]?.content || '')) body.max_tokens = Math.max(4096, Number(body.max_tokens) || 0);
+            else if (body?.messages?.length === 1 && (/^(只回复|回复两个字)：成功$/.test(body.messages[0]?.content || '') || /^(Chỉ trả lời|Trả lời hai chữ)[:：]\s*Thành công$/i.test(body.messages[0]?.content || ''))) body.max_tokens = Math.max(4096, Number(body.max_tokens) || 0);
             if (body) init = { ...init, body: JSON.stringify(body) };
             if (over) {
                 bridge.lastRoute = { id, via: over.via, at: Date.now() };
                 if (over.main) url = MAIN_API_URL + '/chat/completions';
                 else {
-                    try { url = endpointOf(over.url).chat; } catch (e) { return json({ error: { message: `${routeLabel(id)}（${over.via}）：${e?.message || e}` } }, 400); }
+                    try { url = endpointOf(over.url).chat; } catch (e) { return json({ error: { message: `${routeLabel(id)} (${over.via}): ${e?.message || e}` } }, 400); }
                     const headers = { ...(init.headers || {}) }; delete headers.authorization; delete headers.Authorization;
                     if (over.key) headers.Authorization = 'Bearer ' + over.key;
                     body.model = over.model || body.model; if (over.maxTokens) body.max_tokens = over.maxTokens;
@@ -63,9 +63,9 @@ export function proxiedFetch(bridge, persona = () => null) {
             if (method === 'POST' && /\/chat\/completions$/.test(u.pathname)) {
                 const body = JSON.parse(init.body || '{}');
                 try { const text = await bridge.mainChat(body.messages || [], { maxTokens: body.max_tokens, signal: init.signal }); return json({ id: 'st-main', object: 'chat.completion', model: MAIN_API_MODEL, choices: [{ index: 0, finish_reason: 'stop', message: { role: 'assistant', content: text } }] }); }
-                catch (e) { return json({ error: { message: '酒馆主 API：' + (e?.message || e) } }, 502); }
+                catch (e) { return json({ error: { message: 'API chính của quán rượu: ' + (e?.message || e) } }, 502); }
             }
-            return json({ error: { message: '不支持的主 API 路径' } }, 404);
+            return json({ error: { message: 'Đường dẫn API chính không được hỗ trợ' } }, 404);
         }
         const text = String(url), method = String(init.method || 'GET').toUpperCase();
         let u; try { u = new URL(text, location.href); } catch { return real(url, init); }
@@ -85,9 +85,9 @@ export function proxiedFetch(bridge, persona = () => null) {
             catch (error) {
                 if (init?.signal?.aborted) throw error;
                 try { r = await streamedCompletion(relay, body); }
-                catch (e2) { if (init?.signal?.aborted) throw e2; r = json({ error: { message: '浏览器直连被拦截（CORS），经酒馆服务器转发也失败：' + (e2?.message || e2) } }, 502); }
+                catch (e2) { if (init?.signal?.aborted) throw e2; r = json({ error: { message: 'Kết nối trực tiếp từ trình duyệt bị chặn (CORS), chuyển tiếp qua máy chủ quán rượu cũng thất bại: ' + (e2?.message || e2) } }, 502); }
             }
-            if (!r.ok) { const j = await r.clone().json().catch(() => null); reportApiError('独立 API', `HTTP ${r.status} · ${j?.error?.message || ''}`); }
+            if (!r.ok) { const j = await r.clone().json().catch(() => null); reportApiError('API độc lập', `HTTP ${r.status} · ${j?.error?.message || ''}`); }
             return r;
         }
         try { return await real(url, init); }
@@ -103,7 +103,7 @@ export function proxiedFetch(bridge, persona = () => null) {
                 } catch (e) {
                     if (init?.signal?.aborted) throw error;
                     const msg = e?.message || String(e);
-                    reportApiError('拉取模型', msg);
+                    reportApiError('Lấy danh sách mô hình', msg);
                     return json({ error: { message: msg } }, Number(e?.status) || 502);
                 }
             }
@@ -117,7 +117,10 @@ export function clampTimeout(v) { const n = Number(v); return TIMEOUT_CHOICES.in
 /** The original's fixed "超过60秒" wording, corrected to the timeout actually in force. */
 export function retimeError(e, sec) {
     if (!(e instanceof Error) || sec === 60) return e;
-    const m = String(e.message || '').replace(/超过60秒/g, `超过${sec}秒`);
+    const m = String(e.message || '')
+        .replace(/超过60秒/g, `超过${sec}秒`)
+        .replace(/vượt quá 60 giây/gi, `vượt quá ${sec} giây`)
+        .replace(/quá 60 giây/gi, `quá ${sec} giây`);
     if (m === e.message) return e;
     const out = Error(m); out.cause = e; return out;
 }
@@ -128,7 +131,7 @@ export class AssistantHost {
     }
     legacyRunning() { const el = document.getElementById(LEGACY_DOM_ID); return !!el && !el.dataset.ztNative; }
     start() {
-        if (this.legacyRunning()) throw Error('旧版酒馆助手记忆脚本仍在运行：请先在酒馆助手里停用它，原生莉莉丝才会接管（避免双重注入与重复计费）。');
+        if (this.legacyRunning()) throw Error('Script ký ức Tavern Helper bản cũ vẫn đang chạy: vui lòng tắt nó trong Tavern Helper trước để Lilith nguyên bản tiếp quản (tránh tiêm trùng lặp và tính phí hai lần).');
         this.importLegacyConfig();
         const b = this.bridge, a = this.adapter;
         const G = Object.create(this.original);
@@ -139,7 +142,7 @@ export class AssistantHost {
         if (Voice?.mountStory) G.ZhuTianLilithVoice = Object.create(Voice, { mountStory: { enumerable: true, value: (doc, allowed, avatars) => Voice.mountStory(doc, () => this.settings.get('voiceBox') !== false && !!allowed?.(), avatars) } });
         // Hand the original portrait stage (speak / rig / bubble / zones) to the native touch layer, unmodified.
         const Motion = this.original.ZhuTianLilithMotion;
-        if (Motion?.mount) G.ZhuTianLilithMotion = Object.create(Motion, { mount: { enumerable: true, value: opts => { const m = Motion.mount(opts); this.motion = m; try { this.onMotion?.(m); } catch (e) { console.warn('[诸天] 触摸层挂载失败', e); } return m; } } });
+        if (Motion?.mount) G.ZhuTianLilithMotion = Object.create(Motion, { mount: { enumerable: true, value: opts => { const m = Motion.mount(opts); this.motion = m; try { this.onMotion?.(m); } catch (e) { console.warn('[Chư Thiên] Gắn lớp cảm ứng thất bại', e); } return m; } } });
         // 0.8.4 私聊: the original private chat closed the main window when it opened (E.collapseWorkbench → ui.close).
         // That window IS the terminal now, so tapping 私聊 inside the terminal shut the whole terminal, and on phones the
         // close side effects (history step, float re-tuck) sometimes swallowed the panel too. The chat panel already sits
@@ -180,11 +183,11 @@ export class AssistantHost {
             // The original aborts every independent-API request after a fixed 60 s; behind slow providers / thinking models
             // that is too short. Only that exact delay is stretched, every other timer is the platform's.
             setTimeout: (fn, ms, ...rest) => globalThis.setTimeout(fn, ms === 60000 ? this.apiTimeoutSec() * 1000 : ms, ...rest),
-            getTavernVersion: async () => a.version + '（原生扩展）',
-            getTavernHelperVersion: async () => '不需要 · 原生桥接（' + (a.support?.tested ? '已验收宿主' : '能力探测') + '）',
+            getTavernVersion: async () => a.version + ' (tiện ích mở rộng nguyên bản)',
+            getTavernHelperVersion: async () => 'Không cần · Cầu nối nguyên bản (' + (a.support?.tested ? 'host đã nghiệm thu' : 'dò tìm năng lực') + ')',
         });
         this.hostElement = document.getElementById(LEGACY_DOM_ID);
-        if (!this.hostElement) throw Error('原版莉莉丝窗口未创建。');
+        if (!this.hostElement) throw Error('Cửa sổ Lilith gốc chưa được tạo.');
         this.hostElement.dataset.ztNative = '1';               // lets ledger-service tell our instance from a real old TH helper
         this.shadow = this.hostElement.shadowRoot;
         this.disposeOriginal = () => { for (const fn of [...pagehide]) try { fn(); } catch (e) { console.warn(e); } pagehide.clear(); };
@@ -196,9 +199,9 @@ export class AssistantHost {
     apiTimeoutSec() { return clampTimeout(this.settings?.get?.('apiTimeout')); }
     /** Real health of the original assistant: its own status line says 未启动 when a capability check failed. */
     health() {
-        const sh = this.shadow; if (!sh) return { ok: false, text: '莉莉丝窗口未创建' };
+        const sh = this.shadow; if (!sh) return { ok: false, text: 'Cửa sổ Lilith chưa được tạo' };
         const text = (sh.getElementById('status')?.textContent || '').trim();
-        return { ok: !!sh.querySelector('.zt-stage') && !/^未启动/.test(text), text, rig: !!sh.querySelector('.zt-stage') };
+        return { ok: !!sh.querySelector('.zt-stage') && !/^(?:未启动|Chưa khởi động)/i.test(text), text, rig: !!sh.querySelector('.zt-stage') };
     }
     /** Old saves: the v1.1 helper kept its API/UI/private-chat box in Tavern Helper script storage. Import once, read-only source. */
     importLegacyConfig() {
@@ -222,9 +225,9 @@ export class AssistantHost {
         const on = s.getElementById('enabled'), led = s.getElementById('ledger-assist'), save = s.getElementById('save-chat');
         const hint = document.createElement('div'); hint.className = 'zt-ledger-hint';
         hint.style.cssText = 'font-size:12px;line-height:1.6;opacity:.8;margin:-2px 0 8px';
-        hint.textContent = '核验 = 读取最新一条正文末尾的诸天数据块，与账本对照并结算奖励，不请求模型。使用前先勾选上面的「在当前聊天启用助手与记忆注入」和「莉莉丝监管账本与奖励」，再点「保存当前聊天设置」。';
+        hint.textContent = 'Kiểm nghiệm = Đọc khối dữ liệu Chư Thiên ở cuối đoạn chính văn mới nhất, đối chiếu với sổ cái và quyết toán phần thưởng, không gọi mô hình. Trước khi dùng hãy tích chọn 「Bật trợ lý & tiêm ký ức trong cuộc trò chuyện hiện tại」 và 「Lilith giám sát sổ cái & phần thưởng」 ở phía trên, sau đó bấm 「Lưu cài đặt cuộc trò chuyện hiện tại」.';
         btn.after(hint);
-        const GUIDE = '账本核验还没开启（什么都没有写入）：请在本页上方勾选「在当前聊天启用助手与记忆注入」和「莉莉丝监管账本与奖励」，然后点「保存当前聊天设置」，再点「立即核验最新正文」。';
+        const GUIDE = 'Kiểm nghiệm sổ cái chưa được bật (chưa ghi bất cứ thứ gì): vui lòng tích chọn 「Bật trợ lý & tiêm ký ức trong cuộc trò chuyện hiện tại」 và 「Lilith giám sát sổ cái & phần thưởng」 ở phía trên trang này, sau đó bấm 「Lưu cài đặt cuộc trò chuyện hiện tại」, rồi mới bấm 「Kiểm nghiệm ngay chính văn mới nhất」.';
         const flash = () => {
             for (const el of [on?.closest('label'), led?.closest('label'), save].filter(Boolean)) {
                 el.style.outline = '2px solid var(--accent,#c59bee)'; el.style.outlineOffset = '3px'; el.style.borderRadius = '6px';
@@ -235,21 +238,21 @@ export class AssistantHost {
         btn.addEventListener('click', ev => {
             if (on && led && on.checked && led.checked) return;          // ticked: let the original decide (it also checks "saved")
             ev.stopImmediatePropagation(); ev.preventDefault();
-            flash(); try { globalThis.toastr?.warning?.(GUIDE, '诸天 · 账本核验', { timeOut: 9000 }); } catch { /* no toastr */ }
+            flash(); try { globalThis.toastr?.warning?.(GUIDE, 'Chư Thiên · Kiểm nghiệm sổ cái', { timeOut: 9000 }); } catch { /* no toastr */ }
             const st = s.getElementById('status'); if (st) st.textContent = GUIDE;
         }, true);
         const st = s.getElementById('status');
         if (st) new MutationObserver(() => {
-            if (!/请先启用当前聊天与账本核验/.test(st.textContent)) return;
-            st.textContent = on?.checked && led?.checked ? '两个开关已勾选，但还没保存：请点本页的「保存当前聊天设置」，再点「立即核验最新正文」。（什么都没有写入）' : GUIDE;
+            if (!/请先启用当前聊天与账本核验|Vui lòng bật cuộc trò chuyện hiện tại và kiểm nghiệm sổ cái trước/i.test(st.textContent)) return;
+            st.textContent = on?.checked && led?.checked ? 'Hai công tắc đã được tích chọn nhưng chưa lưu: vui lòng bấm 「Lưu cài đặt cuộc trò chuyện hiện tại」 trên trang này, sau đó bấm 「Kiểm nghiệm ngay chính văn mới nhất」. (Chưa ghi bất cứ thứ gì)' : GUIDE;
             flash();
         }).observe(st, { childList: true, characterData: true, subtree: true });
     }
     /** Adds the native-only entries (terminal, status bar) into the original header without touching its code. */
     decorate() {
         const s = this.shadow; if (!s) return;
-        const pill = s.querySelector('.version-pill'); if (pill) pill.textContent = '原生 ' + (this.adapter.version || '');
-        try { this.guideLedgerCheck(); } catch (e) { console.warn('[诸天] 账本核验引导', e); }
+        const pill = s.querySelector('.version-pill'); if (pill) pill.textContent = 'Nguyên bản ' + (this.adapter.version || '');
+        try { this.guideLedgerCheck(); } catch (e) { console.warn('[Chư Thiên] Hướng dẫn kiểm nghiệm sổ cái', e); }
         // 0.5.0: no separate terminal button any more — this window IS the terminal (see src/hub.js).
     }
     open() { const d = this.shadow?.querySelector('dialog'); if (d?.open) return; this.shadow?.getElementById('entry')?.click(); }

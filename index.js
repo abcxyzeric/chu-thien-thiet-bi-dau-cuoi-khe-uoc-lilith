@@ -57,92 +57,92 @@ class App {
     constructor(adapter){this.adapter=adapter;this.original=original;this.base=base;this.parts=[];}
     async start(){
         const a=this.adapter;
-        // 0.9.1: remember the last plugin errors for 复制诊断信息 (first, so start-up failures are caught too)
-        try{this.errorLog=new ErrorLog(base).start();this.parts.push(this.errorLog);}catch(e){console.warn('[诸天] 报错记录未启动',e);}
+        // 0.9.1: remember the last plugin errors for Sao chép thông tin chẩn đoán (first, so start-up failures are caught too)
+        try{this.errorLog=new ErrorLog(base).start();this.parts.push(this.errorLog);}catch(e){console.warn('[Chư Thiên] Nhật ký báo lỗi chưa khởi động',e);}
         this.settings=new Settings(a);
         this.bridge=new Bridge(a,this.settings);this.parts.push(this.bridge);
         a.statusbarActive=()=>!!this.statusbar?.active;
-        this.macros=new MacroLikeHost(a,this.settings);try{this.macros.start();this.parts.push(this.macros);}catch(e){console.warn('[诸天] 变量宏未启动',e);}
+        this.macros=new MacroLikeHost(a,this.settings);try{this.macros.start();this.parts.push(this.macros);}catch(e){console.warn('[Chư Thiên] Macro biến chưa khởi động',e);}
         const V=original.ZhuTianLilithVoice,voiceKit=V?{cardStyle:V.cardStyle,labelStyle:V.labelStyle,avatarStyle:V.avatarStyle,decorate:V.decorate,avatars:original.ZhuTianLilithAvatars}:null;
         this.takeover=new Takeover(a,this.settings);
         try{this.statusbar=new StatusBarHost(a,this.bridge,this.settings,base,{macros:this.macros,voice:voiceKit});await this.statusbar.start();this.parts.push(this.statusbar);}
-        catch(e){this.statusbarError=e.message;console.error('[诸天] 原生状态栏未启动',e);this.statusbar=null;}
+        catch(e){this.statusbarError=e.message;console.error('[Chư Thiên] Thanh trạng thái gốc chưa khởi động',e);this.statusbar=null;}
         if(this.settings.get('assistant')){
             try{this.assistant=new AssistantHost({adapter:a,bridge:this.bridge,original,settings:this.settings,openTerminal:p=>this.openTerminal(p),persona:()=>this.persona}).start();this.parts.push(this.assistant);}
-            catch(e){this.assistantError=e.message;this.assistant=null;console.warn('[诸天] 莉莉丝助手未启动：',e.message);globalThis.toastr?.warning(e.message,'诸天 · 莉莉丝');}
+            catch(e){this.assistantError=e.message;this.assistant=null;console.warn('[Chư Thiên] Trợ lý Lilith chưa khởi động:',e.message);globalThis.toastr?.warning(e.message,'Chư Thiên · Lilith');}
         }
         // 0.5.0: ONE window. The Lilith window is the shell; the hub adds every system page into it.
         this.hubSettings=new HubSettings(this);
-        try{this.hub=new Hub(this).start();this.parts.push(this.hub);}catch(e){this.hubError=e.message;console.error('[诸天] 终端未启动',e);}
-        // 1.1.5 系统助手人设（默认莉莉丝 = 不做任何改动）
-        try{this.personaHost=new PersonaHost(this).start();this.parts.push(this.personaHost);}catch(e){console.warn('[诸天] 系统助手人设未启动',e);}
-        try{this.plugins=new HubPlugins(this).start();this.parts.push(this.plugins);}catch(e){console.warn('[诸天] 外挂管理未启动',e);}
-        try{this.group=new HubGroup(this).start();this.parts.push(this.group);}catch(e){console.warn('[诸天] 聊天群未启动',e);}
-        // 1.1.4: 说明书 — docs/MANUAL.md inside the terminal (read-only)
-        try{this.manual=new HubManual(this).start();this.parts.push(this.manual);}catch(e){console.warn('[诸天] 说明书未启动',e);}
-        try{this.personaPage=new HubPersona(this).start();this.parts.push(this.personaPage);}catch(e){console.warn('[诸天] 人设页未启动',e);}
-        try{this.switches=new HubSwitches(this).start();this.parts.push(this.switches);}catch(e){console.warn('[诸天] 功能开关未启动',e);}
-        // 0.7.0: world themes, 图谱, 演出 (each optional; the terminal works without them).
-        try{this.world=new World(this).start();this.parts.push(this.world);}catch(e){console.warn('[诸天] 世界主题未启动',e);}
-        try{this.atlas=new HubAtlas(this).start();this.parts.push(this.atlas);}catch(e){console.warn('[诸天] 图谱未启动',e);}
-        try{this.fx=new FX(this).start();this.parts.push(this.fx);}catch(e){console.warn('[诸天] 演出未启动',e);}
-        try{this.skills=new SkillSync(this).start();this.parts.push(this.skills);}catch(e){console.warn('[诸天] 修行熟练度未启动',e);}
-        // 1.0: 品阶鉴定 — 剧情里得到的功法 / 物品不再被锁死在凡品（AI 鉴定或手动修正，只升不降）
-        try{this.appraise=new Appraise(this).start();this.parts.push(this.appraise);}catch(e){console.warn('[诸天] 品阶鉴定未启动',e);}
-        // 1.1.1: 数据块格式守卫 — 新回复的数据块混入正文 / 没闭合 / 写进思维链时自动整理；缺失时可补记
-        try{this.panelGuard=new PanelGuard(this).start();this.parts.push(this.panelGuard);}catch(e){console.warn('[诸天] 数据块格式守卫未启动',e);}
-        try{this.rerollGuard=new RerollGuard(this).start();this.parts.push(this.rerollGuard);}catch(e){console.warn('[诸天] 重roll 记账回滚未启动',e);}
+        try{this.hub=new Hub(this).start();this.parts.push(this.hub);}catch(e){this.hubError=e.message;console.error('[Chư Thiên] Thiết bị đầu cuối chưa khởi động',e);}
+        // 1.1.5 Thiết lập nhân cách trợ lý hệ thống (mặc định Lilith = không thay đổi gì)
+        try{this.personaHost=new PersonaHost(this).start();this.parts.push(this.personaHost);}catch(e){console.warn('[Chư Thiên] Thiết lập trợ lý hệ thống chưa khởi động',e);}
+        try{this.plugins=new HubPlugins(this).start();this.parts.push(this.plugins);}catch(e){console.warn('[Chư Thiên] Quản lý phụ trợ chưa khởi động',e);}
+        try{this.group=new HubGroup(this).start();this.parts.push(this.group);}catch(e){console.warn('[Chư Thiên] Nhóm chat chưa khởi động',e);}
+        // 1.1.4: Cẩm nang — docs/MANUAL.md inside the terminal (read-only)
+        try{this.manual=new HubManual(this).start();this.parts.push(this.manual);}catch(e){console.warn('[Chư Thiên] Cẩm nang chưa khởi động',e);}
+        try{this.personaPage=new HubPersona(this).start();this.parts.push(this.personaPage);}catch(e){console.warn('[Chư Thiên] Trang thiết lập trợ lý chưa khởi động',e);}
+        try{this.switches=new HubSwitches(this).start();this.parts.push(this.switches);}catch(e){console.warn('[Chư Thiên] Công tắc tính năng chưa khởi động',e);}
+        // 0.7.0: world themes, Đồ phổ, Hiệu ứng diễn xuất (each optional; the terminal works without them).
+        try{this.world=new World(this).start();this.parts.push(this.world);}catch(e){console.warn('[Chư Thiên] Chủ đề thế giới chưa khởi động',e);}
+        try{this.atlas=new HubAtlas(this).start();this.parts.push(this.atlas);}catch(e){console.warn('[Chư Thiên] Đồ phổ chưa khởi động',e);}
+        try{this.fx=new FX(this).start();this.parts.push(this.fx);}catch(e){console.warn('[Chư Thiên] Hiệu ứng diễn xuất chưa khởi động',e);}
+        try{this.skills=new SkillSync(this).start();this.parts.push(this.skills);}catch(e){console.warn('[Chư Thiên] Độ thuần thục tu hành chưa khởi động',e);}
+        // 1.0: Giám định phẩm giai — công pháp / vật phẩm nhận được trong cốt truyện không còn bị khóa ở Phàm phẩm (AI giám định hoặc sửa thủ công, chỉ tăng không giảm)
+        try{this.appraise=new Appraise(this).start();this.parts.push(this.appraise);}catch(e){console.warn('[Chư Thiên] Giám định phẩm giai chưa khởi động',e);}
+        // 1.1.1: Bảo vệ định dạng khối dữ liệu — tự động chỉnh lý khi khối dữ liệu của phản hồi mới bị lẫn vào chính văn / chưa đóng thẻ / nằm trong chuỗi suy nghĩ; có thể bổ sung khi bị thiếu
+        try{this.panelGuard=new PanelGuard(this).start();this.parts.push(this.panelGuard);}catch(e){console.warn('[Chư Thiên] Bảo vệ định dạng khối dữ liệu chưa khởi động',e);}
+        try{this.rerollGuard=new RerollGuard(this).start();this.parts.push(this.rerollGuard);}catch(e){console.warn('[Chư Thiên] Hoàn tác sổ cái khi reroll chưa khởi động',e);}
         this.touch=new TouchLayer(this.settings);this.parts.push(this.touch);
         if(this.assistant){this.assistant.onMotion=m=>this.touch.attach(m);if(this.assistant.motion)this.touch.attach(this.assistant.motion);}
         this.portrait=new Portrait(this);this.parts.push(this.portrait);
-        try{await this.portrait.start();}catch(e){console.warn('[诸天] 立绘模式回退到原版分层动画：',e.message);}
-        try{this.lilith=new LilithStage(this).start();this.parts.push(this.lilith);}catch(e){console.warn('[诸天] 莉莉丝界面角色未启动',e);}
+        try{await this.portrait.start();}catch(e){console.warn('[Chư Thiên] Chế độ ảnh đứng quay về hoạt ảnh phân lớp nguyên bản:',e.message);}
+        try{this.lilith=new LilithStage(this).start();this.parts.push(this.lilith);}catch(e){console.warn('[Chư Thiên] Nhân vật giao diện Lilith chưa khởi động',e);}
         // 0.9.0: phones get the terminal full screen (follows the keyboard; landscape = left rail). Before the float, which asks it.
-        if(this.hub)try{this.mobile=new MobileLayout(this).start();this.parts.push(this.mobile);}catch(e){console.warn('[诸天] 手机布局未启动',e);}
+        if(this.hub)try{this.mobile=new MobileLayout(this).start();this.parts.push(this.mobile);}catch(e){console.warn('[Chư Thiên] Bố cục di động chưa khởi động',e);}
         for (const [key, Module] of [['windowControls', WindowControls], ['records', OperationRecords], ['commerce', Commerce], ['collect', StoryCollect], ['bonds', Bonds], ['adminConsole', AdminConsole]]) {
             try { this[key] = new Module(this).start(); this.parts.push(this[key]); }
-            catch (e) { console.error('[诸天 1.1] 模块未启动', key, e); globalThis.toastr?.error?.(key + ' 未启动：' + e.message, '诸天'); }
+            catch (e) { console.error('[Chư Thiên 1.1] Mô-đun chưa khởi động', key, e); globalThis.toastr?.error?.(key + ' chưa khởi động: ' + e.message, 'Chư Thiên'); }
         }
         // 0.8.2: phones never show the portrait inside the window — Lilith floats on the page instead (and speaks there).
-        try{this.float=new LilithFloat(this).start();this.parts.push(this.float);}catch(e){console.warn('[诸天] 悬浮莉莉丝未启动',e);}
+        try{this.float=new LilithFloat(this).start();this.parts.push(this.float);}catch(e){console.warn('[Chư Thiên] Lilith nổi chưa khởi động',e);}
         this.features=new Features(this);this.features.start();this.parts.push(this.features);
-        // 1.0: 动态效果自动降级（低端机 / 系统减少动态效果）
-        try{this.perf=new Perf(this).start();this.parts.push(this.perf);}catch(e){console.warn('[诸天] 动态效果检测未启动',e);}
-        // 1.0: 导出 / 导入存档 + 账本结构版本（打开聊天时检查，旧结构先备份再升级，新结构只读）
-        try{this.dataIO=new DataIO(this).start();this.parts.push(this.dataIO);}catch(e){console.warn('[诸天] 存档导出导入未启动',e);}
-        // 0.9.1: 手机真机自检 (runs only when the user starts it)
+        // 1.0: Tự động giảm cấp hiệu ứng động (máy cấu hình thấp / hệ thống bật giảm chuyển động)
+        try{this.perf=new Perf(this).start();this.parts.push(this.perf);}catch(e){console.warn('[Chư Thiên] Kiểm tra hiệu ứng động chưa khởi động',e);}
+        // 1.0: Xuất / Nhập bản lưu + Phiên bản cấu trúc sổ cái (kiểm tra khi mở trò chuyện, cấu trúc cũ sao lưu trước rồi nâng cấp, cấu trúc mới hơn chỉ đọc)
+        try{this.dataIO=new DataIO(this).start();this.parts.push(this.dataIO);}catch(e){console.warn('[Chư Thiên] Xuất nhập bản lưu chưa khởi động',e);}
+        // 0.9.1: Tự kiểm tra thiết bị di động (runs only when the user starts it)
         this.deviceCheck=new DeviceCheck(this);this.parts.push(this.deviceCheck);
-        // 0.8.4: one API setting — the terminal's 连接 page shows the API 中心 form (the original v1.1 form wrote only Lilith's copy).
-        if(this.hub)this.hub.hook('onPage',p=>{if(p==='api')try{mountApiInline(this.hub.shadow.getElementById('page-api'),this.apiOpts());}catch(e){console.warn('[诸天] 连接页',e);}});
+        // 0.8.4: one API setting — the terminal's Kết nối page shows the Trung tâm API form (the original v1.1 form wrote only Lilith's copy).
+        if(this.hub)this.hub.hook('onPage',p=>{if(p==='api')try{mountApiInline(this.hub.shadow.getElementById('page-api'),this.apiOpts());}catch(e){console.warn('[Chư Thiên] Trang kết nối',e);}});
         if(this.statusbar)this.statusbar.openApi=()=>this.openApiCenter();
-        if(this.hub?.page==='api')try{mountApiInline(this.hub.shadow.getElementById('page-api'),this.apiOpts());}catch(e){console.warn('[诸天] 连接页',e);}
-        // 0.9.3: 新手引导 (after the 连接 page hook, so its 「回到引导」 strip lands on top of the mounted form)
-        if(this.hub)try{this.guide=new Onboarding(this).start();this.parts.push(this.guide);}catch(e){console.warn('[诸天] 新手引导未启动',e);}
-        this.settings.mountDrawer({open:()=>this.openTerminal(),restore:()=>this.restoreLegacy(),float:()=>this.float?.show(),avatar:()=>{this.settings.set('floatLilith','off');globalThis.toastr?.info('拖动头像到屏幕底部可以换成莉莉丝，或关闭悬浮窗。','诸天 · 头像已显示',{timeOut:5000});}});
+        if(this.hub?.page==='api')try{mountApiInline(this.hub.shadow.getElementById('page-api'),this.apiOpts());}catch(e){console.warn('[Chư Thiên] Trang kết nối',e);}
+        // 0.9.3: Hướng dẫn tân thủ (after the Kết nối page hook, so its 「Quay lại hướng dẫn」 strip lands on top of the mounted form)
+        if(this.hub)try{this.guide=new Onboarding(this).start();this.parts.push(this.guide);}catch(e){console.warn('[Chư Thiên] Hướng dẫn tân thủ chưa khởi động',e);}
+        this.settings.mountDrawer({open:()=>this.openTerminal(),restore:()=>this.restoreLegacy(),float:()=>this.float?.show(),avatar:()=>{this.settings.set('floatLilith','off');globalThis.toastr?.info('Kéo ảnh đại diện xuống cuối màn hình để đổi thành Lilith, hoặc đóng cửa sổ nổi.','Chư Thiên · Đã hiện ảnh đại diện',{timeOut:5000});}});
         globalThis.__zhutianApp=this;
     }
     openTerminal(page){if(this.hub)this.hub.open(page);else this.assistant?.open();}
     apiOpts(){return {bridge:this.bridge,ns:original.ZhuTianMemoryCore?.NS,notify:()=>this.adapter.notify?.()};}
-    /** Inside the open terminal the 连接 page is the API 中心; elsewhere (diagnostics popup) the same form opens as a dialog. */
+    /** Inside the open terminal the Kết nối page is the Trung tâm API; elsewhere (diagnostics popup) the same form opens as a dialog. */
     openApiCenter(){if(this.hub?.isOpen){this.hub.go('api');return null;}return openApiCenter(this.apiOpts());}
     async runTakeover(){
         const t=globalThis.toastr,list=this.takeover.pending();
-        if(!list.length){t?.info('没有发现仍在启用的旧版正则或酒馆助手脚本；世界书由插件自动安装绑定。','诸天 · 接管');return {items:[],reload:false};}
-        const names=list.map(i=>`${i.kind==='regex'?'正则':'酒馆助手脚本'}（${i.scope==='global'?'全局':'角色卡'}）：${i.name}`).join('\n');
-        if(!globalThis.confirm(`将停用以下 ${list.length} 项旧版内容，由本插件接管（不会删除，可随时“恢复旧版”）：\n\n${names}`))return {items:[],reload:false,cancelled:true};
+        if(!list.length){t?.info('Không phát hiện biểu thức chính quy (Regex) hoặc kịch bản Tavern Helper bản cũ nào còn đang bật; Sách Thế Giới được tiện ích tự động cài đặt và gắn kết.','Chư Thiên · Tiếp quản');return {items:[],reload:false};}
+        const names=list.map(i=>`${i.kind==='regex'?'Regex':'Kịch bản Tavern Helper'} (${i.scope==='global'?'Toàn cục':'Thẻ nhân vật'}): ${i.name}`).join('\n');
+        if(!globalThis.confirm(`Sẽ tắt ${list.length} mục bản cũ sau đây để tiện ích này tiếp quản (không xóa, có thể "Khôi phục bản cũ" bất cứ lúc nào):\n\n${names}`))return {items:[],reload:false,cancelled:true};
         try{const r=await this.takeover.run();this.statusbar?.rebuild();
-            if(r.reload){t?.success('旧版已停用。页面将在 2 秒后刷新，让酒馆助手卸载旧脚本。','诸天 · 接管');setTimeout(()=>location.reload(),2000);}
-            else t?.success(`已停用 ${r.items.length} 个旧正则，现由插件原生接管。`,'诸天 · 接管');
-            return r;}catch(e){t?.error(errorLine(e),'诸天 · 接管');throw e;}
+            if(r.reload){t?.success('Đã tắt bản cũ. Trang sẽ làm mới sau 2 giây để Tavern Helper gỡ nạp kịch bản cũ.','Chư Thiên · Tiếp quản');setTimeout(()=>location.reload(),2000);}
+            else t?.success(`Đã tắt ${r.items.length} Regex cũ, hiện do tiện ích tiếp quản nguyên bản.`,'Chư Thiên · Tiếp quản');
+            return r;}catch(e){t?.error(errorLine(e),'Chư Thiên · Tiếp quản');throw e;}
     }
     async restoreLegacy(){
         const t=globalThis.toastr;
         try{const r=await this.takeover.restore();
-            if(!r.items.length){t?.info('没有可恢复的记录（角色卡里的项目需要先打开对应角色）。','诸天 · 恢复');return r;}
-            t?.warning('旧版已重新启用。为避免两个莉莉丝和重复状态栏，请在扩展列表里停用本插件后刷新。','诸天 · 恢复',{timeOut:12000});
-            this.statusbar?.rebuild();return r;}catch(e){t?.error(errorLine(e),'诸天 · 恢复');throw e;}
+            if(!r.items.length){t?.info('Không có bản ghi nào có thể khôi phục (các mục trong thẻ nhân vật cần mở đúng nhân vật tương ứng trước).','Chư Thiên · Khôi phục');return r;}
+            t?.warning('Đã bật lại bản cũ. Để tránh xuất hiện hai Lilith và trùng lặp thanh trạng thái, vui lòng tắt tiện ích này trong danh sách Tiện ích mở rộng rồi làm mới trang.','Chư Thiên · Khôi phục',{timeOut:12000});
+            this.statusbar?.rebuild();return r;}catch(e){t?.error(errorLine(e),'Chư Thiên · Khôi phục');throw e;}
     }
-    dispose(){if(globalThis.__zhutianApp===this)globalThis.__zhutianApp=null;for(const p of this.parts.splice(0).reverse()){try{p.dispose();}catch(e){console.warn('[诸天] 卸载',e);}}this.settings?.dispose();}
+    dispose(){if(globalThis.__zhutianApp===this)globalThis.__zhutianApp=null;for(const p of this.parts.splice(0).reverse()){try{p.dispose();}catch(e){console.warn('[Chư Thiên] Gỡ nạp',e);}}this.settings?.dispose();}
 }
 
 async function boot(){
@@ -157,23 +157,23 @@ async function boot(){
             next=new App(candidate);await next.start();
             if(disposed||token!==abortStart){next.dispose();candidate.dispose();return;}
             app=next;
-            console.info(`[诸天终端] ${VERSION} 已加载于 SillyTavern ${candidate.version}（${candidate.support.tested?'已验收':'能力探测'}）。`);
-        }catch(error){next?.dispose();candidate.dispose();app=null;if(!disposed&&token===abortStart){console.error('[诸天终端]',error);globalThis.toastr?.error(error.message,'诸天契约终端：启动已阻止');}}
+            console.info(`[Chư Thiên] ${VERSION} đã tải trên SillyTavern ${candidate.version} (${candidate.support.tested?'đã nghiệm thu':'dò tìm năng lực'}).`);
+        }catch(error){next?.dispose();candidate.dispose();app=null;if(!disposed&&token===abortStart){console.error('[Chư Thiên]',error);globalThis.toastr?.error(error.message,'Thiết Bị Đầu Cuối Khế Ước Chư Thiên: Khởi động bị chặn');}}
     })().finally(()=>{starting=null;pending=null;if(!disposed&&!app&&token!==abortStart)void boot();});
     return starting;
 }
 export function activate(){hooked=true;disposed=false;void boot();}
-/** 0.8.2: turning the extension off also takes the 诸天 worldbook off every character card / the global list / the open
- *  chat (setting 关闭插件时自动解绑, default on). SillyTavern awaits this hook for at most 5 s, then saves the settings —
- *  the record written here is what 设置 → 世界书 → 恢复绑定 uses after re-enabling. */
+/** 0.8.2: turning the extension off also takes the Chư Thiên worldbook off every character card / the global list / the open
+ *  chat (setting Tự động gỡ gắn kết khi tắt tiện ích, default on). SillyTavern awaits this hook for at most 5 s, then saves the settings —
+ *  the record written here is what Cài đặt → Sách Thế Giới → Khôi phục gắn kết uses after re-enabling. */
 async function autoUnbind(){
     const c=globalThis.SillyTavern?.getContext?.(), store=c?.extensionSettings?.[ID];
     if(!c||(store&&store.wbUnbindOnDisable===false))return null;
     try{
         const rec=await Promise.race([unbindAll(c,WORLD_NAME,{chat:true}),new Promise(r=>setTimeout(()=>r(null),4500))]);
-        if(rec&&rec.count){c.extensionSettings[ID]={...(c.extensionSettings[ID]||{}),wbUnbound:{...rec,auto:true,noticed:false}};c.saveSettingsDebounced?.();console.info(`[诸天终端] 已解绑世界书：${rec.count} 处`);}
+        if(rec&&rec.count){c.extensionSettings[ID]={...(c.extensionSettings[ID]||{}),wbUnbound:{...rec,auto:true,noticed:false}};c.saveSettingsDebounced?.();console.info(`[Chư Thiên] Đã gỡ gắn kết Sách Thế Giới: ${rec.count} nơi`);}
         return rec;
-    }catch(e){console.warn('[诸天终端] 关闭时解绑世界书失败',e);return null;}
+    }catch(e){console.warn('[Chư Thiên] Gỡ gắn kết Sách Thế Giới khi tắt thất bại',e);return null;}
 }
 export function deactivate(){const p=autoUnbind();disposed=true;abortStart++;pending?.dispose();app?.dispose();app?.adapter?.dispose();app=null;return p;}
 
@@ -187,8 +187,8 @@ export function deactivate(){const p=autoUnbind();disposed=true;abortStart++;pen
         if(hooked||disposed)return;
         let version='';try{version=(await fetchHostVersion()).pkgVersion;}catch{}
         if(hooked||disposed)return;
-        if(version&&!hooksSupported(version)){console.info('[诸天终端] 宿主无扩展生命周期钩子（<1.17），自动启动。');void boot();}
-        else setTimeout(()=>{if(!hooked&&!disposed){console.info('[诸天终端] 未收到 activate 钩子，自动启动。');void boot();}},4000);
+        if(version&&!hooksSupported(version)){console.info('[Chư Thiên] Máy chủ không có hook vòng đời tiện ích (<1.17), tự động khởi động.');void boot();}
+        else setTimeout(()=>{if(!hooked&&!disposed){console.info('[Chư Thiên] Chưa nhận được hook activate, tự động khởi động.');void boot();}},4000);
     };
     c.eventSource.on(c.eventTypes.APP_READY,ready);
 })();

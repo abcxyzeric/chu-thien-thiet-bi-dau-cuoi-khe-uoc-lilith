@@ -1,14 +1,15 @@
-// 演出 (0.7.0): short, skippable transitions for the important moments — 穿越 · 突破 · 契约 · 任务完成 · 抽取 · 奖励入库.
+// Diễn xuất (0.7.0): các đoạn chuyển cảnh ngắn, có thể bỏ qua dành cho những khoảnh khắc quan trọng — Xuyên không · Đột phá · Khế ước · Hoàn thành nhiệm vụ · Rút thẻ · Phần thưởng nhập kho.
 //
-// The one rule: a performance never runs ahead of the ledger. Nothing here decides an outcome.
-//   * Engine / AI driven moments are found by diffing the ledger AFTER the native Bridge has saved it (bridge.onChange
-//     fires after saveMetadata). Right before an event plays it is checked again against the live ledger (`stillBooked`);
-//     if the change is gone (re-roll, rollback, failed write) nothing plays and the history says so.
-//   * Terminal modules (聊天群, 星图 …) call `fx.play()` only after their own `commit()` has read the write back.
-// Performances are optional decoration: mode full | brief | off, prefers-reduced-motion → brief, Esc / click / 跳过 skips.
-// The result card (what changed, "账本已确认", a link to the record) is shown in every mode except off.
+// Quy tắc duy nhất: diễn xuất không bao giờ chạy trước sổ cái. Không có gì ở đây tự quyết định kết quả.
+//   * Các khoảnh khắc do Bộ máy / AI tạo ra được phát hiện bằng cách so sánh độ lệch sổ cái SAU KHI Cầu nối nguyên bản đã lưu nó (bridge.onChange
+//     kích hoạt sau saveMetadata). Ngay trước khi một sự kiện được phát, nó sẽ được kiểm tra lại một lần nữa với sổ cái trực tiếp (`stillBooked`);
+//     nếu thay đổi không còn nữa (do roll lại, hoàn tác, ghi thất bại) thì sẽ không phát gì cả và lịch sử sẽ ghi rõ như vậy.
+//   * Các mô-đun trên thiết bị đầu cuối (Nhóm chat, Tinh đồ …) chỉ gọi `fx.play()` sau khi lệnh `commit()` của chính chúng đã đọc ngược kết quả ghi.
+// Diễn xuất là phần trang trí tùy chọn: chế độ full | brief | off, prefers-reduced-motion → brief, nhấn Esc / bấm chuột / Bỏ qua để bỏ qua.
+// Thẻ kết quả (thay đổi gì, "Đã xác nhận sổ cái", liên kết tới bản ghi) được hiển thị ở mọi chế độ ngoại trừ off.
 import { fxCss, isPalette } from './palettes.js';
-import { TIERS } from './ledger-ops.js';
+import { TIERS, gradeLabel } from './ledger-ops.js';
+import { stageLabel } from './skill-sync.js';
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const num = (x, d = 0) => { const n = Number(x); return Number.isFinite(n) ? n : d; };
@@ -16,16 +17,16 @@ const fmt = x => num(x).toLocaleString('zh-CN');
 const obj = x => (x && typeof x === 'object' && !Array.isArray(x) ? x : {});
 const arr = x => (Array.isArray(x) ? x : []);
 const nameOf = s => String(s ?? '').trim();
-const EMPTY_NAME = /^(|暂无|无|未知|未记录|none)$/i;
+const EMPTY_NAME = /^(|暂无|无|未知|未记录|none|chưa có|không|chưa rõ|chưa ghi nhận)$/i;
 
 export const FX_KINDS = Object.freeze({
-    travel: { label: '穿越', ms: 2100, page: 'stars' },
-    breakthrough: { label: '突破', ms: 1900, page: 'tree' },
-    contract: { label: '契约', ms: 2000, page: 'bonds' },
-    task: { label: '任务完成', ms: 1800, page: 'events' },
-    fail: { label: '任务失败', ms: 1400, page: 'events' },
-    draw: { label: '抽取', ms: 1900, page: 'shop' },
-    reward: { label: '奖励入库', ms: 1500, page: 'bag' },
+    travel: { label: 'Xuyên không', ms: 2100, page: 'stars' },
+    breakthrough: { label: 'Đột phá', ms: 1900, page: 'tree' },
+    contract: { label: 'Khế ước', ms: 2000, page: 'bonds' },
+    task: { label: 'Hoàn thành nhiệm vụ', ms: 1800, page: 'events' },
+    fail: { label: 'Nhiệm vụ thất bại', ms: 1400, page: 'events' },
+    draw: { label: 'Rút thẻ', ms: 1900, page: 'shop' },
+    reward: { label: 'Phần thưởng nhập kho', ms: 1500, page: 'bag' },
 });
 
 function bagMap(z) {
@@ -43,9 +44,9 @@ export function diffLedger(a, b) {
     if (w1 && !EMPTY_NAME.test(w1) && w0 !== w1) out.push({ kind: 'travel', from: EMPTY_NAME.test(w0) ? '' : w0, to: w1, type: nameOf(b.世界类型), key: 'travel:' + w1 });
     // 契约: bond target locked, new group member
     const l0 = nameOf(obj(a.恋爱目标).姓名), l1 = nameOf(obj(b.恋爱目标).姓名);
-    if (l1 && !EMPTY_NAME.test(l1) && l0 !== l1) out.push({ kind: 'contract', name: l1, label: '羁绊锁定', ref: 'bond:love', key: 'contract:love:' + l1 });
+    if (l1 && !EMPTY_NAME.test(l1) && l0 !== l1) out.push({ kind: 'contract', name: l1, label: 'Khóa mục tiêu ràng buộc', ref: 'bond:love', key: 'contract:love:' + l1 });
     const m0 = new Set(arr(obj(a.聊天群).成员).map(m => m?.id));
-    for (const m of arr(obj(b.聊天群).成员)) if (m?.id && !m0.has(m.id)) out.push({ kind: 'contract', name: nameOf(m.名称), world: nameOf(m.世界), label: '入群契约', ref: 'bond:m:' + m.id, member: m.id, key: 'contract:m:' + m.id });
+    for (const m of arr(obj(b.聊天群).成员)) if (m?.id && !m0.has(m.id)) out.push({ kind: 'contract', name: nameOf(m.名称), world: nameOf(m.世界), label: 'Khế ước vào nhóm', ref: 'bond:m:' + m.id, member: m.id, key: 'contract:m:' + m.id });
     // 突破: the original pushes every stage-up into 功法待播报; host tier going up
     const seen = new Set(arr(a.功法待播报).map(x => [x?.名称, x?.阶段, x?.楼层].join('|')));
     for (const x of arr(b.功法待播报)) {
@@ -53,7 +54,7 @@ export function diffLedger(a, b) {
         if (x?.名称 && !seen.has(k)) out.push({ kind: 'breakthrough', name: nameOf(x.名称), stage: nameOf(x.阶段), reward: nameOf(x.奖励), ref: 'skill:' + nameOf(x.名称), key: 'bt:' + k });
     }
     const t0 = num(a.宿主实力档), t1 = num(b.宿主实力档);
-    if (t0 >= 1 && t1 > t0 && t1 <= 8) out.push({ kind: 'breakthrough', name: '宿主实力档', stage: TIERS[t1]?.n || String(t1), tier: t1, ref: 'tier', key: 'tier:' + t1 });
+    if (t0 >= 1 && t1 > t0 && t1 <= 8) out.push({ kind: 'breakthrough', name: 'Bậc thực lực Ký chủ', stage: TIERS[t1]?.n || String(t1), tier: t1, ref: 'tier', key: 'tier:' + t1 });
     // 任务: settlement receipts are the booked truth; status flips without points still count as completion / failure
     const r0 = obj(a.任务结算凭据), r1 = obj(b.任务结算凭据), lib0 = obj(a.任务库), lib1 = obj(b.任务库);
     const paid = new Set();
@@ -65,8 +66,10 @@ export function diffLedger(a, b) {
     for (const [id, t] of Object.entries(lib1)) {
         if (!t || typeof t !== 'object' || paid.has(id)) continue;
         const before = lib0[id]?.状态;
-        if (t.状态 === '已完成' && before && before !== '已完成') out.push({ kind: 'task', id, name: nameOf(t.名称 || id), points: 0, floor: t.更新楼层, ref: 'task:' + id, key: 'task:' + id });
-        if (t.状态 === '已失败' && before && before !== '已失败') out.push({ kind: 'fail', id, name: nameOf(t.名称 || id), floor: t.更新楼层, ref: 'task:' + id, key: 'fail:' + id });
+        const doneNow = t.状态 === '已完成' || t.状态 === 'Đã hoàn thành';
+        const failNow = t.状态 === '已失败' || t.状态 === 'Đã thất bại';
+        if (doneNow && before && before !== '已完成' && before !== 'Đã hoàn thành') out.push({ kind: 'task', id, name: nameOf(t.名称 || id), points: 0, floor: t.更新楼层, ref: 'task:' + id, key: 'task:' + id });
+        if (failNow && before && before !== '已失败' && before !== 'Đã thất bại') out.push({ kind: 'fail', id, name: nameOf(t.名称 || id), floor: t.更新楼层, ref: 'task:' + id, key: 'fail:' + id });
     }
     // 抽取: the original counts every pull in 累计抽数 (神品次数 / 仙品次数 for the best grade)
     const d0 = num(a.累计抽数), d1 = num(b.累计抽数);
@@ -90,8 +93,8 @@ export function stillBooked(ev, z) {
         case 'travel': return nameOf(z.当前世界) === ev.to;
         case 'contract': return ev.member ? arr(obj(z.聊天群).成员).some(m => m?.id === ev.member) : ev.ref === 'lilith' ? true : nameOf(obj(z.恋爱目标).姓名) === ev.name;
         case 'breakthrough': return ev.tier ? num(z.宿主实力档) >= ev.tier : arr(z.功法库).some(s => nameOf(s?.名称) === ev.name) || arr(z.功法待播报).some(x => nameOf(x?.名称) === ev.name);
-        case 'task': return ev.points > 0 ? Object.hasOwn(obj(z.任务结算凭据), ev.id) : obj(z.任务库)[ev.id]?.状态 === '已完成';
-        case 'fail': return obj(z.任务库)[ev.id]?.状态 === '已失败';
+        case 'task': return ev.points > 0 ? Object.hasOwn(obj(z.任务结算凭据), ev.id) : (obj(z.任务库)[ev.id]?.状态 === '已完成' || obj(z.任务库)[ev.id]?.状态 === 'Đã hoàn thành');
+        case 'fail': return obj(z.任务库)[ev.id]?.状态 === '已失败' || obj(z.任务库)[ev.id]?.状态 === 'Đã thất bại';
         case 'draw': return num(z.累计抽数) >= num(ev.total);
         case 'reward': { const m = bagMap(z); return (ev.items || []).every(i => [...m.keys()].some(k => k.startsWith(i.名称 + '|'))); }
         default: return true;
@@ -102,13 +105,13 @@ export function stillBooked(ev, z) {
 export function describe(ev) {
     const k = FX_KINDS[ev.kind] || { label: ev.kind };
     switch (ev.kind) {
-        case 'travel': return { title: '穿越', detail: (ev.from ? `${ev.from} → ` : '坐标锁定 · ') + ev.to + (ev.type ? ` · ${ev.type}` : '') };
-        case 'contract': return { title: ev.label || '契约', detail: ev.name + (ev.world ? ` · 来自${ev.world}` : '') };
-        case 'breakthrough': return { title: '突破', detail: `${ev.name} → ${ev.stage}` + (ev.reward ? ` · ${ev.reward}` : '') };
-        case 'task': return { title: '任务完成', detail: ev.name + (ev.points > 0 ? ` · +${fmt(ev.points)} 系统点` : '') };
-        case 'fail': return { title: '任务失败', detail: ev.name };
-        case 'draw': return { title: `抽取 ×${ev.n}`, detail: (ev.best ? `最高 ${ev.best}` : '结果已进入待处理') + (ev.items?.length ? ` · ${ev.items.slice(0, 3).join('、')}${ev.items.length > 3 ? '…' : ''}` : '') };
-        case 'reward': return { title: '奖励入库', detail: (ev.items || []).slice(0, 3).map(i => `${i.名称}${i.n > 1 ? '×' + i.n : ''}`).join('、') + ((ev.items || []).length > 3 ? ` 等 ${ev.items.length} 种` : '') };
+        case 'travel': return { title: 'Xuyên không', detail: (ev.from ? `${ev.from} → ` : 'Khóa tọa độ · ') + ev.to + (ev.type ? ` · ${ev.type}` : '') };
+        case 'contract': return { title: ev.label || 'Khế ước', detail: ev.name + (ev.world ? ` · Đến từ ${ev.world}` : '') };
+        case 'breakthrough': return { title: 'Đột phá', detail: `${ev.name} → ${stageLabel(ev.stage)}` + (ev.reward ? ` · ${ev.reward}` : '') };
+        case 'task': return { title: 'Hoàn thành nhiệm vụ', detail: ev.name + (ev.points > 0 ? ` · +${fmt(ev.points)} Điểm Hệ Thống` : '') };
+        case 'fail': return { title: 'Nhiệm vụ thất bại', detail: ev.name };
+        case 'draw': return { title: `Rút thẻ ×${ev.n}`, detail: (ev.best ? `Cao nhất ${gradeLabel(ev.best)}` : 'Kết quả đã vào mục chờ xử lý') + (ev.items?.length ? ` · ${ev.items.slice(0, 3).join(', ')}${ev.items.length > 3 ? '…' : ''}` : '') };
+        case 'reward': return { title: 'Phần thưởng nhập kho', detail: (ev.items || []).slice(0, 3).map(i => `${i.名称}${i.n > 1 ? '×' + i.n : ''}`).join(', ') + ((ev.items || []).length > 3 ? ` cùng ${ev.items.length} loại` : '') };
         default: return { title: ev.title || k.label, detail: ev.detail || '' };
     }
 }
@@ -154,7 +157,7 @@ export class FX {
         if (idn !== this.idn) { this.rebase(); return; }
         const z = this.ledger(), prev = this.prev; this.prev = z;
         if (prev === undefined) return;
-        const evs = prev === null ? (z ? [{ kind: 'contract', name: '莉莉丝', label: '诸天契约缔结', ref: 'lilith', key: 'contract:init' }] : []) : diffLedger(prev, z);
+        const evs = prev === null ? (z ? [{ kind: 'contract', name: 'Lilith', label: 'Ký kết Khế ước Chư Thiên', ref: 'lilith', key: 'contract:init' }] : []) : diffLedger(prev, z);
         for (const ev of evs) this.defer(ev);
     }
     /** Watcher events wait a moment so an explicit module call for the same moment (richer text) replaces them. */
@@ -173,7 +176,7 @@ export class FX {
     /** Settings → 预览演出: a sample that writes nothing; the card says so. */
     preview() {
         const kinds = ['task', 'travel', 'breakthrough', 'contract', 'draw', 'reward'], k = kinds[(this.pv = ((this.pv ?? -1) + 1) % kinds.length)];
-        const sample = { task: { name: '示例任务', points: 5000 }, travel: { from: '诸天', to: '示例世界' }, breakthrough: { name: '示例功法', stage: '精通' }, contract: { name: '示例角色', label: '契约' }, draw: { n: 10, best: '神品' }, reward: { items: [{ 名称: '示例物品', 品级: '仙品', n: 1 }] } }[k];
+        const sample = { task: { name: 'Nhiệm vụ mẫu', points: 5000 }, travel: { from: 'Chư Thiên', to: 'Thế giới mẫu' }, breakthrough: { name: 'Công pháp mẫu', stage: '精通' }, contract: { name: 'Nhân vật mẫu', label: 'Khế ước' }, draw: { n: 10, best: '神品' }, reward: { items: [{ 名称: 'Vật phẩm mẫu', 品级: '仙品', n: 1 }] } }[k];
         this.enqueue({ kind: k, ...sample, preview: true, explicit: true, key: 'preview:' + Date.now() });
     }
     enqueue(ev) {
@@ -195,7 +198,7 @@ export class FX {
         try { this.app.lilith?.reactTo?.(ev); } catch { /* optional */ }
         if (mode === 'off') return this.next();
         this.playing = ev;
-        try { await this.show(ev, mode); } catch (e) { console.warn('[诸天演出]', e); }
+        try { await this.show(ev, mode); } catch (e) { console.warn('[Diễn Xuất Chư Thiên]', e); }
         this.playing = null;
         this.next();
     }
@@ -228,8 +231,8 @@ export class FX {
             if (mode === 'full' && where.inside) {
                 overlay = document.createElement('div');
                 overlay.className = 'zt-fx'; overlay.dataset.kind = ev.kind; if (grade) overlay.dataset.grade = grade;
-                overlay.setAttribute('role', 'dialog'); overlay.setAttribute('aria-label', '演出：' + title);
-                overlay.innerHTML = `<div class="zt-fx-stage">${ART[ev.kind] || ART.reward}<div class="zt-fx-title">${esc(title)}</div><div class="zt-fx-detail">${esc(detail)}</div></div><button type="button" class="zt-fx-skip">跳过 ›</button>`;
+                overlay.setAttribute('role', 'dialog'); overlay.setAttribute('aria-label', 'Diễn xuất: ' + title);
+                overlay.innerHTML = `<div class="zt-fx-stage">${ART[ev.kind] || ART.reward}<div class="zt-fx-title">${esc(title)}</div><div class="zt-fx-detail">${esc(detail)}</div></div><button type="button" class="zt-fx-skip">Bỏ qua ›</button>`;
                 overlay.addEventListener('click', () => finish());
                 where.root.append(overlay);
                 // Keyboard users land on 跳过 (Esc / Enter both skip); focus goes back where it was afterwards.
@@ -251,8 +254,8 @@ export class FX {
         const c = document.createElement('div'); c.className = 'zt-fx-card'; c.dataset.kind = ev.kind;
         const mood = MOOD_FOR[ev.kind] || 'neutral', shot = where.inside ? '' : `<i class="zt-fx-bust" style="background-image:url('${this.app.base}assets/lilith/variants/${mood}.webp');${SHOTS.mid}" aria-hidden="true"></i>`;
         const line = !where.inside ? this.app.lilith?.lineFor?.(ev) : '';
-        c.innerHTML = `${shot}<div class="zt-fx-card-body"><b>${esc(title)}</b><span>${esc(detail)}</span>${line ? `<q>${esc(line)}</q>` : ''}<small>${ev.preview ? '预览 · 未写入账本' : '✓ 账本已确认'}</small></div>
-<div class="zt-fx-card-act">${ev.preview ? '' : '<button type="button" data-fx="open">查看记录</button>'}<button type="button" data-fx="close" aria-label="关闭">✕</button></div>`;
+        c.innerHTML = `${shot}<div class="zt-fx-card-body"><b>${esc(title)}</b><span>${esc(detail)}</span>${line ? `<q>${esc(line)}</q>` : ''}<small>${ev.preview ? 'Xem trước · Chưa ghi vào sổ cái' : '✓ Đã xác nhận sổ cái'}</small></div>
+<div class="zt-fx-card-act">${ev.preview ? '' : '<button type="button" data-fx="open">Xem bản ghi</button>'}<button type="button" data-fx="close" aria-label="Đóng">✕</button></div>`;
         c.addEventListener('click', e => {
             const b = e.target.closest('[data-fx]'); if (!b) return;
             if (b.dataset.fx === 'open' && !ev.preview) this.openRecord(ev);

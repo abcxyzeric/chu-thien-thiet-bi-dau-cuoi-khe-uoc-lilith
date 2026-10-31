@@ -35,11 +35,11 @@ test('外挂 prompt: loaded list with limits and costs; switched-off originals f
     const a = normalizePlugin({ name: '时停怀表', grade: '仙品', type: 'daily', daily: 2, rule: '时间静止三秒', cost: { kind: 'points', amount: 5000 } });
     const b = normalizePlugin({ name: '天眼', type: 'active', cost: { kind: 'resource', res: '名望', amount: 2, cooldown: 3 } });
     const text = pluginPrompt([a, b], ['诸天打手']);
-    assert.match(text, /宿主已装载的自拟外挂/);
-    assert.match(text, /时停怀表（仙品·每日次数，每日 2 次；每次 5000 系统点）：时间静止三秒/);
-    assert.match(text, /天眼（凡品·主动，冷却 3 回合；每次 2 名望）/);
-    assert.match(text, /不要重复扣费/);
-    assert.match(text, /宿主当前关闭了：诸天打手。剧情中不得出现或使用/);
+    assert.match(text, /Phụ trợ tự tạo Ký chủ đã trang bị/);
+    assert.match(text, /时停怀表 \(Tiên phẩm·Số lần mỗi ngày, mỗi ngày 2 lần; mỗi lần 5000 Điểm Hệ Thống\): 时间静止三秒/);
+    assert.match(text, /天眼 \(Phàm phẩm·Chủ động, hồi chiêu 3 lượt; mỗi lần 2 Danh vọng\)/);
+    assert.match(text, /đừng trừ phí lặp lại/);
+    assert.match(text, /Ký chủ hiện đã tắt: Tay Đấm Chư Thiên\. Trong cốt truyện không được xuất hiện hoặc sử dụng/);
     assert.equal(pluginPrompt([], []), '');
 });
 

@@ -22,11 +22,11 @@ export function compareVersion(a, b) {
 /** Support decision for a host version string. `tested` means verified on a real isolated host of that minor line. */
 export function hostSupport(version) {
     const v = parseVersion(version);
-    if (!v) return { ok: false, tested: false, level: 'unknown', reason: `无法识别酒馆版本（${version || '空'}），已阻止写入。` };
-    if (compareVersion(version, HOST_MIN) < 0) return { ok: false, tested: false, level: 'too-old', reason: `当前 SillyTavern ${version} 低于最低支持版本 ${HOST_MIN}。请升级酒馆。` };
+    if (!v) return { ok: false, tested: false, level: 'unknown', reason: `Không thể nhận diện phiên bản SillyTavern (${version || 'trống'}), đã chặn ghi dữ liệu.` };
+    if (compareVersion(version, HOST_MIN) < 0) return { ok: false, tested: false, level: 'too-old', reason: `SillyTavern ${version} hiện tại thấp hơn phiên bản hỗ trợ tối thiểu ${HOST_MIN}. Vui lòng nâng cấp SillyTavern.` };
     const line = `${v[0]}.${v[1]}.`;
-    if (HOST_TESTED.some(t => t.startsWith(line))) return { ok: true, tested: HOST_TESTED.includes(version), level: 'supported', reason: HOST_TESTED.includes(version) ? `SillyTavern ${version}：已在隔离真实宿主验收。` : `SillyTavern ${version}：与已验收的 ${line}0 属同一版本线，按能力探测运行。` };
-    return { ok: true, tested: false, level: 'newer', reason: `SillyTavern ${version} 新于已验收范围（${HOST_TESTED[0]}–${HOST_TESTED.at(-1)}）；按接口能力探测运行，缺失接口的功能会自动停用。` };
+    if (HOST_TESTED.some(t => t.startsWith(line))) return { ok: true, tested: HOST_TESTED.includes(version), level: 'supported', reason: HOST_TESTED.includes(version) ? `SillyTavern ${version}: Đã nghiệm thu trên máy chủ thực độc lập.` : `SillyTavern ${version}: Cùng nhánh phiên bản với ${line}0 đã nghiệm thu, chạy theo dò tìm năng lực.` };
+    return { ok: true, tested: false, level: 'newer', reason: `SillyTavern ${version} mới hơn phạm vi đã nghiệm thu (${HOST_TESTED[0]}–${HOST_TESTED.at(-1)}); chạy theo dò tìm năng lực giao diện, tính năng thiếu giao diện sẽ tự động tắt.` };
 }
 export function hooksSupported(version) { return compareVersion(version, HOOKS_SINCE) >= 0; }
 
@@ -36,7 +36,7 @@ let hostModulePromise = null;
  * throws a SyntaxError at link time and silently kills the whole extension on hosts that renamed it.
  */
 export function loadHostModule() {
-    hostModulePromise ??= import('/script.js').then(ns => ns, error => { console.warn('[诸天终端] /script.js 动态导入失败，改用 getContext 能力', error); return {}; });
+    hostModulePromise ??= import('/script.js').then(ns => ns, error => { console.warn('[Chư Thiên] Nhập động /script.js thất bại, chuyển sang dùng năng lực getContext', error); return {}; });
     return hostModulePromise.then(ns => {
         const context = () => globalThis.SillyTavern?.getContext?.();
         return {
@@ -57,7 +57,7 @@ export function loadHostModule() {
 
 export async function fetchHostVersion() {
     const r = await fetch('/version', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
-    if (!r.ok) throw Error('版本接口返回错误');
+    if (!r.ok) throw Error('Giao diện phiên bản trả về lỗi');
     const v = await r.json();
     return { pkgVersion: String(v.pkgVersion || ''), gitRevision: v.gitRevision || '', gitBranch: v.gitBranch || '', agent: v.agent || '' };
 }
@@ -66,20 +66,20 @@ export async function fetchHostVersion() {
 export function probeCapabilities(c, host = {}) {
     const has = key => typeof c?.[key] === 'function';
     const rows = [
-        ['eventSource', !!c?.eventSource?.on, '事件总线'],
-        ['eventTypes', !!c?.eventTypes?.APP_READY, '事件类型'],
-        ['saveChat', has('saveChat'), '保存聊天'],
-        ['saveMetadata', has('saveMetadata'), '保存聊天元数据（变量）'],
-        ['setExtensionPrompt', has('setExtensionPrompt'), '提示注入'],
-        ['addOneMessage', has('addOneMessage'), '系统记录渲染'],
-        ['messageFormatting', has('messageFormatting'), '正文重排（原生状态栏）'],
-        ['saveSettingsDebounced', has('saveSettingsDebounced'), '扩展设置保存'],
-        ['loadWorldInfo', has('loadWorldInfo') && has('saveWorldInfo'), '世界书读写'],
-        ['registerSlashCommand', has('registerSlashCommand'), '斜杠命令'],
-        ['registerMacro', has('registerMacro'), '宏'],
-        ['sendMessageAsUser', typeof host.sendMessageAsUser === 'function', '以玩家身份发送'],
-        ['generateRaw', typeof host.generateRaw === 'function', '主 API 原始生成'],
-        ['webLocks', !!globalThis.navigator?.locks, '浏览器 Web Locks'],
+        ['eventSource', !!c?.eventSource?.on, 'Bus sự kiện'],
+        ['eventTypes', !!c?.eventTypes?.APP_READY, 'Loại sự kiện'],
+        ['saveChat', has('saveChat'), 'Lưu trò chuyện'],
+        ['saveMetadata', has('saveMetadata'), 'Lưu siêu dữ liệu trò chuyện (biến)'],
+        ['setExtensionPrompt', has('setExtensionPrompt'), 'Tiêm prompt'],
+        ['addOneMessage', has('addOneMessage'), 'Kết xuất bản ghi hệ thống'],
+        ['messageFormatting', has('messageFormatting'), 'Sắp xếp lại chính văn (thanh trạng thái gốc)'],
+        ['saveSettingsDebounced', has('saveSettingsDebounced'), 'Lưu cài đặt tiện ích'],
+        ['loadWorldInfo', has('loadWorldInfo') && has('saveWorldInfo'), 'Đọc/ghi Sách Thế Giới'],
+        ['registerSlashCommand', has('registerSlashCommand'), 'Lệnh gạch chéo (Slash)'],
+        ['registerMacro', has('registerMacro'), 'Macro'],
+        ['sendMessageAsUser', typeof host.sendMessageAsUser === 'function', 'Gửi dưới tư cách người chơi'],
+        ['generateRaw', typeof host.generateRaw === 'function', 'Tạo nguyên bản qua API chính'],
+        ['webLocks', !!globalThis.navigator?.locks, 'Web Locks trình duyệt'],
     ];
     return rows.map(([key, ok, label]) => ({ key, ok: !!ok, label }));
 }

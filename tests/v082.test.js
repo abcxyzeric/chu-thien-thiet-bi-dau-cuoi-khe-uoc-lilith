@@ -47,7 +47,7 @@ test('unbindAll removes every binding (not other books) and returns a record; re
     assert.deepEqual(wi.selected_world_info, ['x']);
     assert.equal(ctx.chatMetadata.world_info, undefined);
     assert.equal(findBindings(ctx, wi, NAME).total, 0);
-    assert.match(describe(rec), /2 张角色卡（甲、丙）.*全局世界书.*当前聊天/);
+    assert.match(describe(rec), /2 thẻ nhân vật \(甲, 丙\).*Sách Thế Giới toàn cục.*Trò chuyện hiện tại/);
     // the user picked another book for 丙 in the meantime: that choice is respected
     ctx.characters[2].data.extensions.world = '新书';
     const r = await restoreBindings(ctx, rec, { wi });
@@ -108,10 +108,10 @@ test('story prompt lists group items from the BAG (still owned, any age) with th
     ] };
     assert.deepEqual(groupItems(z, g).map(i => i.名称), ['定海珠', '旧鱼干']);
     const p = groupStoryPrompt(g, t => '档' + t, z);
-    assert.match(p, /定海珠（灵品）×1（苏小蛮@东海渔村·赠礼）/);
+    assert.match(p, /定海珠 \(Linh phẩm\)×1 \(苏小蛮@东海渔村·赠礼\)/);
     assert.match(p, /旧鱼干/); assert.doesNotMatch(p, /商城药|用完了/);
-    assert.match(p, /412 系统点（苏小蛮@东海渔村，红包）/);
-    assert.match(p, /不得改写成/);
+    assert.match(p, /412 系统点 \(苏小蛮@东海渔村, 红包\)/);
+    assert.match(p, /không được sửa thành/);
 });
 
 test('自动闲聊 interval: default every 3 replies, only listed values accepted', () => {
@@ -130,5 +130,5 @@ test('status bar renderer keeps Tavern Helper render wrappers (character-card st
 });
 
 test('0.8.2 capability rows (version checked in v083)', () => {
-    for (const k of ['世界书一键解绑', '悬浮莉莉丝', '角色卡状态栏']) assert.ok(CAPABILITIES.some(c => c.name.includes(k)), k);
+    for (const k of ['Gỡ gắn kết Sách Thế Giới một chạm', 'Lilith nổi', 'Tương thích thanh trạng thái của thẻ nhân vật']) assert.ok(CAPABILITIES.some(c => c.name.includes(k)), k);
 });

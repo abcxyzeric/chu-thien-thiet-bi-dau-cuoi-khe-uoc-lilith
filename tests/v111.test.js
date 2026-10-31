@@ -80,13 +80,13 @@ test('1.1.1 补记: template from the worldbook, prompt bounded, answer validate
     const tpl = panelTemplate(latestRules(original.ZhuTianBuiltinRules).rules);
     assert.ok(tpl.startsWith('系统点: {{get_chat_variable::诸天系统.系统点}}') && tpl.includes('系统播报:'));
     const p = backfillPrompt({ story: 'x'.repeat(9000), userText: 'y'.repeat(3000), template: tpl, previous: F });
-    assert.ok(p.includes('（已截断）') && p.length < 9000 + 3000 && p.includes('上一轮已记账'));
+    assert.ok(p.includes('(đã cắt bớt)') && p.length < 9000 + 3000 && p.includes('đã vào sổ ở lượt trước'));
     assert.equal(parseBackfill('<think>嗯</think>\n' + P(F)), F);
     assert.equal(parseBackfill(F), F);
-    assert.throws(() => parseBackfill('系统点: 1\n好感度: 2'), /不是完整的数据块/);
-    assert.throws(() => parseBackfill('子系统: 1\n子嗣: 0\n好感度: 2\n当前任务: 无\n系统播报: 嗯'), /缺少系统点/);
+    assert.throws(() => parseBackfill('系统点: 1\n好感度: 2'), /không phải là khối dữ liệu hoàn chỉnh/);
+    assert.throws(() => parseBackfill('子系统: 1\n子嗣: 0\n好感度: 2\n当前任务: 无\n系统播报: 嗯'), /thiếu Điểm Hệ Thống/);
     assert.ok(ROUTES.some(r => r.id === 'panel' && r.base === 'status'));
-    assert.match(reminderText(['unclosed']), /没有结束标签/);
+    assert.match(reminderText(['unclosed']), /thiếu thẻ đóng/);
 });
 
 function guardApp(chat, extra = {}) {
@@ -109,8 +109,8 @@ test('1.1.1 guard: a new broken reply is repaired once, backed up, saved, and ca
     assert.ok(chat[1].mes.endsWith('</ZhuTianPanel>') && chat[1].mes.includes('后续剧情'));
     assert.equal(chat[1].swipes[0], chat[1].mes);
     assert.equal(chat[1].extra.zhutianCovenantTerminal.panelRepair.raw, raw);
-    assert.equal(h.saved.length, 1); assert.match(h.toasts[0], /已自动整理第 1 层/);
-    assert.match(h.injected.at(-1)[0].content, /上一轮的数据块有问题/);
+    assert.equal(h.saved.length, 1); assert.match(h.toasts[0], /Đã tự động chỉnh lý khối dữ liệu ở tầng 1/);
+    assert.match(h.injected.at(-1)[0].content, /Khối dữ liệu ở lượt trước có vấn đề/);
     h.listeners.ge[0](); assert.equal(h.saved.length, 1, 'same text is not checked twice');
     globalThis.confirm = () => true; await g.restore(); delete globalThis.confirm;
     assert.equal(chat[1].mes, raw); assert.equal(chat[1].extra.zhutianCovenantTerminal.panelRepair, undefined);
@@ -136,7 +136,7 @@ test('1.1.1 guard: backfill writes only when floor, swipe and text are unchanged
     const chat2 = [{ is_user: true, mes: '出发' }, { mes: '只有正文', swipe_id: 0 }];
     const h2 = guardApp(chat2); const g2 = new PanelGuard(h2.app);
     h2.app.bridge.generateRaw = async () => { chat2[1].mes = '玩家改了正文'; return P(F); }; h2.app.bridge.getVariables = () => ({});
-    await assert.rejects(g2.backfill(1, 'manual'), /楼层已变化/); assert.equal(chat2[1].mes, '玩家改了正文');
+    await assert.rejects(g2.backfill(1, 'manual'), /Tầng tin nhắn đã thay đổi/); assert.equal(chat2[1].mes, '玩家改了正文');
 });
 
 // ---------- #2 群红包 ----------
@@ -175,11 +175,11 @@ test('1.1.1 神品 pity at 1000 pulls; 仙品 pity and rand order unchanged', ()
 });
 test('1.1.1 worldbook: 神品保底 line + rule, rev bumped, previous install not taken for a user edit', () => {
     assert.equal(WORLDBOOK_REV, '1.1.1');
-    const c = latestRules(original.ZhuTianBuiltinRules).rules.find(r => r.comment === '11｜商城｜万界盲盒').content;
-    assert.ok(c.includes('{{get_chat_variable::诸天系统.盲盒状态.神品保底计数}}/1000') && c.includes('第 1000 抽必出神品'));
-    const prev = latestRules(original.ZhuTianBuiltinRules, { previous: true }).rules.find(r => r.comment === '11｜商城｜万界盲盒').content;
+    const c = latestRules(original.ZhuTianBuiltinRules).rules.find(r => r.comment === '11｜Thương thành｜Hộp Mù Vạn Giới').content;
+    assert.ok(c.includes('{{get_chat_variable::诸天系统.盲盒状态.神品保底计数}}/1000') && c.includes('lượt thứ 1000 chắc chắn ra Thần phẩm'));
+    const prev = latestRules(original.ZhuTianBuiltinRules, { previous: true }).rules.find(r => r.comment === '11｜Thương thành｜Hộp Mù Vạn Giới').content;
     assert.ok(!prev.includes('神品保底计数')); assert.match(src('src/features.js'), /previous: true/);
-    assert.match(src('src/commerce.js'), /1000 抽必出神品/);
+    assert.match(src('src/commerce.js'), /1000 lượt rút chắc chắn ra Thần phẩm/);
 });
 
 // ---------- #6 十连 / 盲盒截断 ----------
@@ -204,7 +204,7 @@ test('1.1.1 generate: a cut-off batch keeps complete items and halves the batch'
     const out = await new Commerce(app).generate('gacha', slots, preferences(), [], token);
     assert.equal(out.length, 6); assert.deepEqual(out.map(x => x.slot), [0, 1, 2, 3, 4, 5]);
     assert.equal(asked[0], GACHA_BATCH); assert.ok(asked.slice(1).every(n => n <= Math.floor(GACHA_BATCH / 2)), asked.join(','));
-    assert.match(src('src/commerce.js'), /GACHA_CHUNK/); assert.match(src('src/commerce.js'), /剩余 \$\{count - doneCount\} 抽未扣费/);
+    assert.match(src('src/commerce.js'), /GACHA_CHUNK/); assert.match(src('src/commerce.js'), /\$\{count - doneCount\} lượt còn lại chưa trừ phí/);
     assert.match(src('src/th-bridge.js'), /this\.lastFinish = \{ reason:/);
 });
 

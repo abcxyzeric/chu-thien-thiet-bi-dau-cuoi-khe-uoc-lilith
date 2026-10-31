@@ -1,29 +1,29 @@
-# 悬浮莉莉丝抠图素材 · 来源说明（1.0.0）
+# Tư liệu tách nền Lilith nổi · Thuyết minh nguồn gốc (1.0.0)
 
-本目录是手机悬浮莉莉丝（`src/lilith-float.js`，设置 → 悬浮莉莉丝）的透明素材，由
-`tools/lilith_float_cutout.py` 从仓库里已有的原版素材生成，坐标常量写在 `src/lilith-float-art.js`。
+Thư mục này chứa bộ tư liệu ảnh trong suốt của Lilith nổi trên điện thoại (`src/lilith-float.js`, Cài đặt → Lilith nổi), được tạo bởi
+`tools/lilith_float_cutout.py` từ bộ tư liệu nguyên bản đã có sẵn trong kho lưu trữ, các hằng số tọa độ được ghi trong `src/lilith-float-art.js`.
 
-## 输入
+## Đầu vào
 
-| 输入 | 说明 |
+| Đầu vào | Thuyết minh |
 | --- | --- |
-| `vendor/original/assistant-v1.1.js` 中的 `ZhuTianLilithLayers` | 原版 v1.1 的 636×948 分层立绘：plate 背景、wings、tail、body、faces 表情补丁。**原作者素材**，版权归原作者。 |
-| `assets/lilith/variants/sad.webp` | 委屈表情：原版分层里没有，取自 AI 差分立绘的脸部（见 `assets/lilith/variants/PROVENANCE.md`）。 |
-| 抠图模型 `isnet-anime.onnx` | rembg 发布的动漫人物分割模型（<https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-anime.onnx>），只在生成时使用，**不随仓库分发**。 |
+| `ZhuTianLilithLayers` trong `vendor/original/assistant-v1.1.js` | Ảnh đứng phân lớp 636×948 của bản gốc v1.1: nền `plate`, `wings`, `tail`, `body`, các mảnh vá biểu cảm `faces`. **Tư liệu của tác giả gốc**, bản quyền thuộc về tác giả gốc. |
+| `assets/lilith/variants/sad.webp` | Biểu cảm tủi thân (`sad`): trong bộ phân lớp nguyên bản không có, được lấy từ vùng khuôn mặt của ảnh đứng biến thể AI (xem `assets/lilith/variants/PROVENANCE.md`). |
+| Mô hình tách nền `isnet-anime.onnx` | Mô hình phân đoạn nhân vật anime do `rembg` phát hành (<https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-anime.onnx>), chỉ dùng khi tạo ảnh, **không phân phối kèm theo kho lưu trữ**. |
 
-## 处理
+## Xử lý
 
-1. plate + wings + tail + body 合成整图，交给 isnet-anime 得到人物蒙版。
-2. 单用模型会丢掉翅膀、留下紫雾：body 图层自带的 alpha 与模型蒙版取较小值，再做色阶（0.45–0.90）去掉背景残留。
-3. 只取头到大腿上部 `(0,0)-(636,700)`，底部 22% 羽化渐隐，悬浮时没有硬切边。
-4. 两只翅膀单独导出（各有转轴，悬浮时轻轻扇动）；表情补丁按原版坐标原样导出（委屈表情按脸部对齐）。
-5. 全部为 WebP（带透明通道）。没有用任何图像模型重新绘制人物；像素都来自原版分层或已有的差分立绘。
+1. Ghép `plate` + `wings` + `tail` + `body` thành ảnh hoàn chỉnh rồi đưa vào `isnet-anime` để lấy mặt nạ (mask) nhân vật.
+2. Nếu chỉ dùng riêng mô hình sẽ làm mất cánh và để lại sương tím: lấy giá trị nhỏ hơn giữa kênh alpha có sẵn của lớp `body` và mặt nạ mô hình, sau đó chỉnh mức sắc độ (0.45–0.90) để loại bỏ cặn nền còn sót lại.
+3. Chỉ lấy phần từ đầu đến phần trên đùi `(0,0)-(636,700)`, làm mờ dần (feather) 22% ở cạnh dưới để khi lơ lửng không bị vết cắt cứng.
+4. Xuất riêng hai chiếc cánh (mỗi cánh có trục xoay riêng để vỗ nhẹ khi lơ lửng); các mảnh vá biểu cảm xuất nguyên trạng theo tọa độ gốc (biểu cảm tủi thân được căn chỉnh khớp theo khuôn mặt).
+5. Toàn bộ đều ở định dạng WebP (có kênh trong suốt alpha). Không dùng bất kỳ mô hình hình ảnh nào để vẽ lại nhân vật; mọi điểm ảnh đều lấy từ bộ phân lớp nguyên bản hoặc ảnh đứng biến thể đã có.
 
-重新生成：`python3 tools/lilith_float_cutout.py /path/to/isnet-anime.onnx`（需要 `onnxruntime`、`numpy`、`Pillow`）。
+Tạo lại: `python3 tools/lilith_float_cutout.py /path/to/isnet-anime.onnx` (cần `onnxruntime`, `numpy`, `Pillow`).
 
-## 文件与校验
+## Tệp và mã kiểm tra
 
-| 文件 | 尺寸 | sha256 |
+| Tệp | Kích thước | sha256 |
 | --- | --- | --- |
 | `body.webp` | 636×700 | `35c0aabfd4f268f68680c1f54e405442d1c20b2e79a280b2325e2b036177c1db` |
 | `face-blink.webp` | 126×58 | `47aa2d0ddf25fb55a8d82c0366d499092fb403be70bb7111ea57077758641652` |
@@ -38,5 +38,5 @@
 | `wingl.webp` | 100×391 | `69fcab77c6bab5f7b766f36ddbeaa4c94a04c5719f665f2ad3afb1ac2ca5bf1f` |
 | `wingr.webp` | 130×561 | `47f4e573e4498aaf36ec3251cbf0db2cb7c636e91078b734ee8e4f6898e230fe` |
 
-`tests/v100.test.js` 会逐一核对上表的 sha256。素材的使用条件见仓库根目录 `LICENSE`：原版立绘的权利仍归原作者，
-本插件只在安装使用时显示，不得单独提取再分发。
+`tests/v100.test.js` sẽ đối chiếu từng mã `sha256` trong bảng trên. Điều kiện sử dụng tư liệu xem tại tệp `LICENSE` ở thư mục gốc của kho lưu trữ: quyền đối với ảnh đứng nguyên bản vẫn thuộc về tác giả gốc,
+tiện ích này chỉ hiển thị khi cài đặt sử dụng, nghiêm cấm trích xuất riêng để phân phối lại.

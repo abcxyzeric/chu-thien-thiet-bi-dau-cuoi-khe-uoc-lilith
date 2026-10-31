@@ -1,5 +1,5 @@
-// 1.1.1 · 页面整体上移.
-// Player feedback (screenshot): after 外挂 → 工坊「编辑 / 新建」or 许愿 / 闭关 / 结算 the whole SillyTavern page — the
+// 1.1.1 · Khắc phục lỗi toàn trang bị đẩy dịch lên trên.
+// Player feedback (screenshot): after Phụ trợ → Xưởng 「Sửa / Tạo mới」or Ước nguyện / Bế quan / Kết toán the whole SillyTavern page — the
 // terminal, the input bar, the background — sat ~200 px too high with an empty band below, until the console snippet
 // `document.documentElement.scrollTop = document.body.scrollTop = 0` was run.
 // Cause: element.scrollIntoView() and textarea.focus() (the original insertIntoChatInput focuses #send_textarea) scroll

@@ -1,11 +1,11 @@
-// API 中心 (0.8.4: also the terminal 连接 page) — one place for the two API connections the v1.1 install configured separately:
-//   * status bar (all AI buttons: 商城进货 / 盲盒 / 许愿 / 招募 / 背包整理 / 天眼 …)
-//       original storage: global variable 诸天系统_API {url,key,model} + localStorage sys_api_config
-//   * 莉莉丝 assistant (memory recorder, private chat, workbench)
-//       original storage: script variable 诸天记忆助手_v1_API {url,key,model,maxTokens}
-// The same storage is written, so the original status-bar gear dialog and the Lilith connection page keep showing the
-// values chosen here and vice versa. "酒馆当前主API" writes the reserved sentinel URL (th-bridge MAIN_API_URL), which
-// the native bridge answers through SillyTavern generateRaw; nothing is ever sent to that host.
+// Trung tâm API (0.8.4: đồng thời là trang Kết nối của thiết bị đầu cuối) — một nơi duy nhất cho hai kết nối API mà bản v1.1 trước đây cấu hình riêng rẽ:
+//   * thanh trạng thái (mọi nút AI: Nhập hàng thương thành / Hộp mù / Ước nguyện / Chiêu mộ / Sắp xếp túi đồ / Thiên Nhãn …)
+//       lưu trữ gốc: biến toàn cục 诸天系统_API {url,key,model} + localStorage sys_api_config
+//   * trợ lý Lilith (ghi chép ký ức, trò chuyện riêng, bàn làm việc)
+//       lưu trữ gốc: biến kịch bản 诸天记忆助手_v1_API {url,key,model,maxTokens}
+// Cùng một nơi lưu trữ được ghi vào, nên hộp thoại bánh răng thanh trạng thái gốc và trang kết nối Lilith vẫn hiển thị
+// các giá trị được chọn tại đây và ngược lại. "API chính hiện tại của Quán Rượu" ghi URL đánh dấu dành riêng (th-bridge MAIN_API_URL),
+// được cầu nối nguyên bản trả lời thông qua SillyTavern generateRaw; không có dữ liệu nào bị gửi tới máy chủ đó.
 import { saveEnvironment } from './save-environment.js';
 import { MAIN_API_URL, MAIN_API_MODEL, isMainApi } from './th-bridge.js';
 import { ROUTES, MAIN, readRoutes, writeRoutes, withPreset, withoutPreset, withRoute, routeText, cleanName, normalizeStore } from './api-routes.js';
@@ -17,10 +17,10 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 
 /** Validation shared with the original assistant: https (http only for loopback), no credentials/query/hash. */
 export function validateUrl(url) {
-    let u; try { u = new URL(String(url || '').trim()); } catch { return '地址格式不正确'; }
+    let u; try { u = new URL(String(url || '').trim()); } catch { return 'Định dạng địa chỉ không hợp lệ'; }
     const loop = ['localhost', '127.0.0.1', '[::1]'].includes(u.hostname);
-    if (u.protocol !== 'https:' && !(u.protocol === 'http:' && loop)) return '只允许 https（本机地址可用 http）';
-    if (u.username || u.password || u.search || u.hash) return '地址里不能带账号、查询参数或 #';
+    if (u.protocol !== 'https:' && !(u.protocol === 'http:' && loop)) return 'Chỉ cho phép https (địa chỉ máy cục bộ có thể dùng http)';
+    if (u.username || u.password || u.search || u.hash) return 'Địa chỉ không được chứa tài khoản, tham số truy vấn hoặc dấu #';
     return '';
 }
 export function readConfigs(bridge, ns) {
@@ -57,66 +57,66 @@ const looks = inline => ({
 function formHtml({ status, assistant, inline, routes }) {
     const seed = assistant.url ? assistant : status;
     const main = isMainApi(seed.url);
-    const desc = cfg => cfg?.url ? (isMainApi(cfg.url) ? '用酒馆正在用的模型' : esc(cfg.url) + (cfg.model ? ' · 模型 ' + esc(cfg.model) : ' · 还没填模型')) : '还没设置';
+    const desc = cfg => cfg?.url ? (isMainApi(cfg.url) ? 'Dùng mô hình Quán Rượu đang sử dụng' : esc(cfg.url) + (cfg.model ? ' · Mô hình ' + esc(cfg.model) : ' · Chưa điền mô hình')) : 'Chưa thiết lập';
     const { field, btn } = looks(inline);
     const tick = 'style="width:auto;min-width:0;flex:none;margin:3px 0 0;accent-color:var(--accent,#c59bee)"';
     const same = sameConfig(status, assistant), anySet = !!(status?.url || assistant?.url);
     const both = status?.url && assistant?.url;
     const saveWarning = saveEnvironment().reason;
     const state = !anySet
-        ? `<b style="color:#ffcf8a">⚠ 还没有设置 API</b><span>状态栏里的 AI 功能（进货、盲盒、许愿、招募、天眼…）和莉莉丝私聊都要用它。按下面 3 步填好即可。</span>`
+        ? `<b style="color:#ffcf8a">⚠ Chưa thiết lập API</b><span>Các tính năng AI trên thanh trạng thái (nhập hàng, hộp mù, ước nguyện, chiêu mộ, thiên nhãn…) và trò chuyện riêng với Lilith đều cần dùng nó. Làm theo 3 bước bên dưới là xong.</span>`
         : same
-            ? `<b style="color:#bfe8c8">✓ 已设置</b><span>${desc(status)}</span><span style="opacity:.75">状态栏的 AI 功能和莉莉丝（私聊 / 记忆）都用这一个。想确认能不能用，点下面的「测试连接」。</span>`
-            : `<b style="color:#ffcf8a">⚠ 两处用的 API 不一致</b><span>状态栏 AI 功能：${desc(status)}</span><span>莉莉丝私聊 / 记忆：${desc(assistant)}</span><span style="opacity:.75">${both ? '' : '有一处还没设置。'}在下面填好后点「保存」，两处就统一了。</span>`;
+            ? `<b style="color:#bfe8c8">✓ Đã thiết lập</b><span>${desc(status)}</span><span style="opacity:.75">Các tính năng AI của thanh trạng thái và Lilith (trò chuyện riêng / ký ức) đều dùng chung kết nối này. Muốn kiểm tra xem dùng được không, hãy bấm 「Kiểm tra kết nối」 bên dưới.</span>`
+            : `<b style="color:#ffcf8a">⚠ API ở hai nơi không khớp nhau</b><span>Tính năng AI thanh trạng thái: ${desc(status)}</span><span>Lilith trò chuyện riêng / ký ức: ${desc(assistant)}</span><span style="opacity:.75">${both ? '' : 'Có một nơi chưa được thiết lập. '}Điền xong ở bên dưới rồi bấm 「Lưu」, cả hai nơi sẽ được đồng nhất.</span>`;
     const opt = (value, on, title, sub) => `<label style="display:flex;gap:10px;align-items:flex-start;margin:0;min-height:0;height:auto;padding:10px 12px;border-radius:10px;border:1px solid color-mix(in srgb,var(--accent,#c59bee) ${on ? 55 : 18}%,transparent);cursor:pointer"><input type="radio" name="mode" value="${value}" ${on ? 'checked' : ''} ${tick}><span style="display:grid;gap:2px;min-width:0"><b>${title}</b><small style="opacity:.72">${sub}</small></span></label>`;
     const step = (n, t) => `<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><span style="display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:color-mix(in srgb,var(--accent,#c59bee) 30%,transparent);font-size:12px;flex:none">${n}</span><b>${t}</b></div>`;
     const lbl = 'display:grid;gap:4px';
     return `${saveWarning ? `<p role="alert" data-save-warning>${esc(saveWarning)}</p>` : ''}<form ${inline ? '' : 'method="dialog"'} style="padding:${inline ? '4px 2px' : '18px 20px'};display:grid;gap:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:16px;letter-spacing:1px">${inline ? '连接 · AI 接口设置' : '诸天 · AI 接口设置'}</b>${inline ? '' : `<button value="close" ${btn}>关闭</button>`}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><b style="font-size:16px;letter-spacing:1px">${inline ? 'Kết nối · Cài đặt cổng AI' : 'Chư Thiên · Cài đặt cổng AI'}</b>${inline ? '' : `<button value="close" ${btn}>Đóng</button>`}</div>
       <div data-state style="display:grid;gap:3px;padding:10px 12px;border-radius:10px;background:#ffffff0a;font-size:13px;overflow-wrap:anywhere">${state}</div>
-      <div data-presets style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b style="font-weight:500;white-space:nowrap">接口预设</b><select data-f="preset" aria-label="选择接口预设" style="${field};flex:1 1 140px;min-width:0;width:140px;text-overflow:ellipsis">${presetOptions(routes)}</select><button type="button" data-act="preset-del" ${btn}>删除</button></div>
-      ${step(1, '选择用哪个 AI')}
+      <div data-presets style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><b style="font-weight:500;white-space:nowrap">Thiết lập sẵn cổng</b><select data-f="preset" aria-label="Chọn thiết lập sẵn cổng" style="${field};flex:1 1 140px;min-width:0;width:140px;text-overflow:ellipsis">${presetOptions(routes)}</select><button type="button" data-act="preset-del" ${btn}>Xóa</button></div>
+      ${step(1, 'Chọn dùng AI nào')}
       <div style="display:grid;gap:8px">
-        ${opt('custom', !main, '单独的 API（推荐）', '填一个 OpenAI 兼容接口（中转站 / 官方都行），不占用你正在聊天的模型')}
-        ${opt('main', main, '直接用酒馆正在用的模型', '不用另填地址和密钥；但每次请求会占用主聊天，主聊天生成时要等它')}
+        ${opt('custom', !main, 'API riêng biệt (Khuyên dùng)', 'Điền một cổng tương thích OpenAI (trạm trung chuyển / chính thức đều được), không chiếm dụng mô hình bạn đang dùng để trò chuyện')}
+        ${opt('main', main, 'Dùng trực tiếp mô hình Quán Rượu đang dùng', 'Không cần điền thêm địa chỉ và khóa; nhưng mỗi yêu cầu sẽ chiếm luồng trò chuyện chính, khi trò chuyện chính đang tạo phản hồi thì phải đợi')}
       </div>
       <div data-custom style="display:grid;gap:10px">
-        ${step(2, '填写接口')}
-        <label style="${lbl}">接口地址<input name="url" style="${field}" placeholder="例如 https://api.example.com/v1" value="${main ? '' : esc(seed.url)}" autocomplete="off"><small style="opacity:.65">一般以 /v1 结尾，从你的 API 服务商那里复制。</small></label>
-        <label style="${lbl}">API 密钥<input name="key" type="password" style="${field}" placeholder="sk-…" value="${main ? '' : esc(seed.key)}" autocomplete="off"></label>
-        <div style="${lbl}"><span>模型</span><div style="display:flex;gap:6px"><input name="model" list="zt-api-models" style="${field}" placeholder="先点右边「拉取模型」，或直接手填" value="${main ? '' : esc(seed.model)}" autocomplete="off" aria-label="模型"><button type="button" data-act="models" ${btn}>拉取模型</button></div><datalist id="zt-api-models"></datalist>
-        <select data-models hidden style="${field}" aria-label="从列表选择模型"></select></div>
+        ${step(2, 'Điền thông tin cổng kết nối')}
+        <label style="${lbl}">Địa chỉ cổng API<input name="url" style="${field}" placeholder="Ví dụ: https://api.example.com/v1" value="${main ? '' : esc(seed.url)}" autocomplete="off"><small style="opacity:.65">Thường kết thúc bằng /v1, sao chép từ nhà cung cấp dịch vụ API của bạn.</small></label>
+        <label style="${lbl}">Khóa API (API Key)<input name="key" type="password" style="${field}" placeholder="sk-…" value="${main ? '' : esc(seed.key)}" autocomplete="off"></label>
+        <div style="${lbl}"><span>Mô hình</span><div style="display:flex;gap:6px"><input name="model" list="zt-api-models" style="${field}" placeholder="Bấm 「Lấy danh sách mô hình」 bên phải trước, hoặc tự nhập tay" value="${main ? '' : esc(seed.model)}" autocomplete="off" aria-label="Mô hình"><button type="button" data-act="models" ${btn}>Lấy danh sách mô hình</button></div><datalist id="zt-api-models"></datalist>
+        <select data-models hidden style="${field}" aria-label="Chọn mô hình từ danh sách"></select></div>
       </div>
-      ${step(main ? 2 : 3, '测试并保存')}
+      ${step(main ? 2 : 3, 'Kiểm tra và lưu')}
       <output data-out style="min-height:1.6em;font-size:12px;opacity:.95;white-space:pre-wrap"></output>
-      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" data-act="test" ${btn}>测试连接</button><button type="button" data-act="save" ${btn}>保存</button></div>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input data-f="preset-name" maxlength="24" placeholder="预设名称（必填，例如：公益站 A）" aria-label="预设名称" autocomplete="off" style="${field};flex:1 1 160px;min-width:0;width:auto"><button type="button" data-act="preset-save" disabled ${btn}>保存为预设</button></div>
-      <small style="opacity:.65;margin-top:-4px">把上面填好的接口存成预设：换接口时在顶部「接口预设」里一选就载入，不用重新填写。只有输入了名称才能保存。</small>
+      <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap"><button type="button" data-act="test" ${btn}>Kiểm tra kết nối</button><button type="button" data-act="save" ${btn}>Lưu</button></div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><input data-f="preset-name" maxlength="24" placeholder="Tên thiết lập sẵn (bắt buộc, ví dụ: Trạm miễn phí A)" aria-label="Tên thiết lập sẵn" autocomplete="off" style="${field};flex:1 1 160px;min-width:0;width:auto"><button type="button" data-act="preset-save" disabled ${btn}>Lưu làm thiết lập sẵn</button></div>
+      <small style="opacity:.65;margin-top:-4px">Lưu cổng đã điền ở trên thành thiết lập sẵn: khi đổi cổng chỉ cần chọn ở mục 「Thiết lập sẵn cổng」 phía trên là nạp ngay, không cần điền lại. Chỉ khi nhập tên mới lưu được.</small>
       ${routesHtml(routes, { field, btn })}
-      <details style="font-size:12px;opacity:.9"><summary style="cursor:pointer">高级设置（一般不用改）</summary>
+      <details style="font-size:12px;opacity:.9"><summary style="cursor:pointer">Cài đặt nâng cao (thường không cần sửa)</summary>
         <div style="display:grid;gap:8px;margin-top:8px">
-          <label style="${lbl}">默认 / 预设最大输出（tokens，含思考；留空由各功能决定，可分功能覆盖）<input name="max" type="number" min="64" max="65536" style="${field}" value="${esc(status.maxTokens ?? assistant.maxTokens ?? '')}"></label>
-          <div>保存到（默认两处都保存，保持一致）：</div>
-          <label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="toStatus" checked ${tick}> 状态栏的 AI 功能（进货 / 盲盒 / 许愿 / 招募…）</label>
-          <label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="toAssistant" checked ${tick}> 莉莉丝（私聊 / 记忆 / 工作台）</label>
-          <div style="opacity:.75">请求超时：终端「设置」页 →「独立 API 超时」。请求一律流式传输。</div>
+          <label style="${lbl}">Đầu ra tối đa mặc định / thiết lập sẵn (tokens, gồm cả suy luận; để trống sẽ do từng tính năng quyết định, có thể ghi đè theo từng tính năng)<input name="max" type="number" min="64" max="65536" style="${field}" value="${esc(status.maxTokens ?? assistant.maxTokens ?? '')}"></label>
+          <div>Lưu vào (mặc định lưu cả hai nơi để giữ đồng nhất):</div>
+          <label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="toStatus" checked ${tick}> Tính năng AI của thanh trạng thái (nhập hàng / hộp mù / ước nguyện / chiêu mộ…)</label>
+          <label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="toAssistant" checked ${tick}> Lilith (trò chuyện riêng / ký ức / bàn làm việc)</label>
+          <div style="opacity:.75">Thời gian chờ yêu cầu: Trang 「Cài đặt」 của thiết bị đầu cuối → 「Thời gian chờ API độc lập」. Mọi yêu cầu đều truyền theo luồng (stream).</div>
         </div>
       </details>
-      <small style="opacity:.6">密钥只存在你自己的酒馆和浏览器里，不会写进聊天记录，也不会随插件上传。</small>
+      <small style="opacity:.6">Khóa API chỉ lưu trong Quán Rượu và trình duyệt của riêng bạn, không ghi vào lịch sử trò chuyện và cũng không tải lên theo tiện ích.</small>
     </form>`;
 }
 /** 1.0: options of the preset picker (pure). */
 function presetOptions(routes) {
     const list = normalizeStore(routes).presets;
-    return `<option value="">${list.length ? `— 选择预设（${list.length} 个），载入到下面 —` : '还没有预设：在下面填好接口后输入名称保存'}</option>` + list.map(p => `<option value="${esc(p.name)}">${esc(p.name)} · ${esc((() => { try { return new URL(p.url).host; } catch { return '?'; } })())}${p.model ? ' · ' + esc(p.model) : ''}</option>`).join('');
+    return `<option value="">${list.length ? `— Chọn thiết lập sẵn (${list.length} mục), nạp xuống bên dưới —` : 'Chưa có thiết lập sẵn: điền cổng ở dưới rồi nhập tên để lưu'}</option>` + list.map(p => `<option value="${esc(p.name)}">${esc(p.name)} · ${esc((() => { try { return new URL(p.url).host; } catch { return '?'; } })())}${p.model ? ' · ' + esc(p.model) : ''}</option>`).join('');
 }
 /** 1.0 分功能 API: one row per feature that calls a model (pure). */
 function routesHtml(routes, { field, btn }) {
     const s = normalizeStore(routes), own = Object.keys(s.routes).length;
     const opts = id => {
         const v = s.routes[id], cur = !v ? '' : v === MAIN ? MAIN : typeof v === 'string' ? v : 'own';
-        const list = [['', '跟随默认'], [MAIN, '酒馆当前主 API'], ...s.presets.map(p => ['preset:' + p.name, `预设「${p.name}」`])];
-        if (cur === 'own') list.push(['own', '单独配置（' + routeText(s, id).replace(/^单独配置 · /, '') + '）']);
+        const list = [['', 'Theo mặc định'], [MAIN, 'API chính hiện tại của Quán Rượu'], ...s.presets.map(p => ['preset:' + p.name, `Thiết lập sẵn 「${p.name}」`])];
+        if (cur === 'own') list.push(['own', 'Cấu hình riêng (' + routeText(s, id).replace(/^Cấu hình riêng · /, '') + ')']);
         if (typeof v === 'string' && v.startsWith('preset:') && !s.presets.some(p => 'preset:' + p.name === v)) list.push([v, routeText(s, id)]);
         return list.map(([val, t]) => `<option value="${esc(val)}" ${val === cur ? 'selected' : ''}>${esc(t)}</option>`).join('');
     };
@@ -124,12 +124,12 @@ function routesHtml(routes, { field, btn }) {
     const rows = ROUTES.map(r => {
         const head = r.group !== group ? `<div style="margin-top:6px;font-size:11px;letter-spacing:2px;opacity:.6">${esc((group = r.group))}</div>` : '';
         return `${head}<div data-route="${r.id}" style="display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;padding:6px 0;border-top:1px solid #ffffff10">
-<span style="flex:1 1 180px;min-width:0;overflow-wrap:anywhere"><b style="font-weight:500">${esc(r.label)}</b> <small style="opacity:.6">${esc(r.desc)}</small><br><small data-route-now style="opacity:.8">现在：${esc(routeText(s, r.id))}</small></span>
-<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto;min-width:0;max-width:100%"><select data-route-sel="${r.id}" aria-label="${esc(r.label)} 用哪个接口" style="${field};flex:1 1 150px;width:150px;min-width:0;max-width:220px;padding:5px 8px;text-overflow:ellipsis">${opts(r.id)}</select><button type="button" data-route-own="${r.id}" title="把上面表单里填写的接口单独给这个功能用" ${btn}>用上面填写的</button></span></div>`;
+<span style="flex:1 1 180px;min-width:0;overflow-wrap:anywhere"><b style="font-weight:500">${esc(r.label)}</b> <small style="opacity:.6">${esc(r.desc)}</small><br><small data-route-now style="opacity:.8">Hiện tại: ${esc(routeText(s, r.id))}</small></span>
+<span style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto;min-width:0;max-width:100%"><select data-route-sel="${r.id}" aria-label="${esc(r.label)} dùng cổng nào" style="${field};flex:1 1 150px;width:150px;min-width:0;max-width:220px;padding:5px 8px;text-overflow:ellipsis">${opts(r.id)}</select><button type="button" data-route-own="${r.id}" title="Đem cổng đang điền trên biểu mẫu cấp riêng cho tính năng này dùng" ${btn}>Dùng cổng điền ở trên</button></span></div>`;
     }).join('');
     return `<details data-routes ${own ? 'open' : ''} style="min-width:0;font-size:13px;border:1px solid color-mix(in srgb,var(--accent,#c59bee) 25%,transparent);border-radius:10px;padding:8px 10px">
-<summary style="cursor:pointer"><b>分功能 API</b> <small data-routes-count style="opacity:.75">${own ? `已单独设置 ${own} 项` : '可选：抽卡、聊天群、莉莉丝等可以各用各的接口'}</small></summary>
-<div style="opacity:.75;font-size:12px;margin:6px 0 2px">没单独设置的功能都用上面保存的默认接口。每个功能可以选：酒馆当前主 API、某个预设，或点「用上面填写的」把表单里的接口单独给它。状态栏的 AI 功能会先检查默认接口，所以默认接口要先保存一次。</div>
+<summary style="cursor:pointer"><b>API theo tính năng</b> <small data-routes-count style="opacity:.75">${own ? `Đã thiết lập riêng ${own} mục` : 'Tùy chọn: rút thẻ, nhóm chat, Lilith… có thể dùng cổng riêng cho từng mục'}</small></summary>
+<div style="opacity:.75;font-size:12px;margin:6px 0 2px">Các tính năng chưa thiết lập riêng đều dùng cổng mặc định đã lưu ở trên. Mỗi tính năng có thể chọn: API chính hiện tại của Quán Rượu, một thiết lập sẵn, hoặc bấm 「Dùng cổng điền ở trên」 để gán riêng cổng trong biểu mẫu cho nó. Các tính năng AI trên thanh trạng thái sẽ kiểm tra cổng mặc định trước, nên cổng mặc định cần được lưu ít nhất một lần.</div>
 <div data-routes-body>${rows}</div></details>`;
 }
 export function sameConfig(a, b) { return ['url', 'key', 'model'].every(k => String(a?.[k] || '').trim() === String(b?.[k] || '').trim()); }
@@ -146,32 +146,32 @@ function bindForm(root, { bridge, ns, notify, rerender }) {
     f.addEventListener('change', sync); sync();
     f.addEventListener('submit', e => { if (!f.getAttribute('method')) e.preventDefault(); });
     const current = () => mode() === 'main' ? { url: MAIN_API_URL, key: 'st-main', model: MAIN_API_MODEL, maxTokens: f.max.value } : { url: f.url.value.trim(), key: f.key.value.trim(), model: f.model.value.trim(), maxTokens: f.max.value };
-    const check = c => { if (isMainApi(c.url)) return ''; const bad = validateUrl(c.url); if (bad) return bad; if (!c.key) return '请填写 API 密钥（状态栏的 AI 功能要求地址和密钥都不为空）'; return ''; };
+    const check = c => { if (isMainApi(c.url)) return ''; const bad = validateUrl(c.url); if (bad) return bad; if (!c.key) return 'Vui lòng điền khóa API (các tính năng AI của thanh trạng thái yêu cầu cả địa chỉ lẫn khóa đều không được để trống)'; return ''; };
     const say = (t, bad) => { out.textContent = t; out.style.color = bad ? '#ff9aa8' : '#bfe8c8'; };
     const pickSel = root.querySelector('[data-models]');
     pickSel.addEventListener('change', () => { if (pickSel.value) f.model.value = pickSel.value; });
     root.querySelector('[data-act=models]').addEventListener('click', async () => {
         const c = current(); const bad = validateUrl(c.url); if (bad) return say(bad, true);
-        say('正在拉取模型列表…（浏览器被拦截时自动经酒馆服务器转发）');
+        say('Đang lấy danh sách mô hình… (khi trình duyệt bị chặn sẽ tự động chuyển tiếp qua máy chủ Quán Rượu)');
         try {
             const list = await bridge.listModels(c.url, c.key);
             root.querySelector('#zt-api-models').innerHTML = list.map(m => `<option value="${esc(m)}">`).join('');
             // datalist pickers are unreliable on phones: a plain select as well
-            pickSel.innerHTML = `<option value="">— 从 ${list.length} 个模型中选择 —</option>` + list.map(m => `<option value="${esc(m)}" ${m === f.model.value ? 'selected' : ''}>${esc(m)}</option>`).join('');
+            pickSel.innerHTML = `<option value="">— Chọn từ ${list.length} mô hình —</option>` + list.map(m => `<option value="${esc(m)}" ${m === f.model.value ? 'selected' : ''}>${esc(m)}</option>`).join('');
             pickSel.hidden = false;
-            say(`共 ${list.length} 个模型。`); if (!f.model.value && list[0]) f.model.value = list[0];
-        } catch (e) { say('拉取失败：' + (e?.message || e) + '\n（拉不到列表时也可以直接手动填写模型名。）', true); }
+            say(`Tổng cộng ${list.length} mô hình.`); if (!f.model.value && list[0]) f.model.value = list[0];
+        } catch (e) { say('Lấy danh sách thất bại: ' + (e?.message || e) + '\n(Khi không lấy được danh sách, bạn cũng có thể tự nhập tay tên mô hình.)', true); }
     });
     root.querySelector('[data-act=test]').addEventListener('click', async () => {
         const c = current(); const bad = check(c); if (bad) return say(bad, true);
-        say('测试中…'); const t0 = performance.now(), control = new AbortController(), timer = setTimeout(() => control.abort(), 45000);
-        try { const r = await bridge.customChat(c, [{ role: 'user', content: '回复两个字：成功' }], { maxTokens: 4096, signal: control.signal }); say(`连接正常（${Math.round(performance.now() - t0)} ms · ${r.via === 'st-proxy' ? '经酒馆服务器转发' : r.via === 'st-main' ? '酒馆主 API' : '浏览器直连'}）：${String(r.text).trim().slice(0, 40)}`); }
-        catch (e) { say('测试失败：' + (e?.message || e), true); } finally { clearTimeout(timer); }
+        say('Đang kiểm tra…'); const t0 = performance.now(), control = new AbortController(), timer = setTimeout(() => control.abort(), 45000);
+        try { const r = await bridge.customChat(c, [{ role: 'user', content: 'Chỉ trả lời: Thành công' }], { maxTokens: 4096, signal: control.signal }); say(`Kết nối bình thường (${Math.round(performance.now() - t0)} ms · ${r.via === 'st-proxy' ? 'chuyển tiếp qua máy chủ Quán Rượu' : r.via === 'st-main' ? 'API chính của Quán Rượu' : 'kết nối trực tiếp từ trình duyệt'}): ${String(r.text).trim().slice(0, 40)}`); }
+        catch (e) { say('Kiểm tra thất bại: ' + (e?.message || e), true); } finally { clearTimeout(timer); }
     });
     // ---------- 1.0: presets ----------
     const presetSel = root.querySelector('[data-f=preset]'), nameIn = root.querySelector('[data-f=preset-name]'), saveP = root.querySelector('[data-act=preset-save]');
     const store = () => readRoutes(bridge);
-    const syncName = () => { const n = cleanName(nameIn.value); saveP.disabled = !n; saveP.textContent = n && store().presets.some(p => p.name === n) ? '覆盖预设' : '保存为预设'; };
+    const syncName = () => { const n = cleanName(nameIn.value); saveP.disabled = !n; saveP.textContent = n && store().presets.some(p => p.name === n) ? 'Ghi đè thiết lập sẵn' : 'Lưu làm thiết lập sẵn'; };
     const repaint = () => {
         const s = store(), keep = presetSel.value;
         presetSel.innerHTML = presetOptions(s); if (s.presets.some(p => p.name === keep)) presetSel.value = keep;
@@ -189,43 +189,43 @@ function bindForm(root, { bridge, ns, notify, rerender }) {
         const p = store().presets.find(x => x.name === presetSel.value); if (!p) return;
         const r = f.querySelector('input[name=mode][value=custom]'); if (r) r.checked = true; sync();
         f.url.value = p.url; f.key.value = p.key; f.model.value = p.model || ''; nameIn.value = p.name; syncName();
-        say(`已载入预设「${p.name}」。点「保存」把它设为默认接口，或在下面「分功能 API」里只给某个功能用。`);
+        say(`Đã nạp thiết lập sẵn 「${p.name}」. Bấm 「Lưu」 để đặt làm cổng mặc định, hoặc chỉ gán cho một tính năng trong mục 「API theo tính năng」 bên dưới.`);
     });
     saveP.addEventListener('click', async () => {
-        const name = cleanName(nameIn.value); if (!name) return say('请先输入预设名称，再保存。', true);
-        const c = current(); if (mode() === 'main') return say('「酒馆当前主 API」不需要存成预设：在「分功能 API」里直接选它即可。', true);
+        const name = cleanName(nameIn.value); if (!name) return say('Vui lòng nhập tên thiết lập sẵn trước khi lưu.', true);
+        const c = current(); if (mode() === 'main') return say('「API chính hiện tại của Quán Rượu」 không cần lưu thành thiết lập sẵn: chỉ cần chọn trực tiếp nó trong 「API theo tính năng」.', true);
         const bad = check(c); if (bad) return say(bad, true);
-        try { const had = store().presets.some(p => p.name === name); await writeRoutes(bridge, withPreset(store(), name, c)); repaint(); presetSel.value = name; say(had ? `已覆盖预设「${name}」。用它的功能下一次请求即用新接口。` : `已保存预设「${name}」。`); }
-        catch (e) { say('保存预设失败：' + (e?.message || e), true); }
+        try { const had = store().presets.some(p => p.name === name); await writeRoutes(bridge, withPreset(store(), name, c)); repaint(); presetSel.value = name; say(had ? `Đã ghi đè thiết lập sẵn 「${name}」. Các tính năng đang dùng nó sẽ áp dụng cổng mới ngay ở yêu cầu tiếp theo.` : `Đã lưu thiết lập sẵn 「${name}」.`); }
+        catch (e) { say('Lưu thiết lập sẵn thất bại: ' + (e?.message || e), true); }
     });
     root.querySelector('[data-act=preset-del]').addEventListener('click', async () => {
-        const name = presetSel.value; if (!name) return say('先在「接口预设」里选中要删除的预设。', true);
+        const name = presetSel.value; if (!name) return say('Hãy chọn thiết lập sẵn muốn xóa ở mục 「Thiết lập sẵn cổng」 trước.', true);
         const users = Object.entries(store().routes).filter(([, v]) => v === 'preset:' + name).length;
-        if (!globalThis.confirm(`删除预设「${name}」？${users ? `有 ${users} 个功能在用它，删除后改回跟随默认。` : ''}`)) return;
-        try { await writeRoutes(bridge, withoutPreset(store(), name)); repaint(); presetSel.value = ''; say(`已删除预设「${name}」。`); }
-        catch (e) { say('删除失败：' + (e?.message || e), true); }
+        if (!globalThis.confirm(`Xóa thiết lập sẵn 「${name}」? ${users ? `Có ${users} tính năng đang dùng nó, sau khi xóa sẽ quay về theo mặc định.` : ''}`)) return;
+        try { await writeRoutes(bridge, withoutPreset(store(), name)); repaint(); presetSel.value = ''; say(`Đã xóa thiết lập sẵn 「${name}」.`); }
+        catch (e) { say('Xóa thất bại: ' + (e?.message || e), true); }
     });
     // ---------- 1.0: 分功能 API ----------
     const label = id => ROUTES.find(r => r.id === id)?.label || id;
     f.addEventListener('change', async e => {
         const sl = e.target.closest?.('[data-route-sel]'); if (!sl) return;
         const id = sl.dataset.routeSel; if (sl.value === 'own') return;
-        try { const s = await writeRoutes(bridge, withRoute(store(), id, sl.value)); repaint(); say(`已提交保存：${label(id)} → ${routeText(s, id)}。下一次请求生效。`); }
-        catch (err) { say('保存失败：' + (err?.message || err), true); repaint(); }
+        try { const s = await writeRoutes(bridge, withRoute(store(), id, sl.value)); repaint(); say(`Đã gửi lưu: ${label(id)} → ${routeText(s, id)}. Có hiệu lực từ yêu cầu tiếp theo.`); }
+        catch (err) { say('Lưu thất bại: ' + (err?.message || err), true); repaint(); }
     });
     f.addEventListener('click', async e => {
         const b = e.target.closest?.('[data-route-own]'); if (!b) return;
         const id = b.dataset.routeOwn, c = current();
-        if (mode() !== 'main') { const bad = check(c); if (bad) return say(`${label(id)}：${bad}`, true); }
-        try { const s = await writeRoutes(bridge, withRoute(store(), id, mode() === 'main' ? MAIN : c)); repaint(); say(`已提交保存：${label(id)} → ${routeText(s, id)}。只影响这个功能，默认接口不变。`); }
-        catch (err) { say('保存失败：' + (err?.message || err), true); }
+        if (mode() !== 'main') { const bad = check(c); if (bad) return say(`${label(id)}: ${bad}`, true); }
+        try { const s = await writeRoutes(bridge, withRoute(store(), id, mode() === 'main' ? MAIN : c)); repaint(); say(`Đã gửi lưu: ${label(id)} → ${routeText(s, id)}. Chỉ ảnh hưởng tới tính năng này, cổng mặc định không đổi.`); }
+        catch (err) { say('Lưu thất bại: ' + (err?.message || err), true); }
     });
     syncName();
     root.querySelector('[data-act=save]').addEventListener('click', async () => {
         const c = current(); const bad = check(c); if (bad) return say(bad, true);
-        if (!f.toStatus.checked && !f.toAssistant.checked) return say('至少勾选一个应用目标。', true);
-        try { await saveConfigs(bridge, ns, c, { status: f.toStatus.checked, assistant: f.toAssistant.checked }); notify(); rerender?.('已提交给酒馆保存；若保存失败请查看诊断，重载后核对。状态栏与莉莉丝助手下一次请求即使用新配置（单独设置过的功能不受影响）。'); if (!rerender) say('已提交给酒馆保存；若保存失败请查看诊断，重载后核对。状态栏与莉莉丝助手下一次请求即使用新配置（单独设置过的功能不受影响）。'); }
-        catch (e) { say('保存失败：' + (e?.message || e), true); }
+        if (!f.toStatus.checked && !f.toAssistant.checked) return say('Vui lòng tích chọn ít nhất một mục tiêu áp dụng.', true);
+        try { await saveConfigs(bridge, ns, c, { status: f.toStatus.checked, assistant: f.toAssistant.checked }); notify(); rerender?.('Đã gửi cho Quán Rượu lưu; nếu lưu thất bại vui lòng xem mục Chẩn đoán, tải lại trang để đối chiếu. Thanh trạng thái và trợ lý Lilith sẽ dùng cấu hình mới ngay ở yêu cầu tiếp theo (các tính năng đã thiết lập riêng không bị ảnh hưởng).'); if (!rerender) say('Đã gửi cho Quán Rượu lưu; nếu lưu thất bại vui lòng xem mục Chẩn đoán, tải lại trang để đối chiếu. Thanh trạng thái và trợ lý Lilith sẽ dùng cấu hình mới ngay ở yêu cầu tiếp theo (các tính năng đã thiết lập riêng không bị ảnh hưởng).'); }
+        catch (e) { say('Lưu thất bại: ' + (e?.message || e), true); }
     });
     return { say };
 }

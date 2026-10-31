@@ -1,6 +1,6 @@
 // Shared multi-person model. Viewing a person never changes the legacy active romance target.
 const name = x => String(x?.姓名 || x?.名称 || '').trim();
-export const realName = s => !!s && !/^(暂无|无|未绑定|未知|未记录|none)$/i.test(s);
+export const realName = s => !!s && !/^(暂无|无|未绑定|未知|未记录|none|chưa có|không|chưa gắn kết|chưa rõ|chưa ghi nhận)$/i.test(s);
 export function bondId(world, person) { return 'person:' + encodeURIComponent(String(world || '未记录')) + ':' + encodeURIComponent(person); }
 export function keepPerson(z, person, world = z.当前世界 || '未记录') {
     if (!realName(name(person))) return null;
@@ -10,7 +10,7 @@ export function keepPerson(z, person, world = z.当前世界 || '未记录') {
     if (prior) Object.assign(prior, next); else z.羁绊库.push(next); return next;
 }
 export function migrateBonds(z) {
-    if (z.羁绊库 !== undefined && !Array.isArray(z.羁绊库)) throw Error('羁绊库格式异常，停止迁移，保留旧数据');
+    if (z.羁绊库 !== undefined && !Array.isArray(z.羁绊库)) throw Error('Định dạng Kho ràng buộc bất thường, dừng di chuyển, giữ nguyên dữ liệu cũ');
     z.羁绊库 ||= [];
     const key = z.恋爱目标?.id || bondId(z.恋爱目标?.世界 || z.当前世界, name(z.恋爱目标));
     const old = z.羁绊库.find(p => p.id === key) || keepPerson(z, z.恋爱目标); if (old && !z.当前羁绊ID) z.当前羁绊ID = old.id;
@@ -66,7 +66,7 @@ export const pulledEntry = (z, memberId) => (Array.isArray(z?.羁绊库) ? z.羁
  */
 export function pullMember(z, memberId) {
     const m = (z?.聊天群?.成员 || []).find(x => x?.id === memberId);
-    if (!m || !realName(name(m))) throw Error('群里没有这个群员（可能已被踢出）');
+    if (!m || !realName(name(m))) throw Error('Trong nhóm không có thành viên này (có thể đã bị trục xuất)');
     const prior = pulledEntry(z, memberId); if (prior) return prior;
     migrateBonds(z);
     const world = String(m.世界 || z.当前世界 || '未记录'), same = z.羁绊库.find(p => name(p) === name(m) && p.世界 === world);
@@ -80,10 +80,10 @@ export function pullMember(z, memberId) {
  */
 export function dropPulled(z, bondIdValue) {
     const list = Array.isArray(z?.羁绊库) ? z.羁绊库 : [], i = list.findIndex(p => p?.id === bondIdValue);
-    if (i < 0) throw Error('羁绊里已经没有这个人');
+    if (i < 0) throw Error('Trong mục Ràng buộc đã không còn người này');
     const p = list[i];
-    if (!p.群员ID) throw Error('只有从聊天群拉进来的群友可以移出');
-    if (z.当前羁绊ID === bondIdValue) throw Error('当前攻略目标不能移出，请先切换攻略目标');
+    if (!p.群员ID) throw Error('Chỉ bạn cùng nhóm được kéo từ Nhóm chat vào mới có thể đưa ra ngoài');
+    if (z.当前羁绊ID === bondIdValue) throw Error('Mục tiêu công lược hiện tại không thể đưa ra ngoài, vui lòng chuyển đổi mục tiêu công lược trước');
     if (p.群员拉入) return { removed: true, person: list.splice(i, 1)[0] };
     delete p.群员ID; return { removed: false, person: p };
 }

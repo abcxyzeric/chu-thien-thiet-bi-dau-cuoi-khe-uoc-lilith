@@ -31,9 +31,9 @@ export class HostAdapter {
         const c = this.context();
         this.host = await loadHostModule();
         if (this.dead) return;
-        if (!c?.eventSource || !c.eventTypes || typeof c.saveChat !== 'function' || typeof this.host.sendMessageAsUser !== 'function') throw Error('宿主缺少已核验接口（事件总线 / saveChat / sendMessageAsUser），停止启动，未改写数据。');
+        if (!c?.eventSource || !c.eventTypes || typeof c.saveChat !== 'function' || typeof this.host.sendMessageAsUser !== 'function') throw Error('Máy chủ thiếu giao diện đã kiểm nghiệm (Bus sự kiện / saveChat / sendMessageAsUser), dừng khởi động, chưa sửa đổi dữ liệu.');
         try { const v = await fetchHostVersion(); this.version = v.pkgVersion; this.versionInfo = v; }
-        catch { throw Error('无法核对酒馆版本，已阻止写入。'); }
+        catch { throw Error('Không thể đối chiếu phiên bản SillyTavern, đã chặn ghi dữ liệu.'); }
         if (this.dead) return;
         this.support = hostSupport(this.version);
         if (!this.support.ok) throw Error(this.support.reason);
@@ -46,8 +46,8 @@ export class HostAdapter {
         if (this.dead) return;
         this.capabilities = probeCapabilities(this.context(), this.host);
         const missing = this.capabilities.filter(x => !x.ok && ['eventSource','eventTypes','saveChat','saveMetadata','setExtensionPrompt','addOneMessage'].includes(x.key));
-        if (missing.length) throw Error('宿主缺少核心接口：' + missing.map(x => x.label).join('、') + '；停止启动，未改写数据。');
-        if (this.support.level === 'newer') globalThis.toastr?.warning(this.support.reason, '诸天契约终端');
+        if (missing.length) throw Error('Máy chủ thiếu giao diện cốt lõi: ' + missing.map(x => x.label).join(', ') + '; dừng khởi động, chưa sửa đổi dữ liệu.');
+        if (this.support.level === 'newer') globalThis.toastr?.warning(this.support.reason, 'Thiết Bị Đầu Cuối Khế Ước Chư Thiên');
         for (const key of ['CHAT_CHANGED','MESSAGE_RECEIVED','MESSAGE_EDITED','MESSAGE_SWIPED','MESSAGE_DELETED','USER_MESSAGE_RENDERED','CHARACTER_MESSAGE_RENDERED']) {
             const event = c.eventTypes[key]; if (!event) continue;
             const fn = () => {
@@ -66,10 +66,10 @@ export class HostAdapter {
         if(stop&&typeof MutationObserver==='function'){const mo=new MutationObserver(()=>this.checkStop());mo.observe(stop,{attributes:true,attributeFilter:['style','class','hidden']});this.disposers.push(()=>mo.disconnect());}
     }
     subscribe(fn) { this.subscribers.add(fn); return ()=>this.subscribers.delete(fn); }
-    notify() { if(!this.dead)for(const fn of this.subscribers) { try{fn();}catch(e){console.warn('[诸天终端] 只读刷新失败',e.message);} } }
+    notify() { if(!this.dead)for(const fn of this.subscribers) { try{fn();}catch(e){console.warn('[Chư Thiên] Làm mới chỉ đọc thất bại',e.message);} } }
     /** 0.8.5: a missed GENERATION_ENDED (phone browser backgrounded mid-stream, a thinking model) left `generating` true
      *  for good: the status-bar renderer then never touched the last floor (raw <ZhuTianPanel> text on phones) and trades
-     *  refused with 主聊天正在生成. SillyTavern shows its stop button while the main chat generates and hides it at the end
+     *  refused with Cuộc trò chuyện chính đang tạo phản hồi. SillyTavern shows its stop button while the main chat generates and hides it at the end
      *  (also when the end event is lost). So: once the stop button was seen during this generation and is hidden again,
      *  the generation is over and a stale flag clears itself. GENERATION_STARTED fires *before* SillyTavern sets
      *  is_send_press and shows the button, and quiet generations never show it: a button that was never seen therefore
@@ -102,23 +102,23 @@ export class HostAdapter {
     }
     settings() { return this.context()?.chatMetadata?.[STORAGE] || {}; }
     async setRecall(enabled) {
-        if(this.busy)throw Error('交易正在保存，请稍后修改设置。');
-        if(!this.currentIdentity())throw Error('请先打开单角色聊天。');
-        if(enabled && document.querySelector('#zt-memory-assistant-v1:not([data-zt-native])'))throw Error('检测到旧版记忆助手：请先停用它，再启用新版回忆提示，避免重复注入。');
+        if(this.busy)throw Error('Giao dịch đang được lưu, vui lòng sửa cài đặt sau.');
+        if(!this.currentIdentity())throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước.');
+        if(enabled && document.querySelector('#zt-memory-assistant-v1:not([data-zt-native])'))throw Error('Phát hiện Trợ lý Ký ức bản cũ: vui lòng tắt bản cũ trước rồi mới bật gợi ý hồi ức bản mới để tránh tiêm trùng lặp.');
         const c=this.context(),chat=c.chat,id=this.currentIdentity();
         c.chatMetadata[STORAGE]={...this.settings(),schema:1,recallEnabled:!!enabled};
         await c.saveMetadata();
-        if(this.currentIdentity()!==id||this.context().chat!==chat)throw Error('聊天已切换，请回到原聊天检查设置。');
+        if(this.currentIdentity()!==id||this.context().chat!==chat)throw Error('Trò chuyện đã chuyển, vui lòng quay lại cuộc trò chuyện ban đầu để kiểm tra cài đặt.');
         this.refreshPrompt();this.notify();
     }
     async setNativeLedger(enabled) {
-        if(this.busy||this.dead||this.generating||!this.currentIdentity())throw Error('请先停止生成/交易，并打开单角色聊天。');
-        if(enabled&&this.transactions.legacyActive())throw Error('请先停用旧状态栏和旧助手；不能让两个引擎写同一账本。');
+        if(this.busy||this.dead||this.generating||!this.currentIdentity())throw Error('Vui lòng dừng tạo/giao dịch và mở cuộc trò chuyện đơn nhân vật trước.');
+        if(enabled&&this.transactions.legacyActive())throw Error('Vui lòng tắt thanh trạng thái cũ và trợ lý cũ trước; không thể để hai bộ máy cùng ghi vào một sổ cái.');
         const c=this.context(),id=this.currentIdentity(),target={avatar_url:c.characters[c.characterId].avatar,file_name:c.getCurrentChatId()};
         c.chatMetadata[STORAGE]={...this.settings(),nativeLedgerEnabled:!!enabled};
         await c.saveMetadata();
         const disk=await this.transactions.request('get',target);
-        if(id!==this.currentIdentity()||disk?.[0]?.chat_metadata?.[STORAGE]?.nativeLedgerEnabled!==!!enabled)throw Error('设置保存未能核实，请重载检查。');
+        if(id!==this.currentIdentity()||disk?.[0]?.chat_metadata?.[STORAGE]?.nativeLedgerEnabled!==!!enabled)throw Error('Chưa thể xác thực việc lưu cài đặt, vui lòng tải lại trang để kiểm tra.');
         this.notify();
     }
     clearPrompt() { this.context()?.setExtensionPrompt?.(PROMPT,'',1,0,false,0); }
@@ -132,42 +132,42 @@ export class HostAdapter {
             const q=time.findLast(x=>x.role==='user'&&!x.hidden)?.body||'';
             const recalled=core.recall(st,time,this.ledger(),q),id=identity(c);
             c.setExtensionPrompt(PROMPT,recalled.content,1,0,false,0,()=>!this.dead&&this.currentIdentity()===id&&this.settings().recallEnabled&&!document.querySelector('#zt-memory-assistant-v1:not([data-zt-native])'));
-        }catch(e){this.clearPrompt();console.warn('[诸天终端] 回忆提示未启用：',e.message);}
+        }catch(e){this.clearPrompt();console.warn('[Chư Thiên] Gợi ý hồi ức chưa được bật:',e.message);}
     }
     draft(target,action) {
-        const c=this.context();if(!identity(c))throw Error('请先打开单角色聊天，开发版不接管群聊。');
+        const c=this.context();if(!identity(c))throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước, bản này không tiếp quản trò chuyện nhóm.');
         return {...normalizeIntent(target,action),id:crypto.randomUUID(),chatIdentity:identity(c),chatRef:c.chat,token:snapshotToken(c),epoch:this.generationEpoch};
     }
     async send(draft) {
-        if(this.dead)throw Error('扩展已停用。');
-        if(this.busy||this.isGenerating())throw Error('已有操作或主聊天正在生成，请稍后再试。');
+        if(this.dead)throw Error('Tiện ích đã tắt.');
+        if(this.busy||this.isGenerating())throw Error('Đang có thao tác khác hoặc cuộc trò chuyện chính đang tạo phản hồi, vui lòng thử lại sau.');
         const c=this.context();
-        if(!draft?.id||this.sendingReceipts.has(draft.id))throw Error('该操作已提交，不会重复发送。');
-        if(identity(c)!==draft.chatIdentity||c.chat!==draft.chatRef||snapshotToken(c)!==draft.token||draft.epoch!==this.generationEpoch)throw Error('聊天或正文已变化，请重新预览再发送。');
-        if(document.getElementById('file_form_input')?.files?.length)throw Error('主输入框有待发送附件，请先处理附件，避免把它附在这次互动中。');
+        if(!draft?.id||this.sendingReceipts.has(draft.id))throw Error('Thao tác này đã được gửi, không gửi lặp lại.');
+        if(identity(c)!==draft.chatIdentity||c.chat!==draft.chatRef||snapshotToken(c)!==draft.token||draft.epoch!==this.generationEpoch)throw Error('Trò chuyện hoặc chính văn đã thay đổi, vui lòng xem trước lại rồi mới gửi.');
+        if(document.getElementById('file_form_input')?.files?.length)throw Error('Ô nhập chính đang có tệp đính kèm chờ gửi, vui lòng xử lý tệp đính kèm trước để tránh gửi nhầm vào tương tác này.');
         const normalized=normalizeIntent(draft.target,draft.action);
         const diskTarget={avatar_url:c.characters[c.characterId].avatar,file_name:c.getCurrentChatId()};
         this.busy=true;this.sendingReceipts.add(draft.id);this.notify();
         try {
             const message=await this.host.sendMessageAsUser(normalized.message,'');
             // After host events/save, use the original object identity to avoid stamping a different chat.
-            if(!draft.chatRef.includes(message))throw Error('宿主未确认消息对象，停止后续操作；不要自动重发。');
-            if(identity(this.context())!==draft.chatIdentity||this.context().chat!==draft.chatRef)throw Error('发送期间聊天发生变化。消息可能已写入原聊天，请人工核对；不会自动重发。');
+            if(!draft.chatRef.includes(message))throw Error('Máy chủ chưa xác nhận đối tượng tin nhắn, dừng các thao tác tiếp theo; vui lòng không tự động gửi lại.');
+            if(identity(this.context())!==draft.chatIdentity||this.context().chat!==draft.chatRef)throw Error('Cuộc trò chuyện đã thay đổi trong lúc gửi. Tin nhắn có thể đã được ghi vào cuộc trò chuyện gốc, vui lòng kiểm tra thủ công; không tự động gửi lại.');
             message.extra ||= {};
             message.extra[STORAGE]={kind:'player-interaction',id:draft.id,target:normalized.target,version:1,at:Date.now()};
             await this.context().saveChat();
             // saveChatConditional catches errors internally; its resolved promise is NOT a disk receipt.
             // Read the actual server chat back before reporting success. This endpoint is pinned too.
             const response=await fetch('/api/chats/get',{method:'POST',headers:c.getRequestHeaders(),credentials:'same-origin',cache:'no-store',body:JSON.stringify(diskTarget),signal:AbortSignal.timeout(15000)});
-            if(!response.ok)throw Error('消息保存状态无法核实，已停止后续操作');
+            if(!response.ok)throw Error('Không thể xác thực trạng thái lưu tin nhắn, đã dừng các thao tác tiếp theo');
             const disk=await response.json();
-            if(!Array.isArray(disk)||!disk.some(m=>m.extra?.[STORAGE]?.id===draft.id&&m.is_user&&m.mes===message.mes))throw Error('未在服务器记录中找到本次消息凭据，请人工检查存档');
-            if(identity(this.context())!==draft.chatIdentity)throw Error('消息已在原聊天核实，但当前聊天已切换');
+            if(!Array.isArray(disk)||!disk.some(m=>m.extra?.[STORAGE]?.id===draft.id&&m.is_user&&m.mes===message.mes))throw Error('Không tìm thấy chứng từ tin nhắn lần này trong bản ghi máy chủ, vui lòng kiểm tra bản lưu thủ công');
+            if(identity(this.context())!==draft.chatIdentity)throw Error('Tin nhắn đã được xác thực ở cuộc trò chuyện gốc, nhưng cuộc trò chuyện hiện tại đã chuyển sang nơi khác');
             this.notify();
             return {message,id:this.context().chat.indexOf(message)};
         } catch(e) {
             // A host call can save before rejecting. Fail closed: never silently delete or repeat it.
-            throw Error(`${e.message} 如正文已出现，请勿重复发送。`);
+            throw Error(`${e.message} Nếu nội dung đã xuất hiện trong chính văn, vui lòng không gửi lặp lại.`);
         } finally {this.busy=false;this.notify();}
     }
     dispose() {this.transactions.dispose();this.dead=true;this.generationEpoch++;this.disposers.splice(0).forEach(fn=>fn());this.subscribers.clear();this.clearPrompt();}

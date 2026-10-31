@@ -1,84 +1,84 @@
-# 0.8.0 变更记录：界面统一 · 莉莉丝气泡 · 管理员入口 · 自拟外挂入口 · 熟练度生效 · 角色卡功法
+# Bản ghi thay đổi 0.8.0: Thống nhất giao diện · Bong bóng Lilith · Lối vào Quản trị viên · Lối vào Ngoại quải tự tạo · Độ thuần thục có hiệu lực thực tế · Công pháp thẻ nhân vật
 
-基线：0.7.0（GitHub `main`，提交 `ed45c8d`）。
-验收结果见 [ACCEPTANCE-0.8.0](ACCEPTANCE-0.8.0.md)。
+Cơ sở: 0.7.0 (GitHub `main`, commit `ed45c8d`).
+Kết quả nghiệm thu xem tại [ACCEPTANCE-0.8.0](ACCEPTANCE-0.8.0.md).
 
-## 一、莉莉丝原版页面跟随世界主题（界面统一）
+## I. Các trang Lilith nguyên bản đi theo chủ đề thế giới (Thống nhất giao diện)
 
-0.7.0 的问题：切到仙侠 / 赛博 / 诡异主题后，终端页和状态栏引擎会换色，但莉莉丝原版页面（工作台、记忆、规则、连接、状态）、底部状态行和私聊面板仍是原版紫色。同一个窗口里两套配色，看上去像把状态栏硬塞进来。
+Vấn đề của bản 0.7.0: Sau khi chuyển sang chủ đề Tiên hiệp / Cyber / Quỷ dị, các trang thiết bị đầu cuối và động cơ thanh trạng thái đều đổi màu, nhưng các trang Lilith nguyên bản (Bàn làm việc, Ký ức, Quy tắc, Kết nối, Trạng thái), dòng trạng thái dưới cùng và bảng trò chuyện riêng vẫn giữ màu tím nguyên bản. Trong cùng một cửa sổ lại có hai bộ phối màu khác nhau.
 
-- `styles/world.css` 新增主题桥：在非默认主题下，原版页面的卡片、按钮、主按钮、输入框、标签、`details`、`pre`、快捷提示按钮，底部状态行，窗口标题区，立绘标题，私聊面板（头部、消息、输入区、发送按钮），以及立绘气泡，都改用终端同一组 `--zt-*` 颜色变量。
-- 只改颜色、边框和标题字体，不改尺寸、间距和位置。默认主题完全保留原版紫色（验收里核对了计算后的颜色）。
-- 选择器限定在 `.page:not(.zt-hub-page)` 内，终端自己的页面不受影响。
+- `styles/world.css` thêm mới cầu nối chủ đề: dưới các chủ đề khác mặc định, thẻ, nút bấm, nút chính, ô nhập liệu, nhãn, `details`, `pre`, nút gợi ý nhanh, dòng trạng thái dưới cùng, vùng tiêu đề cửa sổ, tiêu đề tranh đứng, bảng trò chuyện riêng (đầu trang, tin nhắn, vùng nhập liệu, nút gửi), cùng bong bóng thoại tranh đứng của các trang nguyên bản đều chuyển sang dùng chung bộ biến màu `--zt-*` của thiết bị đầu cuối.
+- Chỉ đổi màu sắc, đường viền và phông chữ tiêu đề, không đổi kích thước, khoảng cách hay vị trí. Chủ đề mặc định giữ nguyên hoàn toàn màu tím nguyên bản (trong nghiệm thu đã đối chiếu màu sắc sau khi tính toán).
+- Bộ chọn được giới hạn trong `.page:not(.zt-hub-page)`, nên các trang riêng của thiết bị đầu cuối không bị ảnh hưởng.
 
-## 二、莉莉丝那一行改成立绘气泡
+## II. Dòng Lilith ở đáy thanh trạng thái chuyển thành bong bóng thoại tranh đứng
 
-- 终端里不再显示状态栏底部的「◆ 莉莉丝：……」一行（`ENGINE_CSS` 隐藏 `.mvu-msg`）。楼层内旧兼容模式不受影响。
-- 数据块里的「系统播报」改由立绘气泡说出：每条新播报说一次，动作和表情用原版 `speak(zone)`。终端关着时先记下，下次打开时再说。原版待机台词（没有播报时的那 6 句）不会自动弹出。
-- 点立绘空白处（不是身体部位，也不是抚摸或长按）会说一句剧情台词。台词按顺序轮换，内容取自账本：最新播报、待播报的功法突破、未完成任务和进度、主修功法离下一阶段还差多少、当前世界、羁绊对象的好感和黑化、系统点余额，最后是原版待机台词。点身体部位仍是原版反应。
-- 窗口太小、立绘被隐藏时（手机），播报改用终端底部提示条显示。
-- 设置 → 莉莉丝 →「气泡播报」可以关闭。
+- Trong thiết bị đầu cuối không còn hiển thị dòng 「◆ Lilith: ……」 ở dưới cùng thanh trạng thái nữa (`ENGINE_CSS` ẩn `.mvu-msg`). Chế độ tương thích cũ trong tầng không bị ảnh hưởng.
+- Mục 「Thông báo hệ thống」 (`系统播报`) trong khối dữ liệu chuyển sang do bong bóng thoại trên tranh đứng nói ra: mỗi thông báo mới nói một lần, chuyển động và biểu cảm sử dụng `speak(zone)` nguyên bản. Khi thiết bị đầu cuối đang đóng sẽ ghi nhớ lại trước, lần mở tiếp theo sẽ nói ra. 6 câu thoại chờ nguyên bản (khi không có thông báo) sẽ không tự động bật lên.
+- Bấm vào khoảng trống trên tranh đứng (không phải bộ phận cơ thể, cũng không phải vuốt ve hay nhấn giữ) sẽ nói một câu thoại theo cốt truyện. Lời thoại luân phiên theo thứ tự, nội dung lấy từ sổ cái: thông báo mới nhất, đột phá công pháp đang chờ phát báo, nhiệm vụ chưa hoàn thành và tiến độ, công pháp chủ tu còn cách giai đoạn tiếp theo bao nhiêu, thế giới hiện tại, độ hảo cảm và giá trị hắc hóa của đối tượng gắn kết, số dư Điểm Hệ Thống, và cuối cùng là câu thoại chờ nguyên bản. Bấm vào các bộ phận cơ thể vẫn giữ phản ứng nguyên bản.
+- Khi cửa sổ quá nhỏ khiến tranh đứng bị ẩn đi (trên điện thoại), phát báo sẽ chuyển sang hiển thị bằng thanh thông báo ở đáy thiết bị đầu cuối.
+- Có thể tắt trong Cài đặt → Lilith → 「Phát báo qua bong bóng」.
 
-## 三、顶栏和基础概览的系统点不一致（修复）
+## III. Điểm Hệ Thống trên thanh đỉnh và trong Tổng quan cơ bản không khớp nhau (Đã sửa)
 
-原因：终端里的原版引擎在加载时按数据块文字填数字。只有绑定的楼层带数据块、并且执行了原版捕获时，才会从账本重新读一次。所以签到、聊天群、自拟外挂、管理员这些楼层之外的写入发生后，只有顶栏会刷新，「基础概览」还显示旧数据块里的数字。聊天里还没有 AI 数据块时，概览会一直显示 0。
+Nguyên nhân: Động cơ nguyên bản bên trong thiết bị đầu cuối khi tải sẽ điền con số dựa theo văn bản khối dữ liệu. Chỉ khi tầng gắn kết có khối dữ liệu và thực thi bắt dữ liệu nguyên bản thì nó mới đọc lại từ sổ cái một lần. Do đó, sau khi phát sinh các thao tác ghi bên ngoài tầng như điểm danh, nhóm chat, ngoại quải tự tạo, quản trị viên, chỉ có thanh đỉnh được làm mới, còn 「Tổng quan cơ bản」 vẫn hiển thị con số trong khối dữ liệu cũ. Khi trong cuộc trò chuyện chưa có khối dữ liệu AI nào, trang tổng quan sẽ luôn hiển thị số 0.
 
-修复（`src/hub.js`）：
-- 引擎首次填充完成后（`__ztDataReady`），以及之后每次账本变化，都用原版 `applyVarsToDisplay` 和 `ztRefreshVisible` 把账本重新读到当前页面。数据块文字本身不改。
-- 弹窗打开或正在输入时延后刷新。
+Cách sửa (`src/hub.js`):
+- Sau khi động cơ điền dữ liệu lần đầu hoàn tất (`__ztDataReady`), và mỗi lần sổ cái thay đổi sau đó, đều dùng `applyVarsToDisplay` và `ztRefreshVisible` nguyên bản để đọc lại sổ cái vào trang hiện tại. Bản thân văn bản khối dữ liệu không bị sửa đổi.
+- Khi đang mở hộp thoại bật lên hoặc đang gõ phím sẽ hoãn việc làm mới lại.
 
-## 四、管理员控制台移到设置里
+## IV. Đưa Bảng điều khiển Quản trị viên vào trong Cài đặt
 
-- 设置 → 高级 · 管理员 →「管理员控制台」：打开原版管理员面板，可以改系统点、专属资源、好感 / 黑化 / 悔意、主修功法、货币和实力档，保存后真实写入账本。
-- 终端里原来的入口（底部 ◆ 连点五次）随莉莉丝那一行一起隐藏，面板上「连点 ◆ 五次」的旧说明也隐藏了。
+- Cài đặt → Nâng cao · Quản trị viên → 「Bảng điều khiển Quản trị viên」: mở bảng quản trị viên nguyên bản, có thể sửa Điểm Hệ Thống, tài nguyên độc quyền, hảo cảm / hắc hóa / hối hận, công pháp chủ tu, tiền tệ và bậc thực lực, sau khi lưu sẽ ghi thực tế vào sổ cái.
+- Lối vào cũ trong thiết bị đầu cuối (bấm liên tiếp 5 lần vào biểu tượng ◆ ở dưới cùng) được ẩn đi cùng với dòng Lilith, thuyết minh cũ 「bấm liên tiếp 5 lần vào ◆」 trên bảng cũng được ẩn đi.
 
-## 五、自拟外挂
+## V. Ngoại quải tự tạo
 
-0.5.0 起已经有自拟外挂编辑器（规则、品阶、被动 / 主动 / 每日次数、代价、冷却、注入提示词、导入导出），但入口只在「外挂」页的工具条里，很难找到。本版：
-- 导航「能力」组新增「自拟」（悬停显示全称「自拟外挂」），直接进入编辑与管理页。
-- 「外挂」页工具条新增「＋ 自拟外挂」，点一下就打开空白编辑器，名称框已获得焦点。
-- **修复**：发动自拟外挂扣系统点 / 专属资源时没有写 `界面记账时间`，下一条 AI 数据块可能把扣掉的点数"退"回来。现在两种代价都会盖时间戳（单元测试 + 浏览器验收）。
+Từ bản 0.5.0 đã có trình chỉnh sửa ngoại quải tự tạo (quy tắc, phẩm cấp, bị động / chủ động / số lần mỗi ngày, cái giá phải trả, hồi chiêu, tiêm lời nhắc, nhập/xuất), nhưng lối vào chỉ nằm trong thanh công cụ của trang 「Ngoại quải」 nên khó tìm thấy. Ở bản này:
+- Nhóm điều hướng 「Năng lực」 thêm mới mục 「Tự tạo」 (di chuột lên hiển thị tên đầy đủ 「Ngoại quải tự tạo」), đi thẳng vào trang chỉnh sửa và quản lý.
+- Thanh công cụ trang 「Ngoại quải」 thêm mới nút 「＋ Ngoại quải tự tạo」, bấm một cái sẽ mở ngay trình chỉnh sửa trống và đặt tiêu điểm sẵn vào ô tên.
+- **Sửa lỗi**: Khi phát động ngoại quải tự tạo trừ Điểm Hệ Thống / tài nguyên độc quyền trước đây chưa ghi `界面记账时间`, khiến khối dữ liệu AI ở lượt tiếp theo có thể “hoàn trả” nhầm số điểm vừa trừ. Hiện tại cả hai loại chi phí đều đóng dấu thời gian đầy đủ (kiểm thử đơn vị + nghiệm thu trình duyệt).
 
-## 六、熟练度不再只是装饰（新模块 `src/skill-sync.js`）
+## VI. Độ thuần thục không còn chỉ để trang trí (Mô-đun mới `src/skill-sync.js`)
 
-1. **功法实效提示**（默认开）：每轮把功法库里每门功法当前阶段的原版效果告诉 AI，主修排第一，最多 12 部。效果包括：熟练，消耗 −30%；精通，威力 +100%；宗师，专属奥义；入道，无消耗瞬发；未入门，施展不稳定。同时说明下一阶段需要多少熟练度，以及「功法修炼」怎么写（日常 1–5，苦练 5–20，生死搏杀 / 顿悟 20–100）。原来这些效果只写在界面提示里，AI 看不到。
-2. **实战积累**（默认开）：最新 AI 楼层由原版引擎记账后，如果正文里实际用了功法库里的某门功法，但数据块「功法修炼」漏记了，就按品阶补记少量熟练度。
-   - 凡品 +3，灵品 +2，仙品 / 神品 +1，每层最多 2 部，不超过本品上限。
-   - 升阶会写进原版「功法待播报」，由 AI 播报并用「结算:」结清，和平常的突破一样。终端会播放「突破」演出。
-   - 凭据记在 `功法记录` 里（这是快照字段）。换页或重新生成时，原版恢复楼层快照，补记就跟旧回复一起撤销；同一层重复渲染不会重复补记。
-3. **阶段效果页**：「修行」页工具条显示主修功法的阶段、离下一阶段还差多少、最近一次实战积累，另有「阶段效果与来源 ›」页面。这个页面列出每门功法正在生效的效果和下一阶段的效果、原版阶段规则与品阶上限、实战积累记录。
+1. **Lời nhắc hiệu quả thực tế của công pháp** (mặc định bật): Mỗi lượt đều báo cho AI biết hiệu quả nguyên bản ở giai đoạn hiện tại của từng môn công pháp trong kho công pháp, môn chủ tu xếp đầu tiên, tối đa 12 bộ. Các hiệu quả bao gồm: Thuần Thục giảm 30% tiêu hao; Tinh Thông tăng 100% uy lực; Tông Sư có áo nghĩa độc quyền; Nhập Đạo phát động tức thì không tiêu hao; Chưa Nhập Môn thi triển không ổn định. Đồng thời nêu rõ giai đoạn tiếp theo cần bao nhiêu độ thuần thục, và cách ghi dòng 「功法修炼」 (thường ngày 1–5, khổ luyện 5–20, chiến đấu sinh tử / đốn ngộ 20–100). Trước đây những hiệu quả này chỉ nằm trong gợi ý giao diện nên AI không nhìn thấy được.
+2. **Tích lũy thực chiến** (mặc định bật): Sau khi tầng AI mới nhất được động cơ nguyên bản ghi sổ, nếu trong chính văn thực sự có thi triển một môn công pháp trong kho công pháp nhưng dòng 「功法修炼」 trong khối dữ liệu lại quên ghi, hệ thống sẽ tự động ghi bù một lượng nhỏ độ thuần thục theo phẩm giai.
+   - Phàm phẩm +3, Linh phẩm +2, Tiên phẩm / Thần phẩm +1, mỗi tầng tối đa 2 bộ, không vượt quá giới hạn trần của phẩm giai đó.
+   - Khi thăng giai sẽ được đưa vào mục 「Đột phá chờ phát báo」 (`功法待播报`) nguyên bản để AI phát báo và kết toán bằng `结算:`, giống hệt như đột phá thông thường. Thiết bị đầu cuối sẽ phát trình diễn 「Đột phá」.
+   - Chứng từ được ghi trong `功法记录` (đây là trường thuộc bản chụp nhanh). Khi lật trang swipe hoặc tạo lại phản hồi, bản gốc khôi phục bản chụp nhanh của tầng nên phần ghi bù cũng tự động được hoàn tác cùng phản hồi cũ; cùng một tầng kết xuất lại sẽ không bị ghi bù lặp.
+3. **Trang hiệu quả giai đoạn**: Thanh công cụ trang 「Tu hành」 hiển thị giai đoạn của công pháp chủ tu, còn thiếu bao nhiêu để lên giai đoạn tiếp theo, lần tích lũy thực chiến gần nhất, cùng lối vào trang 「Hiệu quả giai đoạn & Nguồn gốc ›」. Trang này liệt kê hiệu quả đang có hiệu lực và hiệu quả giai đoạn tiếp theo của từng môn công pháp, quy tắc giai đoạn và giới hạn phẩm giai nguyên bản, cùng lịch sử tích lũy thực chiến.
 
-## 七、读取不同角色卡的功法变量
+## VII. Đọc biến số công pháp từ các thẻ nhân vật khác nhau
 
-- 读取的来源：
-  - 当前聊天的其他变量（其他脚本或卡片写的，跳过 `诸天系统` 和记忆助手）；
-  - 最近 30 层里最新一层的 MVU `stat_data`；
-  - 角色卡的酒馆助手变量。
-- 查找名字含 功法 / 技能 / 武技 / 武学 / 法术 / 神通 / 秘籍 / 招式 / 心法 / 绝学 / skills / abilities 的键，最多深入 6 层。
-- 支持的写法：
-  - 数组和对象；
-  - MVU 的 `[值, 说明]` 对；
-  - 「名称〔入门〕」这类字符串；
-  - 字段 熟练度 / 境界 / 品阶 / 描述（含常见英文名）。
-  - 境界词会换算成阈值，例如 入门 100、小成 500、大成 2000。
-- 「修行 · 熟练度」页会列出找到的功法和它们的来源路径（例如 `聊天变量.角色状态.主角.功法.独孤九剑`），点「导入 / 同步到功法库」后：
-  - 新功法会被收录；没有写品阶时，取能容纳该熟练度的最低品阶；
-  - 已有功法的熟练度和品阶只升不降；
-  - 所有楼层快照同步提升，换页时导入的功法不会丢；
-  - 每次导入记入 `功法记录` 和 `诸天系统.角色卡功法同步`（时间、来源、部数、变化数）。
-- 不会改写角色卡自己的变量。设置里可以打开「自动同步」（默认关）。
+- Các nguồn đọc:
+  - Các biến khác của cuộc trò chuyện hiện tại (do kịch bản khác hoặc thẻ nhân vật ghi, bỏ qua `诸天系统` và trợ lý ký ức);
+  - `stat_data` MVU của tầng mới nhất trong 30 tầng gần đây;
+  - Biến Tavern Helper của thẻ nhân vật.
+- Tìm các khóa có tên chứa 功法 / 技能 / 武技 / 武学 / 法术 / 神通 / 秘籍 / 招式 / 心法 / 绝学 / skills / abilities, đi sâu tối đa 6 tầng.
+- Hỗ trợ các cách viết:
+  - Mảng và đối tượng;
+  - Cặp `[giá trị, thuyết minh]` của MVU;
+  - Chuỗi dạng 「Tên〔Nhập Môn〕」;
+  - Các trường Độ thuần thục / Cảnh giới / Phẩm giai / Mô tả (bao gồm cả các tên tiếng Anh phổ biến).
+  - Các từ chỉ cảnh giới sẽ được quy đổi thành ngưỡng tương ứng, ví dụ Nhập Môn 100, Tiểu Thành 500, Đại Thành 2000.
+- Trang 「Tu hành · Độ thuần thục」 sẽ liệt kê các công pháp tìm thấy cùng đường dẫn nguồn của chúng, sau khi bấm 「Nhập / Đồng bộ vào kho công pháp」:
+  - Công pháp mới sẽ được thu lục; khi không ghi phẩm giai sẽ lấy phẩm giai thấp nhất đủ sức chứa độ thuần thục đó;
+  - Độ thuần thục và phẩm giai của công pháp đã có chỉ tăng không giảm;
+  - Bản chụp nhanh của toàn bộ các tầng đều được nâng lên đồng bộ, nên khi đổi swipe công pháp đã nhập sẽ không bị mất;
+  - Mỗi lần nhập đều được ghi vào `功法记录` và `诸天系统.角色卡功法同步` (thời gian, nguồn, số bộ, số mục thay đổi).
+- Không ghi đè biến số của chính thẻ nhân vật. Trong Cài đặt có thể bật 「Tự động đồng bộ」 (mặc định tắt).
 
-## 八、找到并修复的其他问题
+## VIII. Các vấn đề khác đã tìm thấy và sửa chữa
 
-- **弹窗打开时引擎可能被重载**：`engineBusy` 和 Esc 判断用的是 `.overlay.show`，而原版的管理员、抽取、物品详情弹窗都是靠去掉 `[hidden]` 来显示的，所以从来匹配不到。结果是弹窗开着时，一旦有新楼层或账本变化，引擎可能被重建，弹窗直接消失。现在按 `[id$="-overlay"]:not([hidden])` 判断，也包括正在输入数字框或下拉框的情况。
-- 设置里「保留最新几层的数据块」补充了说明：AI 每轮都会从世界书「实时数据」读到最新账本，所以可以设为 0。
+- **Động cơ có thể bị tải lại khi hộp thoại bật lên đang mở**: `engineBusy` và phán đoán phím Esc trước đây dùng `.overlay.show`, trong khi các hộp thoại Quản trị viên, Rút thẻ, Chi tiết vật phẩm nguyên bản đều hiển thị bằng cách gỡ bỏ thuộc tính `[hidden]`, nên không bao giờ khớp được. Kết quả là khi hộp thoại đang mở, hễ có tầng mới hoặc sổ cái thay đổi là động cơ có thể bị dựng lại, làm hộp thoại biến mất ngay lập tức. Hiện đã đổi sang phán đoán theo `[id$="-overlay"]:not([hidden])`, bao gồm cả trường hợp đang nhập trong ô số hoặc hộp chọn thả xuống.
+- Mục 「Giữ lại khối dữ liệu của mấy tầng mới nhất」 trong Cài đặt đã được bổ sung thuyết minh: mỗi lượt AI đều đọc được sổ cái mới nhất từ mục 「Dữ liệu thời gian thực」 trong Sách Thế Giới, nên có thể đặt là 0.
 
-## 新增 / 修改的账本字段
+## Các trường sổ cái thêm mới / sửa đổi
 
-| 字段 | 说明 |
+| Trường | Thuyết minh |
 |---|---|
-| `诸天系统.功法记录[].凭据` / `.楼层` | 实战积累的凭据（`楼层:面板哈希`），只出现在实战积累条目 |
+| `诸天系统.功法记录[].凭据` / `.楼层` | Chứng từ tích lũy thực chiến (`tầng:mã băm bảng`), chỉ xuất hiện ở các mục tích lũy thực chiến |
 | `诸天系统.角色卡功法同步` | `{时间, 来源, 部数, 变化, 自动}` |
-| `诸天系统.功法库[].来源 = '角色卡'` | 从角色卡导入的功法 |
-| 提示命名空间 `zhutian-covenant-terminal/mastery` | 功法实效提示 |
-| 扩展设置 `skills`、`lilith.story` | 新开关 |
+| `诸天系统.功法库[].来源 = '角色卡'` | Công pháp được nhập từ thẻ nhân vật |
+| Không gian tên lời nhắc `zhutian-covenant-terminal/mastery` | Lời nhắc hiệu quả thực tế của công pháp |
+| Cài đặt tiện ích mở rộng `skills`, `lilith.story` | Công tắc mới |

@@ -1,6 +1,6 @@
-// 0.8.2 一键解绑世界书 / 关闭插件时自动解绑.
+// 0.8.2 Gỡ gắn kết Sách Thế Giới một chạm / Tự động gỡ khi tắt tiện ích.
 // The 诸天 worldbook can end up attached in four places. Only SillyTavern's own storage is touched, and every change is
-// recorded so 恢复绑定 can put exactly those bindings back:
+// recorded so Khôi phục gắn kết can put exactly those bindings back:
 //   * character cards — primary book   (character.data.extensions.world, via ctx.writeExtensionField)
 //   * character cards — extra books    (world_info.charLore[].extraBooks, saved with the settings)
 //   * the global selection             (selected_world_info, through ST's own onWorldInfoChange)
@@ -28,9 +28,9 @@ export async function unbindAll(ctx, name, { wi = null, chat = true } = {}) {
     for (const c of found.chars) {
         try {
             if (typeof ctx.writeExtensionField === 'function') await ctx.writeExtensionField(c.id, 'world', '');
-            else throw Error('宿主没有 writeExtensionField');
+            else throw Error('Máy chủ không có writeExtensionField');
             done.chars.push({ avatar: c.avatar, name: c.name });
-        } catch (e) { done.errors.push(`${c.name}：${e.message || e}`); }
+        } catch (e) { done.errors.push(`${c.name}: ${e.message || e}`); }
     }
     if (found.extra.length && Array.isArray(wi?.world_info?.charLore)) {
         const lore = wi.world_info.charLore;
@@ -46,11 +46,11 @@ export async function unbindAll(ctx, name, { wi = null, chat = true } = {}) {
             if (typeof wi?.onWorldInfoChange === 'function') wi.onWorldInfoChange({ state: 'off', silent: 'true' }, name);
             else wi.selected_world_info.splice(wi.selected_world_info.indexOf(name), 1);
             done.global = !wi.selected_world_info.includes(name);
-        } catch (e) { done.errors.push('全局世界书：' + (e.message || e)); }
+        } catch (e) { done.errors.push('Sách Thế Giới toàn cục: ' + (e.message || e)); }
     }
     if (chat && found.chat) {
         try { delete ctx.chatMetadata.world_info; await ctx.saveMetadata?.(); done.chat = found.chat; }
-        catch (e) { done.errors.push('当前聊天：' + (e.message || e)); }
+        catch (e) { done.errors.push('Trò chuyện hiện tại: ' + (e.message || e)); }
     }
     try { ctx.saveSettingsDebounced?.(); } catch { /* host gone */ }
     done.count = done.chars.length + done.extra.length + (done.global ? 1 : 0) + (done.chat ? 1 : 0);
@@ -90,9 +90,9 @@ export async function restoreBindings(ctx, rec, { wi = null } = {}) {
 export function describe(rec) {
     if (!rec) return '';
     const parts = [];
-    if (rec.chars?.length) parts.push(`${rec.chars.length} 张角色卡（${rec.chars.slice(0, 4).map(c => c.name).join('、')}${rec.chars.length > 4 ? '…' : ''}）`);
-    if (rec.extra?.length) parts.push(`${rec.extra.length} 张角色卡的附加世界书`);
-    if (rec.global) parts.push('全局世界书');
-    if (rec.chat) parts.push('当前聊天');
-    return parts.join('、') || '无';
+    if (rec.chars?.length) parts.push(`${rec.chars.length} thẻ nhân vật (${rec.chars.slice(0, 4).map(c => c.name).join(', ')}${rec.chars.length > 4 ? '…' : ''})`);
+    if (rec.extra?.length) parts.push(`Sách Thế Giới phụ của ${rec.extra.length} thẻ nhân vật`);
+    if (rec.global) parts.push('Sách Thế Giới toàn cục');
+    if (rec.chat) parts.push('Trò chuyện hiện tại');
+    return parts.join(', ') || 'Không có';
 }

@@ -1,129 +1,112 @@
-# 0.8.5 变更（手机楼层不渲染 · AI 接口设置排版 · 账本核验说明）
+# Thay đổi 0.8.5 (Tầng trên điện thoại không kết xuất · Dàn trang cài đặt cổng AI · Thuyết minh kiểm nghiệm sổ cái)
 
-0.8.5 处理用户在 0.8.4 之后反馈的三个问题。验收结果见 [ACCEPTANCE-0.8.5](ACCEPTANCE-0.8.5.md)。
+Bản 0.8.5 xử lý ba vấn đề mà người dùng phản hồi sau bản 0.8.4. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.8.5](ACCEPTANCE-0.8.5.md).
 
-- 账本字段、世界书条目都没有变化，**不需要重新导入世界书**。
-- 原版 v1.1 代码（`vendor/original`）没有修改。
+- Các trường sổ cái và mục từ Sách Thế Giới đều không thay đổi, **không cần nhập lại Sách Thế Giới**.
+- Mã nguồn v1.1 nguyên bản (`vendor/original`) giữ nguyên cấu trúc.
 
-## 一、手机上最新一层不渲染，显示成一大段原始数据（Bug，已修复）
+## I. Tầng mới nhất trên điện thoại không kết xuất mà hiển thị thành cả một đoạn dữ liệu thô (Lỗi, đã sửa)
 
-### 症状
+### Triệu chứng
 
-- 手机上，最新一层末尾的诸天数据块显示为原始文字（`<ZhuTianPanel>`、`系统点: …` 一行行列出来），没有变成诸天数据标签。
-- 同一个聊天在电脑上显示正常。
-- 点「编辑」后再保存，楼层仍然是原始文字。
+- Trên điện thoại, khối dữ liệu Chư Thiên ở cuối tầng mới nhất hiển thị thành văn bản thô (`<ZhuTianPanel>`, `系统点: …` liệt kê ra từng dòng), không biến thành nhãn dữ liệu Chư Thiên.
+- Cùng cuộc trò chuyện đó khi mở trên máy tính lại hiển thị bình thường.
+- Sau khi bấm 「Chỉnh sửa」 rồi lưu lại, tầng đó vẫn hiển thị văn bản thô.
 
-### 原因
+### Nguyên nhân
 
-插件不会渲染**正在生成**的那一层（流式输出时每秒变几十次，重建会闪烁，也会打断美化脚本）。插件判断「正在生成」靠酒馆的两个事件：生成开始、生成结束。
+Plugin sẽ không kết xuất tầng **đang được tạo phản hồi** (khi xuất dạng luồng, mỗi giây nội dung thay đổi hàng chục lần, việc dựng lại liên tục sẽ gây nhấp nháy và làm gián đoạn các kịch bản làm đẹp). Plugin phán đoán trạng thái 「đang tạo phản hồi」 dựa vào hai sự kiện của SillyTavern: bắt đầu tạo phản hồi và kết thúc tạo phản hồi.
 
-问题出在手机上：
+Vấn đề nằm ở trên điện thoại:
 
-- 手机浏览器切到后台或锁屏时，页面会被暂停；
-- 部分思考模型 / 中转站的结束方式也比较特殊。
+- Khi trình duyệt điện thoại chuyển sang chạy ngầm hoặc khóa màn hình, trang web sẽ bị tạm dừng;
+- Cách kết thúc của một số mô hình suy luận / trạm trung chuyển cũng khá đặc biệt.
 
-这两种情况下，酒馆可能漏发「生成结束」事件，插件就一直以为还在生成，于是最新一层永远被跳过，显示成原始文字。之后编辑保存的也是这一层，所以同样被跳过。电脑上很少漏发这个事件，所以电脑上正常。
+Trong hai trường hợp này, SillyTavern có thể bỏ sót sự kiện 「Kết thúc tạo phản hồi」, khiến plugin cứ tưởng vẫn đang tạo phản hồi nên tầng mới nhất vĩnh viễn bị bỏ qua và hiển thị thành văn bản thô. Sau đó khi chỉnh sửa rồi lưu lại cũng vẫn là tầng này nên tiếp tục bị bỏ qua. Trên máy tính rất hiếm khi bị sót sự kiện này nên máy tính hiển thị bình thường.
 
-在隔离测试里复现过（1.19，手机模拟）：
+### Cách sửa
 
-- 发出生成开始事件、不发结束事件，酒馆的停止按钮已经隐藏，但插件仍认为在生成；
-- 最新一层保持原始文字，与用户截图一致。
+- **Lấy nút dừng của SillyTavern làm chuẩn.** Trong suốt quá trình tạo phản hồi, SillyTavern sẽ hiển thị nút dừng (`#mes_stop`) và ẩn đi khi kết thúc, ngay cả khi sự kiện 「Kết thúc tạo phản hồi」 bị thất lạc thì nút này vẫn sẽ ẩn đi. Hiện tại plugin sẽ:
+  - Ghi nhận rằng trong lần tạo phản hồi này nút dừng đã từng xuất hiện;
+  - Khi nút dừng ẩn đi trở lại, phán định quá trình tạo phản hồi đã kết thúc, xóa trạng thái 「Đang tạo phản hồi」 quá hạn và kết xuất tầng cuối cùng như bình thường (trong vòng khoảng 0.2 giây).
 
-### 修复
+  Mã nguồn xem tại `src/host-adapter.js`, `src/statusbar-host.js`.
+- **Khóa gửi tin giữ nguyên.** SillyTavern phát sự kiện 「Bắt đầu tạo phản hồi」 trước rồi mới hiển thị nút dừng; còn tạo phản hồi tĩnh chạy ngầm thì hoàn toàn không hiển thị nút dừng. Do đó chỉ khi nút dừng **đã từng xuất hiện rồi sau đó biến mất** mới tính là kết thúc, nếu chưa từng xuất hiện thì không mở khóa.
+- **Hành vi trong lúc xuất dạng luồng không đổi.** Khi nút dừng đang hiển thị, vẫn bỏ qua tầng cuối cùng để không bị nhấp nháy.
+- **Chẩn đoán tương thích thêm mới dòng 「Tầng mới nhất」**, giải thích rõ tầng gần nhất có dữ liệu Chư Thiên đã được kết xuất hay chưa. Khi chưa kết xuất sẽ nêu rõ nguyên nhân, bên cạnh có nút 「Kết xuất lại tầng」.
+  Lối vào: Thiết bị đầu cuối → Cài đặt → Chẩn đoán tương thích.
 
-- **以酒馆的停止按钮为准。** 生成期间酒馆会显示停止按钮（`#mes_stop`），结束时隐藏，即使「生成结束」事件丢了也会隐藏。插件现在会：
-  - 记录本次生成期间停止按钮出现过；
-  - 停止按钮再次隐藏时，判定生成已经结束，清除过期的「正在生成」，最后一层照常渲染（约 0.2 秒内）。
+> **Về việc 「Giao diện chỉnh sửa cũng là văn bản thô」**: Khi bấm nút 「Chỉnh sửa」 của SillyTavern, khung hiện ra là ô chỉnh sửa nguyên văn của chính SillyTavern nên bên trong vốn dĩ là văn bản thô, mọi plugin và tiện ích làm đẹp đều như vậy, đây là hiện tượng bình thường. Sau khi sửa lỗi, bấm ✔ để lưu thì tầng sẽ hiển thị lại thành nhãn dữ liệu Chư Thiên.
 
-  代码见 `src/host-adapter.js`、`src/statusbar-host.js`。
-- **发送锁不变。** 酒馆是先发「生成开始」事件，再显示停止按钮；后台静默生成则根本不显示停止按钮。所以只有停止按钮**出现过又消失**才算结束，从没出现过不会解锁。
-  - 测试中发现：第一版只看「停止按钮是否隐藏」，`native_guards.py` 的「生成期间拒绝发送」随即失败。已改为现在的判断方式，重跑通过。
-- **流式输出期间行为不变。** 停止按钮可见时，仍然跳过最后一层，不闪烁。
-- **兼容诊断新增「最新楼层」一行**，会说明最近一层带诸天数据的楼层是否已渲染。未渲染时说明原因，例如：
-  - 插件没有接管（显示具体原因，如旧状态栏正则仍在启用）；
-  - 插件认为主聊天仍在生成；
-  - 最近 10 层里没有诸天数据块。
+## II. Cài đặt cổng AI khó hiểu, nút chọn đơn bị lệch bố cục (Đã làm lại)
 
-  旁边新增「重新渲染楼层」按钮。
-  入口：终端 → 设置 → 兼容诊断。
+### Vấn đề trước đây
 
-> **关于「编辑界面也是原始文字」**：点酒馆的「编辑」时，出现的是酒馆自己的原文编辑框，里面本来就是原始文字，所有插件和美化都是这样，这是正常现象。修复后，点 ✔ 保存，楼层会重新显示为诸天数据标签。
+- Những cách gọi như 「Trạng thái gắn kết」, 「Áp dụng cho thanh trạng thái」, 「Áp dụng cho trợ lý Lilith」 khiến người dùng mới khó hiểu.
+- Hai nút chọn đơn (radio) bị kiểu dáng nguyên bản kéo giãn thành nửa dòng, chấm tròn và chữ tách sang hai bên.
+- Khi có nhiều tùy chọn, người dùng không nhìn ra cần điền gì trước, bấm gì sau.
 
-## 二、AI 接口设置看不懂、单选框排版错乱（已重做）
+### Hiện tại
 
-### 原来的问题
+Tiêu đề đổi thành 「Kết nối · Cài đặt cổng AI」 (bản hộp thoại bật lên là 「Chư Thiên · Cài đặt cổng AI」). Từ trên xuống dưới lần lượt là:
 
-- 「绑定状态」「应用到状态栏」「应用到莉莉丝助手」这些说法，新用户看不懂。
-- 两个单选框被原版样式拉成半行宽，圆点和文字分在两边。
-- 选项一多，看不出先填什么、后点什么。
+1. **Một câu tóm tắt trạng thái**, một trong ba trạng thái:
+   - 「✓ Đã cài đặt」, hiển thị địa chỉ và mô hình đang dùng;
+   - 「⚠ Chưa cài đặt API」, giải thích những tính năng nào cần dùng tới nó;
+   - 「⚠ API dùng ở hai nơi không đồng nhất」, liệt kê riêng 「Tính năng AI thanh trạng thái」 và 「Trò chuyện riêng / Ký ức Lilith」 đang dùng gì.
+2. **Bước 1: Chọn dùng AI nào**, hai thẻ tùy chọn:
+   - 「API riêng (Khuyên dùng)」;
+   - 「Dùng trực tiếp mô hình SillyTavern đang dùng」.
 
-### 现在
+   Bên dưới mỗi thẻ có một dòng giải thích ưu nhược điểm dễ hiểu. Nút chọn đơn khôi phục kích thước bình thường, nằm sát chữ.
+3. **Bước 2: Điền cổng kết nối**, điền địa chỉ cổng, khóa bảo mật, mô hình, cùng nút 「Lấy mô hình」. Khi chọn 「Dùng trực tiếp mô hình SillyTavern đang dùng」, bước này tự động ẩn đi và số thứ tự các bước phía sau tự động cập nhật theo.
+4. **Bước 3: Kiểm tra và Lưu**.
+5. **Cài đặt nâng cao (Thường không cần sửa)**, mặc định thu gọn, bên trong có:
+   - Đầu ra tối đa (`max_tokens`);
+   - Hai ô tích 「Lưu vào: Tính năng AI thanh trạng thái / Trò chuyện riêng & Ký ức Lilith」 (mặc định tích cả hai, tức dùng chung cho cả hai nơi).
 
-标题改为「连接 · AI 接口设置」（弹窗版是「诸天 · AI 接口设置」）。从上到下依次是：
+## III. Thông báo 「Vui lòng bật cuộc trò chuyện hiện tại và kiểm nghiệm sổ cái trước; chưa ghi dữ liệu.」 là gì và ở đâu (Đã thêm thuyết minh và dẫn đường)
 
-1. **一句话状态**，三种之一：
-   - 「✓ 已设置」，并显示正在用的地址和模型；
-   - 「⚠ 还没有设置 API」，说明哪些功能要用它；
-   - 「⚠ 两处用的 API 不一致」，分别列出「状态栏 AI 功能」和「莉莉丝私聊 / 记忆」用的是什么。
-2. **第 1 步：选择用哪个 AI**，两张选项卡：
-   - 「单独的 API（推荐）」；
-   - 「直接用酒馆正在用的模型」。
+### Đây là gì
 
-   每张卡下面一行白话说明利弊。单选框恢复正常大小，紧挨文字。
-3. **第 2 步：填写接口**，填接口地址、密钥、模型，以及「拉取模型」按钮。选了「直接用酒馆正在用的模型」时，这一步自动隐藏，后面的步骤编号跟着变。
-4. **第 3 步：测试并保存**。
-5. **高级设置（一般不用改）**，默认收起，里面有：
-   - 最大输出；
-   - 「保存到：状态栏 AI 功能 / 莉莉丝私聊与记忆」两个勾选（默认都勾，即两处一起用）。
+Câu thông báo này đến từ nút 「Kiểm nghiệm ngay chính văn mới nhất (Không gọi mô hình)」 ở trang **Ký ức** của Lilith nguyên bản.
 
-其他改动：
+- **Kiểm nghiệm**: Đọc khối dữ liệu Chư Thiên ở cuối tin nhắn chính văn mới nhất, đối chiếu với sổ cái và quyết toán phần thưởng bên trong. Không gọi mô hình, không tốn chi phí API.
+- **Tiền đề**: Cuộc trò chuyện hiện tại phải tích chọn hai công tắc **và đã bấm lưu**:
+  1. 「Bật trợ lý và tiêm ký ức trong cuộc trò chuyện hiện tại」;
+  2. 「Lilith giám sát sổ cái và phần thưởng (Tiếp tục dùng động cơ quyết toán duy nhất của thanh trạng thái 3.1 gốc)」.
 
-- 设置页、兼容诊断里的入口统一改叫「AI 接口设置」。
-- 保存逻辑与 0.8.4 相同：一次保存写入两份配置，存储位置不变（`src/api-center.js`）。
+### Vị trí
 
-## 三、「请先启用当前聊天与账本核验；未写入。」是什么、在哪里（已加说明和引导）
+Thiết bị đầu cuối → Nhóm 「Lilith」 bên trái → Trang 「Ký ức」 → Thẻ 「Khế ước ký ức」.
 
-### 这是什么
+Hai công tắc và nút 「Kiểm nghiệm ngay chính văn mới nhất」 đều nằm trên thẻ này; nút 「Lưu cài đặt trò chuyện hiện tại」 nằm ở dưới đáy thẻ.
 
-这句话来自原版莉莉丝**记忆**页的「立即核验最新正文（不请求模型）」按钮。
+### Hiện tại
 
-- **核验**：读取最新一条正文末尾的诸天数据块，与账本对照，并结算其中的奖励。不调用模型，不花 API 费用。
-- **前提**：当前聊天勾选了两个开关，**并且保存过**：
-  1. 「在当前聊天启用助手与记忆注入」；
-  2. 「莉莉丝监管账本与奖励（沿用原 3.1 状态栏唯一结算引擎）」。
-- 没满足前提时，原版只在页面最底下的小状态行里显示这一句，「未写入」的意思是「什么都没改」。按钮在哪、开关在哪，原版都没有说。
+- Phía dưới nút 「Kiểm nghiệm ngay chính văn mới nhất」 có thêm một dòng thuyết minh: kiểm nghiệm dùng để làm gì, trước khi dùng cần tích hai công tắc nào và bấm nút nào.
+- Khi chưa tích chọn mà bấm nút:
+  - Hai công tắc và nút 「Lưu cài đặt trò chuyện hiện tại」 sẽ sáng nổi bật trong khoảng 4.5 giây và tự động cuộn tới vị trí công tắc;
+  - Bật thông báo và hiển thị hướng dẫn dễ hiểu ở dòng trạng thái dưới cùng.
+- Khi đã tích chọn nhưng chưa lưu mà bấm nút: dòng trạng thái hiển thị nhắc nhở hai công tắc đã được tích nhưng vẫn chưa lưu, vui lòng bấm nút 『Lưu cài đặt trò chuyện hiện tại』 trên trang này.
+- Sau khi lưu, chức năng kiểm nghiệm nguyên bản thực thi bình thường (`src/assistant-host.js`).
 
-### 位置
+> Khi không cần kiểm nghiệm thủ công, bạn có thể không bật hai công tắc này. Việc hiển thị và tính phí của thanh trạng thái không bị ảnh hưởng.
 
-终端 → 左侧「莉莉丝」组 →「记忆」页 →「记忆契约」卡片。
+## Các tệp thay đổi
 
-两个开关和「立即核验最新正文」按钮都在这张卡片上；「保存当前聊天设置」在这张卡片的底部。
-
-### 现在
-
-- 「立即核验最新正文」按钮下面多了一行说明：核验是做什么的、使用前要勾哪两个开关、要点哪个按钮。
-- 没勾选就点按钮时：
-  - 两个开关和「保存当前聊天设置」会高亮约 4.5 秒，并滚动到开关的位置；
-  - 弹出提示，底部状态行同时显示白话说明。
-- 已经勾了但没保存就点按钮时：状态行显示「两个开关已勾选，但还没保存：请点本页的『保存当前聊天设置』」。
-- 保存后，原版核验照常执行。原版的检查逻辑没有改，只是替换了这句提示，并加了高亮（`src/assistant-host.js`）。
-
-> 不需要核验时，可以不开这两个开关。状态栏的显示和计费不受影响。
-
-## 文件
-
-| 文件 | 改动 |
+| Tệp | Thay đổi |
 | --- | --- |
-| `src/host-adapter.js` | `stopButtonShown()`、`checkStop()`；监听停止按钮；停止按钮出现过又隐藏时清除过期的「正在生成」 |
-| `src/statusbar-host.js` | 判断最后一层是否在生成时，同时看停止按钮；监听停止按钮变化后重扫；`diagnoseLast()` |
-| `src/features.js` | 兼容诊断：「最新楼层」一行、「重新渲染楼层」按钮；入口改名「AI 接口设置」 |
-| `src/api-center.js` | AI 接口设置表单重做（状态行、三步、高级设置、单选框样式） |
-| `src/assistant-host.js` | 账本核验说明、高亮引导、提示改写 |
-| `src/hub-settings.js` | 设置页入口改名 |
-| `src/contracts.js` | 版本号 0.8.5；能力表新增 3 行 |
-| `manifest.json`、`package.json`、`package-lock.json` | 版本号 0.8.5 |
-| `tests/v085.test.js`、`tests/native_v085.py` | 新增测试 |
-| `tests/v080.test.js`、`tests/v084.test.js` | 版本号断言更新 |
-| `tests/native_v084.py` | 删除世界书后清除酒馆缓存（测试隔离修正，见验收报告） |
-| `docs/evidence/guards.json` | 1.19 上 0.8.5 的 guards 结果 |
-| `README.md`、`docs/FEATURE_MATRIX.md`、`docs/CHANGES-0.8.5.md`、`docs/ACCEPTANCE-0.8.5.md` | 文档 |
+| `src/host-adapter.js` | `stopButtonShown()`, `checkStop()`; lắng nghe nút dừng; xóa trạng thái 「Đang tạo phản hồi」 quá hạn khi nút dừng từng xuất hiện rồi ẩn đi |
+| `src/statusbar-host.js` | Khi phán đoán tầng cuối cùng có đang tạo phản hồi hay không sẽ kiểm tra đồng thời nút dừng; quét lại sau khi nút dừng thay đổi; `diagnoseLast()` |
+| `src/features.js` | Chẩn đoán tương thích: dòng 「Tầng mới nhất」, nút 「Kết xuất lại tầng」; đổi tên lối vào thành 「Cài đặt cổng AI」 |
+| `src/api-center.js` | Làm lại biểu mẫu Cài đặt cổng AI (dòng trạng thái, 3 bước, cài đặt nâng cao, kiểu dáng nút chọn đơn) |
+| `src/assistant-host.js` | Thuyết minh kiểm nghiệm sổ cái, tô sáng dẫn đường, viết lại câu thông báo |
+| `src/hub-settings.js` | Đổi tên lối vào trên trang Cài đặt |
+| `src/contracts.js` | Số phiên bản 0.8.5; bảng năng lực thêm mới 3 dòng |
+| `manifest.json`, `package.json`, `package-lock.json` | Số phiên bản 0.8.5 |
+| `tests/v085.test.js`, `tests/native_v085.py` | Thêm bài kiểm thử mới |
+| `tests/v080.test.js`, `tests/v084.test.js` | Cập nhật khẳng định số phiên bản |
+| `tests/native_v084.py` | Xóa bộ nhớ đệm SillyTavern sau khi xóa Sách Thế Giới |
+| `docs/evidence/guards.json` | Kết quả guards bản 0.8.5 trên 1.19 |
+| `README.md`, `docs/FEATURE_MATRIX.md`, `docs/CHANGES-0.8.5.md`, `docs/ACCEPTANCE-0.8.5.md` | Tài liệu |

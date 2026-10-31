@@ -1,74 +1,69 @@
-# 1.1.0 · 验证记录
+# 1.1.0 · Bản ghi xác minh
 
-> **最新修订 1.1.0-patch3**：330/330单测、10套浏览器301/301。三项P1修复及安全上下文/协议/Web Locks/保存失败诊断见 [PATCH-1.1.0-3](PATCH-1.1.0-3.md)。下文此前复查的305/238等结果为历史批次，不是最新总数。真实模型和实体手机仍未验证。
+> **Bản sửa đổi mới nhất 1.1.0-patch3**: 330/330 bài kiểm thử đơn vị, 10 bộ trình duyệt đạt 301/301. Ba bản sửa lỗi P1 cùng chẩn đoán ngữ cảnh bảo mật / giao thức / Web Locks / lỗi lưu trữ xem tại [PATCH-1.1.0-3](PATCH-1.1.0-3.md). Các kết quả 305/238 của đợt phúc tra trước bên dưới là lô lịch sử, không phải tổng số mới nhất. Mô hình thực tế và điện thoại vật lý vẫn chưa được xác minh.
 
+## Môi trường & Quy chuẩn
 
-## 环境与口径
+- Cơ sở (Baseline): nhánh main của kho lưu trữ chỉ định `ce29f61a9c254517fdf1fae2385b83b55cfa3688`; sửa đổi sau khi toàn bộ 250 bài kiểm thử đơn vị gốc đã đạt.
+- Ngày: 2026-10-04. SillyTavern 1.19.0 cô lập (`7e8663c`), Chromium/Playwright; chỉ nghiệm thu nhân vật 「Lilith · Nghiệm thu Chư Thiên」. Không kết nối dữ liệu sản xuất thực tế.
+- Phản hồi mô hình là mô phỏng tất định; lưu sổ cái, lưu Sách Thế Giới và tải lại trang sử dụng máy chủ SillyTavern cô lập thực sự. Việc tiêm lỗi trình duyệt và kiểm thử thiết bị vật lý / mô hình thực tế được trình bày tách biệt rõ ràng.
+- 1.16–1.19 là phạm vi hỗ trợ vốn có của kho lưu trữ; đợt chạy trình duyệt thực tế lần này chỉ chạy trên 1.19.0, không tuyên bố đã kiểm thử lại từng phiên bản máy chủ.
 
-- 基线：指定仓库 main `ce29f61a9c254517fdf1fae2385b83b55cfa3688`；原250项单测通过后修改。
-- 日期：2026-10-04。隔离 SillyTavern 1.19.0（`7e8663c`），Chromium/Playwright；仅验收角色「莉莉丝 · 诸天验收」。没有接入生产数据。
-- 模型响应为确定性模拟；账本保存、世界书保存及重载使用真实隔离酒馆服务器。浏览器故障注入与实体设备/真实模型测试分开表述。
-- 1.16–1.19为仓库原有支持范围；本轮浏览器实跑仅1.19.0，不声称重新测试了每个宿主版本。
+## Kết quả
 
-## 结果
+Đợt phúc tra thứ hai trước khi bàn giao đã hoàn tất: 305 bài kiểm thử đơn vị, 8 bộ trình duyệt với 238 hạng mục đều đạt; các vấn đề phát hiện và sửa chữa, bản ghi thất bại và ngưỡng chưa xác minh xem chi tiết tại [REVIEW-1.1.0](REVIEW-1.1.0.md). 37/28 hạng mục dưới đây là hai bộ trong tập hợp phúc tra đầy đủ, không phải toàn bộ phạm vi bao phủ trình duyệt.
 
-第二轮传输前复查已完成：305项单测、8组浏览器238项通过；发现及修复、失败记录和未验证门槛详见 [REVIEW-1.1.0](REVIEW-1.1.0.md)。下列37/28项是完整复查集合中的两套，不是全部浏览器覆盖。
-
-| 检查 | 结果与范围 |
+| Kiểm tra | Kết quả & Phạm vi |
 |---|---|
-| `npm test` | 305项：原250项+1.1第一轮35项+复查20项；具体日志见配套证据 |
-| `npm run check` | 全部原生JS语法检查、原始vendor提取/来源校验 |
-| `npm run filelist:check` | 与交付的完整文件树一致 |
-| `tests/native_v110.py --isolated-test-only` | **37/37通过**；1.1专项及故障注入 |
-| `tests/native_v100.py --isolated-test-only` | **28/28通过**；存档、设置、立绘、横屏等旧功能回归 |
-| 浏览器未捕获异常 | 上述专项/旧回归均无pageerror |
-| `vendor/original` | 相对基线无修改 |
+| `npm test` | 305 hạng mục: 250 mục cũ + 35 mục lượt 1 bản 1.1 + 20 mục phúc tra; nhật ký cụ thể xem trong bằng chứng đi kèm |
+| `npm run check` | Kiểm tra cú pháp toàn bộ JS gốc, trích xuất/kiểm tra nguồn gốc vendor nguyên bản |
+| `npm run filelist:check` | Đồng nhất với cây thư mục tệp bàn giao đầy đủ |
+| `tests/native_v110.py --isolated-test-only` | **Đạt 37/37**; chuyên đề 1.1 và tiêm lỗi |
+| `tests/native_v100.py --isolated-test-only` | **Đạt 28/28**; hồi quy các tính năng cũ như bản lưu, cài đặt, tranh đứng, màn hình ngang |
+| Ngoại lệ chưa bắt được trên trình duyệt | Cả chuyên đề và hồi quy cũ nêu trên đều có 0 pageerror |
+| `vendor/original` | Không sửa đổi cấu trúc so với cơ sở |
 
-## 1.1专项覆盖（37项）
+## Bao phủ chuyên đề 1.1 (37 hạng mục)
 
-1. 新模块挂载；刷新500点/8件；第二批近期避重及历史16项；刷新不进展示记录；购买写真实背包。
-2. 坏JSON不扣费、不换库存；10抽一次扣100000点并写待处理与累计次数；真实按钮捕获阻止旧代码再次扣费。
-3. 记录摘要预览默认排除刷新、分解，保留购买。
-4. 收纳引用真实来源；未知品阶暂存、不伪装凡品；确认仙品后进背包并保留「天阶」原品阶。
-5. 两个旧恋爱目标连续更新后保留两份档案；只查看不切换；关系图读取同一多人库。
-6. 空正文截断4096→8192仅一次重试且错误不编造原因；显式1000上限不越过；招募有效候选保存，失败不扣系统点。
-7. **身份变化故障注入**：模型返回后替换adapter身份读数模拟切聊天，提交拒绝且账本完全不变。不是声称执行了实体设备上人工切换角色的全流程。
-8. **世界书真实落盘**：先备份；冲突拒绝后保留自改正文、开关、自定义关键词及depth；保留额外条目与顶层元数据，其它内置条目升级。
-9. **世界书备份核验故障**：服务器读回503即停止升级，不被宿主缓存骗过。
-10. **账本读回故障**：保存前503不改变量；保存后503冻结交易，排队的第二个writer未执行，避免重复扣费。
-11. 重载后保留购买背包和待处理物品；桌面无pageerror。
-12. 390×844触屏CDP触摸事件：全屏→浮窗；拖动y8→78；366×675缩至291×575；全屏往返保留浮窗尺寸；复位回默认尺寸。
-13. **圆形入口**左贴边/点回、右贴边/点回；恢复不误开终端；无pageerror。
+1. Gắn kết mô-đun mới; làm mới 500 điểm / 8 món; lô thứ hai tránh trùng lặp gần đây và lưu lịch sử 16 mục; làm mới không đi vào bản ghi hiển thị; mua sắm ghi vào túi đồ thực tế.
+2. JSON hỏng không trừ phí, không đổi kho hàng; rút 10 lần trừ 100.000 điểm trong một lần và ghi vào mục chờ xử lý cùng tổng số lượt rút tích lũy; bắt sự kiện nút bấm thực tế ngăn mã cũ trừ phí lần nữa.
+3. Xem trước tóm tắt bản ghi mặc định loại trừ làm mới và phân giải, giữ lại mua sắm.
+4. Thu nạp trích dẫn nguồn gốc thực tế; phẩm giai chưa rõ được lưu tạm chứ không ngụy trang thành Phàm phẩm; sau khi xác nhận Tiên phẩm sẽ đưa vào túi đồ và giữ lại phẩm giai gốc 「Thiên giai」.
+5. Hai mục tiêu tình yêu cũ sau khi cập nhật liên tiếp vẫn giữ lại cả hai hồ sơ; chỉ xem không làm chuyển đổi mục tiêu gắn kết; đồ phổ quan hệ đọc cùng một kho đa nhân vật.
+6. Cắt cụt chính văn rỗng 4096→8192 chỉ thử lại đúng một lần và thông báo lỗi không tự bịa nguyên nhân; không vượt quá giới hạn trần 1000 tường minh; chiêu mộ lưu ứng viên hợp lệ, thất bại không trừ Điểm Hệ Thống.
+7. **Tiêm lỗi thay đổi định danh**: Sau khi mô hình trả về, thay thế giá trị đọc định danh của adapter để mô phỏng chuyển cuộc trò chuyện, việc gửi bị từ chối và sổ cái hoàn toàn không thay đổi. Không tuyên bố đã thực thi toàn bộ quy trình chuyển đổi nhân vật thủ công trên thiết bị vật lý.
+8. **Ghi Sách Thế Giới xuống đĩa thực sự**: Sao lưu trước; sau khi từ chối xung đột vẫn giữ nguyên chính văn tự sửa, công tắc bật/tắt, từ khóa tùy chỉnh và `depth`; giữ lại mục từ bổ sung và siêu dữ liệu cấp cao nhất, các mục từ tích hợp sẵn khác được nâng cấp.
+9. **Lỗi kiểm nghiệm sao lưu Sách Thế Giới**: Máy chủ đọc lại trả về 503 sẽ dừng nâng cấp ngay lập tức, không bị bộ nhớ đệm của máy chủ đánh lừa.
+10. **Lỗi đọc lại sổ cái**: 503 trước khi lưu không làm thay đổi biến số; 503 sau khi lưu sẽ đóng băng giao dịch, tác vụ ghi thứ hai đang xếp hàng không được thực thi, tránh trừ phí lặp lại.
+11. Sau khi tải lại trang vẫn giữ nguyên túi đồ đã mua và vật phẩm chờ xử lý; trên máy tính không có pageerror.
+12. Sự kiện cảm ứng CDP màn hình 390×844: toàn màn hình → cửa sổ nổi; kéo y8→78; thu nhỏ 366×675 xuống 291×575; chuyển đổi qua lại toàn màn hình vẫn giữ nguyên kích thước cửa sổ nổi; đặt lại về kích thước mặc định.
+13. **Lối vào hình tròn**: nấp sát mép trái / bấm quay ra, nấp sát mép phải / bấm quay ra; khi khôi phục không mở nhầm thiết bị đầu cuối; không có pageerror.
 
-## 旧功能回归
+## Hồi quy tính năng cũ
 
-28项包括：立绘素材及透明背景、互动、设置分层/搜索、无Key导出与导入预览、真实账本读回、导入前/回滚前备份、保留原Key、schema2升级与更高版本只读、错误提示、初始化不误开世界书、精简动态效果、手机横屏6常用入口+更多及当前页保持可见。
+28 hạng mục bao gồm: tài nguyên tranh đứng và nền trong suốt, tương tác, phân tầng / tìm kiếm cài đặt, xuất không kèm Key và xem trước nhập bản lưu, đọc lại sổ cái thực tế, sao lưu trước khi nhập / trước khi quay lui, giữ nguyên Key cũ, nâng cấp schema 2 và chỉ đọc với phiên bản cao hơn, thông báo lỗi, khởi tạo không mở nhầm Sách Thế Giới, hiệu ứng động rút gọn, 6 lối vào thường dùng + Thêm trên màn hình ngang điện thoại và giữ trang hiện tại luôn hiển thị.
 
-复跑时修正了两处测试前提：旧schema1断言更新为当前schema2；横屏回归显式设置自动全屏，不继承另一套测试刻意保存的浮窗模式。1.1专项也独立初始化触屏尺寸和抽奖状态，不依赖上次运行留下的数据。没有删除失败用例来得到通过结果。
+## Trọng tâm kiểm thử đơn vị
 
-## 单元测试重点
+Biên xác suất / bảo hiểm, ô tùy chỉnh, thế giới có tên và mục loại trừ, khử trùng lặp tên / hiệu quả, điều kiện nhận Cấm kỵ, hàng thông thường không ép làm yếu; bằng chứng / quyền sở hữu / số lượng, nguồn trùng lặp, phẩm giai chưa rõ, túi đồ sẵn có, bản chụp nhanh công pháp, xuất không kèm Key giữ nguyên chứng từ thu nạp; di chuyển bản lưu cũ đa nhân vật và trùng tên xuyên thế giới, cô lập ID / hảo cảm mục tiêu cũ; biến mô hình không thể xóa kho gốc; bí danh ký ức và kiểm tra bằng chứng; dọn dẹp nhật ký phạm vi hẹp; ràng buộc hình học cửa sổ; giữ nguyên cài đặt tùy chỉnh Sách Thế Giới.
 
-概率边界/保底、定制槽位、命名世界与排除项、名称/效果去重、禁忌获得条件、普通品不强制削弱；证据/归属/数量、重复来源、未知品阶、既有背包、功法快照、无Key导出保留收纳凭据；多人旧档迁移及同名跨世界、旧目标ID/好感隔离；模型变量不能清原生库；记忆别名与证据校验；窄范围日志清理；窗口几何约束；世界书自定义设置保留。
-
-## 可复现方式
+## Cách tái hiện
 
 ```sh
 npm ci
 npm run check
 npm test
 npm run filelist:check
-# 仅指向你自行创建的隔离酒馆；脚本会写入测试聊天/设置/世界书，切勿指向生产。
+# Chỉ trỏ tới SillyTavern cô lập do chính bạn tự tạo; kịch bản sẽ ghi cuộc trò chuyện/cài đặt/Sách Thế Giới kiểm thử, tuyệt đối không trỏ vào môi trường sản xuất.
 python tests/native_v110.py --isolated-test-only --base-url http://127.0.0.1:8019 --output /tmp/zt-v110-evidence
 python tests/native_v100.py --isolated-test-only --base-url http://127.0.0.1:8019 --mock http://127.0.0.1:5001/v1 --shots /tmp/zt-v100-evidence
 ```
 
-隔离环境准备及模拟API可复用仓库 `tests/qa/`。需要另装Python Playwright/Chromium及浏览器系统依赖，不是插件生产运行依赖。
+## Chưa bao phủ / Bắt buộc kiểm tra thủ công
 
-## 未覆盖/必须人工复核
-
-- 未使用用户Key或真实付费模型：不保证特定模型/网关的输出格式、作品真实性、品阶语义和去重效果。
-- 触屏为Chromium模拟，未实体Android/iPhone/Safari测试；软键盘、浏览器工具栏与多指手势仍需真机确认。
-- 本轮不对全部历史AI功能重新做真实模型端到端验收，不自动重建不存在的多人历史。
-- 不能从文本验证物品确实归宿主；归属、数量、世界映射仍由用户勾选核对。不要将旁人持有、未来承诺、出售物当作已取得。
-- 保存后读回异常属于结果不明，不能声称已退款或没扣钱。应重载核对一次，勿连续点击或手工再补发。
-- 世界书拒绝覆盖自改正文会保留旧规则，需手动合并；这是保留用户修改，不是自动保证所有自定义规则都无冲突。
+- Chưa sử dụng Key người dùng hoặc mô hình trả phí thực tế: không đảm bảo định dạng đầu ra, tính xác thực của tác phẩm, ngữ nghĩa phẩm giai và hiệu quả khử trùng lặp của mô hình/cổng kết nối cụ thể.
+- Màn hình cảm ứng là mô phỏng Chromium, chưa kiểm thử trên thiết bị Android/iPhone/Safari vật lý; bàn phím ảo, thanh công cụ trình duyệt và cử chỉ đa điểm vẫn cần xác nhận trên máy thật.
+- Đợt này không nghiệm thu lại đầu-cuối bằng mô hình thực tế cho toàn bộ tính năng AI lịch sử, không tự động dựng lại lịch sử đa nhân vật không tồn tại.
+- Không thể xác minh từ văn bản rằng vật phẩm thực sự thuộc về Ký chủ; quyền sở hữu, số lượng, ánh xạ thế giới vẫn do người dùng tích chọn đối chiếu. Đừng coi vật người khác đang cầm, lời hứa tương lai hay hàng đang bày bán là đã nhận được.
+- Lỗi đọc lại sau khi lưu thuộc trường hợp kết quả chưa rõ, không thể tuyên bố là đã hoàn tiền hay chưa trừ tiền. Cần tải lại trang để đối chiếu một lần, không bấm liên tiếp hoặc tự phát bù thủ công.
+- Khi Sách Thế Giới từ chối ghi đè chính văn tự sửa sẽ giữ lại quy tắc cũ, cần hợp nhất thủ công; đây là cơ chế bảo toàn sửa đổi của người dùng, không tự động đảm bảo mọi quy tắc tùy chỉnh đều không có xung đột.

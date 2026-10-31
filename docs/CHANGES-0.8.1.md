@@ -1,66 +1,66 @@
-# 0.8.1 变更（修复版）
+# Thay đổi 0.8.1 (Bản sửa lỗi)
 
-0.8.1 修的是用户在 0.7 / 0.8 里实际遇到的问题：莉莉丝连不上独立 API、聊天群招募假随机且定价离谱、群员红包太频繁、正文不知道聊天群里发生的事。另外插件安装的世界书升级为「插件版」，可以一键更新旧书。验收见 [ACCEPTANCE-0.8.1](ACCEPTANCE-0.8.1.md)。
+Bản 0.8.1 giải quyết những vấn đề thực tế mà người dùng gặp phải ở bản 0.7 / 0.8: Lilith không kết nối được API độc lập, chiêu mộ trong nhóm chat ngẫu nhiên giả và định giá quá cao, thành viên nhóm phát lì xì quá dày, chính văn không biết những chuyện đã xảy ra trong nhóm chat. Ngoài ra Sách Thế Giới do plugin cài đặt được nâng cấp lên 「Bản Plugin」, hỗ trợ cập nhật sách cũ chỉ bằng một chạm. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.8.1](ACCEPTANCE-0.8.1.md).
 
-## 一、莉莉丝连接页「拉取模型」总是报 CORS（修复）
+## I. Nút 「Lấy mô hình」 ở trang Kết nối của Lilith luôn báo lỗi CORS (Đã sửa)
 
-症状：莉莉丝 → 连接 → 拉取模型，无论地址对不对都显示「浏览器网络请求失败：可能是 CORS、网络或接口地址问题……没有自动切换接口」，下面是 `本次请求：GET https://…/v1/models`。
+Triệu chứng: Vào Lilith → Kết nối → Lấy mô hình, bất kể địa chỉ đúng hay sai đều hiển thị lỗi yêu cầu mạng trình duyệt thất bại (có thể do CORS, mạng hoặc địa chỉ cổng kết nối), bên dưới là `Yêu cầu lần này: GET https://…/v1/models`.
 
-原因有两个：
-1. 原版连接页拉取模型调用的是 `root.fetch(…/models)`，`root` 是原版脚本的私有 `globalThis`。插件给原版提供私有作用域时，只换了模块级的 `fetch`，私有 `globalThis` 上没有 `fetch`，所以这一行**直接抛 TypeError**，根本没发出请求，原版把它当网络错误显示成了「CORS」。0.4 起就是这样（0.4 能用，是因为手填模型名后，聊天请求走的是另一条路径）。
-2. 浏览器真的被 CORS 拦下时，插件会改走酒馆自己的服务器转发，但转发前把地址里的 `/v1` 也去掉了，酒馆服务器去请求 `https://域名/models`，很多中转站在这里返回 404。
+Có hai nguyên nhân:
+1. Nút lấy mô hình ở trang kết nối nguyên bản gọi `root.fetch(…/models)`, trong đó `root` là `globalThis` riêng tư của kịch bản nguyên bản. Khi plugin cung cấp phạm vi riêng tư cho bản gốc, chỉ thay thế `fetch` ở cấp mô-đun mà chưa gắn `fetch` lên `globalThis` riêng tư, khiến dòng này **ném trực tiếp lỗi TypeError** mà chưa hề gửi yêu cầu đi, và bản gốc đã coi đó là lỗi mạng rồi hiển thị thành 「CORS」.
+2. Khi trình duyệt thực sự bị CORS chặn lại, plugin chuyển sang đi qua máy chủ của chính SillyTavern để chuyển tiếp, nhưng trước khi chuyển tiếp lại cắt mất `/v1` trong địa chỉ, khiến máy chủ SillyTavern gửi yêu cầu tới `https://tên-miền/models` và bị nhiều trạm trung chuyển trả về lỗi 404.
 
-修复：
-- 私有 `globalThis` 也装上同一个带转发的 `fetch`（`src/assistant-host.js`）。
-- 转发时保留用户填写的基础路径；只填了域名时，依次尝试「原样」和「加 /v1」（`src/th-bridge.js`）。
-- 顺带修复：只填域名时，基础地址会变成 `https://域名/`，拼出 `https://域名//models`、`//chat/completions` 这样的双斜杠地址。
+Cách sửa:
+- Gắn cùng hàm `fetch` có hỗ trợ chuyển tiếp lên cả `globalThis` riêng tư (`src/assistant-host.js`).
+- Khi chuyển tiếp sẽ giữ nguyên đường dẫn cơ sở do người dùng điền; khi chỉ điền tên miền sẽ lần lượt thử 「nguyên bản」 và 「thêm `/v1`」 (`src/th-bridge.js`).
+- Sửa luôn lỗi phụ: khi chỉ điền tên miền có dấu gạch chéo cuối, địa chỉ cơ sở biến thành `https://tên-miền/` làm ghép ra địa chỉ hai dấu gạch chéo `https://tên-miền//models` và `//chat/completions`.
 
-转发由**你自己的酒馆服务器**发出，Key 只发给你填写的接口，不经过任何第三方。
+Yêu cầu chuyển tiếp do **chính máy chủ SillyTavern của bạn** gửi đi, Key chỉ gửi tới cổng kết nối mà bạn điền, không đi qua bất kỳ bên thứ ba nào.
 
-## 二、聊天群招募（修复）
+## II. Chiêu mộ Nhóm chat (Đã sửa)
 
-| 问题 | 原因 | 0.8.1 |
+| Vấn đề | Nguyên nhân | 0.8.1 |
 |---|---|---|
-| 第一个候选人买不起，再招募还是同一个人 | 提示词只排除「已在群里」的人，被放弃的候选人不排除；每次的提示词一字不差，模型自然给同一个答案 | 新字段 `聊天群.候选历史`（最近 12 个）列进【不要选】；随机模式在**本地**抽一个世界类型（24 种）和目标实力档，每次提示词都不同；模型仍给出重复的人时自动纠正重问一次，再重复就退回招募令费用并提示 |
-| 只有几百系统点，却招出要几十亿入群费的人 | 入群费直接用了神通「图鉴复刻」的价格表（1 千 … 1 千亿），提示词也没告诉模型宿主有多少点 | 入群费改成独立曲线：300 / 1,500 / 6,000 / 3 万 / 20 万 / 200 万 / 3,000 万 / 5 亿（1–8 档）；随机和指定世界模式按你当前的系统点挑目标实力档，模型给出更强的人时纠正重问一次；仍超预算的候选卡会标明「系统点不足」，邀请时不会扣成负数 |
-| 招募令费用 | 200 点 | 100 点（失败退回不变） |
+| Ứng viên đầu tiên không đủ tiền mời, chiêu mộ lại vẫn ra đúng người đó | Lời nhắc chỉ loại trừ những người 「đã ở trong nhóm」, không loại trừ ứng viên vừa bị từ bỏ; lời nhắc mỗi lần giống hệt nhau từng chữ nên mô hình tất nhiên đưa ra cùng một câu trả lời | Thêm trường mới `聊天群.候选历史` (12 người gần nhất) đưa vào mục 【Không được chọn】; chế độ ngẫu nhiên rút ngẫu nhiên một loại thế giới (24 loại) và bậc thực lực mục tiêu **ngay tại máy cục bộ**, nên lời nhắc mỗi lần đều khác nhau; khi mô hình vẫn đưa ra người trùng lặp sẽ tự động đính chính hỏi lại một lần, nếu vẫn trùng sẽ hoàn lại phí Lệnh Chiêu Mộ và thông báo |
+| Chỉ có vài trăm Điểm Hệ Thống nhưng lại chiêu mộ ra người đòi phí vào nhóm hàng tỷ điểm | Phí vào nhóm dùng thẳng bảng giá của Thần thông 「Sao Chép Đồ Giám」 (1 nghìn … 100 tỷ), và lời nhắc cũng không báo cho mô hình biết Ký chủ đang có bao nhiêu điểm | Phí vào nhóm đổi sang đường cong độc lập: 300 / 1.500 / 6.000 / 3 vạn / 20 vạn / 200 vạn / 3.000 vạn / 500 triệu (bậc 1–8); chế độ ngẫu nhiên và chỉ định thế giới sẽ chọn bậc thực lực mục tiêu dựa theo số Điểm Hệ Thống hiện tại của bạn, khi mô hình đưa ra người mạnh hơn sẽ đính chính hỏi lại một lần; thẻ ứng viên vẫn vượt ngân sách sẽ ghi rõ 「Điểm Hệ Thống không đủ」, khi bấm mời sẽ không bị trừ thành số âm |
+| Chi phí Lệnh Chiêu Mộ | 200 điểm | 100 điểm (thất bại vẫn được hoàn lại như cũ) |
 
-「指定角色」模式不受预算限制：你点名要谁就招谁，按原作如实评估实力档，入群费照实显示。降临费用没有改（仍是原神通价格表的十分之一）。
+Chế độ 「Chỉ định nhân vật」 không bị giới hạn bởi ngân sách: bạn chỉ đích danh ai thì sẽ chiêu mộ người đó, đánh giá trung thực bậc thực lực theo nguyên tác và hiển thị đúng phí vào nhóm thực tế. Phí giáng lâm không thay đổi (vẫn bằng 1/10 bảng giá Thần thông gốc).
 
-## 三、群员红包 / 赠礼频率
+## III. Tần suất lì xì / quà tặng của thành viên nhóm
 
-- 原来只在提示词里写「偶尔（不要每次）」，模型几乎每轮都发。
-- 现在由账本强制：群员的红包和赠礼**三到四轮群聊才允许一次**（每次随机定 3 或 4），不到时提示词明确写「本轮禁止」，模型硬发的那一行也会被丢弃、不入账。
-- **宿主主动要求时例外**：群里说「发红包 / 送礼 / 礼物 / 打赏」之类的话，本轮允许，最多 3 个。
-- 每天收红包上限（6 个）不变。新字段 `聊天群.节奏 {距上次, 间隔}`。
+- Trước đây chỉ viết trong lời nhắc là 「thỉnh thoảng (đừng phát mỗi lượt)」, nên mô hình hầu như lượt nào cũng phát.
+- Hiện tại do sổ cái cưỡng chế: lì xì và quà tặng của thành viên nhóm **ba đến bốn lượt trò chuyện nhóm mới cho phép một lần** (mỗi lần chọn ngẫu nhiên 3 hoặc 4), khi chưa tới lượt thì trong lời nhắc ghi rõ 「Lượt này cấm phát」, và dòng do mô hình cố tình phát ra cũng sẽ bị loại bỏ, không ghi vào sổ.
+- **Ngoại lệ khi Ký chủ chủ động yêu cầu**: khi bạn nói những câu như 「phát lì xì / tặng quà / quà tặng / thưởng」 trong nhóm, lượt đó sẽ được phép phát tối đa 3 cái.
+- Giới hạn nhận lì xì mỗi ngày (6 cái) không đổi. Thêm trường mới `聊天群.节奏 {距上次, 间隔}`.
 
-## 四、正文不知道聊天群里的事 / 物品来历被改写
+## IV. Chính văn không biết chuyện trong nhóm chat / Lai lịch vật phẩm bị viết sai
 
-- 新字段 `聊天群.入库记录`（最近 20 条）：抢红包、领赠礼、集市买入 / 卖出、群签到，凡是真正写进账本的，都记下「什么东西、谁给的（名称@世界）、怎么来的」。
-- 剧情提示（`zhutian-covenant-terminal/group`）现在包含：
-  - 群员名单；
-  - 最近 8 条真实入库记录；
-  - 最近群聊；
-  - 明确要求：这些东西的来历就是诸天聊天群，**不得改写成捡到、买到、当面赠送**；可以自然衔接，但不要编造没有记录的群聊、红包或赠礼。
-- 注入深度从 4 调到 2，离最新剧情更近。
-- 世界书新增条目「36｜联动｜诸天聊天群（插件）」，把同样的规则写成常驻规则。
+- Trường mới `聊天群.入库记录` (20 mục gần nhất): giật lì xì, nhận quà tặng, mua / bán ở chợ nhóm, điểm danh nhóm — phàm là những thứ thực sự được ghi vào sổ cái đều ghi lại 「vật gì, ai đưa (Tên@Thế giới), nhận bằng cách nào」.
+- Lời nhắc cốt truyện (`zhutian-covenant-terminal/group`) hiện bao gồm:
+  - Danh sách thành viên nhóm;
+  - 8 bản ghi nhập kho thực tế gần nhất;
+  - Trò chuyện nhóm gần đây;
+  - Yêu cầu rõ ràng: lai lịch của những thứ này chính là Nhóm Chat Chư Thiên, **không được sửa thành nhặt được, mua được hay tặng trực tiếp trước mặt**; có thể nối tiếp tự nhiên, nhưng đừng tự bịa ra trò chuyện nhóm, lì xì hay quà tặng không có trong bản ghi.
+- Độ sâu tiêm được điều chỉnh từ 4 về 2 để nằm gần cốt truyện mới nhất hơn.
+- Sách Thế Giới thêm mới mục từ 「36｜Liên kết｜Nhóm Chat Chư Thiên (Plugin)」, viết cùng quy tắc này thành quy tắc thường trực.
 
-## 五、世界书「插件版」
+## V. Sách Thế Giới 「Bản Plugin」
 
-- 原版 35 条保持原样（`vendor/original` 字节级不动），新文件 `src/worldbook.js` 在安装时叠加：
-  - 05 条里「状态栏底部 ◆ 连点五次打开」改为「设置 → 高级 · 管理员 → 管理员控制台」；
-  - 05 条里「需要酒馆助手」改为「本插件原生支持，不需要酒馆助手」；
-  - 新增 36 条（聊天群衔接）。
-- 设置 → 世界书安装 / 绑定，新增两个按钮：
-  - 「更新到最新版（先备份）」：先把旧书完整另存为 `诸天万界最强系统-备份-时间`，再替换内置条目；你自己加的条目保留，内置条目的开 / 关状态保留。
-  - 「导出 JSON」：下载与插件安装内容完全相同的世界书文件，可在酒馆里手动导入。
-- 打开已绑定旧版世界书的诸天聊天时，每次会话提醒一次「不是最新版」。旧书**不会被自动覆盖**。
+- 35 mục từ nguyên bản được giữ nguyên trong `vendor/original`, tệp mới `src/worldbook.js` khi cài đặt sẽ áp chồng:
+  - Trong mục số 05, đổi hướng dẫn mở bảng Quản trị viên sang 「Cài đặt → Nâng cao · Quản trị viên → Bảng điều khiển Quản trị viên」;
+  - Trong mục số 05, đổi chú thích 「cần có Tavern Helper」 thành 「Plugin này hỗ trợ gốc, không cần Tavern Helper」;
+  - Thêm mới mục số 36 (Liên kết nhóm chat).
+- Trong Cài đặt → Cài đặt / Gắn kết Sách Thế Giới, thêm mới hai nút:
+  - 「Cập nhật lên bản mới nhất (Sao lưu trước)」: lưu toàn bộ quyển sách cũ thành `诸天万界最强系统-备份-thời_gian` trước, sau đó thay thế các mục từ tích hợp sẵn; các mục từ do chính bạn thêm vào và trạng thái bật / tắt của các mục tích hợp sẵn đều được giữ nguyên.
+  - 「Xuất JSON」: tải xuống tệp Sách Thế Giới có nội dung giống hệt bản do plugin cài đặt, có thể dùng để nhập thủ công trong SillyTavern.
+- Khi mở cuộc trò chuyện Chư Thiên đang gắn kết Sách Thế Giới bản cũ, mỗi phiên làm việc sẽ nhắc một lần 「Không phải bản mới nhất」. Sách cũ **sẽ không bị tự động ghi đè**.
 
-## 新增 / 修改的账本字段
+## Các trường sổ cái thêm mới / sửa đổi
 
-| 字段 | 说明 |
+| Trường | Thuyết minh |
 |---|---|
-| `诸天系统.聊天群.候选历史` | 最近出现过的候选人名称（最多 12 个），招募时排除 |
-| `诸天系统.聊天群.节奏` | `{距上次, 间隔}`，红包 / 赠礼节奏 |
-| `诸天系统.聊天群.入库记录[]` | `{t, what, src, how}`，最近 20 条，用于剧情提示 |
-| `诸天系统.聊天群.候选.超预算` | 候选人实力档超出当前预算 |
+| `诸天系统.聊天群.候选历史` | Tên các ứng viên đã xuất hiện gần đây (tối đa 12 người), dùng để loại trừ khi chiêu mộ |
+| `诸天系统.聊天群.节奏` | `{距上次, 间隔}`, nhịp độ lì xì / quà tặng |
+| `诸天系统.聊天群.入库记录[]` | `{t, what, src, how}`, 20 mục gần nhất, dùng cho lời nhắc cốt truyện |
+| `诸天系统.聊天群.候选.超预算` | Bậc thực lực của ứng viên vượt quá ngân sách hiện tại |

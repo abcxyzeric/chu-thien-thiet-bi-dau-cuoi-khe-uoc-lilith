@@ -1,95 +1,95 @@
-# 1.1.4 验收记录
+# Bản ghi nghiệm thu 1.1.4
 
-## 环境
+## Môi trường
 
-- 一次性隔离 SillyTavern 1.19.0（`tests/qa/setup_isolated_st.py`），配合确定性模拟模型（`tests/qa/mock_model.py`）。
-- 桌面视口 1280×860。
-- 本轮**不是**真实模型验收，也**不是**实体手机验收。
+- SillyTavern 1.19.0 cô lập dùng một lần (`tests/qa/setup_isolated_st.py`), kết hợp với mô hình mô phỏng tất định (`tests/qa/mock_model.py`).
+- Khung nhìn máy tính để bàn 1280×860.
+- Đợt này **không phải** nghiệm thu bằng mô hình thực tế, cũng **không phải** nghiệm thu trên điện thoại vật lý.
 
-## 静态与单元测试
+## Kiểm tra tĩnh & Kiểm thử đơn vị
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 |---|---|
-| `npm run check` | 通过（运行时已重建，来源哈希一致；`vendor/original` 未改动） |
+| `npm run check` | Đạt (runtime đã được dựng lại, mã băm nguồn đồng nhất; `vendor/original` giữ nguyên cấu trúc) |
 | `npm test` | 429/429 |
-| `npm run filelist` | 285 个文件，已重新生成 |
-| `tests/v114.test.js`（新增） | 19 项通过，见下表 |
+| `npm run filelist` | 285 tệp, đã tạo lại |
+| `tests/v114.test.js` (mới) | 19 hạng mục đạt, xem bảng dưới |
 
-`tests/v114.test.js` 覆盖的内容：
+Nội dung được `tests/v114.test.js` bao phủ:
 
-| 范围 | 覆盖内容 |
+| Phạm vi | Nội dung bao phủ |
 |---|---|
-| 群聊生成 | 设置的默认值和边界；自动输出上限；输出上限的优先级 |
-| 重roll | 端到端测试：输入相同、你的发言保留；请求失败时旧的一轮保留 |
-| 重roll 撤回 | 不能重roll 的情况（已抢红包、已领赠礼）；撤回没抢的红包、日计、节奏、禁言 |
-| 删除 | 删除限制；端到端删除 |
-| 截断 | 丢掉半条并给出提示 |
-| 假冻结 | 迟到的保存会重存，不冻结；其他脚本改自己的变量，不冻结；写入确实没落地时仍然冻结；核对并解冻 |
-| 记忆键清洗 | 中点、冒号、空格、假名、全角、危险词、重复键 |
-| 思维链保护 | 草稿标签停用；思维链健康时原样不动；预填充；没闭合；只在思维链里的数据块；数据块内的 `<think>` 保持 1.1.1 行为 |
-| 旧楼层 | 显示、账本绑定、旧楼层过滤都跳过思维链 |
-| 语音框 | 不从思维链里取台词 |
-| 格式提醒 | 深度设置 |
-| 楼层检查 | 报告内容 |
-| 说明书 | 渲染时转义（`<img onerror>`、`javascript:`、表格里的 HTML 都不生效）；目录和章节闭合 |
+| Tạo phản hồi nhóm chat | Giá trị mặc định và biên của cài đặt; giới hạn đầu ra tự động; độ ưu tiên của giới hạn đầu ra |
+| Roll lại (Reroll) | Kiểm thử đầu-cuối: đầu vào giữ nguyên, tin nhắn của bạn được giữ lại; khi yêu cầu thất bại thì lượt cũ vẫn được giữ nguyên |
+| Thu hồi khi roll lại | Các trường hợp không thể roll lại (đã giật lì xì, đã nhận quà tặng); thu hồi lì xì chưa giật, bộ đếm ngày, nhịp độ, cấm chat |
+| Xóa tin nhắn | Giới hạn xóa; xóa đầu-cuối |
+| Cắt cụt | Loại bỏ nửa câu bị đứt và đưa ra thông báo |
+| Đóng băng giả | Lần lưu đến muộn sẽ được lưu lại một lần chứ không đóng băng; kịch bản khác sửa biến riêng của nó sẽ không gây đóng băng; khi thao tác ghi thực sự không lưu xuống được thì vẫn đóng băng; đối chiếu và mở khóa băng |
+| Làm sạch khóa ký ức | Dấu chấm giữa, dấu hai chấm, khoảng trắng, chữ Kana, ký tự toàn giác, từ nguy hiểm, khóa trùng lặp |
+| Bảo vệ chuỗi tư duy | Vô hiệu hóa thẻ bản nháp; khi chuỗi tư duy lành mạnh thì giữ nguyên; điền sẵn (prefill); chưa đóng thẻ; khối dữ liệu chỉ nằm trong chuỗi tư duy; thẻ `<think>` nằm trong khối dữ liệu vẫn giữ hành vi của bản 1.1.1 |
+| Tầng cũ | Hiển thị, gắn kết sổ cái, lọc tầng cũ đều bỏ qua chuỗi tư duy |
+| Khung thoại | Không lấy lời thoại từ bên trong chuỗi tư duy |
+| Nhắc nhở định dạng | Cài đặt độ sâu |
+| Kiểm tra tầng | Nội dung báo cáo |
+| Sách hướng dẫn | Thoát mã (escape) khi kết xuất (`<img onerror>`, `javascript:`, HTML trong bảng đều không thể thực thi); mục lục và đóng/mở chương |
 
-## 浏览器：`tests/native_v114.py`，29/29
+## Trình duyệt: `tests/native_v114.py`, 29/29
 
-### 聊天群
+### Nhóm chat
 
-1. 群务 →「群聊生成」有 5 个设置，默认值是 1 / 6 / 300 / 16 / 自动。下限设为 8 时，上限跟着变成 8，并写入账本。
-2. 发消息后收到一轮回复。请求里带着所选的输出上限 3000，以及人数和字数要求。账本里有一条轮次记录。
-3. 「↻ 重roll」：先弹窗确认；替换群员的发言，你的发言保留；结果写入服务器上的聊天文件。
-4. 领取赠礼后入背包。之后这一轮**不能**重roll，会显示原因，内容不变。
-5. 「🗑 管理」：每条消息都有删除按钮。已领取的赠礼不能删；普通消息能删；点「✓ 完成」后按钮隐藏。
-6. 截断：模拟模型返回 `finish_reason=length`。最后半条被丢掉，出现提示，这一轮被标为截断。
+1. Công việc nhóm → 「Tạo phản hồi nhóm chat」 có 5 cài đặt, giá trị mặc định là 1 / 6 / 300 / 16 / Tự động. Khi đặt giới hạn dưới là 8, giới hạn trên tự động tăng lên 8 theo và ghi vào sổ cái.
+2. Sau khi gửi tin nhắn sẽ nhận được một lượt phản hồi. Trong yêu cầu mang theo giới hạn đầu ra đã chọn là 3000, cùng yêu cầu về số người và số chữ. Trong sổ cái có một bản ghi lượt.
+3. 「↻ Roll lại」: bật hộp thoại xác nhận trước; thay thế phát biểu của thành viên nhóm, giữ nguyên phát biểu của bạn; kết quả được ghi vào tệp trò chuyện trên máy chủ.
+4. Sau khi nhận quà tặng sẽ cất vào túi đồ. Từ lúc đó lượt này **không thể** roll lại nữa, hệ thống sẽ hiển thị lý do và giữ nguyên nội dung.
+5. 「🗑 Quản lý」: mỗi tin nhắn đều có nút xóa. Quà tặng đã nhận không thể xóa; tin nhắn thông thường xóa được; sau khi bấm 「✓ Hoàn tất」 các nút xóa sẽ ẩn đi.
+6. Cắt cụt: mô hình mô phỏng trả về `finish_reason=length`. Nửa dòng cuối bị loại bỏ, xuất hiện thông báo và lượt này được đánh dấu là bị cắt cụt.
 
-### 冻结
+### Đóng băng
 
-7. 冻结状态下，写入被拒绝，提示指向新按钮。
-8. 「核对并解冻账本」：服务器存档和页面一致，不刷新就解冻；之后写入恢复正常。
+7. Ở trạng thái đóng băng, thao tác ghi bị từ chối và thông báo chỉ dẫn tới nút mới.
+8. 「Đối chiếu & Mở khóa sổ cái」: khi bản lưu trên máy chủ khớp với trên trang, sổ cái sẽ được mở khóa ngay mà không cần làm mới trang; sau đó các thao tác ghi trở lại bình thường.
 
-### 思维链（真实生成，走酒馆主 API → 模拟模型）
+### Chuỗi tư duy (Tạo phản hồi thực tế, đi qua API chính của SillyTavern → mô hình mô phỏng)
 
-9. 模拟模型的回复结构：
-   - `<think>` 里有一个没闭合的数据块草稿，以及一句草稿台词；
-   - 然后是正文和莉莉丝台词；
-   - 末尾是正式数据块（系统点 1400）。
-10. 验证结果：
-    - 思维链的标签和文字都保留，只有草稿标签变成全角，原文有备份；
-    - 正式数据块入账，系统点 1200 → 1400；
-    - 语音框只有正文那句，共 1 张；
-    - 格式提醒在深度 1，提醒文字里没有「思考过程」。
-11. 对照：1.1.3 的同一场景下，楼层上的 `</think>` 和正文被吞掉，小标签显示「系统点 草稿」，没有入账，语音框 0 张。
+9. Cấu trúc phản hồi của mô hình mô phỏng:
+   - Bên trong `<think>` có một bản nháp khối dữ liệu chưa đóng thẻ cùng một câu thoại nháp;
+   - Tiếp theo là chính văn và lời thoại của Lilith;
+   - Cuối cùng là khối dữ liệu chính thức (Điểm Hệ Thống 1400).
+10. Kết quả xác minh:
+    - Thẻ và văn bản của chuỗi tư duy đều được giữ nguyên, chỉ có thẻ bản nháp bên trong bị đổi thành ký tự toàn giác, nguyên văn có bản sao lưu;
+    - Khối dữ liệu chính thức được ghi sổ, Điểm Hệ Thống tăng từ 1200 → 1400;
+    - Khung thoại chỉ có đúng câu trong chính văn, tổng cộng 1 thẻ;
+    - Lời nhắc định dạng nằm ở độ sâu 1, trong văn bản nhắc nhở không có cụm từ cấm quá trình suy nghĩ.
+11. Đối chiếu: Trong cùng kịch bản này ở bản 1.1.3, thẻ `</think>` và chính văn trên tầng bị nuốt mất, nhãn nhỏ hiển thị 「Điểm Hệ Thống Bản nháp」, không được ghi sổ, khung thoại có 0 thẻ.
 
-### 楼层检查与说明书
+### Kiểm tra tầng & Sách hướng dẫn
 
-12. 「检查最新楼层」按钮在 设置 → 诊断与维护 里。报告列出：
-    - 正文被改写（并说明原因）；
-    - 正文里 1 段思维链；
-    - 由插件渲染；
-    - 当前 8 条扩展提示，包括其他来源注入的世界书提示。
-13. 终端 → 说明书：读取 `docs/MANUAL.md`，目录 17 章。搜索「核对并解冻」时，只剩 3 章相关。
-14. 全程没有页面错误。
+12. Nút 「Kiểm tra tầng mới nhất」 nằm trong Cài đặt → Chẩn đoán & Bảo trì. Báo cáo liệt kê:
+    - Chính văn đã được viết lại (kèm thuyết minh nguyên nhân);
+    - Trong chính văn có 1 đoạn chuỗi tư duy;
+    - Được kết xuất bởi plugin;
+    - 8 lời nhắc tiện ích mở rộng hiện tại, bao gồm cả lời nhắc Sách Thế Giới do nguồn khác tiêm vào.
+13. Thiết bị đầu cuối → Sách hướng dẫn: đọc `docs/MANUAL.md`, mục lục có đủ các chương. Khi tìm kiếm 「Đối chiếu và mở khóa」 chỉ còn lại 3 chương liên quan.
+14. Suốt quá trình không có lỗi trang.
 
-## 旧版浏览器回归（同一环境）
+## Hồi quy trình duyệt các bản cũ (cùng môi trường)
 
-| 脚本 | 结果 |
+| Kịch bản | Kết quả |
 |---|---|
 | `native_v111.py` | 32/32 |
 | `native_v112.py` | 40/40 |
 | `native_v113.py` | 34/34 |
 | `native_group060.py` | 44/44 |
-| `native_guards.py` | 通过 |
+| `native_guards.py` | Đạt |
 | `native_v100.py` | 27/28 |
 
-`native_v100.py` 唯一的失败项是「动态效果 精简」。把仓库还原到未改动的 1.1.3 后重跑，同样失败，所以是已有问题，与本版无关。
+Hạng mục thất bại duy nhất của `native_v100.py` là 「Hiệu ứng động Rút gọn」. Khi khôi phục kho lưu trữ về bản 1.1.3 chưa sửa đổi rồi chạy lại vẫn thất bại y hệt, nên đây là vấn đề đã có từ trước, không liên quan tới bản này.
 
-## 未验证 / 边界
+## Chưa xác minh / Ranh giới
 
-- **真实模型**：重roll、截断识别、记忆清洗后的整理效果、补记，都只用模拟模型验证过。
-- **截断识别**：只对独立 API 有效。走酒馆主 API 时，酒馆不返回结束原因。
-- **玩家截图（图 6）**：非诸天聊天的思维链标签丢失没有复现。判断为预设、其他扩展或正则冲突，可以用「检查最新楼层」确认。
-- **世界书深度 0**：原版世界书有 3 条常驻条目插在深度 0，插件不改。说明书里写了怎么手动调整。
-- **冻结状态**只保存在页面内存里。核对结果不一致时，仍然需要重载页面。
-- **实体手机**：本版改动的界面（聊天群工具栏、说明书页）没有在实体手机上点过。
+- **Mô hình thực tế**: Roll lại, nhận diện cắt cụt, hiệu quả chỉnh lý sau khi làm sạch khóa ký ức, và ghi bù đều mới chỉ được xác minh bằng mô hình mô phỏng.
+- **Nhận diện cắt cụt**: Chỉ có hiệu lực với API độc lập. Khi đi qua API chính của SillyTavern, SillyTavern không trả về nguyên nhân kết thúc (`finish_reason`).
+- **Ảnh chụp màn hình của người chơi (Hình 6)**: Hiện tượng mất thẻ chuỗi tư duy trong cuộc trò chuyện không phải Chư Thiên chưa tái hiện được. Phán đoán là do xung đột với preset, tiện ích mở rộng khác hoặc biểu thức chính quy, có thể dùng nút 「Kiểm tra tầng mới nhất」 để xác nhận.
+- **Độ sâu 0 của Sách Thế Giới**: Sách Thế Giới nguyên bản có 3 mục từ thường trực chèn ở độ sâu 0, plugin không tự ý sửa. Trong Sách hướng dẫn đã ghi rõ cách điều chỉnh thủ công.
+- **Trạng thái đóng băng** chỉ lưu trong bộ nhớ trang. Khi kết quả đối chiếu không khớp, người dùng vẫn cần tải lại trang.
+- **Điện thoại vật lý**: Các giao diện thay đổi trong bản này (thanh công cụ nhóm chat, trang sách hướng dẫn) chưa được bấm kiểm thử trên điện thoại vật lý.

@@ -10,48 +10,48 @@ const DEFAULTS = Object.freeze({
     schema: 1,
     assistant: true,             // original Lilith window, memory, workbench, private chat (native bridge)
     statusbar: 'terminal',       // terminal (0.5.0: data blocks go to the terminal, a chip stays in the story) | native (old in-message bar) | off
-    floorTag: true,              // terminal mode: the small “系统已记录” chip in place of each data block
+    floorTag: true,              // terminal mode: the small “Hệ thống đã ghi nhận” chip in place of each data block
     hubPage: 'ov',               // last terminal page (reopens there)
     hubOutsideClose: 'auto',     // auto (phones) | always | never — click outside the terminal closes it
     hubBackClose: true,          // phone back gesture closes the terminal
     statusbarMaxDepth: 1,        // original regex maxDepth 1: floors at depth 0..1 get the live bar, older ones the compact card
-    compactHistory: true,        // original "旧楼层精简显示": 系统点 · 好感 · 任务 one-liner (click to expand)
-    voiceBox: true,              // original "莉莉丝专属语音框" regex, switchable
-    promptStripPanels: true,     // original "旧楼层不发给AI": status blocks of older floors are removed from the prompt
+    compactHistory: true,        // original "Hiển thị rút gọn tầng cũ": Điểm Hệ Thống · Hảo cảm · Nhiệm vụ one-liner (click to expand)
+    voiceBox: true,              // original "Khung thoại độc quyền của Lilith" regex, switchable
+    promptStripPanels: true,     // original "Tầng cũ không gửi cho AI": status blocks of older floors are removed from the prompt
     promptPanelKeepDepth: 2,     // original minDepth 2: the two newest floors keep their panel in the prompt
     worldbookAuto: true,         // install + bind the 诸天 worldbook on 诸天 chats (never overwrites, skips if already active)
     wbUnbindOnDisable: true,     // 0.8.2: disabling the extension (1.17+ hook) unbinds the 诸天 worldbook from cards / global / open chat
-    wbUnbound: null,             // 0.8.2: what the last unbind removed (for 恢复绑定)
+    wbUnbound: null,             // 0.8.2: what the last unbind removed (for Khôi phục gắn kết)
     floatLilith: 'auto',         // 0.8.2: floating entry — auto (Lilith on phones / touch) | on (Lilith) | off (avatar) | none (1.1.3: closed, no floating entry)
-    guide: null,                 // 0.9.3: 新手引导 answer {state: 'done'|'skipped', at, version}; null = opens once by itself
-    deviceCheck: null,           // 0.9.1: last 手机真机自检 result {at, version, text} (no chat data; shown in 复制诊断信息)
+    guide: null,                 // 0.9.3: Hướng dẫn tân thủ answer {state: 'done'|'skipped', at, version}; null = opens once by itself
+    deviceCheck: null,           // 0.9.1: last Tự kiểm tra trên điện thoại thật result {at, version, text} (no chat data; shown in Sao chép thông tin chẩn đoán)
     mobileLayout: 'auto',        // 0.9.0: terminal on phones — auto (full screen on phones) | full (always) | window (0.8.5 floating window)
-    motion: 'auto',              // 1.0: 动态效果 auto (reduced motion / low fps on phones → lite) | full | lite
+    motion: 'auto',              // 1.0: Hiệu ứng động auto (reduced motion / low fps on phones → lite) | full | lite
     floatSize: 'm',              // 0.8.3: floating Lilith size p20 / p30 / p40 (1.1.3) | xs 55 % | s 65 % | m 75 % (default) | l 90 % | xl 100 % (= 0.8.2)
     avatarSize: 'xl',            // 1.1.3: round avatar launcher size, same keys; xl = 100 % (64 px, unchanged)
-    apiTimeout: 180,             // 0.8.4: seconds for the original's independent-API requests (私聊 / 记忆 / 工作台); original fixed 60
-    palette: 'auto',             // 0.8.4: 配色方案 — auto (world colours) | lilith | inkgold | celadon | sakura | frost | crimson | slate
+    apiTimeout: 180,             // 0.8.4: seconds for the original's independent-API requests (Trò chuyện riêng / Ký ức / Bàn làm việc); original fixed 60
+    palette: 'auto',             // 0.8.4: Bảng phối màu — auto (world colours) | lilith | inkgold | celadon | sakura | frost | crimson | slate
     floatPos: null,              // 0.8.2: {x, y, edge, tucked} of the floating portrait
     macroLike: true,             // {{get_chat_variable::…}} for the worldbook without Tavern Helper
     touchGestures: true,         // stroke / long-press / touch look on the Lilith portrait
     haptics: true,               // vibration feedback for touch gestures (phones that support it)
-    takeoverLog: [],             // legacy v1.1 items switched off by 一键接管 (for 恢复旧版)
+    takeoverLog: [],             // legacy v1.1 items switched off by Tiếp quản một chạm (for Khôi phục bản cũ)
     hud: true,                   // compact ledger HUD above the input bar
     hotkeys: true,               // Alt+Z Lilith, Alt+X terminal, Alt+S latest status bar
     portrait: { mode: 'rig', variant: 'default', autoMood: true },   // rig | variants | live2d
-    fx: { mode: 'full', outside: true },                   // 0.7.0 演出: full | brief (result card only) | off; outside = 剧情提示 card when the terminal is closed
-    world: { enabled: true, theme: 'auto', prompt: true },  // 0.7.0 世界主题: auto | default | xianxia | cyber | eerie; prompt = ask the model to record 当前世界/世界类型
-    lilith: { react: true, pageLines: true, camera: true, story: true }, // 0.7.0 莉莉丝界面角色; 0.8.0 story = 气泡播报 + 点空白处的剧情台词
-    appraise: { prompt: true, raise: true },                  // 1.0 品阶鉴定: 收录写明品阶的提示 · 「收录:X[更高品阶]」更正剧情功法
+    fx: { mode: 'full', outside: true },                   // 0.7.0 Hiệu ứng diễn xuất: full | brief (result card only) | off; outside = Gợi ý cốt truyện card when the terminal is closed
+    world: { enabled: true, theme: 'auto', prompt: true },  // 0.7.0 Chủ đề thế giới: auto | default | xianxia | cyber | eerie; prompt = ask the model to record 当前世界/世界类型
+    lilith: { react: true, pageLines: true, camera: true, story: true }, // 0.7.0 Nhân vật giao diện Lilith; 0.8.0 story = Bong bóng thoại + Lời thoại cốt truyện khi chạm khoảng trống
+    appraise: { prompt: true, raise: true },                  // 1.0 Giám định phẩm giai: Gợi ý ghi rõ phẩm giai khi thu lục · Đính chính công pháp cốt truyện qua 「Thu lục:X[Phẩm giai cao hơn]」
     skills: { prompt: true, practice: true, cardAuto: false },
-    panelGuard: { repair: true, backfill: 'missing', remind: true, skillHint: true }, // 1.1.1 数据块格式守卫: 自动修复新回复 · 缺失时补记 (missing | off) · 每轮格式提醒 · 剧情功法未入账提示   // 0.8.0 修行: 功法实效提示 · 实战积累 · 角色卡功法自动同步
-    gachaMode: 'classic',        // 1.1.2 抽卡模式: classic 经典折叠（整次一起结算，≥50 抽折叠凡品、≥100 抽再折叠灵品）| chunk 十抽一结算
-    // 1.1.5 系统助手人设: lilith (default — nothing changes) | orb (numbered 系统光球) | custom; avatar = small data: URI
+    panelGuard: { repair: true, backfill: 'missing', remind: true, skillHint: true }, // 1.1.1 Bảo vệ định dạng khối dữ liệu
+    gachaMode: 'classic',        // 1.1.2 Chế độ rút thẻ: classic Gộp cổ điển | chunk Kết toán mỗi 10 lượt rút
+    // 1.1.5 Nhân cách trợ lý hệ thống: lilith (default — nothing changes) | orb (numbered Quang cầu Hệ thống) | custom; avatar = small data: URI
     persona: { preset: 'lilith', name: '', code: '001', call: '', en: '', personality: '', style: '', story: '', chat: '', avatar: '' },
-    // 1.1.5 功能开关: whole modules (page + prompt + background work); navHidden = terminal pages taken out of the navigation
+    // 1.1.5 Công tắc tính năng: whole modules (page + prompt + background work); navHidden = terminal pages taken out of the navigation
     modules: { group: true, groupAuto: true, plugins: true, slash: true, guide: true },
     navHidden: [],
-    // 1.1.5 聊天群 × 世界书: read = 召唤的群员带上世界书条目 + 按聊天关键词读取世界书背景; memory = 群聊里与世界书角色的互动摘要注入正文
+    // 1.1.5 Nhóm chat × Sách Thế Giới
     groupWorld: { read: true, memory: true, budget: 1600 },
     live2d: { accepted: false, coreUrl: LIVE2D_CORE_URL, model: '', scale: 1, x: 0, y: 0, follow: true, lipsync: true, idle: true, moodMap: {} },
     scriptVariables: {},
@@ -90,11 +90,11 @@ export class Settings {
     patch(key, part) { this.set(key, merge(this.all[key] || {}, part)); }
     save() {
         assertSaveEnvironment();
-        try { const pending = this.ctx().saveSettingsDebounced(); pending?.catch?.(e => recordSaveFailure(e, '设置保存')); return pending; }
-        catch (e) { recordSaveFailure(e, '设置保存'); throw e; }
+        try { const pending = this.ctx().saveSettingsDebounced(); pending?.catch?.(e => recordSaveFailure(e, 'Lưu cài đặt')); return pending; }
+        catch (e) { recordSaveFailure(e, 'Lưu cài đặt'); throw e; }
     }
     onChange(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
-    emit(key) { for (const fn of this.listeners) try { fn(key); } catch (e) { console.warn('[诸天设置]', e); } }
+    emit(key) { for (const fn of this.listeners) try { fn(key); } catch (e) { console.warn('[Chư Thiên Cài Đặt]', e); } }
     scriptVariables() { const v = this.all.scriptVariables; return v && typeof v === 'object' && !Array.isArray(v) ? v : {}; }
     setScriptVariables(v) { this.set('scriptVariables', v); }
 
@@ -107,15 +107,15 @@ export class Settings {
         wrap.id = ID + '-settings'; wrap.className = 'zt-settings';
         wrap.innerHTML = `
 <div class="inline-drawer">
-  <div class="inline-drawer-toggle inline-drawer-header"><b>诸天终端 <small>${VERSION}</small></b><div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div></div>
+  <div class="inline-drawer-toggle inline-drawer-header"><b>Thiết Bị Đầu Cuối Chư Thiên <small>${VERSION}</small></b><div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div></div>
   <div class="inline-drawer-content">
     <div class="zt-set-actions">
-      <div class="menu_button" data-act="open">打开诸天终端</div>
-      <div class="menu_button" data-act="float" title="关掉的悬浮窗以莉莉丝的样子回到页面上">显示悬浮莉莉丝</div>
-      <div class="menu_button" data-act="avatar" title="关掉的悬浮窗以圆形头像的样子回到页面上">显示头像</div>
-      <div class="menu_button" data-act="restore" title="重新启用被“一键接管”停用的旧版正则与酒馆助手脚本">紧急恢复旧版</div>
+      <div class="menu_button" data-act="open">Mở Thiết Bị Đầu Cuối Chư Thiên</div>
+      <div class="menu_button" data-act="float" title="Đưa cửa sổ nổi đã đóng quay lại trang dưới hình dáng Lilith">Hiện Lilith nổi</div>
+      <div class="menu_button" data-act="avatar" title="Đưa cửa sổ nổi đã đóng quay lại trang dưới hình dáng ảnh đại diện tròn">Hiện ảnh đại diện</div>
+      <div class="menu_button" data-act="restore" title="Bật lại các Regex và kịch bản Tavern Helper bản cũ đã bị tắt bởi &quot;Tiếp quản một chạm&quot;">Khôi phục khẩn cấp bản cũ</div>
     </div>
-    <small class="zt-set-note">所有功能与设置都在终端里（莉莉丝头像 → 设置）。已验收宿主：SillyTavern ${HOST_TESTED.join(' / ')}；无需酒馆助手、无需导入正则。</small>
+    <small class="zt-set-note">Mọi tính năng và cài đặt đều nằm trong thiết bị đầu cuối (Ảnh đại diện Lilith → Cài đặt). Máy chủ đã nghiệm thu: SillyTavern ${HOST_TESTED.join(' / ')}; không cần Tavern Helper, không cần nhập Regex.</small>
   </div>
 </div>`;
         wrap.querySelector('.zt-set-actions').addEventListener('click', e => { const act = e.target.closest('[data-act]')?.dataset.act; if (act) actions[act]?.(); });

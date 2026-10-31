@@ -1,80 +1,80 @@
-# 0.7.0 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.7.0
 
-## 环境
+## Môi trường
 
-与 [0.6.0](ACCEPTANCE-0.6.0.md) 相同：一次性的 SillyTavern 实例（官方仓库按 tag 全新安装，扩展以符号链接加载仓库工作区），Playwright Chromium 无头 + swiftshader，本地模拟模型 `tests/qa/mock_model.py`。所有测试聊天都是明确标记的隔离测试聊天，不是真实存档。
+Giống với [0.6.0](ACCEPTANCE-0.6.0.md): các thực thể SillyTavern dùng một lần (cài đặt mới hoàn toàn theo tag từ kho lưu trữ chính thức, tiện ích mở rộng tải không gian làm việc kho lưu trữ qua liên kết tượng trưng), Playwright Chromium headless + swiftshader, mô hình mô phỏng cục bộ `tests/qa/mock_model.py`. Tất cả các cuộc trò chuyện kiểm thử đều là cuộc trò chuyện kiểm thử cô lập được đánh dấu rõ ràng, không phải bản lưu thật.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.17.0 | `e3f41666c69db032e17e079fcddcf40cf47e8593` |
 | 1.18.0 | `51ad27fb86d39a3daca3adaa970375c9670c12df` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.17 | 1.18 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.17 | 1.18 | 1.19 |
 | --- | --- | --- | --- | --- |
-| `native_world070.py`（0.7.0 主题 / 莉莉丝 / 图谱 / 演出，40 项） | 40/40 | 40/40 | 40/40 | 40/40 |
-| `native_terminal050.py`（0.5.0 终端回归，58 项） | 58/58 | 58/58 | 58/58 | 58/58 |
-| `native_group060.py`（0.6.0 聊天群回归，44 项） | 44/44 | 44/44 | 44/44 | 44/44 |
-| `native_guards.py`（发送保护） | ✅ | ✅ | ✅ | ✅ |
-| `native_replace040.py`（v1.1 整体替代，兼容模式，70 项） | **本轮未运行** | **本轮未运行** | **本轮未运行** | **本轮未运行** |
-| `node --test tests/*.test.js`（纯逻辑，与宿主版本无关） | 82/82 | 82/82 | 82/82 | 82/82 |
+| `native_world070.py` (Chủ đề / Lilith / Đồ phổ / Trình diễn 0.7.0, 40 hạng mục) | 40/40 | 40/40 | 40/40 | 40/40 |
+| `native_terminal050.py` (Hồi quy thiết bị đầu cuối 0.5.0, 58 hạng mục) | 58/58 | 58/58 | 58/58 | 58/58 |
+| `native_group060.py` (Hồi quy nhóm chat 0.6.0, 44 hạng mục) | 44/44 | 44/44 | 44/44 | 44/44 |
+| `native_guards.py` (Bảo vệ gửi tin) | ✅ | ✅ | ✅ | ✅ |
+| `native_replace040.py` (Thay thế toàn diện v1.1, chế độ tương thích, 70 hạng mục) | **Đợt này không chạy** | **Đợt này không chạy** | **Đợt này không chạy** | **Đợt này không chạy** |
+| `node --test tests/*.test.js` (Thuần logic, không phụ thuộc phiên bản máy chủ) | 82/82 | 82/82 | 82/82 | 82/82 |
 
-`native_replace040.py` 需要 v1.1 原版导入文件（`--legacy-dir`），这些文件按约定不进仓库、不上传，本轮测试机上没有，所以没有跑。0.7.0 没有改它覆盖的代码路径（旧兼容模式的渲染代码保留未动，测试里是用 `settings.set('statusbar','native')` 显式打开的，不受一次性迁移影响），但**没有实测**。
+`native_replace040.py` cần các tệp nhập nguyên bản v1.1 (`--legacy-dir`), những tệp này theo quy ước không đưa vào kho lưu trữ và không tải lên, trên máy kiểm thử đợt này không có nên không chạy. Bản 0.7.0 không sửa đổi đường dẫn mã nguồn mà bài kiểm thử đó bao phủ (mã kết xuất của chế độ tương thích cũ vẫn được giữ nguyên, trong bài kiểm thử dùng `settings.set('statusbar','native')` để bật tường minh nên không bị ảnh hưởng bởi quá trình di chuyển một lần), nhưng **chưa kiểm thử thực tế trong đợt này**.
 
-`docs/evidence/guards.json` 是本轮最后一次 `native_guards.py` 的输出。
+`docs/evidence/guards.json` là đầu ra của lần chạy `native_guards.py` cuối cùng trong đợt này.
 
-## `native_world070.py` 覆盖项
+## Các hạng mục bao phủ của `native_world070.py`
 
-**图谱与主题**
-- 导航「图谱」组有 事件线 / 羁绊图 / 星图 / 能力树。
-- 当前世界「太初仙域」→ 终端切到仙侠主题；终端里的原版引擎跟着换色；顶栏显示主题徽标。
-- 镜头：系统页 = 半身。
+**Đồ phổ & Chủ đề**
+- Nhóm điều hướng 「Đồ phổ」 có Dòng sự kiện / Đồ phổ gắn kết / Bản đồ sao / Cây năng lực.
+- Thế giới hiện tại 「Thái Sơ Tiên Vực」 → thiết bị đầu cuối chuyển sang chủ đề Tiên hiệp; động cơ nguyên bản bên trong thiết bị đầu cuối đổi màu theo; thanh đỉnh hiển thị huy hiệu chủ đề.
+- Góc máy: Trang hệ thống = Bán thân.
 
-**事件线**
-- 点击任务节点，详情显示原始记录和账本路径 `诸天系统.任务库.T2`；列出起因 / 承接 / 奖励。
-- 莉莉丝对选中的任务说出账本数据（「拜入青云门」，进行中。进度 40%。）。
-- 键盘：方向键 + Enter 选中下一个节点。
-- 「在任务页定位」→ 原版任务分页，原来那一行被选中；任务分页上的链接能跳回事件线。
+**Dòng sự kiện**
+- Bấm vào nút nhiệm vụ, phần chi tiết hiển thị bản ghi gốc và đường dẫn sổ cái `诸天系统.任务库.T2`; liệt kê Nguyên nhân / Tiếp nhận / Phần thưởng.
+- Lilith nói ra dữ liệu sổ cái của nhiệm vụ đang chọn (「Bái nhập Thanh Vân Môn」, đang tiến hành. Tiến độ 40%.).
+- Bàn phím: Phím mũi tên + Enter chọn nút tiếp theo.
+- 「Định vị ở trang Nhiệm vụ」 → nhảy tới trang Nhiệm vụ nguyên bản, dòng tương ứng được chọn; liên kết trên trang Nhiệm vụ có thể nhảy ngược về Dòng sự kiện.
 
-**演出（账本读回后）**
-- 写入结算凭据 → 终端内播放「任务完成」；Esc 跳过，终端保持打开。
-- 结果卡片写明结果和「✓ 账本已确认」；账本里确实有这条凭据。
-- 「查看记录」→ 事件线，并选中这个任务。
-- 写入后立刻回滚的抽取：不播放，历史里标「未入账」。
-- 减少动态效果：不出全屏演出，只出结果卡片。
-- 演出关闭：什么都不显示，但仍记为已入账。
+**Hiệu ứng trình diễn (sau khi đọc lại sổ cái)**
+- Ghi chứng từ quyết toán → bên trong thiết bị đầu cuối phát hiệu ứng 「Hoàn thành nhiệm vụ」; nhấn Esc để bỏ qua, thiết bị đầu cuối vẫn mở.
+- Thẻ kết quả ghi rõ kết quả và 「✓ Sổ cái đã xác nhận」; trong sổ cái thực sự có chứng từ này.
+- 「Xem bản ghi」 → nhảy tới Dòng sự kiện và chọn đúng nhiệm vụ đó.
+- Lượt rút thẻ bị quay lui ngay sau khi ghi: không phát trình diễn, trong lịch sử đánh dấu 「Chưa ghi sổ」.
+- Giảm chuyển động: không hiện trình diễn toàn màn hình, chỉ hiện thẻ kết quả.
+- Tắt trình diễn: không hiển thị gì cả, nhưng vẫn ghi nhận là đã vào sổ.
 
-**穿越与主题切换**
-- 星图「记录穿越」写入并读回（当前世界、万界足迹）；旧的 `世界类型` 不带到新世界；播放穿越演出；主题切到赛博。
-- 各主题下控件坐标一致。
-- 模拟 AI 在「变量更新」里改世界：旧类型被清掉，「雾隐镇」→ 诡异；足迹记下这次变化。
-- 设置可以固定主题。
+**Xuyên không & Chuyển đổi chủ đề**
+- Bản đồ sao 「Ghi nhận xuyên không」 ghi và đọc lại thành công (Thế giới hiện tại, Dấu chân Vạn Giới); `世界类型` (Loại thế giới) cũ không bị mang sang thế giới mới; phát trình diễn xuyên không; chủ đề chuyển sang Cyber.
+- Tọa độ các điều khiển dưới từng chủ đề hoàn toàn đồng nhất.
+- Mô phỏng AI đổi thế giới trong 「Cập nhật biến số」: loại cũ được xóa đi, 「Trấn Vụ Ẩn」 → Quỷ dị; dấu chân ghi nhận thay đổi này.
+- Trong cài đặt có thể cố định chủ đề.
 
-**莉莉丝**
-- 在原版背包分页点一件物品，莉莉丝的台词里带这件物品的名字。
-- 镜头：工作台 = 全身；私聊 = 面部特写条。
-- 终端关闭时出现带莉莉丝胸像的剧情提示卡片；打开终端时收起。
+**Lilith**
+- Bấm vào một vật phẩm ở trang Túi đồ nguyên bản, trong lời thoại của Lilith có nhắc tới tên vật phẩm đó.
+- Góc máy: Bàn làm việc = Toàn thân; Trò chuyện riêng = Dải cận cảnh khuôn mặt.
+- Khi đóng thiết bị đầu cuối sẽ xuất hiện thẻ gợi ý cốt truyện có ảnh bán thân của Lilith; khi mở thiết bị đầu cuối thì thu gọn lại.
 
-**设置与清理**
-- 设置里不再提供楼层内状态栏（旧兼容模式），也没有只对它有效的两项；新设置项都在。
+**Cài đặt & Dọn dẹp**
+- Trong cài đặt không còn cung cấp thanh trạng thái trong tầng (chế độ tương thích cũ), cũng không còn hai mục chỉ có hiệu lực với chế độ đó; các mục cài đặt mới đều có mặt đầy đủ.
 
-**手机（390×800）**
-- 打开事件线、羁绊图、星图、能力树并截图（版面靠人工看图核对，脚本不做自动断言：图谱可横向拖动，文字不缩小）。
-- 全程没有页面错误。
+**Điện thoại (390×800)**
+- Mở Dòng sự kiện, Đồ phổ gắn kết, Bản đồ sao, Cây năng lực và chụp ảnh màn hình (bố cục được kiểm tra thủ công qua ảnh chụp, kịch bản không đặt khẳng định tự động: đồ phổ kéo ngang được, chữ không bị thu nhỏ).
+- Suốt quá trình không có lỗi trang.
 
-## 人工看图
+## Kiểm tra ảnh chụp thủ công
 
-截图目录里的每张图都人工看过：仙侠 / 赛博 / 诡异三套主题的总览、事件线、能力树、演出中和结果卡片、私聊面部特写、终端外剧情提示卡片、手机四个图谱页。修掉的问题：图谱连线被原版助手的 svg 全局样式涂成实心、节点文字重叠、胸像裁切位置错、手机顶栏主题徽标压住「系统点」、手机图谱文字过小、页面提示台词挡住紧接着的点击反应。
+Mọi bức ảnh trong thư mục ảnh chụp đều đã được xem xét thủ công: Tổng quan của ba bộ chủ đề Tiên hiệp / Cyber / Quỷ dị, Dòng sự kiện, Cây năng lực, đang trình diễn và thẻ kết quả, cận cảnh khuôn mặt khi trò chuyện riêng, thẻ gợi ý cốt truyện bên ngoài thiết bị đầu cuối, và bốn trang đồ phổ trên điện thoại. Các vấn đề đã sửa: đường nối đồ phổ bị kiểu svg toàn cục của trợ lý nguyên bản tô đặc, chữ trên nút bị chồng lấp, vị trí cắt ảnh bán thân bị lệch, huy hiệu chủ đề trên thanh đỉnh điện thoại đè lên chữ 「Điểm Hệ Thống」, chữ đồ phổ trên điện thoại quá nhỏ, lời thoại gợi ý trang chặn mất phản ứng bấm ngay sau đó.
 
-仓库内截图：`docs/evidence/w070-fx-task.png`（任务完成演出）、`w070-task-focus.png`（事件线 → 原版任务页定位）、`w070-cyber.png`、`w070-eerie.png`、`w070-mobile-stars.png`。
+Ảnh chụp màn hình trong kho lưu trữ: `docs/evidence/w070-fx-task.png` (trình diễn hoàn thành nhiệm vụ), `w070-task-focus.png` (Dòng sự kiện → định vị trang Nhiệm vụ nguyên bản), `w070-cyber.png`, `w070-eerie.png`, `w070-mobile-stars.png`.
 
-## 已知边界
+## Ranh giới đã biết
 
-- **真实模型**：仍未验证。尤其是「AI 在穿越时写 当前世界 / 世界类型」，只用模拟模型验证了提示词注入和写入后的主题切换；真实模型写漏时，可以在星图手动「记录穿越」。
-- **突破、契约演出**：检测逻辑有纯逻辑测试，浏览器里只实测了任务完成、穿越和回滚的抽取。
-- **图谱 → 定位聊天楼层**：已实现，没有浏览器验收。
-- **`native_replace040.py`**：见上文，本轮未运行。
-- **酒馆群聊（ST group chat）**、**触觉反馈**：同 0.6.0。
+- **Mô hình thực tế**: Vẫn chưa xác minh. Đặc biệt là việc 「AI ghi Thế giới hiện tại / Loại thế giới khi xuyên không」 mới chỉ dùng mô hình mô phỏng để xác minh việc tiêm lời nhắc và chuyển chủ đề sau khi ghi; khi mô hình thực tế quên ghi, người chơi có thể bấm 「Ghi nhận xuyên không」 thủ công ở Bản đồ sao.
+- **Trình diễn đột phá, khế ước**: Logic phát hiện đã có kiểm thử thuần logic, trên trình duyệt mới kiểm thử thực tế hoàn thành nhiệm vụ, xuyên không và rút thẻ bị quay lui.
+- **Đồ phổ → Định vị tầng trò chuyện**: Đã triển khai, chưa nghiệm thu trên trình duyệt.
+- **`native_replace040.py`**: Xem ở trên, đợt này không chạy.
+- **Trò chuyện nhóm của SillyTavern (ST group chat)**, **Phản hồi xúc giác**: Giống bản 0.6.0.

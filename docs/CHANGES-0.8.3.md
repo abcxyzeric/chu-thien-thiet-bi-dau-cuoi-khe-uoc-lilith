@@ -1,69 +1,60 @@
-# 0.8.3 变更（悬浮莉莉丝修正）
+# Thay đổi 0.8.3 (Chỉnh sửa Lilith nổi)
 
-0.8.3 只改手机上的悬浮莉莉丝，修正用户在 0.8.2 里遇到的两个问题：
+Bản 0.8.3 chỉ chỉnh sửa Lilith nổi trên điện thoại, khắc phục hai vấn đề mà người dùng gặp phải ở bản 0.8.2:
 
-1. 图标太大；
-2. 终端打开后点她，终端会被关掉。
+1. Biểu tượng quá lớn;
+2. Sau khi mở thiết bị đầu cuối, bấm vào cô ấy thì thiết bị đầu cuối lại bị đóng mất.
 
-其他功能、账本字段、世界书都没有变化，**不需要重新导入世界书**。验收见 [ACCEPTANCE-0.8.3](ACCEPTANCE-0.8.3.md)。
+Các tính năng khác, trường sổ cái và Sách Thế Giới đều không thay đổi, **không cần nhập lại Sách Thế Giới**. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.8.3](ACCEPTANCE-0.8.3.md).
 
-## 一、大小可调，默认缩小
+## I. Có thể điều chỉnh kích thước, mặc định thu nhỏ
 
-位置：终端 → 设置 → 莉莉丝 →「悬浮莉莉丝大小」。改完立即生效，位置保持不变。
+Vị trí: Thiết bị đầu cuối → Cài đặt → Lilith → 「Kích thước Lilith nổi」. Chỉnh xong có hiệu lực ngay lập tức, vị trí được giữ nguyên.
 
-| 选项 | 比例 | 尺寸（宽 × 高，px） |
+| Tùy chọn | Tỷ lệ | Kích thước (Rộng × Cao, px) |
 |---|---|---|
-| 特小 | 55% | 43 × 57 |
-| 小 | 65% | 51 × 68 |
-| **标准（默认）** | 75% | 59 × 78 |
-| 大 | 90% | 70 × 94 |
-| 特大 | 100% | 78 × 104（即 0.8.2 的大小） |
+| Rất nhỏ | 55% | 43 × 57 |
+| Nhỏ | 65% | 51 × 68 |
+| **Tiêu chuẩn (Mặc định)** | 75% | 59 × 78 |
+| Lớn | 90% | 70 × 94 |
+| Rất lớn | 100% | 78 × 104 (tức kích thước của bản 0.8.2) |
 
-- 等比例缩放：立绘、圆角、宝石标记一起缩小。
-- 躲在边缘时露出的那一角至少保留 24px，手指仍然点得到。
+- Thu phóng đồng tỷ lệ: tranh đứng, góc bo và dấu hiệu đá quý cùng thu nhỏ theo.
+- Khi nấp ở mép màn hình, phần góc lộ ra luôn giữ lại ít nhất 24px để ngón tay vẫn chạm tới dễ dàng.
 
-## 二、终端打开时点她，终端被关掉（Bug，已修复）
+## II. Khi thiết bị đầu cuối đang mở, bấm vào cô ấy làm thiết bị đầu cuối bị đóng mất (Lỗi, đã sửa)
 
-症状：
+Triệu chứng:
 
-1. 打开终端后，莉莉丝自动缩回屏幕边缘；
-2. 想点她说话，一点终端就关了；
-3. 终端开着的时候，根本没法和她互动。
+1. Sau khi mở thiết bị đầu cuối, Lilith tự động rụt về mép màn hình;
+2. Muốn bấm vào cô ấy để nghe nói chuyện, nhưng vừa chạm vào là thiết bị đầu cuối đóng sập lại;
+3. Khi thiết bị đầu cuối đang mở thì hoàn toàn không thể tương tác với cô ấy được.
 
-原因有两个，叠在一起：
+Có hai nguyên nhân chồng lên nhau:
 
-1. **「点击终端外部时关闭」把点她也算成了点外部。** 手机上这个选项默认开启。以前它只放过终端本身、酒馆弹窗和提示条，悬浮莉莉丝不在其中，所以按下手指的那一刻终端就关了，她自己的点击逻辑还没轮到执行。
-2. **她出来之后，很快又会自己躲回去。** 「点一下出来」会把她放在离边缘 8px 的位置，而每次重新读取位置时（关掉终端、旋转屏幕、刷新页面），这个位置又被套用了一遍「靠近边缘就躲起来」的规则，于是她又缩了回去。看起来就像点出来又被收回去，和终端开关来回打架。
+1. **Cơ chế 「Đóng khi bấm ra ngoài thiết bị đầu cuối」 tính luôn cả thao tác bấm vào cô ấy là bấm ra ngoài.** Trên điện thoại tùy chọn này mặc định bật. Trước đây nó chỉ bỏ qua bản thân thiết bị đầu cuối, hộp thoại SillyTavern và thanh thông báo, còn Lilith nổi không nằm trong danh sách miễn trừ, nên ngay khoảnh khắc đặt ngón tay xuống là thiết bị đầu cuối đã đóng lại trước khi logic bấm của chính cô ấy kịp chạy.
+2. **Sau khi cô ấy bước ra lại nhanh chóng tự nấp ngược vào trong.** Thao tác 「bấm một cái để bước ra」 đặt cô ấy ở vị trí cách mép 8px, nhưng mỗi lần đọc lại vị trí (đóng thiết bị đầu cuối, xoay màn hình, làm mới trang), vị trí này lại bị áp dụng quy tắc 「gần mép thì nấp vào」 thêm một lần nữa, khiến cô ấy lại rụt vào trong.
 
-修复：
+Cách sửa:
 
-- 悬浮莉莉丝不再算作「终端外部」（`src/hub.js`）。真正点在终端外面（比如聊天区）照样会关闭终端。
-- **终端开着时，点她只说话**：她探出来说一句当前的系统播报或剧情台词，几秒后缩回边缘。她不会移到终端上方，也不会关闭终端。
-  - 双击照样戳她，长按照样可以拖动。
-  - 关闭终端请用终端自己的 ✕ 或返回手势。
-- 「靠近边缘就躲起来」只在**拖动后松手**时判断。保存下来的「在外面」的位置只保证不超出屏幕，不会再被自动收回。
+- Lilith nổi không còn bị tính là 「bên ngoài thiết bị đầu cuối」 nữa (`src/hub.js`). Bấm thực sự ra bên ngoài thiết bị đầu cuối (ví dụ vùng trò chuyện) vẫn đóng thiết bị đầu cuối như bình thường.
+- **Khi thiết bị đầu cuối đang mở, bấm vào cô ấy chỉ nói chuyện**: cô ấy ló ra nói một câu thông báo hệ thống hiện tại hoặc lời thoại cốt truyện, vài giây sau lại rụt về mép. Cô ấy không di chuyển đè lên thiết bị đầu cuối, cũng không đóng thiết bị đầu cuối.
+  - Nhấn đúp vẫn chọc cô ấy, nhấn giữ vẫn kéo đi được như bình thường.
+  - Để đóng thiết bị đầu cuối vui lòng dùng nút ✕ của chính thiết bị đầu cuối hoặc cử chỉ vuốt quay lại.
+- Quy tắc 「gần mép thì nấp vào」 chỉ phán đoán khi **kéo xong rồi thả tay**. Vị trí 「ở bên ngoài」 đã lưu chỉ đảm bảo không tràn khỏi màn hình chứ không tự động thu về mép nữa.
 
-## 现在的完整操作
+## Toàn bộ thao tác hiện tại
 
-| 场景 | 操作 | 效果 |
+| Tình huống | Thao tác | Hiệu quả |
 |---|---|---|
-| 终端关着 | 点露出的一角 | 她出来，说「被你发现了～」 |
-| 终端关着 | 点她 | 打开终端（她自动退到边缘，不挡终端） |
-| 终端开着 | 点她 | 探出来说一句当前的系统播报或剧情台词，然后缩回边缘；**终端保持打开** |
-| 任何时候 | 双击 | 戳她：换个表情回应 |
-| 任何时候 | 长按约 0.4 秒后拖动 | 移动她；拖到左 / 右边缘松手就躲起来，位置会记住 |
+| Thiết bị đầu cuối đang đóng | Bấm vào góc lộ ra | Cô ấy bước ra và nói 「Bị ngài phát hiện rồi~」 |
+| Thiết bị đầu cuối đang đóng | Bấm vào cô ấy | Mở thiết bị đầu cuối (cô ấy tự động lùi về mép, không che khuất thiết bị đầu cuối) |
+| Thiết bị đầu cuối đang mở | Bấm vào cô ấy | Ló ra nói một câu thông báo hệ thống hiện tại hoặc lời thoại cốt truyện, sau đó rụt về mép; **thiết bị đầu cuối vẫn mở** |
+| Bất cứ lúc nào | Nhấn đúp | Chọc cô ấy: đổi biểu cảm để đáp lại |
+| Bất cứ lúc nào | Nhấn giữ khoảng 0.4 giây rồi kéo | Di chuyển cô ấy; kéo tới mép trái / phải rồi thả tay sẽ nấp vào mép và ghi nhớ vị trí |
 
-## 新增设置
+## Cài đặt mới thêm
 
-| 名称 | 说明 |
+| Tên | Thuyết minh |
 |---|---|
-| 扩展设置 `floatSize` | `xs` / `s` / `m`（默认）/ `l` / `xl` |
-
-## 修改的文件
-
-- 新增：`tests/v083.test.js`、`tests/native_v083.py`、本文档、`docs/ACCEPTANCE-0.8.3.md`
-- 修改：
-  - 根目录：`manifest.json`、`package.json`、`package-lock.json`
-  - `src/`：`lilith-float.js`、`hub.js`、`hub-settings.js`、`settings.js`、`contracts.js`
-  - `tests/`：`v080.test.js`、`v082.test.js`（版本号断言移到 `v083.test.js`）
-  - 文档：`README.md`、`docs/FEATURE_MATRIX.md`、`docs/evidence/guards.json`
+| Cài đặt tiện ích mở rộng `floatSize` | `xs` / `s` / `m` (mặc định) / `l` / `xl` |

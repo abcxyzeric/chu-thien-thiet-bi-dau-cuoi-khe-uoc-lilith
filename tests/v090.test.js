@@ -86,7 +86,7 @@ test('Bridge.addScriptFilter: filters see (next, prev), can replace the write, a
 test('settings: mobileLayout defaults to auto and the settings page offers it', () => {
     const store = {}; const s = new Settings({ context: () => ({ extensionSettings: store, saveSettingsDebounced() {} }) });
     assert.equal(s.get('mobileLayout'), 'auto');
-    assert.match(read('src/hub-settings.js'), /sel\('mobileLayout', '手机上的终端与私聊窗口', MOBILE_LAYOUTS/);
+    assert.match(read('src/hub-settings.js'), /sel\('mobileLayout', 'Cửa sổ thiết bị đầu cuối và trò chuyện riêng trên điện thoại', MOBILE_LAYOUTS/);
 });
 
 test('index.js starts the phone layout after the terminal and before floating Lilith, and disposes it', () => {
@@ -113,8 +113,8 @@ test('package.json check covers the modules that were missing and the new one', 
 
 // ---------- capability row / version ----------
 test('capabilities list 手机端适配 and say it is not tested on real phones', () => {
-    const c = CAPABILITIES.find(r => r.name === '手机端适配');
-    assert.ok(c && c.state === 'implemented'); assert.match(c.scope, /未在真机上测试/);
+    const c = CAPABILITIES.find(r => r.name === 'Tương thích giao diện di động');
+    assert.ok(c && c.state === 'implemented'); assert.match(c.scope, /chưa thử nghiệm trên máy thật/);
 });
 
 test('version ≥ 0.9.0 and consistent everywhere (exact value pinned in tests/version.test.js)', () => {

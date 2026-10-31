@@ -1,84 +1,84 @@
-# 0.8.3 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.8.3
 
-## 环境
+## Môi trường
 
-测试环境与 [0.8.2](ACCEPTANCE-0.8.2.md) 相同。本轮开始前沙盒被重置，所有一次性环境按同样的步骤重新搭建：
+Môi trường kiểm thử giống với [0.8.2](ACCEPTANCE-0.8.2.md). Trước khi bắt đầu đợt này, sandbox đã được đặt lại và toàn bộ môi trường dùng một lần được dựng lại theo đúng các bước tương tự:
 
-- SillyTavern 1.16.0 / 1.19.0 按官方 tag 全新安装；
-- 1.19 实例装有酒馆助手 4.11.2；
-- Playwright Chromium；
-- 模拟模型：5001 普通，5002 不发 CORS 头。
+- SillyTavern 1.16.0 / 1.19.0 cài đặt mới hoàn toàn theo tag chính thức;
+- Thực thể 1.19 có cài đặt Tavern Helper 4.11.2;
+- Playwright Chromium;
+- Mô hình mô phỏng: cổng 5001 thông thường, cổng 5002 không gửi tiêu đề CORS.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.19 |
 | --- | --- | --- |
-| `native_v083.py`（0.8.3 新增，13 项） | 13/13 | 13/13 |
-| `native_v082.py` | 20/20（跳过酒馆助手、停用钩子两段，同 0.8.2） | 25/25 |
-| `native_v081.py`（20 项） | 20/20 | 20/20 |
-| `native_v080.py`（33 项） | 33/33 | 33/33 |
-| `native_group060.py`（44 项） | 44/44 | 44/44 |
-| `native_world070.py`（40 项） | 40/40 | 40/40 |
-| `native_terminal050.py`（58 项） | 58/58 | 58/58 |
-| `native_guards.py` | ✅ | ✅（`docs/evidence/guards.json`：无页面错误，无模型请求） |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | **未运行** |
+| `native_v083.py` (Mới thêm bản 0.8.3, 13 hạng mục) | 13/13 | 13/13 |
+| `native_v082.py` | 20/20 (bỏ qua hai đoạn Tavern Helper và hook vô hiệu hóa, giống 0.8.2) | 25/25 |
+| `native_v081.py` (20 hạng mục) | 20/20 | 20/20 |
+| `native_v080.py` (33 hạng mục) | 33/33 | 33/33 |
+| `native_group060.py` (44 hạng mục) | 44/44 | 44/44 |
+| `native_world070.py` (40 hạng mục) | 40/40 | 40/40 |
+| `native_terminal050.py` (58 hạng mục) | 58/58 | 58/58 |
+| `native_guards.py` | ✅ | ✅ (`docs/evidence/guards.json`: không có lỗi trang, không có yêu cầu mô hình) |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | **Không chạy** |
 | `npm run check` | ✅ | ✅ |
 | `node --test tests/*.test.js` | 120/120 | 120/120 |
 
-1.17 / 1.18 本轮没有测。
+Bản 1.17 / 1.18 đợt này không kiểm thử.
 
-## 修复确认
+## Xác nhận sửa lỗi
 
-- 把 `src/hub.js` 里放过悬浮莉莉丝的那一行临时撤掉后重跑 `native_v083.py`，结果是 11/13：
-  - 「终端开着时点她说话」失败；
-  - 「双击戳她、终端保持打开」失败，失败时终端已经被关闭。
-- 恢复这一行后 13/13。这说明问题确实来自「点击终端外部时关闭」，而且这个修复是必要的。
+- Khi tạm thời gỡ bỏ dòng mã bỏ qua Lilith nổi trong `src/hub.js` rồi chạy lại `native_v083.py`, kết quả là 11/13:
+  - 「Bấm vào cô ấy để nói chuyện khi thiết bị đầu cuối đang mở」 thất bại;
+  - 「Nhấn đúp chọc cô ấy, thiết bị đầu cuối vẫn mở」 thất bại, lúc thất bại thì thiết bị đầu cuối đã bị đóng mất.
+- Sau khi khôi phục dòng mã này thì đạt 13/13. Điều này chứng tỏ vấn đề thực sự xuất phát từ cơ chế 「Đóng khi bấm ra ngoài thiết bị đầu cuối」, và bản sửa lỗi này là cần thiết.
 
-另一个问题也在第一次运行时复现了：「她出来之后又自己躲回去」。这是 `native_v083.py` 第一次运行的失败原因——测试先把位置设成离边缘 8px，但立刻被重新判定为「躲藏」，于是点她变成了「出来」，而不是「打开终端」。修复后，这一项和纯逻辑测试（`keepOnScreen`）都通过。
+Một vấn đề khác cũng đã được tái hiện ở lần chạy đầu tiên: 「Sau khi cô ấy bước ra lại tự nấpกลับ vào」. Đây là nguyên nhân thất bại của lần chạy `native_v083.py` đầu tiên — bài kiểm thử đặt vị trí cách mép 8px trước, nhưng ngay lập tức bị phán định lại thành 「đang nấp」, thế là bấm vào cô ấy biến thành 「bước ra」 chứ không phải 「mở thiết bị đầu cuối」. Sau khi sửa, hạng mục này và bài kiểm thử thuần logic (`keepOnScreen`) đều đạt.
 
-## `native_v083.py` 覆盖项
+## Các hạng mục bao phủ của `native_v083.py`
 
-环境：手机模拟，390×844，`has_touch`、`is_mobile`。点按使用 Playwright 的**真实触摸点按** `touchscreen.tap`，会依次产生 touchstart、pointerdown、pointerup、click，与手指操作一致。
+Môi trường: mô phỏng điện thoại, 390×844, `has_touch`, `is_mobile`. Thao tác chạm sử dụng **chạm cảm ứng thực sự** `touchscreen.tap` của Playwright, lần lượt sinh ra touchstart, pointerdown, pointerup, click giống hệt thao tác ngón tay.
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 1 | 默认尺寸 59×78，是 0.8.2 的 75% |
-| 2 | 大小设置即时生效：特小 43×57、小 51×68、大 70×94、特大 78×104 |
-| 3 | 改大小时位置不变 |
-| 4 | 设置页有「悬浮莉莉丝大小」选项 |
-| 5 | 终端关着：点她打开终端 |
-| 6 | 终端开着：她退到边缘，不挡终端 |
-| 7 | 终端开着时点她露出的一角：**终端不关闭**（「点击终端外部时关闭」为默认的「仅手机」） |
-| 8 | ……她探出来说一句台词 |
-| 9 | ……几秒后缩回边缘；保存的位置没有被改动 |
-| 10 | 终端开着时双击：有戳她的回应，终端仍然开着 |
-| 11 | 在聊天区按下（真正的终端外部）：终端照常关闭 |
-| 12 | 终端关闭后她回到原来的位置（没有被收回边缘） |
-| 13 | 无页面错误 |
+| 1 | Kích thước mặc định 59×78, bằng 75% của bản 0.8.2 |
+| 2 | Cài đặt kích thước có hiệu lực ngay lập tức: Rất nhỏ 43×57, Nhỏ 51×68, Lớn 70×94, Rất lớn 78×104 |
+| 3 | Khi đổi kích thước, vị trí không thay đổi |
+| 4 | Trang Cài đặt có tùy chọn 「Kích thước Lilith nổi」 |
+| 5 | Khi thiết bị đầu cuối đang đóng: bấm vào cô ấy sẽ mở thiết bị đầu cuối |
+| 6 | Khi thiết bị đầu cuối đang mở: cô ấy lùi về mép, không che khuất thiết bị đầu cuối |
+| 7 | Khi thiết bị đầu cuối đang mở, bấm vào góc lộ ra của cô ấy: **thiết bị đầu cuối không đóng** (mục 「Đóng khi bấm ra ngoài thiết bị đầu cuối」 đang ở mặc định 「Chỉ điện thoại」) |
+| 8 | ……cô ấy ló ra nói một câu thoại |
+| 9 | ……vài giây sau rụt về lại mép; vị trí đã lưu không bị thay đổi |
+| 10 | Khi thiết bị đầu cuối đang mở, nhấn đúp: có phản hồi chọc cô ấy, thiết bị đầu cuối vẫn mở |
+| 11 | Nhấn vào vùng trò chuyện (bên ngoài thiết bị đầu cuối thực sự): thiết bị đầu cuối đóng lại như bình thường |
+| 12 | Sau khi thiết bị đầu cuối đóng lại, cô ấy quay về vị trí cũ (không bị thu về mép) |
+| 13 | Không có lỗi trang |
 
-截图在 `/var/tmp/qa/shots083/`，这是测试机上的临时目录，不在仓库里：
+Ảnh chụp màn hình nằm tại `/var/tmp/qa/shots083/`, đây là thư mục tạm trên máy kiểm thử, không nằm trong kho lưu trữ:
 
 - `01-default-size`
 - `02-size-xs`
 - `03-terminal-open-tap-talks`
 
-## 纯逻辑测试（`tests/v083.test.js`，8 项）
+## Kiểm thử thuần logic (`tests/v083.test.js`, 8 hạng mục)
 
-- 尺寸档位：默认 75%，特大等于 0.8.2 的尺寸，比例不变，露出的一角不小于 24px，未知值回到默认。
-- 边缘判定按实际尺寸计算。
-- 终端开着时 `tap()` 只说话，不移动、不打开也不关闭终端。用户自己藏起来的情况同样适用。
-- 终端关着时：点露出的一角她出来（并保存位置），再点一下打开终端。
-- `hub.js` 的外部点击规则放过悬浮莉莉丝。
-- `floatSize` 默认值、设置项、即时生效。
-- 保存的「在外面」位置不会被重新收回（`keepOnScreen`）；拖动松手在边缘时仍然会躲起来。
-- 版本 0.8.3。
+- Bậc kích thước: mặc định 75%, rất lớn bằng kích thước bản 0.8.2, tỷ lệ không đổi, góc lộ ra không nhỏ hơn 24px, giá trị lạ quay về mặc định.
+- Phán định mép tính theo kích thước thực tế.
+- Khi thiết bị đầu cuối đang mở, `tap()` chỉ nói chuyện, không di chuyển, không mở cũng không đóng thiết bị đầu cuối. Trường hợp người dùng tự giấu vào mép cũng áp dụng tương tự.
+- Khi thiết bị đầu cuối đang đóng: bấm vào góc lộ ra cô ấy bước ra (và lưu vị trí), bấm thêm cái nữa sẽ mở thiết bị đầu cuối.
+- Quy tắc bấm bên ngoài của `hub.js` bỏ qua Lilith nổi.
+- Giá trị mặc định của `floatSize`, mục cài đặt, có hiệu lực tức thì.
+- Vị trí 「ở bên ngoài」 đã lưu không bị thu về mép lại (`keepOnScreen`); khi kéo rồi thả tay ở sát mép thì vẫn nấp vào như bình thường.
+- Phiên bản 0.8.3.
 
-## 未验证
+## Chưa xác minh
 
-- **真实手机浏览器**：iOS Safari、Android Chrome 上的实际手感没有测，只在 Chromium 手机模拟里用真实触摸事件测过。
-- **1.17 / 1.18**：本轮没有运行。
+- **Trình duyệt điện thoại thực tế**: Cảm giác vuốt chạm thực tế trên iOS Safari, Android Chrome chưa được kiểm thử, mới chỉ kiểm thử bằng sự kiện cảm ứng thực trong trình mô phỏng điện thoại Chromium.
+- **1.17 / 1.18**: Đợt này không chạy.

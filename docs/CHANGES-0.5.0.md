@@ -1,90 +1,87 @@
-# 0.5.0 变更记录：终端就是一切
+# Bản ghi thay đổi 0.5.0: Thiết bị đầu cuối là tất cả
 
-基线：0.4.0。
-目标：**一个窗口装下整个诸天系统**。莉莉丝窗口就是「诸天终端」，原版状态栏、外挂、设置全部搬进来；聊天楼层里不再有状态栏。
+Cơ sở: 0.4.0.
+Mục tiêu: **Một cửa sổ duy nhất chứa trọn toàn bộ Hệ Thống Chư Thiên**. Cửa sổ Lilith chính là 「Thiết Bị Đầu Cuối Chư Thiên」, thanh trạng thái nguyên bản, ngoại quải và cài đặt đều được chuyển hết vào trong; trong các tầng trò chuyện không còn hiển thị thanh trạng thái nữa.
 
-验收结果见 [ACCEPTANCE-0.5.0](ACCEPTANCE-0.5.0.md)。
+Kết quả nghiệm thu xem tại [ACCEPTANCE-0.5.0](ACCEPTANCE-0.5.0.md).
 
-## 一个窗口
+## Một cửa sổ duy nhất
 
-| 以前 | 0.5.0 |
+| Trước đây | 0.5.0 |
 |---|---|
-| 莉莉丝窗口 + 另一个「系统工作台 / 终端」窗口，来回切换 | 只有一个窗口「诸天终端」。原来的莉莉丝页面（工作台、记忆档案、规则藏书、连接、运行状态、私聊）和系统页面在同一个导航里 |
-| 两个入口（莉莉丝头像 + 终端按钮） | 一个入口：莉莉丝头像。也可以用 Alt+Z、`/zt`、楼层小标签、扩展设置里的「打开诸天终端」 |
-| 扩展设置抽屉里一长串开关 | 抽屉只留「打开诸天终端」和「紧急恢复旧版」。**所有开关和工具都在终端的「设置」页** |
+| Cửa sổ Lilith + một cửa sổ 「Bàn làm việc hệ thống / Thiết bị đầu cuối」 khác, phải chuyển qua chuyển lại | Chỉ có một cửa sổ duy nhất là 「Thiết Bị Đầu Cuối Chư Thiên」. Các trang Lilith trước đây (Bàn làm việc, Hồ sơ ký ức, Kho quy tắc, Kết nối, Trạng thái vận hành, Trò chuyện riêng) và các trang hệ thống nằm chung trong cùng một thanh điều hướng |
+| Hai lối vào (Ảnh đại diện Lilith + Nút thiết bị đầu cuối) | Một lối vào: Ảnh đại diện Lilith. Cũng có thể dùng Alt+Z, `/zt`, nhãn nhỏ trên tầng, hoặc nút 「Mở Thiết Bị Đầu Cuối Chư Thiên」 trong cài đặt tiện ích mở rộng |
+| Một danh sách dài các công tắc trong ngăn kéo cài đặt tiện ích mở rộng | Ngăn kéo chỉ giữ lại 「Mở Thiết Bị Đầu Cuối Chư Thiên」 và 「Khôi phục khẩn cấp bản cũ」. **Tất cả công tắc và công cụ đều nằm ở trang 「Cài đặt」 của thiết bị đầu cuối** |
 
-导航分组固定，换页不换位置：
-- **系统**：总览 · 任务 · 羁绊 · 修行
-- **交易**：商城 · 背包
-- **能力**：外挂 · 神通
-- **莉莉丝**：工作台 · 记忆 · 规则
-- **终端**：连接 · 状态 · 设置
+Các nhóm điều hướng cố định, chuyển trang không làm thay đổi vị trí:
+- **Hệ thống**: Tổng quan · Nhiệm vụ · Gắn kết · Tu hành
+- **Giao dịch**: Thương thành · Túi đồ
+- **Năng lực**: Ngoại quải · Thần thông
+- **Lilith**: Bàn làm việc · Ký ức · Quy tắc
+- **Thiết bị đầu cuối**: Kết nối · Trạng thái · Cài đặt
 
-顶栏常驻：当前世界、系统点、五种专属资源、商城等级，读自账本。
+Thanh đỉnh thường trực: Thế giới hiện tại, Điểm Hệ Thống, năm loại tài nguyên độc quyền, cấp độ thương thành, đọc trực tiếp từ sổ cái.
 
-### 关闭
+### Đóng cửa sổ
 
-以下四种方式都会**一次关掉整个窗口**，带淡出动画；焦点回到打开前的位置，聊天不滚动：
-- 右上角 ✕；
-- Esc（焦点在终端里任何位置都行；如果酒馆自己的弹窗开着，Esc 先关弹窗）；
-- 点终端外部（设置：仅手机 / 总是 / 从不，默认仅手机）；
-- 手机返回手势（可关）。
+Bốn cách dưới đây đều sẽ **đóng toàn bộ cửa sổ chỉ trong một lần**, kèm hiệu ứng mờ dần; tiêu điểm quay về vị trí trước khi mở, cuộc trò chuyện không bị cuộn:
+- Nút ✕ ở góc trên bên phải;
+- Phím Esc (tiêu điểm nằm ở bất kỳ đâu trong thiết bị đầu cuối đều được; nếu hộp thoại của chính SillyTavern đang mở, nhấn Esc sẽ đóng hộp thoại trước);
+- Bấm ra bên ngoài thiết bị đầu cuối (cài đặt: Chỉ điện thoại / Luôn luôn / Không bao giờ, mặc định là Chỉ điện thoại);
+- Cử chỉ vuốt quay lại trên điện thoại (có thể tắt).
 
-再次打开时回到上次的页面。
+Khi mở lại sẽ quay về đúng trang của lần trước.
 
-## 聊天楼层不再显示状态栏
+## Tầng trò chuyện không còn hiển thị thanh trạng thái
 
-- `<ZhuTianPanel>` 数据块照常由原版引擎记账（原版 `ztApplyPanel`，同一个 `面板账本`，不会重复入账）。记账的位置从“最新楼层里的状态栏”换成了“终端里的引擎”。
-- 楼层里只留一个小标签「✧ 系统已记录 · 系统点 … · 任务 … · 查看 ›」，点它打开终端总览。标签可在设置里关闭。
-- 莉莉丝语音框照常显示（仍可开关）。
-- 需要旧样式时：设置 →「聊天楼层里的系统数据块」→「兼容：楼层内仍显示原版状态栏」。0.4.0 的全部行为（精简卡、显示深度）在兼容模式下保留。
+- Khối dữ liệu `<ZhuTianPanel>` vẫn do động cơ nguyên bản ghi sổ như bình thường (`ztApplyPanel` nguyên bản, cùng một `面板账本`, không bị ghi sổ lặp lại). Vị trí ghi sổ được chuyển từ “thanh trạng thái trong tầng mới nhất” sang “động cơ bên trong thiết bị đầu cuối”.
+- Trong tầng chỉ để lại một nhãn nhỏ 「✧ Hệ thống đã ghi nhận · Điểm Hệ Thống … · Nhiệm vụ … · Xem ›」, bấm vào đó sẽ mở Tổng quan thiết bị đầu cuối. Nhãn nhỏ này có thể tắt trong cài đặt.
+- Khung thoại Lilith vẫn hiển thị bình thường (vẫn có thể bật/tắt).
+- Khi cần kiểu hiển thị cũ: Cài đặt → 「Khối dữ liệu hệ thống trong tầng trò chuyện」 → 「Tương thích: Vẫn hiển thị thanh trạng thái nguyên bản trong tầng」. Toàn bộ hành vi của bản 0.4.0 (thẻ rút gọn, độ sâu hiển thị) được giữ nguyên ở chế độ tương thích.
 
-## 原版 8 个分页在终端里
+## 8 trang nguyên bản nằm trong thiết bị đầu cuối
 
-终端内嵌的是**原版 3.1 状态栏引擎本身**（同一份 part1/part2/part3，字节未改），绑定到最新带数据块的楼层：
-- 原版的标题栏和分页标签被隐藏，改由终端导航切换；
-- 配色换成终端的紫色主题（只改 CSS 变量）；
-- 所有按钮、购物车、结算、抽卡、许愿、回收、背包、外挂、神通都是原版代码在跑，写同一份 `诸天系统.*`。
+Bên trong thiết bị đầu cuối nhúng **chính động cơ thanh trạng thái 3.1 nguyên bản** (cùng bộ part1/part2/part3), gắn kết với tầng mới nhất có khối dữ liệu:
+- Thanh tiêu đề và nhãn phân trang nguyên bản được ẩn đi, chuyển sang điều khiển bằng thanh điều hướng của thiết bị đầu cuối;
+- Bảng màu đổi sang chủ đề màu tím của thiết bị đầu cuối (chỉ đổi các biến CSS);
+- Tất cả các nút bấm, giỏ hàng, quyết toán, rút thẻ, ước nguyện, thu hồi, túi đồ, ngoại quải, thần thông đều do mã nguồn nguyên bản chạy, ghi vào cùng một `诸天系统.*`.
 
-原版有些操作是“把一段系统操作写进聊天输入框，由你发送给 AI 演绎”（购物车结算、闭关、使用物品、解散打手）。终端开着时输入框被挡住，所以现在写入后终端会提示「已写入聊天输入框」，并给一个「关闭终端去发送」按钮：关窗、把焦点放进输入框，文字保留。
+Một số thao tác nguyên bản có cơ chế “ghi một đoạn thao tác hệ thống vào ô nhập liệu trò chuyện để bạn gửi cho AI diễn dịch” (quyết toán giỏ hàng, bế quan, sử dụng vật phẩm, giải tán đả thủ). Khi thiết bị đầu cuối đang mở thì ô nhập liệu bị che khuất, nên hiện tại sau khi ghi xong, thiết bị đầu cuối sẽ hiện thông báo 「Đã ghi vào ô nhập trò chuyện」 kèm nút 「Đóng thiết bị đầu cuối để gửi」: đóng cửa sổ, đặt tiêu điểm vào ô nhập liệu và giữ nguyên văn bản.
 
-## 外挂管理 + 自拟外挂
+## Quản lý ngoại quải + Ngoại quải tự tạo
 
-「外挂」页顶部新增一条入口「外挂管理 ›」。
+Đầu trang 「Ngoại quải」 thêm mới một lối vào 「Quản lý ngoại quải ›」.
 
-**原版 6 个外挂按聊天开关**（无限口袋、诸天打手、洞察之眼、分身派遣、随身洞天、万物熔炉）：
-- 关掉的外挂在终端里隐藏、不能使用；
-- 同时告诉 AI「宿主当前关闭了：…，剧情中不得出现或使用」。
+**Bật/tắt 6 ngoại quải nguyên bản theo từng cuộc trò chuyện** (Túi Vô Hạn, Đả Thủ Chư Thiên, Con Mắt Động Sát, Phái Cử Phân Thân, Động Thiên Tùy Thân, Lò Nung Vạn Vật):
+- Ngoại quải đã tắt sẽ ẩn đi trong thiết bị đầu cuối và không thể sử dụng;
+- Đồng thời báo cho AI biết 「Ký chủ hiện đã tắt: …, không được xuất hiện hoặc sử dụng trong cốt truyện」.
 
-**自拟外挂**：
-- 字段：名称、品级（凡品→禁忌）、类型（被动 / 主动 / 每日次数）、规则、代价（无 / 系统点 / 专属资源）、冷却回合；
-- 保存在本机外挂库（所有聊天共用），每个聊天单独勾选启用；
-- 可导出为 `.json`、从 `.json` 导入（导入时逐条校验、截断超长文字、宏与标签变成无效文本）；
-- 启用的外挂会作为「宿主已装载的自拟外挂」写进提示词；
-- 主动 / 每日外挂有「发动」按钮：**先扣代价并从账本读回确认**，再把发动写进输入框；每日次数和冷却由终端执行，最近 30 次发动有记录。
+**Ngoại quải tự tạo**:
+- Các trường: Tên, Phẩm cấp (Phàm phẩm → Cấm kỵ), Loại (Bị động / Chủ động / Số lần mỗi ngày), Quy tắc, Cái giá phải trả (Không / Điểm Hệ Thống / Tài nguyên độc quyền), Số lượt hồi chiêu;
+- Lưu trong kho ngoại quải trên máy (dùng chung cho mọi cuộc trò chuyện), mỗi cuộc trò chuyện tích chọn kích hoạt riêng;
+- Có thể xuất ra tệp `.json`, nhập từ tệp `.json` (khi nhập sẽ kiểm tra từng mục, cắt bớt văn bản quá dài, biến macro và thẻ HTML thành văn bản trơ);
+- Ngoại quải đang bật sẽ được ghi vào lời nhắc dưới dạng 「Ngoại quải tự tạo Ký chủ đã trang bị」;
+- Ngoại quải Chủ động / Số lần mỗi ngày có nút 「Phát động」: **trừ chi phí trước và đọc lại từ sổ cái để xác nhận**, sau đó mới ghi lệnh phát động vào ô nhập liệu; giới hạn số lần mỗi ngày và hồi chiêu do thiết bị đầu cuối thực thi, lưu lại bản ghi 30 lần phát động gần nhất.
 
-## 立绘
+## Tranh đứng
 
-- 删除了 0.4.0 的两张 AI 姿势（抱臂、侧坐）。它们换了服装，不符合“必须用原图”的要求。用原图重新生成的尝试被图像模型拒绝，因此不再提供姿势差分。
-- 保留原版分层动画（伪 Live2D）和 8 张表情差分。
-- 桌面端立绘保持原比例，不再有左右空带。手机端和窄窗口只在莉莉丝自己的页面显示立绘，系统页面把高度全部让给内容。
+- Đã xóa hai tấm tư thế AI (Khoanh tay, Ngồi nghiêng) của bản 0.4.0 vì chúng bị đổi trang phục, không đáp ứng yêu cầu “bắt buộc dùng ảnh gốc”.
+- Giữ lại hoạt ảnh phân lớp nguyên bản (giả Live2D) và 8 tấm biến thể biểu cảm.
+- Trên máy tính, tranh đứng giữ nguyên tỷ lệ gốc, không còn dải trống hai bên. Trên điện thoại và cửa sổ hẹp chỉ hiển thị tranh đứng ở các trang riêng của Lilith, còn các trang hệ thống nhường toàn bộ chiều cao cho nội dung.
 
-## 文件
+## Các tệp thay đổi
 
-新增：
-- `src/hub.js`：终端外壳（导航、顶栏、引擎嵌入、关闭方式、提示条）。
-- `src/hub-settings.js`：设置页。
-- `src/hub-plugins.js`：外挂管理与自拟外挂。
-- `styles/hub.css`：终端样式（在莉莉丝窗口的 Shadow DOM 内）。
-- `tests/native_terminal050.py`：0.5.0 真实宿主验收。
-- `tests/terminal050.test.js`：自拟外挂数据模型、提示词、楼层模式判定的纯逻辑测试。
+Thêm mới:
+- `src/hub.js`: Vỏ thiết bị đầu cuối (điều hướng, thanh đỉnh, nhúng động cơ, cách đóng, thanh thông báo).
+- `src/hub-settings.js`: Trang cài đặt.
+- `src/hub-plugins.js`: Quản lý ngoại quải và ngoại quải tự tạo.
+- `styles/hub.css`: Kiểu dáng thiết bị đầu cuối (bên trong Shadow DOM của cửa sổ Lilith).
+- `tests/native_terminal050.py`: Nghiệm thu máy chủ thực tế 0.5.0.
+- `tests/terminal050.test.js`: Kiểm thử thuần logic cho mô hình dữ liệu ngoại quải tự tạo, lời nhắc và phán định chế độ tầng.
 
-修改：`index.js`、`src/settings.js`、`src/features.js`、`src/statusbar-host.js`、`src/th-bridge.js`、`src/assistant-host.js`、`src/portrait.js`、`src/contracts.js`、`styles/host.css`、`tests/native_replace040.py`（固定为兼容模式）、`tests/native_guards.py`、`tests/native030.test.js`、`tests/qa/run_matrix.sh`、`package.json`、`package-lock.json`、`manifest.json`、`assets/lilith/variants/PROVENANCE.md`。
+Sửa đổi: `index.js`, `src/settings.js`, `src/features.js`, `src/statusbar-host.js`, `src/th-bridge.js`, `src/assistant-host.js`, `src/portrait.js`, `src/contracts.js`, `styles/host.css`, `tests/native_replace040.py` (cố định ở chế độ tương thích), `tests/native_guards.py`, `tests/native030.test.js`, `tests/qa/run_matrix.sh`, `package.json`, `package-lock.json`, `manifest.json`, `assets/lilith/variants/PROVENANCE.md`.
 
-删除：
-- `src/terminal.js`、`styles/shell.css`、`assets/star-sea.jpg`：旧的第二个终端窗口。
-- `assets/lilith/variants/pose-*.webp`：两张换了服装的姿势。
-- `tests/native_acceptance.py`、`native_views.py`、`native_ledger.py`、`native_ledger_guards.py`：它们驱动的是已删除的旧终端界面。覆盖关系：
-  - 引擎记账、购买、抽卡、回收、背包 → `native_terminal050.py` 的 engine / ops 阶段；
-  - 发送保护（附件、过期预览、生成锁、重复发送、读回失败）→ `native_guards.py`（保留）；
-  - 账本纯逻辑 → `tests/ledger.test.js`、`native030.test.js`（保留）。
+Xóa bỏ:
+- `src/terminal.js`, `styles/shell.css`, `assets/star-sea.jpg`: Cửa sổ thiết bị đầu cuối thứ hai kiểu cũ.
+- `assets/lilith/variants/pose-*.webp`: Hai tấm tư thế bị đổi trang phục.
+- `tests/native_acceptance.py`, `native_views.py`, `native_ledger.py`, `native_ledger_guards.py`: Các kịch bản điều khiển giao diện thiết bị đầu cuối cũ đã xóa.

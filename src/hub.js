@@ -1,10 +1,10 @@
-// 诸天终端 (0.5.0+): ONE window for the whole system.
-// The original Lilith window (portrait, private chat, workbench, memory, rules, connection, status) is the shell; this
-// module adds every other surface into that same window: the original 3.1 status-bar engine (all 8 pages, driven by the
-// terminal navigation instead of an in-message bar), 外挂管理 + 自拟外挂, settings (everything that used to hide in the
-// Extensions drawer), and later phases (聊天群, 图谱, 演出, 主题).
-// Nothing here re-implements settlement rules: the engine iframe runs the byte-for-byte original functions on the native
-// Bridge, bound to the latest floor that carries a <ZhuTianPanel> block.
+// Thiết Bị Đầu Cuối Chư Thiên (0.5.0+): MỘT cửa sổ duy nhất cho toàn bộ hệ thống.
+// Cửa sổ Lilith gốc (chân dung, trò chuyện riêng, bàn làm việc, ký ức, quy tắc, kết nối, trạng thái) là khung vỏ; mô-đun này
+// đưa tất cả các bề mặt khác vào cùng cửa sổ đó: bộ máy thanh trạng thái 3.1 gốc (đầy đủ 8 trang, điều khiển bởi
+// thanh điều hướng thiết bị đầu cuối thay vì thanh nằm trong tin nhắn), Quản lý phụ trợ + Phụ trợ tự tạo, Cài đặt (mọi thứ trước đây ẩn trong
+// ngăn kéo Tiện ích mở rộng), và các giai đoạn sau (Nhóm chat, Đồ phổ, Diễn xuất, Chủ đề).
+// Không có gì ở đây viết lại quy tắc quyết toán: iframe bộ máy chạy nguyên vẹn từng byte các hàm gốc trên Cầu nối
+// nguyên bản, gắn với tầng mới nhất mang khối <ZhuTianPanel>.
 import { ID, VERSION, STORAGE } from './contracts.js';
 import { hash } from './statusbar-host.js';
 import { shopLevel } from './ledger-ops.js';
@@ -13,6 +13,7 @@ import { resetPageScroll, guardPageScroll, withoutFocusScroll } from './page-scr
 export const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 export const fmtNum = x => { const n = Number(x); return Number.isFinite(n) ? n.toLocaleString('zh-CN') : '—'; };
 const RES_KEYS = ['天命印记', '血脉结晶', '因果筹码', '名望', '岁月沉淀'];
+const RES_LABELS = { 天命印记: 'Ấn Ký Thiên Mệnh', 血脉结晶: 'Kết Tinh Huyết Mạch', 因果筹码: 'Phỉnh Nhân Quả', 名望: 'Danh vọng', 岁月沉淀: 'Lắng Đọng Năm Tháng' };
 const I = {
     grid: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
     task: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v4H9zM9 12h6M9 16h4"/>',
@@ -34,16 +35,25 @@ const icon = k => `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" strok
 export const ENGINE_TABS = { ov: 1, bond: 2, task: 3, cult: 4, shop: 5, bag: 6, plug: 7, art: 8 };
 /** Fixed navigation (positions never change with world themes). Original Lilith pages keep their own buttons. */
 export const NAV = [
-    { group: '系统', items: [['ov', '总览', 'grid'], ['task', '任务', 'task'], ['bond', '羁绊', 'heart'], ['cult', '修行', 'lotus']] },
-    { group: '交易', items: [['shop', '商城', 'shop'], ['bag', '背包', 'bag']] },
-    { group: '能力', items: [['plug', '外挂', 'plug'], ['plugmgr', '自拟', 'quill'], ['art', '神通', 'art']] },
-    { group: '图谱', items: [] },
-    { group: '万界', items: [] },
-    { group: '莉莉丝', items: [['work'], ['memory'], ['rules']] },
-    { group: '终端', items: [['api'], ['env'], ['set', '设置', 'gear']] },
+    { group: 'Hệ thống', items: [['ov', 'Tổng quan', 'grid'], ['task', 'Nhiệm vụ', 'task'], ['bond', 'Ràng buộc', 'heart'], ['cult', 'Tu hành', 'lotus']] },
+    { group: 'Giao dịch', items: [['shop', 'Thương thành', 'shop'], ['bag', 'Túi đồ', 'bag']] },
+    { group: 'Năng lực', items: [['plug', 'Phụ trợ', 'plug'], ['plugmgr', 'Tự tạo', 'quill'], ['art', 'Thần thông', 'art']] },
+    { group: 'Đồ phổ', items: [] },
+    { group: 'Vạn giới', items: [] },
+    { group: 'Lilith', items: [['work'], ['memory'], ['rules']] },
+    { group: 'Thiết bị đầu cuối', items: [['api'], ['env'], ['set', 'Cài đặt', 'gear']] },
 ];
+const GROUP_ALIASES = {
+    '系统': 'Hệ thống', 'Hệ thống': 'Hệ thống',
+    '交易': 'Giao dịch', 'Giao dịch': 'Giao dịch',
+    '能力': 'Năng lực', 'Năng lực': 'Năng lực',
+    '图谱': 'Đồ phổ', 'Đồ phổ': 'Đồ phổ',
+    '万界': 'Vạn giới', 'Vạn giới': 'Vạn giới',
+    '莉莉丝': 'Lilith', 'Lilith': 'Lilith',
+    '终端': 'Thiết bị đầu cuối', 'Thiết bị đầu cuối': 'Thiết bị đầu cuối',
+};
 /** Full names for short navigation labels (tooltip + screen readers via title). */
-const NAV_TITLE = { plugmgr: '自拟外挂：自己编写外挂（规则、代价、冷却），按聊天启用' };
+const NAV_TITLE = { plugmgr: 'Phụ trợ tự tạo: tự viết phụ trợ (quy tắc, cái giá, hồi chiêu), bật theo từng cuộc trò chuyện' };
 const ORIGINAL_PAGES = ['work', 'memory', 'rules', 'api', 'env'];
 /** Pages that can never be switched off (the way back to the switches). */
 export const ALWAYS_PAGES = Object.freeze(['ov', 'set', 'api', 'switches', 'persona']);
@@ -55,13 +65,13 @@ export function hiddenPages(navHidden, modules) {
     for (const [k, page] of Object.entries(MODULE_PAGES)) if (modules?.[k] === false) out.add(page);
     return out;
 }
-const ORIGINAL_LABEL = { work: '工作台', memory: '记忆', rules: '规则', api: '连接', env: '状态' };
+const ORIGINAL_LABEL = { work: 'Bàn làm việc', memory: 'Ký ức', rules: 'Quy tắc', api: 'Kết nối', env: 'Trạng thái' };
 
 export class Hub {
     constructor(app) { this.app = app; this.pages = new Map(); this.disposers = []; this.page = 'ov'; this.dead = false; this.engineSig = ''; this.engineFrame = null; this.engineTimer = 0; this.passClose = false; this.historyArmed = false; }
     get a() { return this.app.adapter; }
     /** Chains a hook (onEngine, onPage, onEngineTab, onOpen, onClose, onTop …) without replacing earlier listeners. */
-    hook(name, fn) { const prev = this[name]; this[name] = (...args) => { try { prev?.(...args); } catch (e) { console.warn('[诸天终端]', name, e); } return fn(...args); }; }
+    hook(name, fn) { const prev = this[name]; this[name] = (...args) => { try { prev?.(...args); } catch (e) { console.warn('[Thiết Bị Đầu Cuối Chư Thiên]', name, e); } return fn(...args); }; }
     get settings() { return this.app.settings; }
     on(target, type, fn, opt) { target.addEventListener(type, fn, opt); this.disposers.push(() => target.removeEventListener(type, fn, opt)); }
 
@@ -77,9 +87,9 @@ export class Hub {
         this.marker = document.createElement('div'); this.marker.id = ID; this.marker.hidden = true; document.body.append(this.marker);
         this.buildNav(); this.buildTop(); this.buildEngine(); this.buildDeco();
         this.applyNav(); if (this.settings?.onChange) this.disposers.push(this.settings.onChange(k => { if (k === 'navHidden' || k === 'modules') this.applyNav(); }));
-        const title = this.shadow.getElementById('title'); if (title) { this.oldTitle = [title.textContent, title.nextElementSibling?.textContent]; title.textContent = '诸天终端'; if (title.nextElementSibling) title.nextElementSibling.textContent = 'ZHUTIAN TERMINAL · LILITH'; }
+        const title = this.shadow.getElementById('title'); if (title) { this.oldTitle = [title.textContent, title.nextElementSibling?.textContent]; title.textContent = 'Thiết Bị Đầu Cuối Chư Thiên'; if (title.nextElementSibling) title.nextElementSibling.textContent = 'ZHUTIAN TERMINAL · LILITH'; }
         const pill = this.shadow.querySelector('.version-pill'); if (pill) pill.textContent = VERSION;
-        this.register('set', { title: '设置', render: el => this.app.hubSettings?.render(el) });
+        this.register('set', { title: 'Cài đặt', render: el => this.app.hubSettings?.render(el) });
         this.bindClose();
         this.disposers.push(this.a.subscribe(() => { if (this.engineFrame && !this.app.statusbar.isCurrent(this.engineFrame)) this.dropEngine(); this.refreshTop(); this.scheduleEngine(); }));
         // 0.8.0: a ledger write from outside the engine (签到, 聊天群, 自拟外挂, 管理员 …) also refreshes the numbers shown
@@ -102,9 +112,9 @@ export class Hub {
     fallbackShell() {
         const host = document.createElement('div'); host.id = 'zhutian-hub-fallback'; document.body.append(host);
         const shadow = host.attachShadow({ mode: 'open' });
-        shadow.innerHTML = `<button id="entry" class="zt-fb-entry" type="button" title="打开诸天终端" aria-label="打开诸天终端"><img src="${this.app.base}assets/original/avatar.webp" alt=""></button>
-<dialog class="zt-fb"><header class="zt-fb-head"><b>诸天终端</b><span class="window-tools"></span><button id="close" type="button" aria-label="关闭">✕</button></header>
-<div class="shell"><aside class="sidebar"><nav aria-label="终端导航"></nav></aside><main class="main"><div class="page-scroll"></div></main></div></dialog>`;
+        shadow.innerHTML = `<button id="entry" class="zt-fb-entry" type="button" title="Mở Thiết Bị Đầu Cuối Chư Thiên" aria-label="Mở Thiết Bị Đầu Cuối Chư Thiên"><img src="${this.app.base}assets/original/avatar.webp" alt=""></button>
+<dialog class="zt-fb"><header class="zt-fb-head"><b>Thiết Bị Đầu Cuối Chư Thiên</b><span class="window-tools"></span><button id="close" type="button" aria-label="Đóng">✕</button></header>
+<div class="shell"><aside class="sidebar"><nav aria-label="Điều hướng thiết bị đầu cuối"></nav></aside><main class="main"><div class="page-scroll"></div></main></div></dialog>`;
         const d = shadow.querySelector('dialog'), close = () => d.close();
         shadow.getElementById('entry').addEventListener('click', () => { if (!d.open) d.show(); });
         shadow.getElementById('close').addEventListener('click', close);
@@ -132,7 +142,7 @@ export class Hub {
         }
         for (const b of originals.values()) frag.append(b);        // unknown future original tabs stay reachable
         nav.replaceChildren(frag);
-        this.groupBox = g => nav.querySelector(`.zt-nav-group[data-group="${g}"] .zt-nav-items`);
+        this.groupBox = g => nav.querySelector(`.zt-nav-group[data-group="${GROUP_ALIASES[g] || g}"] .zt-nav-items`);
         this.on(nav, 'click', e => {
             const b = e.target.closest('.nav-button[data-page]'); if (!b) return;
             if (b.classList.contains('zt-nav-orig')) { this.page = b.dataset.page; this.afterGo(); return; }   // original handler switches the page
@@ -180,7 +190,7 @@ export class Hub {
     }
     buildTop() {
         const top = document.createElement('div'); top.className = 'zt-hub-top'; top.setAttribute('role', 'status');
-        top.innerHTML = `<div class="zt-top-world" title="打开星图"><small>当前世界 <span class="zt-world-badge" id="zt-top-theme"></span></small><b id="zt-top-world">—</b></div><div class="zt-top-pts"><small>系统点</small><b id="zt-top-pts">—</b></div><div class="zt-top-res" id="zt-top-res"></div><div class="zt-top-shop"><small>商城</small><b id="zt-top-shop">—</b></div>`;
+        top.innerHTML = `<div class="zt-top-world" title="Mở Tinh đồ"><small>Thế giới hiện tại <span class="zt-world-badge" id="zt-top-theme"></span></small><b id="zt-top-world">—</b></div><div class="zt-top-pts"><small>Điểm Hệ Thống</small><b id="zt-top-pts">—</b></div><div class="zt-top-res" id="zt-top-res"></div><div class="zt-top-shop"><small>Thương thành</small><b id="zt-top-shop">—</b></div>`;
         this.shell.main.insertBefore(top, this.shell.main.firstChild); this.top = top;
         this.on(top, 'click', e => { if (e.target.closest('.zt-top-pts,.zt-top-res')) this.go('ov'); if (e.target.closest('.zt-top-shop')) this.go('shop'); if (e.target.closest('.zt-top-world') && this.pages.has('stars')) this.go('stars'); });
     }
@@ -195,19 +205,19 @@ export class Hub {
     refreshTop() {
         if (!this.top || this.dead) return;
         const l = this.ledger(), $ = id => this.shadow.getElementById(id);
-        $('zt-top-world').textContent = l?.当前世界 || l?.世界名称 || (this.a.currentIdentity() ? '未记录' : '未打开聊天');
+        $('zt-top-world').textContent = l?.当前世界 || l?.世界名称 || (this.a.currentIdentity() ? 'Chưa ghi nhận' : 'Chưa mở cuộc trò chuyện');
         $('zt-top-pts').textContent = l ? fmtNum(l.系统点) : '—';
         const r = l?.专属资源 && typeof l.专属资源 === 'object' ? l.专属资源 : {};
-        $('zt-top-res').innerHTML = RES_KEYS.map(k => `<span title="${k}"><small>${k}</small><b>${fmtNum(r[k] ?? 0)}</b></span>`).join('');
+        $('zt-top-res').innerHTML = RES_KEYS.map(k => `<span title="${RES_LABELS[k] || k}"><small>${RES_LABELS[k] || k}</small><b>${fmtNum(r[k] ?? 0)}</b></span>`).join('');
         $('zt-top-shop').textContent = 'Lv.' + shopLevel(l);
         const th = this.app.world?.theme || 'default', badge = $('zt-top-theme');
-        if (badge) { badge.textContent = { default: '', xianxia: '玉简', cyber: '全息', eerie: '异常' }[th] || ''; badge.dataset.theme = th; }
+        if (badge) { badge.textContent = { default: '', xianxia: 'Ngọc giản', cyber: 'Toàn tức', eerie: 'Dị thường' }[th] || ''; badge.dataset.theme = th; }
         this.onTop?.(l);
     }
 
     // ---------- navigation ----------
     go(id, { silent = false } = {}) {
-        if (this.hiddenPages().has(id)) { this.toast?.(`「${this.navLabel(id)}」已在 设置 → 功能开关 里关闭`, 3600); if (this.page && !this.hiddenPages().has(this.page) && this.page !== id) return; id = 'ov'; }
+        if (this.hiddenPages().has(id)) { this.toast?.(`「${this.navLabel(id)}」 đã bị tắt trong Cài đặt → Công tắc tính năng`, 3600); if (this.page && !this.hiddenPages().has(this.page) && this.page !== id) return; id = 'ov'; }
         if (ORIGINAL_PAGES.includes(id)) { const b = this.shadow.querySelector(`.zt-nav-orig[data-page="${id}"]`); if (b) { b.click(); return; } id = 'ov'; }
         const engine = id in ENGINE_TABS && !this.pages.has(id), def = this.pages.get(engine ? 'zt-engine' : id);
         if (!def) id = 'ov';
@@ -217,7 +227,7 @@ export class Hub {
         this.shell.scroll.querySelectorAll(':scope > .page').forEach(p => { p.hidden = p !== target; });
         this.shell.scroll.classList.toggle('zt-fill', target.classList.contains('zt-fill-page'));
         if (engine) this.setEngineTab(ENGINE_TABS[id]);
-        else { try { def?.render?.(target); } catch (e) { target.innerHTML = `<div class="zt-empty">页面加载失败：${esc(e.message)}</div>`; } this.shell.scroll.scrollTop = 0; }
+        else { try { def?.render?.(target); } catch (e) { target.innerHTML = `<div class="zt-empty">Tải trang thất bại: ${esc(e.message)}</div>`; } this.shell.scroll.scrollTop = 0; }
         this.afterGo(silent);
     }
     afterGo(silent) {
@@ -288,9 +298,9 @@ export class Hub {
 
     // ---------- the original 3.1 engine inside the terminal ----------
     buildEngine() {
-        const el = this.register('zt-engine', { title: '诸天系统' });
+        const el = this.register('zt-engine', { title: 'Hệ Thống Chư Thiên' });
         el.classList.add('zt-fill-page');
-        el.innerHTML = `<div class="zt-engine-tools" id="zt-engine-tools"></div><div class="zt-engine-slot" id="zt-engine-slot"><div class="zt-empty" id="zt-engine-empty">正在读取当前聊天的诸天系统…</div></div>`;
+        el.innerHTML = `<div class="zt-engine-tools" id="zt-engine-tools"></div><div class="zt-engine-slot" id="zt-engine-slot"><div class="zt-empty" id="zt-engine-empty">Đang đọc Hệ Thống Chư Thiên của cuộc trò chuyện hiện tại…</div></div>`;
         this.engineTab = 1;
     }
     scheduleEngine(ms = 250) { if (this.dead) return; clearTimeout(this.engineTimer); this.engineTimer = setTimeout(() => this.syncEngine(), ms); }
@@ -307,7 +317,7 @@ export class Hub {
         if (this.engineFrame && !this.app.statusbar.isCurrent(this.engineFrame)) this.dropEngine();
         const t = this.engineTarget(), slot = this.shadow.getElementById('zt-engine-slot'); if (!slot) return;
         if (!t) { this.scheduleEngine(1000); return; }
-        if (t.none) { this.dropEngine(); slot.innerHTML = '<div class="zt-empty">请先打开一个单角色聊天。诸天系统的数据保存在每个聊天里。</div>'; this.engineSig = ''; return; }
+        if (t.none) { this.dropEngine(); slot.innerHTML = '<div class="zt-empty">Vui lòng mở một cuộc trò chuyện đơn nhân vật trước. Dữ liệu của Hệ Thống Chư Thiên được lưu trong từng cuộc trò chuyện.</div>'; this.engineSig = ''; return; }
         if (this.a.isGenerating()) { this.scheduleEngine(800); return; }
         const sig = [t.idn, t.id, hash(t.panel), t.capture ? 1 : 0].join('|');
         if (!force && sig === this.engineSig && this.engineFrame?.isConnected) return;
@@ -363,28 +373,28 @@ export class Hub {
         if (!root) { if (tries < 40) this.viewTimer = setTimeout(() => this.refreshEngineView(tries + 1), 250); return; }
         if (this.engineBusy) { this.viewTimer = setTimeout(() => this.refreshEngineView(tries), 900); return; }
         const w = f.contentWindow;
-        try { w.applyVarsToDisplay?.(root); } catch (e) { console.warn('[诸天终端] 概览刷新失败', e); }
-        try { w.ztRefreshVisible?.(root); } catch (e) { console.warn('[诸天终端] 页面刷新失败', e); }
+        try { w.applyVarsToDisplay?.(root); } catch (e) { console.warn('[Thiết Bị Đầu Cuối Chư Thiên] Làm mới tổng quan thất bại', e); }
+        try { w.ztRefreshVisible?.(root); } catch (e) { console.warn('[Thiết Bị Đầu Cuối Chư Thiên] Làm mới trang thất bại', e); }
         this.onEngineView?.(root, f.contentDocument);
     }
     /** 管理员控制台 — 1.1.2: the terminal page (src/admin.js); the original overlay stays reachable from it. */
     async openAdmin() {
-        if (!this.a.currentIdentity()) throw Error('请先打开单角色聊天。');
-        if (!this.ledger()) throw Error('当前聊天还没有诸天账本，先在「设置 → 新聊天初始化」创建。');
+        if (!this.a.currentIdentity()) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước.');
+        if (!this.ledger()) throw Error('Cuộc trò chuyện hiện tại chưa có sổ cái Chư Thiên, hãy tạo trước tại 「Cài đặt → Khởi tạo cuộc trò chuyện mới」.');
         if (this.pages.has('admin')) { this.go('admin'); return true; }
         return this.openOriginalAdmin();
     }
     /** Original openAdmin overlay — 0.8.0 entry: 设置 → 高级. The ◆ five-click entry is hidden in the terminal. */
     async openOriginalAdmin() {
-        if (!this.a.currentIdentity()) throw Error('请先打开单角色聊天。');
-        if (!this.ledger()) throw Error('当前聊天还没有诸天账本，先在「设置 → 新聊天初始化」创建。');
+        if (!this.a.currentIdentity()) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước.');
+        if (!this.ledger()) throw Error('Cuộc trò chuyện hiện tại chưa có sổ cái Chư Thiên, hãy tạo trước tại 「Cài đặt → Khởi tạo cuộc trò chuyện mới」.');
         this.open('ov');
         for (let i = 0; i < 60; i++) {
             const root = this.engineRoot(), w = this.engineFrame?.contentWindow;
             if (root && typeof w?.openAdmin === 'function') { await w.openAdmin(root); return true; }
             await new Promise(r => setTimeout(r, 150));
         }
-        throw Error('诸天系统页面还没加载好，稍后再试。');
+        throw Error('Trang Hệ Thống Chư Thiên chưa tải xong, vui lòng thử lại sau giây lát.');
     }
     setEngineTab(n, force = false) {
         this.engineTab = n;
@@ -398,7 +408,7 @@ export class Hub {
     /** Something was written into the chat input while the terminal is open. */
     inputWritten() {
         if (!this.isOpen) return;
-        this.toast('已写入聊天输入框 · 发送后由 AI 演绎', 5000, { label: '关闭终端去发送', run: () => { this.close(); setTimeout(() => document.getElementById('send_textarea')?.focus({ preventScroll: true }), 260); } });
+        this.toast('Đã ghi vào ô nhập liệu trò chuyện · Sau khi gửi sẽ do AI diễn dịch', 5000, { label: 'Đóng thiết bị đầu cuối để gửi', run: () => { this.close(); setTimeout(() => document.getElementById('send_textarea')?.focus({ preventScroll: true }), 260); } });
         try { this.engineFrame?.contentWindow?.focus(); } catch { /* ignore */ }
     }
     /** Short status line at the bottom of the terminal; optional one action button ({label, run}). */

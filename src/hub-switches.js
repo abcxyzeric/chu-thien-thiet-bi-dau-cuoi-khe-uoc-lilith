@@ -1,6 +1,6 @@
-// 1.1.5 终端 · 功能开关: every feature in one table — what it does, whether it is on, and whether the change needs a
-// page reload. Rows write the same settings the rest of the terminal reads (nothing new to keep in sync), whole
-// modules use `modules.*`, and pages leave the navigation via `navHidden`.
+// 1.1.5 Thiết bị đầu cuối · Công tắc tính năng: mọi tính năng nằm trong một bảng — tác dụng là gì, đang bật hay tắt, và thay đổi có cần
+// làm mới trang hay không. Các dòng ghi vào cùng cài đặt mà phần còn lại của thiết bị đầu cuối đọc (không sinh thêm biến mới phải đồng bộ), toàn bộ
+// mô-đun dùng `modules.*`, và các trang rời khỏi thanh điều hướng thông qua `navHidden`.
 import { esc } from './hub.js';
 import { ALWAYS_PAGES, hiddenPages } from './hub.js';
 import { errorLine } from './errors.js';
@@ -11,59 +11,59 @@ const m = (name, label, desc = '', o = {}) => ({ kind: 'bool', k: 'modules.' + n
 
 /** Every switch, grouped (pure data; tests check each key exists in the settings defaults). */
 export const SWITCH_GROUPS = Object.freeze([
-    { id: 'assistant', title: '系统助手', items: [
-        b('assistant', '系统助手窗口', '原版窗口：工作台、记忆、规则、私聊。关闭后终端照常可用，但这些页面、私聊和自动记忆都不在。', { reload: true }),
-        v('floatLilith', 'auto', 'none', '悬浮窗（悬浮莉莉丝 / 头像）', '关闭 = 页面上不显示悬浮入口；终端仍可从扩展菜单、快捷键、楼层标签打开。'),
-        b('voiceBox', '聊天楼层里的系统助手语音框', '把「【莉莉丝】：“……”」画成语音卡片；关闭后原样显示文字。'),
-        b('touchGestures', '触摸互动（抚摸 / 长按 / 视线跟随）', '只对莉莉丝立绘生效。'),
-        b('haptics', '触摸震动反馈（手机）'),
-        b('lilith.react', '界面角色反应', '对选中的任务 / 物品 / 功法和结算成败作出反应。'),
-        b('lilith.pageLines', '进入系统页时说一句'),
-        b('lilith.camera', '镜头（半身 / 全身 / 面部特写）'),
-        b('lilith.story', '气泡播报', '数据块里的「系统播报」由立绘气泡说出。'),
+    { id: 'assistant', title: 'Trợ lý hệ thống', items: [
+        b('assistant', 'Cửa sổ Trợ lý hệ thống', 'Cửa sổ gốc: Bàn làm việc, Ký ức, Quy tắc, Trò chuyện riêng. Sau khi tắt, thiết bị đầu cuối vẫn dùng bình thường nhưng các trang này, trò chuyện riêng và ký ức tự động sẽ không còn.', { reload: true }),
+        v('floatLilith', 'auto', 'none', 'Cửa sổ nổi (Lilith nổi / Ảnh đại diện)', 'Tắt = không hiển thị lối vào nổi trên trang; thiết bị đầu cuối vẫn mở được từ trình đơn tiện ích mở rộng, phím tắt hoặc nhãn tầng.'),
+        b('voiceBox', 'Khung thoại Trợ lý hệ thống trong tầng trò chuyện', 'Vẽ 「【Lilith】: “……”」 thành thẻ thoại; khi tắt sẽ hiển thị văn bản như nguyên gốc.'),
+        b('touchGestures', 'Tương tác chạm (xoa đầu / nhấn giữ / mắt nhìn theo)', 'Chỉ có hiệu lực với chân dung Lilith.'),
+        b('haptics', 'Phản hồi rung khi chạm (điện thoại)'),
+        b('lilith.react', 'Phản ứng nhân vật trên giao diện', 'Phản ứng với nhiệm vụ / vật phẩm / công pháp đang chọn và kết quả quyết toán thành bại.'),
+        b('lilith.pageLines', 'Nói một câu khi vào trang hệ thống'),
+        b('lilith.camera', 'Góc máy (Bán thân / Toàn thân / Cận cảnh khuôn mặt)'),
+        b('lilith.story', 'Thông báo qua bong bóng thoại', 'Mục 「Thông báo hệ thống」 trong khối dữ liệu được nói ra qua bong bóng thoại của chân dung.'),
     ] },
-    { id: 'floor', title: '聊天楼层与数据块', items: [
-        v('statusbar', 'terminal', 'off', '系统数据块记账', '关闭 = 插件不再处理剧情里的数据块，账本不会从剧情自动入账（终端手动操作仍可用）。'),
-        b('floorTag', '楼层小标签“系统已记录”'),
-        b('promptStripPanels', '旧楼层数据块不发给 AI（省 token）'),
-        b('panelGuard.repair', '数据块格式守卫：自动修复新回复'),
-        v('panelGuard.backfill', 'missing', 'off', '数据块缺失时补记', '回复里没有数据块时，按剧情补一份（一次额外请求）。'),
-        b('panelGuard.remind', '每轮格式提醒（发给 AI）'),
-        b('panelGuard.skillHint', '剧情功法未入账提示'),
-        b('macroLike', '世界书变量宏 {{get_chat_variable::…}}', '酒馆助手在运行时自动让位。'),
-        b('worldbookAuto', '诸天存档自动安装并绑定世界书'),
-        b('wbUnbindOnDisable', '关闭插件时自动解绑世界书'),
+    { id: 'floor', title: 'Tầng trò chuyện & Khối dữ liệu', items: [
+        v('statusbar', 'terminal', 'off', 'Ghi sổ khối dữ liệu hệ thống', 'Tắt = tiện ích không còn xử lý khối dữ liệu trong cốt truyện nữa, sổ cái không tự động ghi nhận từ cốt truyện (các thao tác thủ công trên thiết bị đầu cuối vẫn dùng được).'),
+        b('floorTag', 'Nhãn nhỏ ở tầng “Hệ thống đã ghi nhận”'),
+        b('promptStripPanels', 'Không gửi khối dữ liệu của các tầng cũ cho AI (tiết kiệm token)'),
+        b('panelGuard.repair', 'Bảo vệ định dạng khối dữ liệu: tự động sửa chữa phản hồi mới'),
+        v('panelGuard.backfill', 'missing', 'off', 'Ghi bù khi thiếu khối dữ liệu', 'Khi trong phản hồi không có khối dữ liệu, dựa theo cốt truyện viết bù một bản (tốn thêm một yêu cầu).'),
+        b('panelGuard.remind', 'Nhắc nhở định dạng mỗi lượt (gửi cho AI)'),
+        b('panelGuard.skillHint', 'Gợi ý công pháp cốt truyện chưa ghi sổ'),
+        b('macroLike', 'Macro biến Sách Thế Giới {{get_chat_variable::…}}', 'Khi Tavern Helper đang chạy sẽ tự động nhường quyền.'),
+        b('worldbookAuto', 'Bản lưu Chư Thiên tự động cài đặt và gắn kết Sách Thế Giới'),
+        b('wbUnbindOnDisable', 'Tự động gỡ gắn kết Sách Thế Giới khi tắt tiện ích'),
     ] },
-    { id: 'prompt', title: '剧情提示（附加给正文 AI 的规则）', items: [
-        b('world.prompt', '记录穿越（当前世界 / 世界类型）'),
-        b('appraise.prompt', '品阶提示：收录写明品阶'),
-        b('appraise.raise', '品阶更正：「收录:X[更高品阶]」'),
-        b('skills.prompt', '功法熟练度效果提示'),
-        b('skills.practice', '实战积累熟练度'),
-        b('skills.cardAuto', '角色卡功法自动同步'),
-        m('plugins', '自拟外挂', '「自拟」页面和已启用外挂的提示词。关闭后页面隐藏，外挂规则不再发给 AI（外挂本身保留）。'),
+    { id: 'prompt', title: 'Gợi ý cốt truyện (quy tắc bổ sung gửi cho AI chính văn)', items: [
+        b('world.prompt', 'Ghi nhận xuyên không (Thế giới hiện tại / Loại thế giới)'),
+        b('appraise.prompt', 'Gợi ý phẩm giai: khi thu lục ghi rõ phẩm giai'),
+        b('appraise.raise', 'Đính chính phẩm giai: 「Thu lục:X[Phẩm giai cao hơn]」'),
+        b('skills.prompt', 'Gợi ý hiệu quả độ thuần thục công pháp'),
+        b('skills.practice', 'Tích lũy độ thuần thục qua thực chiến'),
+        b('skills.cardAuto', 'Tự động đồng bộ công pháp từ thẻ nhân vật'),
+        m('plugins', 'Phụ trợ tự tạo', 'Trang 「Tự tạo」 và lời nhắc của các phụ trợ đang bật. Sau khi tắt, trang sẽ ẩn đi và quy tắc phụ trợ không còn gửi cho AI nữa (bản thân phụ trợ vẫn được giữ lại).'),
     ] },
-    { id: 'group', title: '聊天群', items: [
-        m('group', '聊天群', '整个聊天群：页面、发给正文的群聊摘要、自动闲聊、降临。关闭后数据保留，重新打开即恢复。'),
-        m('groupAuto', '剧情后自动闲聊（总开关）', '每个聊天里还要在 聊天群 → 群务 单独打开；这里关掉 = 所有聊天都不自动闲聊。'),
-        b('groupWorld.read', '读取世界书', '「从世界书召唤」，群聊 / 私聊时带上召唤群员的条目资料和关键词命中的条目（只读）。'),
-        b('groupWorld.memory', '群员记忆注入', '从世界书召唤的角色在正文里出场时，把 TA 和你的群聊 / 私聊摘要带给正文 AI。需要该聊天的「摘要注入」开着。'),
+    { id: 'group', title: 'Nhóm chat', items: [
+        m('group', 'Nhóm chat', 'Toàn bộ nhóm chat: trang giao diện, bản tóm tắt nhóm chat gửi cho chính văn, tự động tán gẫu, giáng lâm. Sau khi tắt dữ liệu vẫn được giữ lại, bật lại sẽ khôi phục ngay.'),
+        m('groupAuto', 'Tự động tán gẫu sau cốt truyện (công tắc tổng)', 'Trong từng cuộc trò chuyện vẫn cần bật riêng tại Nhóm chat → Quản trị nhóm; tắt ở đây = mọi cuộc trò chuyện đều không tự động tán gẫu.'),
+        b('groupWorld.read', 'Đọc Sách Thế Giới', '「Triệu hồi từ Sách Thế Giới」, khi trò chuyện nhóm / trò chuyện riêng sẽ mang theo tư liệu mục của thành viên được triệu hồi và các mục khớp từ khóa (chỉ đọc).'),
+        b('groupWorld.memory', 'Tiêm ký ức thành viên nhóm', 'Khi nhân vật được triệu hồi từ Sách Thế Giới xuất hiện trong chính văn, mang bản tóm tắt trò chuyện nhóm / trò chuyện riêng giữa họ và bạn gửi cho AI chính văn. Yêu cầu mục 「Đưa tóm tắt nhóm vào lời nhắc」 của cuộc trò chuyện đó phải đang bật.'),
     ] },
-    { id: 'ui', title: '界面与操作', items: [
-        b('hud', '输入框上方账本速览'),
-        b('hotkeys', '快捷键 Alt+Z / Alt+X / Alt+S'),
-        m('slash', '斜杠命令 /zt'),
-        m('guide', '新手引导自动弹出', '关闭后仍可在 设置 → 新手引导 手动打开。'),
-        b('world.enabled', '世界主题（按当前世界换装饰）', '关闭 = 固定诸天默认主题。'),
-        v('fx.mode', 'full', 'off', '演出（结算动画）'),
-        b('fx.outside', '终端关闭时的剧情提示卡片'),
+    { id: 'ui', title: 'Giao diện & Thao tác', items: [
+        b('hud', 'Xem nhanh sổ cái phía trên ô nhập liệu'),
+        b('hotkeys', 'Phím tắt Alt+Z / Alt+X / Alt+S'),
+        m('slash', 'Lệnh gạch chéo /zt'),
+        m('guide', 'Tự động bật Hướng dẫn tân thủ', 'Sau khi tắt vẫn có thể mở thủ công tại Cài đặt → Hướng dẫn tân thủ.'),
+        b('world.enabled', 'Chủ đề thế giới (đổi họa tiết trang trí theo thế giới hiện tại)', 'Tắt = cố định chủ đề mặc định Chư Thiên.'),
+        v('fx.mode', 'full', 'off', 'Diễn xuất (hoạt ảnh quyết toán)'),
+        b('fx.outside', 'Thẻ gợi ý cốt truyện khi thiết bị đầu cuối đang đóng'),
     ] },
 ]);
 /** Rows in the 终端页面 group that come from the navigation itself. */
 export const PER_CHAT_NOTES = Object.freeze([
-    ['记忆整理 / 自动记忆', '每个聊天单独设置', 'memory'],
-    ['聊天群摘要注入 · 自动闲聊间隔', '每个聊天单独设置（聊天群 → 群务）', 'group'],
-    ['外挂启用', '每个聊天单独设置（自拟 / 外挂页）', 'plugmgr'],
+    ['Tổng hợp ký ức / Ký ức tự động', 'Thiết lập riêng cho từng cuộc trò chuyện', 'memory'],
+    ['Đưa tóm tắt nhóm vào lời nhắc · Khoảng cách tự động tán gẫu', 'Thiết lập riêng cho từng cuộc trò chuyện (Nhóm chat → Quản trị nhóm)', 'group'],
+    ['Bật phụ trợ', 'Thiết lập riêng cho từng cuộc trò chuyện (Trang Tự tạo / Phụ trợ)', 'plugmgr'],
 ]);
 
 const read = (all, k) => k.split('.').reduce((o, x) => o?.[x], all);
@@ -94,7 +94,7 @@ export class HubSwitches {
     get s() { return this.app.settings; }
     start() {
         const hub = this.hub; if (!hub) return this;
-        hub.register('switches', { title: '功能开关', render: el => this.render(el) });
+        hub.register('switches', { title: 'Công tắc tính năng', render: el => this.render(el) });
         return this;
     }
     dispose() { /* the hub removes its pages */ }
@@ -116,17 +116,17 @@ export class HubSwitches {
         const sum = switchSummary(all, navHidden), current = this.app.persona;
         const row = (r, gi, ri) => {
             const on = switchOn(r, all);
-            return `<tr data-search="${esc((r.label + ' ' + r.desc).toLowerCase())}"><td>${esc(r.label)}${r.reload ? '<span class="zt-sw-tag">刷新后生效</span>' : ''}${r.desc ? `<small>${esc(r.desc)}</small>` : ''}</td><td class="c"><label class="zt-switch"><input type="checkbox" data-sw="${gi}:${ri}" ${on ? 'checked' : ''} aria-label="${esc(r.label)}"><i></i></label></td></tr>`;
+            return `<tr data-search="${esc((r.label + ' ' + r.desc).toLowerCase())}"><td>${esc(r.label)}${r.reload ? '<span class="zt-sw-tag">Có hiệu lực sau khi làm mới</span>' : ''}${r.desc ? `<small>${esc(r.desc)}</small>` : ''}</td><td class="c"><label class="zt-switch"><input type="checkbox" data-sw="${gi}:${ri}" ${on ? 'checked' : ''} aria-label="${esc(r.label)}"><i></i></label></td></tr>`;
         };
         const pages = this.pages();
-        el.innerHTML = `<div class="zt-eyebrow">FEATURE SWITCHES</div><h2 class="zt-h">功能开关</h2>
-<p class="zt-sub">所有功能都在这里开关。改动立即生效（标「刷新后生效」的除外）；关掉的功能数据都保留，重新打开就回来。</p>
-<div class="zt-sw-sum"><span class="zt-chip">已开启 ${sum.on} / ${sum.total} 项功能</span><span class="zt-chip">隐藏页面 ${off.size} 个</span><span class="zt-chip">系统助手：${esc(current?.name || '莉莉丝')}</span><button type="button" class="zt-btn small" data-sw-act="persona">系统助手人设 ›</button><button type="button" class="zt-btn small" data-sw-act="all-on">全部开启</button><button type="button" class="zt-btn small" data-sw-act="back">返回设置</button></div>
-<div class="zt-set-search"><input type="search" data-f="swq" placeholder="搜索功能，例如：聊天群、世界书、语音" aria-label="搜索功能" enterkeyhint="search"></div>
+        el.innerHTML = `<div class="zt-eyebrow">FEATURE SWITCHES</div><h2 class="zt-h">Công tắc tính năng</h2>
+<p class="zt-sub">Tất cả tính năng đều được bật/tắt tại đây. Thay đổi có hiệu lực ngay lập tức (trừ các mục ghi 「Có hiệu lực sau khi làm mới」); dữ liệu của các tính năng đã tắt đều được giữ nguyên, bật lại sẽ khôi phục ngay.</p>
+<div class="zt-sw-sum"><span class="zt-chip">Đã bật ${sum.on} / ${sum.total} tính năng</span><span class="zt-chip">Trang đang ẩn: ${off.size}</span><span class="zt-chip">Trợ lý hệ thống: ${esc(current?.name || 'Lilith')}</span><button type="button" class="zt-btn small" data-sw-act="persona">Thiết lập Trợ lý hệ thống ›</button><button type="button" class="zt-btn small" data-sw-act="all-on">Bật tất cả</button><button type="button" class="zt-btn small" data-sw-act="back">Quay lại Cài đặt</button></div>
+<div class="zt-set-search"><input type="search" data-f="swq" placeholder="Tìm kiếm tính năng, ví dụ: nhóm chat, sách thế giới, thoại" aria-label="Tìm kiếm tính năng" enterkeyhint="search"></div>
 <div class="zt-grid2">${SWITCH_GROUPS.map((g, gi) => `<section class="zt-card" data-sw-group="${g.id}"><h3>${esc(g.title)}</h3><table class="zt-sw-table"><tbody>${g.items.map((r, ri) => row(r, gi, ri)).join('')}</tbody></table></section>`).join('')}
-<section class="zt-card" data-sw-group="pages"><h3>终端页面 <small>关掉 = 从导航里拿掉（总览、设置、连接一直保留）</small></h3><table class="zt-sw-table"><tbody>${pages.map(p => `<tr data-search="${esc((p.label + ' ' + p.group).toLowerCase())}"><td>${esc(p.label)}<small>${esc(p.group)}${p.id === 'group' && all.modules?.group === false ? ' · 已随「聊天群」关闭' : ''}${p.id === 'plugmgr' && all.modules?.plugins === false ? ' · 已随「自拟外挂」关闭' : ''}</small></td><td class="c"><label class="zt-switch"><input type="checkbox" data-page-sw="${esc(p.id)}" ${off.has(p.id) ? '' : 'checked'} ${(p.id === 'group' && all.modules?.group === false) || (p.id === 'plugmgr' && all.modules?.plugins === false) ? 'disabled' : ''} aria-label="显示 ${esc(p.label)}"><i></i></label></td></tr>`).join('')}</tbody></table></section>
-<section class="zt-card"><h3>按聊天的开关 <small>这些跟着每个聊天走，在对应页面里设置</small></h3><table class="zt-sw-table"><tbody>${PER_CHAT_NOTES.map(([a, d, page]) => `<tr><td>${esc(a)}<small>${esc(d)}</small></td><td class="c"><button type="button" class="zt-btn small" data-sw-go="${page}">去设置</button></td></tr>`).join('')}</tbody></table></section>
-</div><p class="zt-set-none" hidden>没有找到匹配的功能。</p>`;
+<section class="zt-card" data-sw-group="pages"><h3>Trang trên thiết bị đầu cuối <small>Tắt = ẩn khỏi thanh điều hướng (Tổng quan, Cài đặt, Kết nối luôn được giữ lại)</small></h3><table class="zt-sw-table"><tbody>${pages.map(p => `<tr data-search="${esc((p.label + ' ' + p.group).toLowerCase())}"><td>${esc(p.label)}<small>${esc(p.group)}${p.id === 'group' && all.modules?.group === false ? ' · Đã tắt theo 「Nhóm chat」' : ''}${p.id === 'plugmgr' && all.modules?.plugins === false ? ' · Đã tắt theo 「Phụ trợ tự tạo」' : ''}</small></td><td class="c"><label class="zt-switch"><input type="checkbox" data-page-sw="${esc(p.id)}" ${off.has(p.id) ? '' : 'checked'} ${(p.id === 'group' && all.modules?.group === false) || (p.id === 'plugmgr' && all.modules?.plugins === false) ? 'disabled' : ''} aria-label="Hiển thị ${esc(p.label)}"><i></i></label></td></tr>`).join('')}</tbody></table></section>
+<section class="zt-card"><h3>Công tắc theo từng cuộc trò chuyện <small>Các mục này đi theo từng cuộc trò chuyện, được thiết lập trong trang tương ứng</small></h3><table class="zt-sw-table"><tbody>${PER_CHAT_NOTES.map(([a, d, page]) => `<tr><td>${esc(a)}<small>${esc(d)}</small></td><td class="c"><button type="button" class="zt-btn small" data-sw-go="${page}">Tới cài đặt</button></td></tr>`).join('')}</tbody></table></section>
+</div><p class="zt-set-none" hidden>Không tìm thấy tính năng nào khớp.</p>`;
         const q = el.querySelector('[data-f=swq]');
         q.oninput = () => {
             const words = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean); let hits = 0;
@@ -156,7 +156,7 @@ export class HubSwitches {
         if (row.kind === 'value' && cur !== row.off) this.prev[row.k] = cur;
         const [k, val] = switchWrite(row, all, on, this.prev);
         this.s.set(k, val);
-        this.hub?.toast(row.reload ? `「${row.label}」已${on ? '开启' : '关闭'}，刷新页面后生效` : `「${row.label}」已${on ? '开启' : '关闭'}`, row.reload ? 6000 : 2600);
+        this.hub?.toast(row.reload ? `「${row.label}」 đã ${on ? 'bật' : 'tắt'}, có hiệu lực sau khi làm mới trang` : `「${row.label}」 đã ${on ? 'bật' : 'tắt'}`, row.reload ? 6000 : 2600);
     }
     togglePage(id, show) {
         const cur = new Set(Array.isArray(this.s.get('navHidden')) ? this.s.get('navHidden') : []);
@@ -166,6 +166,6 @@ export class HubSwitches {
     allOn() {
         for (const g of SWITCH_GROUPS) for (const r of g.items) if (!switchOn(r, this.s.all)) { const [k, val] = switchWrite(r, this.s.all, true, this.prev); this.s.set(k, val); }
         this.s.set('navHidden', []);
-        this.hub?.toast('全部功能已开启（「系统助手窗口」需要刷新页面）', 4000);
+        this.hub?.toast('Đã bật toàn bộ tính năng (「Cửa sổ Trợ lý hệ thống」 cần làm mới trang)', 4000);
     }
 }

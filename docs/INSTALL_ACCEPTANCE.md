@@ -1,45 +1,45 @@
-# 新仓库 Git 安装验收 · 已通过
+# Nghiệm thu cài đặt từ Git kho lưu trữ mới · Đã đạt
 
-> **历史记录（0.2.0 检查点）。** 本文记录的是 2026-09-29 用酒馆原生接口从 Git 安装 0.2.0 的过程，下方「限制」描述的也是当时的状态（例如当时 AI 进货/抽卡/工作台尚未迁移，这些在 0.4.0 起已迁移并在四个宿主版本上验收）。
-> 当前版本的验收见 [ACCEPTANCE-0.8.1](ACCEPTANCE-0.8.1.md)：1.16 与 1.19 上 `native_v081` 20/20、`native_group060` 44/44；1.19 上 `native_v080` 33/33、`native_world070` 40/40、`native_terminal050` 58/58、`native_guards` 通过；纯逻辑测试 101/101；1.17 / 1.18 与 `native_replace040`（需要 v1.1 原版文件）本轮未运行。安装方式没有变化，仍是扩展面板「Install extension」填仓库地址。
+> **Hồ sơ lịch sử (Điểm kiểm tra 0.2.0).** Tài liệu này ghi lại quá trình cài đặt bản 0.2.0 từ Git bằng giao diện nguyên bản của quán rượu vào ngày 2026-09-29, mục 「Giới hạn」 bên dưới cũng mô tả trạng thái tại thời điểm đó (ví dụ lúc đó AI nhập hàng/rút thẻ/bàn làm việc vẫn chưa di chuyển sang, những tính năng này từ bản 0.4.0 trở đi đã được di chuyển và nghiệm thu trên cả 4 phiên bản máy chủ).
+> Nghiệm thu của phiên bản hiện tại xem tại [ACCEPTANCE-0.8.1](ACCEPTANCE-0.8.1.md): trên 1.16 và 1.19 đạt `native_v081` 20/20, `native_group060` 44/44; trên 1.19 đạt `native_v080` 33/33, `native_world070` 40/40, `native_terminal050` 58/58, `native_guards` đạt; kiểm tra logic thuần túy 101/101; 1.17 / 1.18 và `native_replace040` (cần tệp v1.1 nguyên bản) không chạy trong vòng này. Cách thức cài đặt không thay đổi, vẫn là điền địa chỉ kho lưu trữ vào mục 「Install extension」 trong bảng Tiện ích mở rộng.
 
-日期：2026-09-29
+Ngày: 2026-09-29
 
-仓库：https://github.com/falingzhi1-boop/zhutianxitongchajianban
+Kho lưu trữ: https://github.com/abcxyzeric/chu-thien-thiet-bi-dau-cuoi-khe-uoc-lilith
 
-本次功能源码 commit：`a7678ddd8ea527c5b749239c06a70e27409b95c1`
+Commit mã nguồn tính năng lần này: `a7678ddd8ea527c5b749239c06a70e27409b95c1`
 
-## 真实执行记录
+## Bản ghi thực thi thực tế
 
-1. 在与旧工程分开的新仓库目录中导入经过哈希核对的 Git bundle；未将旧工程的本地导入 JSON、密钥或宿主数据放进新仓库。
-2. 使用本机已有 Git 认证执行 `git push --dry-run origin main`，成功后正常 `git push -u origin main`，退出码 0；未使用 force push。
-3. 从另一环境独立查询 `git ls-remote`，确认远端 main 是上述 commit。
-4. **先移除隔离酒馆中的旧手动扩展副本**，再由 SillyTavern 原生安装接口提交：
+1. Nhập gói Git bundle đã đối chiếu mã băm vào thư mục kho lưu trữ mới tách biệt với dự án cũ; không đưa các tệp JSON nhập cục bộ, khóa API hay dữ liệu máy chủ của dự án cũ vào kho lưu trữ mới.
+2. Sử dụng xác thực Git có sẵn trên máy để chạy `git push --dry-run origin main`, sau khi thành công chạy `git push -u origin main` bình thường, mã thoát bằng 0; không sử dụng `force push`.
+3. Truy vấn độc lập `git ls-remote` từ một môi trường khác, xác nhận nhánh `main` từ xa đúng là commit nêu trên.
+4. **Xóa bản sao tiện ích mở rộng thủ công cũ trong quán rượu cô lập trước**, sau đó gửi yêu cầu qua giao diện cài đặt nguyên bản của SillyTavern:
    ```json
-   {"url":"https://github.com/falingzhi1-boop/zhutianxitongchajianban","global":false}
+   {"url":"https://github.com/abcxyzeric/chu-thien-thiet-bi-dau-cuoi-khe-uoc-lilith","global":false}
    ```
-5. `/api/extensions/install` 返回 **HTTP 200**，实际安装位置：
+5. `/api/extensions/install` trả về **HTTP 200**, vị trí cài đặt thực tế:
    ```text
    data/default-user/extensions/zhutianxitongchajianban
    ```
-   返回 manifest 版本 **0.2.0**、正确文件夹名。实际 Git HEAD 与远端源码 commit 相同。
-6. 刷新酒馆后，只有一个原生入口；本次不再依靠旧目录的文件。安装过程 0 pageerror。
-7. 针对这个 **Git 克隆得到的实际扩展**，依次重新通过：
-   - `native_acceptance.py`：原版分层渲染、正文玩家消息、重载及生命周期。
-   - `native_guards.py`：发送防重、附件、历史变化与保存核验故障。
-   - `native_views.py`：七个手机视图、静态回退、快速启停与聚焦草稿切换。
-   - `native_ledger.py`：17组真实账本、交易、正文凭据和故障测试。
-   - `native_ledger_guards.py`：同源标签锁、过期预览和保存响应期间切换角色。
+   Trả về phiên bản manifest **0.2.0** và đúng tên thư mục. Git HEAD thực tế trùng khớp với commit mã nguồn từ xa.
+6. Sau khi làm mới trang quán rượu, chỉ có duy nhất một lối vào nguyên bản; lần này không còn dựa vào các tệp ở thư mục cũ nữa. Quá trình cài đặt đạt 0 `pageerror`.
+7. Đối với **tiện ích mở rộng thực tế được nhân bản (clone) từ Git** này, lần lượt vượt qua lại toàn bộ:
+   - `native_acceptance.py`: kết xuất phân lớp nguyên bản, tin nhắn người chơi trong chính văn, tải lại trang và vòng đời.
+   - `native_guards.py`: chống gửi trùng lặp, tệp đính kèm, thay đổi lịch sử và lỗi kiểm nghiệm lưu.
+   - `native_views.py`: 7 khung nhìn điện thoại, lùi về ảnh tĩnh, bật/tắt nhanh và chuyển đổi bản nháp đang lấy tiêu điểm.
+   - `native_ledger.py`: 17 nhóm kiểm tra sổ cái thực tế, giao dịch, chứng từ chính văn và tiêm lỗi.
+   - `native_ledger_guards.py`: khóa thẻ cùng nguồn, bản xem trước hết hạn và chuyển đổi nhân vật trong lúc chờ phản hồi lưu.
 
-五组浏览器脚本均通过，**0 pageerror**。原始结果和截图在 `docs/evidence/`。
+Cả 5 nhóm kịch bản trình duyệt đều vượt qua với **0 pageerror**. Kết quả gốc và ảnh chụp màn hình nằm trong `docs/evidence/`.
 
-这验证的是原生接口驱动的 Git 安装（与扩展安装界面使用同一后端），不是用复制文件夹代替 Git 安装，也不是假宿主。
+Điều này xác minh quá trình cài đặt từ Git thông qua giao diện nguyên bản (sử dụng cùng một backend với giao diện cài đặt tiện ích mở rộng), không phải dùng cách sao chép thư mục để thay thế cho cài đặt Git, và cũng không phải máy chủ giả.
 
-后续提交仅更新验收文档、截图/结果及测试报告字段，功能运行文件仍与上述测试源码一致；没有据此宣称原版全功能完成。
+Các commit tiếp theo chỉ cập nhật tài liệu nghiệm thu, ảnh chụp màn hình/kết quả và trường báo cáo kiểm thử, các tệp chạy tính năng vẫn giống hệt mã nguồn kiểm thử nêu trên; không dựa vào đó để tuyên bố đã hoàn thành toàn bộ tính năng của bản gốc.
 
-## 限制
+## Giới hạn
 
-- 仅 SillyTavern 1.19.0、默认账号的按用户安装路径已验收。
-- 未验证全部其他版本、所有多账号权限组合或实体手机性能。
-- 不曾调用真实模型。AI进货/抽卡/工作台/自动记忆等能力仍按功能矩阵列为待迁移。
-- 该检查点不是全功能正式发行版；没有创建宣称稳定版的 GitHub Release。
+- Chỉ mới nghiệm thu đường dẫn cài đặt theo người dùng của tài khoản mặc định trên SillyTavern 1.19.0.
+- Chưa kiểm chứng toàn bộ các phiên bản khác, mọi tổ hợp quyền hạn đa tài khoản hay hiệu năng trên điện thoại vật lý.
+- Chưa từng gọi mô hình thật. Các năng lực như AI nhập hàng/rút thẻ/bàn làm việc/tự động chỉnh lý ký ức… vẫn được liệt kê là chờ di chuyển theo ma trận tính năng.
+- Điểm kiểm tra này chưa phải là bản phát hành chính thức đầy đủ tính năng; chưa tạo GitHub Release tuyên bố bản ổn định.

@@ -50,13 +50,13 @@ test('status bar: the last floor is skipped only while the stop button is visibl
     assert.match(sb, /mo\.observe\(stop, \{ attributes: true, attributeFilter: \['style', 'class', 'hidden'\] \}\)/);
     assert.match(sb, /diagnoseLast\(\) \{/);
     const f = read('src/features.js');
-    assert.match(f, /最新楼层：/); assert.match(f, /data-diag="rerender">重新渲染楼层</);
+    assert.match(f, /Tầng mới nhất:/); assert.match(f, /data-diag="rerender">Kết xuất lại các tầng</);
 });
 
 // ---------- AI 接口设置 ----------
 test('API form: plain wording, three steps, advanced section; radios/checkboxes are not stretched', () => {
     const s = read('src/api-center.js');
-    for (const t of ['连接 · AI 接口设置', '还没有设置 API', '选择用哪个 AI', '单独的 API（推荐）', '直接用酒馆正在用的模型', '填写接口', '测试并保存', '高级设置（一般不用改）', '两处用的 API 不一致'])
+    for (const t of ['Kết nối · Cài đặt cổng AI', 'Chưa thiết lập API', 'Chọn dùng AI nào', 'API riêng biệt (Khuyên dùng)', 'Dùng trực tiếp mô hình Quán Rượu đang dùng', 'Điền thông tin cổng kết nối', 'Kiểm tra và lưu', 'Cài đặt nâng cao (thường không cần sửa)', 'API ở hai nơi không khớp nhau'])
         assert.ok(s.includes(t), t);
     assert.doesNotMatch(s, /应用到状态栏|应用到莉莉丝助手/, 'the old 应用到… boxes are gone from the main form');
     assert.match(s, /const tick = 'style="width:auto;min-width:0;flex:none/);
@@ -71,15 +71,15 @@ test('ledger check: hint under the button, capture-phase guard, original message
     const h = read('src/assistant-host.js');
     assert.match(h, /guideLedgerCheck\(\) \{/);
     assert.match(h, /btn\.addEventListener\('click', ev => \{[\s\S]*?ev\.stopImmediatePropagation\(\)[\s\S]*?\}, true\)/);
-    for (const t of ['在当前聊天启用助手与记忆注入', '莉莉丝监管账本与奖励', '保存当前聊天设置', '什么都没有写入'])
+    for (const t of ['Bật trợ lý & tiêm ký ức trong cuộc trò chuyện hiện tại', 'Lilith giám sát sổ cái & phần thưởng', 'Lưu cài đặt cuộc trò chuyện hiện tại', 'Chưa ghi bất cứ thứ gì'])
         assert.ok(h.includes(t), t);
     const rt = read('vendor/original/assistant-runtime.js');
-    assert.ok(rt.includes("throw Error('请先启用当前聊天与账本核验；未写入。')"), 'original check is still there (we only rewrite its message)');
+    assert.ok(rt.includes("throw Error('Vui lòng bật cuộc trò chuyện hiện tại và xác minh sổ cái trước; chưa ghi dữ liệu.')"), 'original check is still there (we only rewrite its message)');
 });
 
 // ---------- 能力表 / 版本 ----------
 test('capabilities list the 0.8.5 rows', () => {
-    for (const n of ['AI 接口设置（新手版排版）', '账本核验引导', '生成状态自愈（手机状态栏不渲染修复）'])
+    for (const n of ['Thiết lập cổng AI (bố cục cho người mới)', 'Hướng dẫn kiểm nghiệm sổ cái', 'Tự phục hồi trạng thái đang tạo (sửa lỗi không kết xuất thanh trạng thái trên điện thoại)'])
         assert.ok(CAPABILITIES.some(c => c.name === n && c.state === 'implemented'), n);
 });
 

@@ -1,107 +1,105 @@
-# 1.1.1 · 验证记录
+# 1.1.1 · Bản ghi xác minh
 
-> 修 bug 的小更新，改动见 [CHANGES-1.1.1](CHANGES-1.1.1.md)。结论（含发布前审查修复）：单测 381/381；审查专项 34/34（真实酒馆，连续 3 次）；1.1.1 专项 32/32、手机头像专项 12/12；旧浏览器回归和 1.1.0 基线一致。**没有用真实模型，也没有在实体手机上测**，下文「没测到的」一节要一起看。
+> Bản cập nhật nhỏ sửa lỗi (bugfix), chi tiết thay đổi xem tại [CHANGES-1.1.1](CHANGES-1.1.1.md). Kết luận (bao gồm các bản sửa lỗi thẩm tra trước khi phát hành): kiểm thử đơn vị 381/381; chuyên đề thẩm tra 34/34 (SillyTavern thực tế, chạy liên tiếp 3 lần); chuyên đề 1.1.1 đạt 32/32, chuyên đề ảnh đại diện điện thoại đạt 12/12; hồi quy trình duyệt cũ đồng nhất với cơ sở 1.1.0. **Chưa kiểm thử bằng mô hình thực tế, cũng chưa kiểm thử trên điện thoại vật lý**, vui lòng xem thêm mục 「Những phần chưa kiểm thử」 bên dưới.
 
-## 环境与口径
+## Môi trường & Quy chuẩn
 
-- 基线：main `bfa4807`（1.1.0-patch4）。改代码前原 348 项单测、`check`、`filelist:check` 都通过。
-- 日期：2026-10-06。隔离 SillyTavern 1.19.0（`7e8663c`）+ Chromium/Playwright，端口 8019。只用验收角色，没碰任何用户的酒馆和数据。
-- 模型回复全部是确定性模拟（`tests/qa/mock_model.py` 和页面内拦截），只证明插件逻辑，不代表真实模型会怎么写。聊天保存、变量保存、重载都走真实的隔离酒馆服务器。
+- Cơ sở: main `bfa4807` (1.1.0-patch4). Trước khi sửa mã, toàn bộ 348 bài kiểm thử đơn vị gốc, `check` và `filelist:check` đều đạt.
+- Ngày: 2026-10-06. SillyTavern 1.19.0 cô lập (`7e8663c`) + Chromium/Playwright, cổng 8019. Chỉ dùng nhân vật nghiệm thu, không chạm tới bất kỳ SillyTavern hay dữ liệu người dùng nào.
+- Phản hồi mô hình toàn bộ là mô phỏng tất định (`tests/qa/mock_model.py` và chặn trong trang), chỉ chứng minh logic của plugin chứ không đại diện cho cách viết của mô hình thực tế. Lưu cuộc trò chuyện, lưu biến số và tải lại trang đều đi qua máy chủ SillyTavern cô lập thực sự.
 
-## 结果
+## Kết quả
 
-| 检查 | 结果与范围 |
+| Kiểm tra | Kết quả & Phạm vi |
 |---|---|
-| `npm test` | **381/381**：原 348 项 + `tests/v111.test.js` 20 项 + `tests/v111-audit.test.js` 13 项；改了 3 个旧测试的期望值（版本号、世界书修订、未改动旧条目不算自改），`group060.test.js` 的叠加断言按新叠加规则改写，原因见 CHANGES |
-| `npm run check` | JS 语法检查、vendor 提取与来源哈希全部通过 |
-| `npm run filelist:check` | 与交付文件树一致 |
-| `tests/native_v111_audit.py --isolated-test-only` | **34/34**，发布前审查专项（见下），审查修复全部完成后连续跑 3 次都是 34/34 |
-| `tests/native_v111.py --isolated-test-only` | **32/32**，1.1.1 专项（见下），审查修复后重跑 |
-| `tests/native_v111_mobile.py --isolated-test-only` | **12/12**，手机头像专项（见下），审查修复后重跑；同一套用 1.1.0 的 `window-controls.js` 跑只有 4/12 |
-| `tests/native_v110.py` | 37/37（商城、盲盒、收纳、触屏浮窗拖动缩放等 1.1 回归），审查修复后重跑 |
-| `tests/native_v100.py` | 28/28（存档、设置、立绘、横屏等旧功能），审查修复后重跑 |
-| `tests/native_v090.py` | 24/24（0.9 手机全屏适配、键盘避让），审查修复后重跑。紧接审查专项连跑时有一次 23/24：「桌面窗口位置未被改动」一项只在设置里已有 `_UI` 键时才会预置窗口位置，属于测试顺序依赖，单独重跑 24/24 |
-| `tests/native_v110_review.py` | 11/12，**和基线 `bfa4807` 一样**的 1 项失败：这套旧复查脚本把 patch4 故意抛出的「终端页面已失效」算成页面异常，不是本次改动导致 |
-| `tests/native_v110_patch3.py` | 19/19（切聊天、落盘、安全上下文诊断），审查修复后重跑 |
-| `tests/native_group060.py` | 44/44（聊天群、红包、私聊），审查修复后重跑 |
-| `tests/native_world070.py` | 40/40（世界书安装、升级、冲突），审查修复后重跑 |
-| `tests/native_guards.py` | 5 组全部通过（发送去重、标记不执行等） |
-| `tests/native_terminal050.py` | 49/58，**和 1.1.0 基线 `bfa4807` 完全一样的 9 项失败**（0.5.0 时代的旧商城/导航断言，早已被 1.0 商城取代），这次没有新增失败 |
-| 浏览器未捕获异常 | 专项和回归都没有 pageerror |
-| `vendor/original` | 没改 |
+| `npm test` | **381/381**: 348 mục cũ + `tests/v111.test.js` 20 mục + `tests/v111-audit.test.js` 13 mục; cập nhật giá trị kỳ vọng của 3 bài kiểm thử cũ (số phiên bản, bản sửa đổi Sách Thế Giới, mục từ cũ chưa sửa không tính là tự sửa), khẳng định cộng dồn của `group060.test.js` được viết lại theo quy tắc cộng dồn mới, nguyên nhân xem tại CHANGES |
+| `npm run check` | Kiểm tra cú pháp JS, trích xuất vendor và mã băm nguồn đều đạt |
+| `npm run filelist:check` | Đồng nhất với cây thư mục tệp bàn giao |
+| `tests/native_v111_audit.py --isolated-test-only` | **34/34**, chuyên đề thẩm tra trước khi phát hành (xem bên dưới), sau khi hoàn tất toàn bộ sửa lỗi thẩm tra chạy liên tiếp 3 lần đều đạt 34/34 |
+| `tests/native_v111.py --isolated-test-only` | **32/32**, chuyên đề 1.1.1 (xem bên dưới), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_v111_mobile.py --isolated-test-only` | **12/12**, chuyên đề ảnh đại diện điện thoại (xem bên dưới), chạy lại sau khi sửa lỗi thẩm tra; cùng bộ này nếu chạy với `window-controls.js` của bản 1.1.0 chỉ đạt 4/12 |
+| `tests/native_v110.py` | 37/37 (hồi quy 1.1: thương thành, hộp mù, thu nạp, kéo/thu phóng cửa sổ nổi cảm ứng, v.v.), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_v100.py` | 28/28 (bản lưu, cài đặt, tranh đứng, màn hình ngang, v.v.), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_v090.py` | 24/24 (thích ứng toàn màn hình điện thoại 0.9, né bàn phím), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_v110_review.py` | 11/12, **giống hệt cơ sở `bfa4807`** có 1 mục thất bại: kịch bản phúc tra cũ này tính lỗi 「Trang thiết bị đầu cuối đã hết hiệu lực」 do patch4 cố ý ném ra là ngoại lệ trang, không phải do thay đổi đợt này gây ra |
+| `tests/native_v110_patch3.py` | 19/19 (chuyển cuộc trò chuyện, lưu đĩa, chẩn đoán ngữ cảnh bảo mật), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_group060.py` | 44/44 (nhóm chat, lì xì, trò chuyện riêng), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_world070.py` | 40/40 (cài đặt, nâng cấp, xung đột Sách Thế Giới), chạy lại sau khi sửa lỗi thẩm tra |
+| `tests/native_guards.py` | Cả 5 nhóm đều đạt (khử trùng lặp gửi tin, nhãn không thực thi, v.v.) |
+| `tests/native_terminal050.py` | 49/58, **9 mục thất bại giống hệt cơ sở 1.1.0 `bfa4807`** (khẳng định thương thành/điều hướng cũ thời 0.5.0, đã được thay thế bởi thương thành 1.0 từ lâu), đợt này không có thất bại mới |
+| Ngoại lệ chưa bắt được trên trình duyệt | Cả chuyên đề lẫn hồi quy đều có 0 pageerror |
+| `vendor/original` | Giữ nguyên cấu trúc |
 
-## 发布前审查专项（34 项，`tests/native_v111_audit.py`）
+## Chuyên đề thẩm tra trước khi phát hành (34 hạng mục, `tests/native_v111_audit.py`)
 
-全部在隔离的真实 SillyTavern 1.19.0 里通过界面或酒馆事件操作，聊天和变量都落到服务器磁盘再读回核对。模型回复由 `tests/qa/mock_model.py` 模拟。
+Toàn bộ đều thao tác thông qua giao diện hoặc sự kiện SillyTavern bên trong SillyTavern 1.19.0 cô lập thực tế, cuộc trò chuyện và biến số đều được lưu xuống đĩa máy chủ rồi đọc lại để đối chiếu. Phản hồi mô hình do `tests/qa/mock_model.py` mô phỏng.
 
-1. **#7 重roll**（主 API 接模拟模型，回复里 名望 +50、持有金额 +100）：
-   - 首条回复：名望 100 → 150，提示词里是 名望100。
-   - swipe：提示词里是本楼之前的 名望100（不是 150），结果 150，没有叠到 200。滑回第一条仍是 150。
-   - 重新生成：提示词 名望100，结果 150，磁盘账本一致；持有金额 600（500 起算），没有叠加。
-   - **对照**：关闭守卫做同样的 swipe，名望叠到 200，说明测试确实能抓到这个 bug。
-2. **#3 补记串聊天**：在 A 收到缺块回复后 50 毫秒切到 B。B 没有补记请求、没有追加内容；A 在内存和磁盘里都没有被写入过期的补记块。
-3. **#2 补记覆盖交易**：自动补记等待模型时扣到 1000 并保存。补记被拒绝，内存和磁盘都是 1000，并提示「补记期间账本有变化…本次补记未写入」。
-4. **#6 停用插件**：补记等待时停用插件，聊天没变、没有保存、磁盘没变。
-5. **#4 还原原文**：63084 字的污染回复被自动整理，备份是完整的 63084 字；还原后内存和磁盘都是 63084 字。
-6. **#5 / #1 物品**（引擎渲染的真实按钮）：
-   - 保留盲盒仙品（价格 10000000）：单独一行，没有并进价格 1 的剧情仙品；磁盘一致，只记一条操作记录。
-   - 分解时让服务器核对返回 HTTP 500：提示「物品与系统点都没有变化」，确实都没变；重试后 +20 系统点，物品少一件。
-   - 全部保留连点两次：只保留一次，待处理清空，磁盘一致。
-   - 回收这件盲盒仙品：+1,000,000 系统点（不是按合并后的价格只得 1）。
-   - 无限口袋走的原版 `bagAdd` 同样用严格叠加规则。
-7. **次要 · 抽卡**：保存读回失败时提示「第 1–10 抽的保存结果未能确认（可能已扣点并写入待处理），交易已冻结…」，不再说「未扣系统点」；之后本聊天不再写账本，直到重载。
-8. 全程没有 pageerror。修复过程中曾出现一条：状态栏重新渲染后，已被释放的旧页面里的后台写入被拒绝，但原版代码没接这个错误。已修，见 CHANGES「测试中顺带修的」。
+1. **#7 Roll lại (Reroll)** (API chính nối với mô hình mô phỏng, trong phản hồi có Danh Vọng +50, Số tiền nắm giữ +100):
+   - Phản hồi đầu tiên: Danh Vọng 100 → 150, trong lời nhắc là Danh Vọng 100.
+   - Vuốt đổi (swipe): trong lời nhắc là Danh Vọng 100 trước tầng này (chứ không phải 150), kết quả là 150, không bị cộng dồn lên 200. Vuốt quay về tin đầu tiên vẫn là 150.
+   - Tạo lại (regenerate): lời nhắc Danh Vọng 100, kết quả 150, sổ cái trên đĩa đồng nhất; Số tiền nắm giữ 600 (tính từ mốc 500), không bị cộng dồn.
+   - **Đối chiếu**: Tắt bộ bảo vệ rồi thực hiện swipe tương tự, Danh Vọng bị cộng dồn lên 200, chứng tỏ bài kiểm thử thực sự bắt được lỗi này.
+2. **#3 Ghi bù nhảy nhầm cuộc trò chuyện**: Sau khi cuộc trò chuyện A nhận phản hồi thiếu khối dữ liệu 50 mili-giây thì chuyển sang cuộc trò chuyện B. Cuộc trò chuyện B không phát sinh yêu cầu ghi bù, không bị nối thêm nội dung; cuộc trò chuyện A cả trong bộ nhớ lẫn trên đĩa đều không bị ghi khối dữ liệu ghi bù quá hạn.
+3. **#2 Ghi bù ghi đè giao dịch**: Trong lúc tự động ghi bù đang chờ mô hình, người dùng tiêu điểm xuống còn 1000 và lưu lại. Kết quả ghi bù bị từ chối, cả bộ nhớ lẫn đĩa đều giữ nguyên 1000, và hiện thông báo 「Sổ cái đã thay đổi trong lúc bổ sung… bản bổ sung lần này chưa được ghi」.
+4. **#6 Tắt plugin**: Tắt plugin trong lúc đang chờ ghi bù, cuộc trò chuyện không đổi, không lưu, đĩa không đổi.
+5. **#4 Khôi phục nguyên văn**: Phản hồi bị nhiễu dài 63.084 chữ được tự động chỉnh lý, bản sao lưu giữ trọn vẹn 63.084 chữ; sau khi khôi phục, cả bộ nhớ lẫn đĩa đều là 63.084 chữ.
+6. **#5 / #1 Vật phẩm** (nút bấm thực tế do động cơ kết xuất):
+   - Giữ lại Tiên phẩm hộp mù (giá 10.000.000): nằm riêng một dòng, không bị gộp vào Tiên phẩm cốt truyện có giá 1; đĩa đồng nhất, chỉ ghi một bản ghi thao tác.
+   - Khi phân giải, cho máy chủ kiểm tra trả về HTTP 500: thông báo 「Vật phẩm và Điểm Hệ Thống đều không thay đổi」, thực tế đều không đổi; sau khi thử lại +20 Điểm Hệ Thống, vật phẩm giảm 1 món.
+   - Bấm liên tiếp hai lần vào Giữ lại toàn bộ: chỉ giữ lại một lần, danh sách chờ xử lý trống, đĩa đồng nhất.
+   - Thu hồi món Tiên phẩm hộp mù này: +1.000.000 Điểm Hệ Thống (chứ không phải chỉ nhận được 1 theo giá sau khi gộp).
+   - Hàm `bagAdd` nguyên bản của Túi Vô Hạn cũng áp dụng quy tắc cộng dồn nghiêm ngặt tương tự.
+7. **Thứ yếu · Rút thẻ**: Khi đọc lại sau khi lưu thất bại sẽ thông báo 「Chưa thể xác nhận kết quả lưu của lượt rút 1–10 (có thể đã trừ điểm và ghi vào mục chờ xử lý), giao dịch đã bị đóng băng…」, không còn nói 「chưa trừ Điểm Hệ Thống」 nữa; sau đó cuộc trò chuyện này không ghi sổ cái nữa cho tới khi tải lại trang.
+8. Suốt quá trình không có pageerror.
 
-审查报告附带的 4 个反例（`audit-counterexamples.mjs`，对应 #2、#3、#4、#6）：修复前在 1.1.1 上有 3 个成立，第 4 个脚本本身在故意抛出的错误上中断；修复后用加了异常捕获的同一套反例重跑，4 个全部不成立（`confirmed: false`）。
+## Bao phủ chuyên đề 1.1.1 (32 hạng mục)
 
-## 1.1.1 专项覆盖（32 项）
+1. **Bộ bảo vệ định dạng khối dữ liệu (#7/#4)**: Đi qua API chính của SillyTavern bằng nút gửi thực tế, phản hồi mô phỏng viết cả chính văn và `<think>` vào bên trong khối dữ liệu, thẻ viết chữ thường và không có thẻ đóng.
+   - Kết quả: Tầng này được sửa sạch. Khối dữ liệu được đóng thẻ, tên thẻ chuẩn hóa, chính văn được chuyển ra ngoài khối, chuỗi tư duy đi vào `reasoning`.
+   - Văn bản swipe đồng bộ, nguyên văn có bản sao lưu, tệp trò chuyện trên đĩa cũng là phiên bản đã sửa.
+   - Thanh trạng thái gắn vào tầng này, động cơ ghi sổ theo khối đã sửa (Điểm Hệ Thống 1300).
+   - Bộ lắng nghe `MESSAGE_RECEIVED` của bộ bảo vệ được xếp ở vị trí đầu tiên.
+2. **Công pháp (#3)**: Dòng `功法修炼: Lĩnh ngộ 《Thái Hư Kiếm Ý》[Tiên phẩm]` được viết lại thành `收录:Thái Hư Kiếm Ý[Tiên phẩm]`, trong kho công pháp thực sự xuất hiện 「Thái Hư Kiếm Ý」.
+3. **Nhắc nhở định dạng**: Trong yêu cầu chính mỗi lượt đều mang theo một dòng nhắc nhở. Sau khi lượt trước vừa được sửa lỗi, lời nhắc sẽ ghi rõ vấn đề cụ thể (thiếu thẻ đóng, chính văn viết nhầm vào trong khối).
+4. **Ghi bù (Backfill)**: Mô phỏng một lượt phản hồi chỉ có chính văn mà không có khối dữ liệu.
+   - Cổng ghi bù chỉ được gọi 1 lần, khối dữ liệu được nối vào cuối tầng và ghi nhận `panelBackfill.via=auto`, động cơ ghi sổ theo khối ghi bù (1250).
+   - Trong yêu cầu ghi bù có bản mẫu Sách Thế Giới (macro biến số đã được thay bằng giá trị thực), chính văn lượt này và đầu vào của người dùng.
+5. **Bảo hiểm Thần phẩm (#1)**: Khi bản lưu cũ chỉ có tổng cộng 300 lượt rút tích lũy, thẻ hiển thị 「Còn 700 lượt tới bảo hiểm Thần phẩm」. Sau khi rút xong, `神品保底计数` được di chuyển từ số lượt rút tích lũy sang và tiếp tục tăng dần.
+6. **Rút ≥10 lượt (#6)**:
+   - Rút 20 lượt, lô phản hồi đầu tiên bị cắt cụt: các món hàng hoàn chỉnh được giữ lại, kích thước lô tự động thu nhỏ. Chia làm hai lần quyết toán 10 lượt, trừ phí đúng 200.000, mục chờ xử lý có 20 món.
+   - Khi mô hình trả về sai phẩm giai, phân loại, đề tài, kết quả cuối cùng lấy theo ô cục bộ làm chuẩn.
+   - Thất bại giữa chừng: 10 lượt đầu đã ghi sổ, 10 lượt còn lại không bị trừ phí và có thông báo rõ ràng.
+   - Thất bại ngay từ đầu: không trừ điểm, bảo hiểm không đổi.
+7. **Trang bị trượt lên trên (#5)**: Xác nhận trước rằng trang kiểm thử thực sự có thể bị cuộn bởi kịch bản.
+   - Bấm 「Tạo mới」 trong Công xưởng ngoại quải, trang đứng yên.
+   - Khi động cơ gọi `insertIntoChatInput`, nếu thiết bị đầu cuối đang mở thì chỉ ghi văn bản, không đặt tiêu điểm, không cuộn trang.
+   - Khi thiết bị đầu cuối đang mở mà trang bị cuộn thì sẽ được đưa về vị trí cũ; khi thiết bị đầu cuối đóng lại thì bộ bảo vệ không can thiệp nữa.
+8. **Lì xì (#2)**: Lì xì văn bản thuần kiểu cũ hiển thị nút 「Ghi bù」, sau khi bấm sẽ biến thành lì xì có thể giật (Đồng Tiền Cổ Thấm Máu ×3), nút biến mất, chỉ có thể ghi bù một lần.
+9. Trong Cài đặt có phân vùng 「Bảo vệ định dạng khối dữ liệu」 (hộp chọn ghi bù, nút khôi phục); trong thông tin chẩn đoán có thống kê bộ bảo vệ, không chứa chính văn hay khóa bảo mật.
+10. Nút 「Khôi phục lần tự động sửa gần nhất」 có thể khôi phục tầng về lại nguyên văn của AI; suốt quá trình không có pageerror.
 
-1. **数据块格式守卫（#7/#4）**：通过真实发送按钮走酒馆主 API，模拟回复把正文、`<think>` 写进数据块，标签小写而且没闭合。
-   - 结果：本层被修好。块闭合，标签规范，正文挪回块外，思维链进了 reasoning。
-   - swipe 文本同步，原文有备份，磁盘上的聊天文件也是修好的版本。
-   - 状态栏绑在这一层，引擎按修好的块入账（系统点 1300）。
-   - 守卫的 MESSAGE_RECEIVED 监听排在第一个。
-2. **功法（#3）**：「功法修炼: 领悟《太虚剑意》[仙品]」被改写成 `收录:太虚剑意[仙品]`，功法库里真的出现了「太虚剑意」。
-3. **格式提醒**：每轮的主请求里都带一行提醒。上一轮被修过以后，提醒会写明具体问题（没有结束标签、正文写进了块）。
-4. **补记**：模拟一轮只有正文没有数据块的回复。
-   - 补记接口只调用了 1 次，块追加在楼层末尾，并记下 `panelBackfill.via=auto`，引擎按补记入账（1250）。
-   - 补记请求里有世界书模板（变量宏换成了真实值）、本轮正文和用户输入。
-5. **神品保底（#1）**：老存档只有累计 300 抽时，卡片显示「距神品保底 700 抽」。抽完以后 `神品保底计数` 从累计抽数迁移过来，并且继续递增。
-6. **≥10 抽（#6）**：
-   - 20 抽，第一批回复被截断：完整的商品保留下来，批次自动改小。分两次 10 抽结算，扣费正好 200000，待处理 20 件。
-   - 模型回了错误的品阶、分类、题材，最后以本地槽位为准。
-   - 中途失败：前 10 抽已入账，剩下 10 抽没扣费，并有提示。
-   - 一开始就失败：不扣点，保底不变。
-7. **页面上移（#5）**：先确认测试页面确实能被脚本滚动，否则这几项等于没测。
-   - 外挂工坊点「新建」，页面不动。
-   - 引擎调用 insertIntoChatInput 时，终端开着就只写入、不聚焦、不滚动。
-   - 终端开着时页面被滚动会被复位；终端关了守卫就不再管。
-8. **红包（#2）**：旧版纯文本红包显示「补登」，点了以后变成可以抢的红包（浸血古铜钱 ×3），按钮消失，只能补登一次。
-9. 设置里有「数据块格式守卫」分区（补记下拉、还原按钮）；诊断信息里有守卫统计，不含正文和密钥。
-10. 「还原最新一次自动修复」能把楼层恢复成 AI 原文；全程没有 pageerror。
+## Chuyên đề ảnh đại diện điện thoại (12 hạng mục, `tests/native_v111_mobile.py`)
 
-## 手机头像专项（12 项，`tests/native_v111_mobile.py`）
+Dùng CDP `Emulation.setSafeAreaInsetsOverride` để mô phỏng thanh trạng thái / tai thỏ điện thoại. Đây là mô phỏng Chromium, **không phải máy thật**.
 
-用 CDP `Emulation.setSafeAreaInsetsOverride` 模拟手机状态栏 / 刘海。这是 Chromium 模拟，**不是真机**。
+1. Màn hình dọc 360×780, thanh trạng thái 40px:
+   - Thiết bị đầu cuối toàn màn hình, ảnh đại diện neo trong thanh tiêu đề: ảnh đại diện 45–89px, thanh tiêu đề 40–95px. Trước khi sửa, ảnh đại diện nằm ở 14–58px.
+   - Ảnh đại diện căn giữa theo chiều dọc, nằm bên trái tiêu đề 「Thiết Bị Đầu Cuối Chư Thiên」; bấm vào tâm ảnh đại diện trúng ngay ảnh đại diện.
+2. Bấm vào ảnh đại diện để vào trò chuyện riêng: ảnh đại diện xếp chồng lên ảnh đại diện của chính thanh tiêu đề trò chuyện riêng, nằm bên dưới thanh trạng thái và bấm trúng được. Sau khi quay lại thiết bị đầu cuối, ảnh đại diện trở về thanh tiêu đề thiết bị đầu cuối.
+3. Chuyển sang cửa sổ nổi cảm ứng: cả cửa sổ nổi và ảnh đại diện đang neo đều nằm bên dưới thanh trạng thái. Trước khi sửa, đỉnh cửa sổ nổi nằm ở pixel thứ 9, lọt vào trong thanh trạng thái.
+4. Khi không có thanh trạng thái (thẻ trình duyệt thông thường): ảnh đại diện vẫn căn giữa trong thanh tiêu đề như bình thường.
+5. Màn hình ngang 780×360, tai thỏ trái phải mỗi bên 36px: ảnh đại diện nằm bên phải tai thỏ, bên trong thanh tiêu đề.
+6. Cửa sổ máy tính: ảnh đại diện căn giữa trong thanh tiêu đề, chỉnh dịch lên trên khoảng 8px so với trước đây; không có pageerror.
 
-1. 竖屏 360×780，40px 状态栏：
-   - 终端全屏，头像停靠在标题栏里：头像 45–89px，标题栏 40–95px。修复前头像在 14–58px。
-   - 头像竖直居中，在「诸天终端」标题左边；点击头像中心能点中头像。
-2. 点头像进私聊：头像叠在私聊标题栏自己的头像上，在状态栏下面，可以点中。返回终端以后，头像回到终端标题栏。
-3. 切到触屏浮窗：浮窗和停靠的头像都在状态栏下面。修复前浮窗顶在第 9px，在状态栏里。
-4. 没有状态栏时（普通浏览器标签页）：头像照样在标题栏里居中。
-5. 横屏 780×360，左右各 36px 刘海：头像在刘海右边、标题栏里。
-6. 电脑窗口：头像在标题栏里居中，比原来往上回正约 8px（原版在打开动画中量了位置）；没有 pageerror。
+## Những phần chưa kiểm thử
 
-## 没测到的
-
-- **审查 #1 的「全部保留存进背包后清待处理失败」**：现在只有一次写入，这种中间状态不存在了；用单测和服务器 500 场景验证，没有模拟浏览器在两次保存之间崩溃。
-- **审查 #7 的真实模型**：只用固定的模拟回复验证。角色卡如果用数据块以外的方式记资产（例如自己的脚本），不在回滚范围内。
-- **真实模型**：补记的效果、格式提醒能不能真的减少出错、截断以后改小批次的实际表现，都只用模拟模型验证过。补记标为实验性。
-- **实体手机**：本轮没有真机。页面上移只在桌面 Chromium 上用强制可滚动的页面验证过；头像位置只用 Chromium 的状态栏 / 刘海模拟验证过，各家浏览器（尤其是全屏 / 沉浸式模式、夸克、Via 等）报告的状态栏高度可能不一样。
-- **MVU / 角色卡状态栏消失（#4）**：拿不到原始楼层，没能复现酒馆助手 / MVU 和插件的先后竞争。已经做的缓解：守卫排第一个先修楼层、没有字段的块不当数据块、缺块时补记。还需要用户的楼层原文来确认。
-- **`always` 补记模式没有实现**，只有「只在缺失时补记」和「关闭」。
-- 自动补记只处理正常生成的回复（received），开场白、斜杠命令和其他扩展插入的楼层不处理；前面要有用户消息，聊天里要已经有诸天账本。
-- 老存档在第一次抽卡前，世界书里的「神品保底计数」显示为空。
-- 主 API 路径拿不到 `finish_reason`，截断只能靠文本判断。
-- 只实跑了 SillyTavern 1.19.0，没有逐个重测 1.16–1.18。
+- **Mục #1 trong thẩm tra 「Sau khi Giữ lại toàn bộ cất vào túi đồ xong thì xóa mục chờ xử lý thất bại」**: Hiện tại chỉ còn duy nhất một lần ghi, trạng thái trung gian này không còn tồn tại nữa; đã xác minh bằng kiểm thử đơn vị và kịch bản máy chủ trả về lỗi 500, không mô phỏng trình duyệt bị sập giữa hai lần lưu.
+- **Mô hình thực tế của mục #7 trong thẩm tra**: Mới chỉ xác minh bằng phản hồi mô phỏng cố định. Nếu thẻ nhân vật ghi nhận tài sản bằng phương thức ngoài khối dữ liệu (ví dụ kịch bản riêng của thẻ), phần đó không nằm trong phạm vi quay lui.
+- **Mô hình thực tế**: Hiệu quả của việc ghi bù, việc lời nhắc định dạng có thực sự giảm lỗi hay không, và biểu hiện thực tế của việc thu nhỏ lô sau khi bị cắt cụt đều mới chỉ được xác minh bằng mô hình mô phỏng. Tính năng ghi bù được đánh dấu là Thử nghiệm.
+- **Điện thoại vật lý**: Đợt này không có máy thật. Hiện tượng trang bị trượt lên mới chỉ xác minh trên Chromium máy tính với trang ép cuộn; vị trí ảnh đại diện mới chỉ xác minh bằng mô phỏng thanh trạng thái / tai thỏ của Chromium, chiều cao thanh trạng thái do các trình duyệt khác nhau (đặc biệt là chế độ toàn màn hình / tràn viền, Quark, Via, v.v.) báo cáo có thể khác nhau.
+- **Thanh trạng thái MVU / thẻ nhân vật biến mất (#4)**: Do không có nguyên văn tầng lỗi nên chưa tái hiện được tranh chấp thứ tự giữa Tavern Helper / MVU và plugin. Các biện pháp giảm thiểu đã thực hiện: xếp bộ bảo vệ lên đầu tiên để sửa tầng trước, khối không có trường hợp lệ không bị coi là khối dữ liệu, khi thiếu khối sẽ ghi bù. Vẫn cần nguyên văn tầng của người dùng để xác nhận thêm.
+- **Chế độ ghi bù `always` không được triển khai**, chỉ có 「Chỉ bổ sung khi bị thiếu」 và 「Tắt」.
+- Tự động ghi bù chỉ xử lý phản hồi được tạo ra bình thường (`received`), không xử lý lời mở đầu, lệnh gạch chéo hay tầng do tiện ích mở rộng khác chèn vào; phía trước phải có tin nhắn người dùng và trong cuộc trò chuyện phải có sẵn sổ cái Chư Thiên.
+- Bản lưu cũ trước khi rút thẻ lần đầu tiên, mục 「Tiến độ bảo hiểm Thần phẩm」 trong Sách Thế Giới sẽ hiển thị trống.
+- Đường dẫn API chính không lấy được `finish_reason`, nên việc phát hiện cắt cụt chỉ có thể dựa vào văn bản.
+- Chỉ chạy thực tế trên SillyTavern 1.19.0, chưa kiểm thử lại từng bản 1.16–1.18.

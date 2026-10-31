@@ -1,7 +1,7 @@
 import { compactLegacyOperation } from './operation-records.js';
 import { displayPanel, outsideThoughts } from './panel-guard.js';
 const OPEN_TAG = '<ZhuTianPanel>', CLOSE_TAG = '</ZhuTianPanel>';
-// "诸天状态栏 · 旧楼层不发给AI" as a native generation interceptor (manifest.generate_interceptor).
+// "Thanh trạng thái Chư Thiên · Tầng cũ không gửi cho AI" as a native generation interceptor (manifest.generate_interceptor).
 // Original regex: /<ZhuTianPanel>[\s\S]*?<\/ZhuTianPanel>/gm → '' , promptOnly, minDepth 2 (depth 0 = newest floor).
 // SillyTavern calls the interceptor with its prompt copy of the chat (coreChat) before the prompt is built; the
 // array is a copy but the message objects are the live chat, so changed floors are REPLACED by shallow clones —
@@ -36,6 +36,6 @@ export function installInterceptor() {
             if (Array.isArray(chat)) for (let i = 0; i < chat.length; i++) { const m = chat[i]; if (typeof m?.mes === 'string') { const text = compactLegacyOperation(m.mes); if (text !== m.mes) chat[i] = { ...m, mes: text }; } }
             const n = stripOldPanels(chat, app.settings.get('promptPanelKeepDepth'));
             promptFilterStats.runs++; promptFilterStats.floors += n; promptFilterStats.last = Date.now();
-        } catch (e) { console.warn('[诸天] 旧楼层面板过滤失败（提示词保持原样）', e); }
+        } catch (e) { console.warn('[Chư Thiên] Lọc bảng trạng thái tầng cũ thất bại (prompt giữ nguyên)', e); }
     };
 }

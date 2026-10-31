@@ -1,10 +1,10 @@
-// 1.0 动态效果：低端机自动降级.
+// 1.0 Hiệu ứng động: tự động giảm cấp trên máy cấu hình thấp.
 // Setting `motion`: auto (default) | full | lite.
 //   auto → lite when the system asks for reduced motion, or when a touch device draws fewer than 40 frames per second
 //          in a 2-second sample taken once per session (6 s after start, so SillyTavern's own loading is not counted).
 //   lite → the floating Lilith stops breathing / swaying and drops her shadow filter; world decorations and the
-//          terminal's own decorative animations stop; 演出 shows only the result card. Nothing functional changes.
-export const MOTION_OPTIONS = Object.freeze([['auto', '自动（系统要求减少动态效果，或手机明显卡顿时降级）'], ['full', '完整'], ['lite', '精简（低端机推荐）']]);
+//          terminal's own decorative animations stop; Hiệu ứng diễn xuất shows only the result card. Nothing functional changes.
+export const MOTION_OPTIONS = Object.freeze([['auto', 'Tự động (giảm cấp khi hệ thống yêu cầu giảm chuyển động hoặc điện thoại bị giật lag)'], ['full', 'Đầy đủ'], ['lite', 'Tinh giản (khuyên dùng cho máy yếu)']]);
 export const LOW_FPS = 40;
 
 /** Should the lite visuals be used? (pure) */
@@ -35,7 +35,7 @@ export class Perf {
         try { reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; coarse = matchMedia('(pointer: coarse)').matches; } catch { /* ignore */ }
         const mode = this.settings.get('motion') || 'auto';
         this.lite = decideLite(mode, { reduced, fps: this.fps, coarse });
-        this.reason = mode !== 'auto' ? `设置为「${mode === 'lite' ? '精简' : '完整'}」` : reduced ? '系统要求减少动态效果' : this.lite ? `帧率 ${this.fps} fps` : this.fps ? `帧率 ${this.fps} fps，正常` : '尚未测量';
+        this.reason = mode !== 'auto' ? `Đã đặt là 「${mode === 'lite' ? 'Tinh giản' : 'Đầy đủ'}」` : reduced ? 'Hệ thống yêu cầu giảm hiệu ứng động' : this.lite ? `Tốc độ khung hình ${this.fps} fps` : this.fps ? `Tốc độ khung hình ${this.fps} fps, bình thường` : 'Chưa đo';
         const host = this.app.hub?.shadow?.host;
         if (host) host.toggleAttribute('data-zt-lite', this.lite);
         const fl = this.app.float?.el; if (fl) fl.dataset.lite = String(this.lite);

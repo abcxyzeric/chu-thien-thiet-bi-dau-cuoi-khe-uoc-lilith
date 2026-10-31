@@ -1,70 +1,70 @@
-# 0.6.0 变更记录：诸天万界聊天群
+# Bản ghi thay đổi 0.6.0: Nhóm Chat Chư Thiên Vạn Giới
 
-基线：0.5.0。
-目标：在终端里加一个 QQ 群式的**跨世界聊天群**。群员来自不同世界，能聊天、发红包、送礼、求助、直播、降临；群员送来的东西**真的进账本**。
+Cơ sở: 0.5.0.
+Mục tiêu: Bổ sung một **Nhóm chat xuyên thế giới** kiểu nhóm QQ vào trong thiết bị đầu cuối. Thành viên nhóm đến từ các thế giới khác nhau, có thể trò chuyện, phát lì xì, tặng quà, cầu viện, phát sóng trực tiếp, giáng lâm; những món đồ do thành viên nhóm gửi tặng **thực sự được ghi vào sổ cái**.
 
-验收结果见 [ACCEPTANCE-0.6.0](ACCEPTANCE-0.6.0.md)。
+Kết quả nghiệm thu xem tại [ACCEPTANCE-0.6.0](ACCEPTANCE-0.6.0.md).
 
-## 入口
+## Lối vào
 
-终端导航新增一组「万界 · 聊天群」，位置在「神通」和「工作台」之间。群页面有四个分页：**聊天 · 群员 · 集市 · 群务**。
+Thanh điều hướng thiết bị đầu cuối thêm mới nhóm 「Vạn Giới · Nhóm chat」, nằm giữa 「Thần thông」 và 「Bàn làm việc」. Trang nhóm có bốn phân trang: **Trò chuyện · Thành viên · Chợ nhóm · Công việc nhóm**.
 
-数据存在聊天变量 `诸天系统.聊天群`，跟随存档和分支。没有诸天账本的聊天，页面会提示先去「设置 → 新聊天初始化」。
+Dữ liệu được lưu tại biến trò chuyện `诸天系统.聊天群`, đi theo bản lưu và nhánh cốt truyện. Với những cuộc trò chuyện chưa có sổ cái Chư Thiên, trang sẽ nhắc vào 「Cài đặt → Khởi tạo cuộc trò chuyện mới」 trước.
 
-## 玩法
+## Cách chơi
 
-| 功能 | 怎么用 | 规则 |
+| Tính năng | Cách dùng | Quy tắc |
 |---|---|---|
-| 招募 | 群员页「发布招募令」：随机世界，或指定世界/角色名 | 每次 200 系统点，模型没给出有效角色时退回。候选人卡片显示世界、实力档、性格、特产 |
-| 邀请入群 | 候选卡片上的「邀请入群」 | 入群费 = 该实力档的基准价（原版 `ZT_TIERS`：凡人 1,000 · 武道宗师 10,000 · 城市级 1,000,000 …）|
-| 扩建 | 群员页「扩建 +5」 | 当前容量 × 2,000 系统点；起始 5 人，最多 30 人 |
-| 群聊 | 聊天页输入框，Enter 发送 | 宿主发一条 = 模型调用一次，1–6 位群员回话；非群员、被禁言的群员说的话会被丢掉 |
-| 群员红包 | 群员在回话里发 `[红包]` | 系统点红包：金额 ≤ 群员实力档基准价，且 ≤ 商城等级上限（Lv1 2,000 · Lv2 20,000 · Lv3 200,000 · Lv4 200 万 · Lv5 2,000 万）。物品红包：品阶见下方「规则底线」 |
-| 抢红包 | 红包卡片上的「抢」 | 拼手气（二倍均值随机）。**先写入账本并读回确认，再提示「已入库」**；物品带来源「名称@世界」。每天最多收 6 个群员红包 |
-| 赠礼 | 群员回话里的 `[赠礼]` | 进入顶部的「待领取」条，点一下领取入包，同样先入账再提示 |
-| 宿主发红包 | 聊天页「发红包」：系统点或背包物品 | 先从账本扣除并读回，再发出；群员抢到会提升好感，可能回礼（进待领取）。每天最多发 10 个；禁忌品不能发 |
-| 签到 | 聊天页「签到」 | 100 × 连续天数（最多按 7 天算）+ 10 × 群员数，当天只能签一次 |
-| 求助 | 聊天页「求助」写下需求，可指定群员或随机 | 群员接下后生成一条原版任务，进入 `任务库`，状态「待接取」，来源「聊天群求助 · 名称@世界」，在「任务」页能看到；群里的任务卡片有「查看」直达任务页 |
-| 群直播 | 聊天页「群直播」（随机一位），或群员页某人的「直播」 | 群员用 3–5 条消息直播自己世界此刻正在发生的事 |
-| 私聊 | 群员页「私聊」 | 单独对话，保存每位群员最近 30 条 |
-| 降临 | 群员页「降临」 | 花 max(100, 实力档基准价 ÷ 10) 系统点，该群员接下来 **3 轮剧情**作为同伴出现在正文里（写入剧情提示词），之后自动结束 |
-| 集市 | 集市页 | 每天每位群员挂出一件自己世界的特产（品阶受规则底线约束），可以买下，价格从账本扣除并读回。宿主也能把背包物品挂单：售价 ≤ 原版估值 × 1.3 才会有人买，否则群员会嫌贵；可以撤单取回 |
-| 群务 | 群务页 | 群名、公告、群规（可改，最多 12 条）；禁言、踢人、设管理员；「群聊摘要注入剧情」和「每轮剧情后自动闲聊」两个开关 |
+| Chiêu mộ | Trang Thành viên → 「Phát Lệnh Chiêu Mộ」: thế giới ngẫu nhiên, hoặc chỉ định tên thế giới/nhân vật | Mỗi lần 200 Điểm Hệ Thống, khi mô hình không đưa ra nhân vật hợp lệ sẽ được hoàn lại. Thẻ ứng viên hiển thị thế giới, bậc thực lực, tính cách, đặc sản |
+| Mời vào nhóm | Nút 「Mời vào nhóm」 trên thẻ ứng viên | Phí vào nhóm = giá chuẩn của bậc thực lực đó (`ZT_TIERS` nguyên bản: Phàm nhân 1.000 · Võ đạo tông sư 10.000 · Cấp thành phố 1.000.000 …) |
+| Mở rộng nhóm | Trang Thành viên → 「Mở rộng +5」 | Sức chứa hiện tại × 2.000 Điểm Hệ Thống; khởi đầu 5 người, tối đa 30 người |
+| Trò chuyện nhóm | Ô nhập liệu ở trang Trò chuyện, nhấn Enter để gửi | Ký chủ gửi 1 tin = gọi mô hình 1 lần, từ 1–6 thành viên trả lời; lời nói của người không ở trong nhóm hoặc thành viên đang bị cấm chat sẽ bị loại bỏ |
+| Lì xì thành viên | Thành viên gửi `[红包]` / `[Lì xì]` trong câu trả lời | Lì xì Điểm Hệ Thống: số tiền ≤ giá chuẩn bậc thực lực của thành viên đó, và ≤ giới hạn cấp độ thương thành (Lv1 2.000 · Lv2 20.000 · Lv3 200.000 · Lv4 200 vạn · Lv5 2.000 vạn). Lì xì vật phẩm: phẩm giai xem tại mục 「Giới hạn quy tắc tối thiểu」 bên dưới |
+| Giật lì xì | Nút 「Giật」 trên thẻ lì xì | Thử vận may (ngẫu nhiên gấp đôi trung bình). **Ghi vào sổ cái và đọc lại xác nhận trước, sau đó mới hiện thông báo 「Đã nhập kho」**; vật phẩm mang nguồn gốc 「Tên@Thế giới」. Mỗi ngày nhận tối đa 6 lì xì của thành viên |
+| Quà tặng | `[赠礼]` / `[Tặng lễ]` trong câu trả lời của thành viên | Đi vào thanh 「Chờ nhận」 ở trên cùng, bấm một cái để nhận vào túi đồ, cũng ghi sổ trước rồi mới thông báo |
+| Ký chủ phát lì xì | Trang Trò chuyện → 「Phát lì xì」: Điểm Hệ Thống hoặc vật phẩm trong túi đồ | Trừ từ sổ cái và đọc lại trước rồi mới phát ra; thành viên giật được sẽ tăng độ hảo cảm và có thể đáp lễ (đi vào mục chờ nhận). Mỗi ngày phát tối đa 10 cái; hàng Cấm kỵ không thể phát |
+| Điểm danh | Trang Trò chuyện → 「Điểm danh」 | 100 × số ngày liên tiếp (tính tối đa theo mốc 7 ngày) + 10 × số thành viên nhóm, mỗi ngày chỉ được điểm danh một lần |
+| Cầu viện | Trang Trò chuyện → 「Cầu viện」 viết nhu cầu, có thể chỉ định thành viên hoặc ngẫu nhiên | Sau khi thành viên nhận lời sẽ tạo ra một nhiệm vụ nguyên bản đi vào `任务库`, trạng thái 「Chờ nhận」, nguồn gốc 「Cầu viện nhóm chat · Tên@Thế giới」, nhìn thấy được ở trang 「Nhiệm vụ」; thẻ nhiệm vụ trong nhóm có nút 「Xem」 dẫn thẳng tới trang Nhiệm vụ |
+| Phát sóng trực tiếp | Trang Trò chuyện → 「Phát sóng trực tiếp」 (ngẫu nhiên 1 người), hoặc nút 「Trực tiếp」 của một người ở trang Thành viên | Thành viên dùng 3–5 tin nhắn để phát sóng trực tiếp những gì đang diễn ra tại thế giới của mình ngay lúc này |
+| Trò chuyện riêng | Trang Thành viên → 「Trò chuyện riêng」 | Hội thoại riêng, lưu lại 30 tin nhắn gần nhất của mỗi thành viên |
+| Giáng lâm | Trang Thành viên → 「Giáng lâm」 | Tốn `max(100, giá chuẩn bậc thực lực ÷ 10)` Điểm Hệ Thống, trong **3 lượt cốt truyện tiếp theo** thành viên đó sẽ xuất hiện trong chính văn với tư cách đồng hành (ghi vào lời nhắc cốt truyện), sau đó tự động kết thúc |
+| Chợ nhóm | Trang Chợ nhóm | Mỗi ngày mỗi thành viên treo bán một món đặc sản của thế giới mình (phẩm giai chịu sự ràng buộc của giới hạn quy tắc tối thiểu), có thể mua về, giá tiền trừ từ sổ cái và đọc lại xác nhận. Ký chủ cũng có thể treo bán vật phẩm trong túi đồ: giá bán ≤ định giá nguyên bản × 1.3 mới có người mua, nếu cao hơn thành viên sẽ chê đắt; có thể rút đơn lấy về |
+| Công việc nhóm | Trang Công việc nhóm | Tên nhóm, thông báo, nội quy nhóm (có thể sửa, tối đa 12 điều); cấm chat, trục xuất, đặt làm quản trị viên; hai công tắc 「Tiêm tóm tắt nhóm chat vào cốt truyện」 và 「Tự động tán gẫu sau mỗi lượt cốt truyện」 |
 
-## 规则底线（不可关闭）
+## Giới hạn quy tắc tối thiểu (Không thể tắt)
 
-群规“不太严，但有规矩”。以下几条写在代码里，群规怎么改都绕不过去：
-- 群员送出的物品（红包、赠礼、集市），品阶 ≤ 宿主商城等级，≤ 赠送者自身实力档，禁忌品一律禁止。超标时**自动降到允许的最高品阶**，而不是整条拒绝。
-- 系统点红包有上限（见上表）；每个物品红包的件数也有上限（凡品/灵品 5，仙品 2，神品 1）。
-- 每天最多收 6 个群员红包、发 10 个红包，超出的会在群里显示“被群规拦下”。
-- 所有进出账都走同一个加锁写入，并按 `[rev, 系统点, 背包件数, 任务数]` 读回核对；读回不一致就报错，不提示成功。
+Nội quy nhóm “không quá khắt khe, nhưng có khuôn phép”. Các điều dưới đây được viết cứng trong mã nguồn, dù sửa nội quy nhóm thế nào cũng không thể lách qua:
+- Vật phẩm do thành viên gửi ra (lì xì, quà tặng, chợ nhóm) phải có phẩm giai ≤ cấp độ thương thành của Ký chủ, ≤ bậc thực lực của chính người tặng, hàng Cấm kỵ bị cấm tuyệt đối. Khi vượt chuẩn sẽ **tự động hạ xuống phẩm giai cao nhất được phép**, chứ không từ chối cả tin nhắn.
+- Lì xì Điểm Hệ Thống có giới hạn trần (xem bảng trên); số lượng món trong mỗi lì xì vật phẩm cũng có giới hạn trần (Phàm phẩm/Linh phẩm 5, Tiên phẩm 2, Thần phẩm 1).
+- Mỗi ngày nhận tối đa 6 lì xì của thành viên và phát tối đa 10 lì xì, phần vượt quá sẽ hiển thị trong nhóm là “bị nội quy nhóm chặn lại”.
+- Toàn bộ giao dịch thu chi đều đi qua cùng một hàm ghi có khóa, và đọc lại đối chiếu theo `[rev, 系统点, số món túi đồ, số nhiệm vụ]`; nếu đọc lại không khớp sẽ báo lỗi chứ không thông báo thành công.
 
-## 与剧情的联动
+## Liên kết với cốt truyện
 
-- 「群聊摘要注入剧情」（默认开）：把群员名单和最近 4 条群聊作为系统提示放进正文生成（深度 4），让剧情里的角色知道这个群。
-- 降临中的群员单独注入一段，要求正文按其性格和原世界设定写他登场。
-- 「每轮剧情后自动闲聊」（默认关）：每次收到剧情回复后，群里自动聊一轮（宿主没有发言）。
+- 「Tiêm tóm tắt nhóm chat vào cốt truyện」 (mặc định bật): đưa danh sách thành viên và 4 tin nhắn nhóm gần nhất làm lời nhắc hệ thống vào quá trình tạo chính văn (độ sâu 4), để các nhân vật trong cốt truyện biết tới sự tồn tại của nhóm này.
+- Thành viên đang giáng lâm được tiêm riêng một đoạn lời nhắc, yêu cầu chính văn miêu tả người đó xuất hiện đúng theo tính cách và thiết lập thế giới gốc.
+- 「Tự động tán gẫu sau mỗi lượt cốt truyện」 (mặc định tắt): mỗi lần nhận được phản hồi cốt truyện, trong nhóm sẽ tự động trò chuyện một lượt (Ký chủ không phát biểu).
 
-## 其他修改
+## Các sửa đổi khác
 
-- 终端顶栏的商城等级改为和原版 `ztShopLevel` 同样实时计算。以前读的是账本里上次写入的 `商城等级`，聊天群改动系统点后会滞后；现在群里的所有写入也会同步这个字段。
-- 群聊界面在重绘时保留输入框焦点、光标位置和滚动位置。
-- 手机版：群顶栏压成一行，分页铺满宽度，工具按钮和待领取条改为横向滚动，聊天区至少留出约 250 px。
+- Cấp độ thương thành trên thanh đỉnh của thiết bị đầu cuối được đổi sang tính toán thời gian thực giống hệt `ztShopLevel` nguyên bản.
+- Giao diện nhóm chat khi vẽ lại vẫn giữ nguyên tiêu điểm ô nhập liệu, vị trí con trỏ và vị trí cuộn.
+- Bản di động: thanh đỉnh nhóm được nén thành một dòng, phân trang trải kín chiều rộng, các nút công cụ và thanh chờ nhận chuyển sang cuộn ngang, vùng trò chuyện dành ra ít nhất khoảng 250 px.
 
-## 文件
+## Các tệp thay đổi
 
-新增：
-- `src/hub-group.js`：聊天群页面、规则和模型调用。
-- `src/ledger-ops.js`：共用的账本操作：品阶/档位常量、商城等级、扣点/加点/入包/出包，以及带读回的 `commit()`。
-- `tests/group060.test.js`（纯逻辑）、`tests/native_group060.py`（真实宿主浏览器）。
-- `docs/CHANGES-0.6.0.md`、`docs/ACCEPTANCE-0.6.0.md`。
+Thêm mới:
+- `src/hub-group.js`: Trang Nhóm chat, quy tắc và gọi mô hình.
+- `src/ledger-ops.js`: Các thao tác sổ cái dùng chung: hằng số phẩm giai/bậc thực lực, cấp độ thương thành, trừ điểm/cộng điểm/vào túi/ra túi, cùng hàm `commit()` có đọc lại xác nhận.
+- `tests/group060.test.js` (thuần logic), `tests/native_group060.py` (trình duyệt máy chủ thực tế).
+- `docs/CHANGES-0.6.0.md`, `docs/ACCEPTANCE-0.6.0.md`.
 
-修改：
-- `index.js`：接入聊天群。
-- `src/hub.js`：顶栏商城等级。
-- `styles/hub.css`：`.zt-g*` 样式。
-- `tests/qa/mock_model.py`：模拟模型能回答招募、群聊、任务、直播、私聊。
-- `tests/qa/zt_common.py`：`open_chat()`，刷新页面后重新打开验收聊天。
-- `tests/qa/run_matrix.sh`：加入 group060。
-- `package.json`：`check` 脚本加入新文件。
-- `README.md`、`docs/FEATURE_MATRIX.md`，以及各处版本号。
+Sửa đổi:
+- `index.js`: Đấu nối Nhóm chat.
+- `src/hub.js`: Cấp độ thương thành trên thanh đỉnh.
+- `styles/hub.css`: Các kiểu `.zt-g*`.
+- `tests/qa/mock_model.py`: Mô hình mô phỏng trả lời được chiêu mộ, trò chuyện nhóm, nhiệm vụ, phát sóng trực tiếp, trò chuyện riêng.
+- `tests/qa/zt_common.py`: `open_chat()`, mở lại cuộc trò chuyện nghiệm thu sau khi làm mới trang.
+- `tests/qa/run_matrix.sh`: Thêm `group060`.
+- `package.json`: Kịch bản `check` thêm các tệp mới.
+- `README.md`, `docs/FEATURE_MATRIX.md`, cùng số phiên bản ở các nơi.

@@ -1,88 +1,73 @@
-# 1.1.3 · 悬浮窗「切换 / 关闭」分开、大小最低 20%、经典折叠一次调用 API
+# 1.1.3 · Tách bạch 「Chuyển đổi / Đóng」 cửa sổ nổi, Kích thước tối thiểu 20%, Gộp cổ điển gọi API 1 lần
 
-在 1.1.2 之上增量修改（1.1.1 / 1.1.2 都没单独推送，改动一并带上，见 [CHANGES-1.1.1](CHANGES-1.1.1.md)、[CHANGES-1.1.2](CHANGES-1.1.2.md)）。插件版本 1.1.3。账本结构版本 2 不变，世界书规则版本 1.1.1 不变（世界书不需要更新）。插件 ID 和所有存储键不变。
+Sửa đổi tăng thêm trên nền bản 1.1.2 (xem [CHANGES-1.1.1](CHANGES-1.1.1.md), [CHANGES-1.1.2](CHANGES-1.1.2.md)). Phiên bản plugin 1.1.3. Phiên bản cấu trúc sổ cái 2 giữ nguyên, phiên bản quy tắc Sách Thế Giới 1.1.1 giữ nguyên (không cần cập nhật Sách Thế Giới). ID plugin và toàn bộ khóa lưu trữ không đổi.
 
-## 1. 悬浮窗：「关闭是关闭，切换是切换」
+## 1. Cửa sổ nổi: 「Đóng là đóng, chuyển đổi là chuyển đổi」
 
-玩家反馈：在手机上关掉悬浮窗，它却变成了头像悬浮窗；设置里的「关闭」其实是换成原版唤醒按钮。
+Phản hồi từ người chơi: Khi đóng cửa sổ nổi trên điện thoại, nó lại biến thành cửa sổ nổi hình ảnh đại diện; tùy chọn 「Đóng」 trong cài đặt thực chất lại là đổi sang nút đánh thức nguyên bản.
 
-原因：以前「关闭悬浮窗」只是把 `floatLilith` 设成 `off`，而 `off` 的意思是「不用悬浮莉莉丝、改用原版唤醒按钮」。在手机上，原版唤醒按钮就是可拖动的圆形头像，所以看起来像是「关了又变成头像」。
+Nguyên nhân: Trước đây thao tác 「Đóng cửa sổ nổi」 chỉ đặt `floatLilith` thành `off`, trong khi `off` có nghĩa là 「không dùng Lilith nổi mà chuyển sang dùng nút đánh thức nguyên bản」. Trên điện thoại, nút đánh thức nguyên bản chính là ảnh đại diện hình tròn có thể kéo đi, nên nhìn giống như 「đóng xong lại biến thành ảnh đại diện」.
 
-现在 `floatLilith` 有四个值：
+Hiện tại `floatLilith` có bốn giá trị:
 
-| 值 | 页面上显示 | 设置里的名字 |
+| Giá trị | Hiển thị trên trang | Tên trong Cài đặt |
 |---|---|---|
-| `auto`（默认） | 手机 / 触屏：悬浮莉莉丝；电脑：原版唤醒按钮 | 自动 |
-| `on` | 悬浮莉莉丝 | 悬浮莉莉丝 |
-| `off` | 头像（原版唤醒按钮；手机上是圆形头像） | 头像（原版唤醒按钮） |
-| `none`（新） | **什么都不显示** | 已关闭 |
+| `auto` (Mặc định) | Điện thoại / màn hình cảm ứng: Lilith nổi; Máy tính: Nút đánh thức nguyên bản | Tự động |
+| `on` | Lilith nổi | Lilith nổi |
+| `off` | Ảnh đại diện (nút đánh thức nguyên bản; trên điện thoại là ảnh đại diện tròn) | Ảnh đại diện (Nút đánh thức nguyên bản) |
+| `none` (Mới) | **Không hiển thị gì cả** | Đã đóng |
 
-旧设置里的 `off` 继续表示「头像」，升级后看到的东西不变。
+Giá trị `off` trong cài đặt cũ vẫn tiếp tục biểu thị 「Ảnh đại diện」, nên sau khi nâng cấp những gì người dùng nhìn thấy không bị thay đổi đột ngột.
 
-### 切换（莉莉丝 ⇄ 头像）
+### Chuyển đổi (Lilith ⇄ Ảnh đại diện)
 
-- 拖动悬浮莉莉丝时，屏幕底部有两个目标：**「拖到这里换成头像」**和**「拖到这里关闭悬浮窗」**。
-- 拖动头像（手机上的圆形头像，电脑上的唤醒按钮）时，也有两个目标：**「拖到这里换成莉莉丝」**和**「拖到这里关闭悬浮窗」**。
-- 电脑上右键莉莉丝，菜单里有「切换成头像」和「关闭悬浮窗…」两项。
-- 设置 → 莉莉丝 →「悬浮窗（切换样子）」下拉框。
-- 切换不需要确认；丢到目标上不算移动，头像 / 莉莉丝会回到原来的位置。
+- Khi kéo Lilith nổi, dưới đáy màn hình sẽ có hai mục tiêu: **「Kéo vào đây để đổi thành ảnh đại diện」** và **「Kéo vào đây để đóng cửa sổ nổi」**.
+- Khi kéo ảnh đại diện (ảnh đại diện tròn trên điện thoại, nút đánh thức trên máy tính) cũng có hai mục tiêu: **「Kéo vào đây để đổi thành Lilith」** và **「Kéo vào đây để đóng cửa sổ nổi」**.
+- Trên máy tính khi nhấp chuột phải vào Lilith, trong menu có hai mục 「Đổi thành ảnh đại diện」 và 「Đóng cửa sổ nổi…」.
+- Cài đặt → Lilith → hộp chọn thả xuống 「Cửa sổ nổi (Chuyển đổi kiểu dáng)」.
+- Việc chuyển đổi không cần hỏi xác nhận; thả vào mục tiêu không tính là di chuyển vị trí nên ảnh đại diện / Lilith sẽ quay về vị trí cũ.
 
-### 关闭（都不显示）
+### Đóng (Ẩn cả hai)
 
-- 入口：上面的「关闭悬浮窗」目标，或设置 → 莉莉丝里单独的**「关闭悬浮窗…」**按钮。
-- 关闭前会先确认，提示里写明：关闭后莉莉丝和头像都不显示，从酒馆「扩展」面板 →「诸天终端」→「打开诸天终端」进入控制台。
-- 恢复：
-  - 扩展面板里点「显示悬浮莉莉丝」或新加的「显示头像」；
-  - 或者在设置的下拉框里选回来。
-- 关闭后打开终端，终端左上角的头像照常停在标题栏里，不受影响。
-- 电脑上 Alt+Z 照常能打开终端。
+- Lối vào: mục tiêu 「Đóng cửa sổ nổi」 ở trên, hoặc nút **「Đóng cửa sổ nổi…」** riêng biệt trong Cài đặt → Lilith.
+- Trước khi đóng sẽ hỏi xác nhận trước, trong thông báo ghi rõ: sau khi đóng cả Lilith lẫn ảnh đại diện đều không hiển thị, có thể vào lại bảng điều khiển từ bảng 「Tiện ích mở rộng」 của SillyTavern → 「Thiết Bị Đầu Cuối Chư Thiên」 → 「Mở Thiết Bị Đầu Cuối Chư Thiên」.
+- Cách khôi phục:
+  - Trong bảng tiện ích mở rộng, bấm 「Hiển thị Lilith nổi」 hoặc nút mới 「Hiển thị ảnh đại diện」;
+  - Hoặc chọn lại trong hộp chọn thả xuống ở trang Cài đặt.
+- Sau khi đóng mà mở thiết bị đầu cuối, ảnh đại diện ở góc trên bên trái thiết bị đầu cuối vẫn neo trong thanh tiêu đề như bình thường, không bị ảnh hưởng.
+- Trên máy tính, tổ hợp phím Alt+Z vẫn mở thiết bị đầu cuối bình thường.
 
-### 终端 ×
+### Nút × của thiết bị đầu cuối
 
-- × 本来就只关闭终端。头像出现在页面上，是因为当时的悬浮窗设置就是「头像」。现在关闭了悬浮窗，按 × 后页面上什么都不会出现。
-- 手机上「浮窗 / 全屏」按钮：在模拟 Pixel 7 上逐项检查了全屏、浮窗、关闭后重开、最小化后重开、关闭悬浮窗后打开这几种情况，按钮每次都在（全屏时显示「浮窗」，浮窗时显示「全屏」）。如果你的手机上仍然看不到，请发一张截图，并写上浏览器和屏幕宽度。
+- Nút × vốn dĩ chỉ đóng thiết bị đầu cuối. Trước đây ảnh đại diện xuất hiện trên trang sau khi bấm × là do cài đặt cửa sổ nổi lúc đó đang là 「Ảnh đại diện」. Giờ đây khi đã đóng hẳn cửa sổ nổi (`none`), sau khi bấm × trên trang sẽ không xuất hiện bất cứ thứ gì.
 
-## 2. 大小最低 20%
+## 2. Kích thước tối thiểu 20%
 
-- 「悬浮莉莉丝大小」新增 20% / 30% / 40%。20% 时约 30×33 px，藏在屏幕边时露出 24 px。
-- 新增「头像悬浮窗大小」（20%–100%，默认 100% = 64 px，和以前一样）。
-  - 电脑上的唤醒按钮也按这个比例缩放。
-  - 缩小后照样能点、能拖、能藏到屏幕边，位置会记住。
-  - 实现上用 CSS `scale`（左上角固定），移动量按比例换算，所以松手的位置就是落点。
+- Mục 「Kích thước Lilith nổi」 thêm mới các mức 20% / 30% / 40%. Ở mức 20% kích thước khoảng 30×33 px, khi nấp ở mép màn hình vẫn lộ ra 24 px.
+- Thêm mới mục 「Kích thước cửa sổ nổi ảnh đại diện」 (20%–100%, mặc định 100% = 64 px, giống như trước đây).
+  - Nút đánh thức trên máy tính cũng thu phóng theo tỷ lệ này.
+  - Sau khi thu nhỏ vẫn bấm được, kéo được, giấu vào mép màn hình được và ghi nhớ vị trí như bình thường.
 
-## 3. 经典折叠：一次调用 API
+## 3. Gộp cổ điển: Gọi API 1 lần duy nhất
 
-玩家反馈：经典折叠也应该只调用一次 API，被折叠的凡品 / 灵品只计数。
+Phản hồi từ người chơi: Chế độ Gộp cổ điển chỉ nên gọi API đúng một lần, còn Phàm phẩm / Linh phẩm bị gộp chỉ cần đếm số lượng.
 
-- 整次抽取里没被折叠的物品，放在**同一个请求**里一起生成。1.1.2 是每 20 件发一次请求。
-- 输出上限随件数增加：至少 8192，每件约 240 tokens，最多 32768。如果在 AI 接口设置里填了最大输出（默认 / 预设，或「分功能 API」里抽卡那一项），就以填的数为准；填得太小时，一次装不下的部分会被截断重试，请求次数就会多于一次，建议留空或填 16000 以上。
-- 被折叠的凡品（≥50 抽）和灵品（≥100 抽）只计数：
-  - 不发给模型、不生成名称和效果，合成一行「凡品杂物 ×N」/「灵品杂物 ×N」；
-  - 保底、累计抽数、回收 / 分解价值不变。
-- 只有模型回答被截断或不合格时才会重试（截断时把剩下的件数减半再发），这时会多于一次请求。失败时不扣系统点，保底不变。
-- 门槛沿用 1.1.2：50 抽以上折叠凡品（含 50 抽），100 抽以上再折叠灵品（含 100 抽）。
-- 十抽一结算不变。
+- Trong cả lượt rút thẻ, toàn bộ những vật phẩm không bị gộp sẽ được đưa vào **cùng một yêu cầu duy nhất** để tạo cùng lúc (ở bản 1.1.2 là cứ mỗi 20 món gửi một yêu cầu).
+- Giới hạn đầu ra (`max_tokens`) tự động tăng theo số lượng món: tối thiểu 8192, mỗi món khoảng 240 tokens, tối đa 32768. Nếu trong Cài đặt cổng AI có điền đầu ra tối đa (mặc định / cấu hình sẵn, hoặc mục Rút thẻ trong 「API phân nhánh tính năng」) thì sẽ lấy theo con số đã điền; nếu điền quá nhỏ khiến một lần không chứa hết thì phần bị cắt cụt sẽ tự động thử lại, khi đó số lần yêu cầu sẽ nhiều hơn một lần (khuyến nghị để trống hoặc điền từ 16000 trở lên).
+- Phàm phẩm (khi rút ≥50 lượt) và Linh phẩm (khi rút ≥100 lượt) bị gộp chỉ đếm số lượng:
+  - Không gửi cho mô hình, không tạo tên và hiệu quả riêng, gộp thành một dòng 「Tạp vật Phàm phẩm ×N」 / 「Tạp vật Linh phẩm ×N」;
+  - Bảo hiểm, tổng số lượt rút tích lũy, giá trị thu hồi / phân giải hoàn toàn không đổi.
+- Chỉ khi câu trả lời của mô hình bị cắt cụt hoặc không đạt chuẩn mới thử lại (khi bị cắt cụt sẽ giảm một nửa số món còn thiếu rồi gửi tiếp). Khi thất bại không trừ Điểm Hệ Thống, bảo hiểm không đổi.
+- Ngưỡng gộp giữ nguyên như bản 1.1.2: từ 50 lượt trở lên gộp Phàm phẩm (tính cả mốc 50 lượt), từ 100 lượt trở lên gộp thêm Linh phẩm (tính cả mốc 100 lượt).
+- Chế độ 10 lượt 1 lần quyết toán không đổi.
 
-## 改动的文件
+## Các tệp thay đổi
 
-- `src/lilith-float.js`：
-  - `floatEntry` / `wantFloat` 增加 `none`；
-  - 两个拖放目标（`binHtml` / `showBinAt` / `binHit` / `binHot`）；
-  - `closeFloats`（关闭）和 `swapFloat`（切换）；
-  - 右键菜单新增「切换成头像」；
-  - 新的关闭提示文字；`FLOAT_SIZES` 增加 p20 / p30 / p40。
-- `src/window-controls.js`：头像拖动时的两个目标、头像大小（`avatarSize`）、缩放后的落点换算。
-- `src/hub-settings.js`：「悬浮窗（切换样子）」四个选项、「关闭悬浮窗…」按钮、两个大小选项。
-- `src/settings.js`：新设置 `avatarSize: 'xl'`；扩展面板新增「显示头像」按钮。
-- `index.js`：「显示头像」按钮的动作。
-- `src/commerce.js`：经典折叠一次请求（`classicTokens`），去掉 `CLASSIC_BATCH`，更新模式说明。
-- `src/contracts.js`：版本 1.1.3，功能清单。
-- 版本号和文档：
-  - `manifest.json`、`package.json`、`package-lock.json`；
-  - `README.md`、`CHANGELOG.md`、`docs/FEATURE_MATRIX.md`；
-  - 本文件、`docs/ACCEPTANCE-1.1.3.md`。
-- 测试：
-  - 新增：`tests/v113.test.js`、`tests/native_v113.py`；
-  - 修改：`tests/version.test.js`、`tests/v083.test.js`、`tests/v100-feedback.test.js`、`tests/v112.test.js`、`tests/native_v112.py`、`tests/native_v100_feedback.py`；
-  - 修改的旧测试都按新行为调整：关闭 = `none`，两个目标，一次请求。
-- `FILELIST.sha256`：重新生成。
+- `src/lilith-float.js`: bổ sung `none` cho `floatEntry` / `wantFloat`; hai mục tiêu kéo thả (`binHtml` / `showBinAt` / `binHit` / `binHot`); `closeFloats` (đóng) và `swapFloat` (chuyển đổi); menu chuột phải thêm 「Đổi thành ảnh đại diện」; `FLOAT_SIZES` thêm p20 / p30 / p40.
+- `src/window-controls.js`: hai mục tiêu khi kéo ảnh đại diện, kích thước ảnh đại diện (`avatarSize`), quy đổi tọa độ thả sau khi thu phóng.
+- `src/hub-settings.js`: bốn tùy chọn cho 「Cửa sổ nổi (Chuyển đổi kiểu dáng)」, nút 「Đóng cửa sổ nổi…」, hai tùy chọn kích thước.
+- `src/settings.js`: cài đặt mới `avatarSize: 'xl'`; bảng tiện ích mở rộng thêm nút 「Hiển thị ảnh đại diện」.
+- `index.js`: hành động của nút 「Hiển thị ảnh đại diện」.
+- `src/commerce.js`: Gộp cổ điển gửi 1 yêu cầu (`classicTokens`), bỏ `CLASSIC_BATCH`, cập nhật thuyết minh chế độ.
+- `src/contracts.js`: phiên bản 1.1.3, danh sách tính năng.
+- Kiểm thử: thêm mới `tests/v113.test.js`, `tests/native_v113.py`; cập nhật các bài kiểm thử liên quan và tạo lại `FILELIST.sha256`.

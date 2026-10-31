@@ -9,14 +9,14 @@ import { errorLine } from './errors.js';
 
 export const MOODS = ['neutral', 'smile', 'shy', 'pout', 'surprised', 'wink', 'smug', 'sad'];
 export const VARIANTS = [
-    { id: 'neutral', label: '平静', file: 'neutral.webp', mood: 'neutral' },
-    { id: 'smile', label: '微笑', file: 'smile.webp', mood: 'smile' },
-    { id: 'shy', label: '害羞', file: 'shy.webp', mood: 'shy' },
-    { id: 'pout', label: '嘟嘴', file: 'pout.webp', mood: 'pout' },
-    { id: 'surprised', label: '惊讶', file: 'surprised.webp', mood: 'surprised' },
-    { id: 'wink', label: '眨眼', file: 'wink.webp', mood: 'wink' },
-    { id: 'smug', label: '坏笑', file: 'smug.webp', mood: 'smug' },
-    { id: 'sad', label: '委屈', file: 'sad.webp', mood: 'sad' },
+    { id: 'neutral', label: 'Bình thản', file: 'neutral.webp', mood: 'neutral' },
+    { id: 'smile', label: 'Mỉm cười', file: 'smile.webp', mood: 'smile' },
+    { id: 'shy', label: 'Ngượng ngùng', file: 'shy.webp', mood: 'shy' },
+    { id: 'pout', label: 'Bĩu môi', file: 'pout.webp', mood: 'pout' },
+    { id: 'surprised', label: 'Ngạc nhiên', file: 'surprised.webp', mood: 'surprised' },
+    { id: 'wink', label: 'Nháy mắt', file: 'wink.webp', mood: 'wink' },
+    { id: 'smug', label: 'Cười ranh mãnh', file: 'smug.webp', mood: 'smug' },
+    { id: 'sad', label: 'Tủi thân', file: 'sad.webp', mood: 'sad' },
 ];
 // 0.5.0: the three AI pose sheets (比心 / 抱臂 / 侧坐) were removed — they changed the original outfit. A retry with the
 // original full-body art as reference was refused by the image model, so no pose sheet ships; the original layered rig
@@ -24,9 +24,9 @@ export const VARIANTS = [
 export const POSES = [];
 // Heuristic mood -> model expression names (Cubism samples use f00…, many community models use words).
 const MOOD_HINTS = {
-    neutral: /^(f00|normal|neutral|default|idle|平静|普通)/i, smile: /(smile|happy|joy|laugh|f01|f07|笑|开心)/i,
-    shy: /(shy|blush|embarrass|f05|害羞|脸红)/i, pout: /(pout|angry|anger|mad|f03|生气|嘟)/i,
-    surprised: /(surpris|shock|f06|惊)/i, wink: /(wink|眨眼)/i, smug: /(smug|grin|evil|smirk|f02|坏笑|得意)/i, sad: /(sad|cry|tear|f04|伤心|委屈)/i,
+    neutral: /^(f00|normal|neutral|default|idle|平静|普通|bình thản)/i, smile: /(smile|happy|joy|laugh|f01|f07|笑|开心|mỉm cười|vui)/i,
+    shy: /(shy|blush|embarrass|f05|害羞|脸红|ngượng|đỏ mặt)/i, pout: /(pout|angry|anger|mad|f03|生气|嘟|bĩu môi|tức)/i,
+    surprised: /(surpris|shock|f06|惊|ngạc nhiên)/i, wink: /(wink|眨眼|nháy mắt)/i, smug: /(smug|grin|evil|smirk|f02|坏笑|得意|ranh mãnh|đắc ý)/i, sad: /(sad|cry|tear|f04|伤心|委屈|buồn|tủi thân)/i,
 };
 export function pickExpression(mood, names, map = {}) {
     if (map[mood] && names.includes(map[mood])) return map[mood];
@@ -42,7 +42,7 @@ const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 function loadScript(src, attrs = {}) {
     return new Promise((resolve, reject) => {
         const el = document.createElement('script'); el.src = src; el.async = false; Object.assign(el.dataset, attrs);
-        el.onload = () => resolve(el); el.onerror = () => reject(Error('脚本加载失败：' + src)); document.head.append(el);
+        el.onload = () => resolve(el); el.onerror = () => reject(Error('Tải script thất bại: ' + src)); document.head.append(el);
     });
 }
 
@@ -51,7 +51,7 @@ export class Portrait {
     get settings() { return this.app.settings; }
     stage() { return this.app.assistant?.shadow?.querySelector('.zt-stage') || null; }
     media() { return this.stage()?.querySelector('.zt-media') || null; }
-    describe() { return { rig: '原版分层参数动画', variants: 'AI 差分立绘（交叉淡入 1.0s）', live2d: this.l2d ? '真 Live2D：' + (this.l2d.name || '模型') : '真 Live2D（未加载：' + (this.error || '未配置模型') + '）' }[this.mode] || this.mode; }
+    describe() { return { rig: 'Hoạt ảnh tham số phân lớp nguyên bản', variants: 'Hình nhân vật biến thể AI (mờ dần chéo 1.0s)', live2d: this.l2d ? 'Live2D thực: ' + (this.l2d.name || 'Mô hình') : 'Live2D thực (chưa tải: ' + (this.error || 'chưa cấu hình mô hình') + ')' }[this.mode] || this.mode; }
     async start() {
         this.disposers.push(this.settings.onChange(k => { if (k === 'portrait' || k === 'live2d') this.applying = this.apply().catch(e => this.fail(e)); }));
         const c = this.app.adapter.context(), speak = () => this.speak();
@@ -65,12 +65,12 @@ export class Portrait {
         await this.apply();
     }
     async waitForStage() { for (let i = 0; i < 40 && !this.stage(); i++) await new Promise(r => setTimeout(r, 100)); }
-    fail(e) { this.error = e.message; console.warn('[诸天立绘]', e); globalThis.toastr?.warning(e.message + '；已回退到原版分层动画。', '诸天 · 立绘'); this.teardown(); this.mode = 'rig'; }
+    fail(e) { this.error = e.message; console.warn('[Chư Thiên · Hình nhân vật]', e); globalThis.toastr?.warning(e.message + '; đã quay lui về hoạt ảnh phân lớp nguyên bản.', 'Chư Thiên · Hình nhân vật'); this.teardown(); this.mode = 'rig'; }
     setMode(mode) { this.settings.patch('portrait', { mode }); }
     async apply() {
         const want = this.settings.get('portrait').mode || 'rig', gen = this.gen = (this.gen || 0) + 1;   // newest apply wins
         this.teardown(); this.mode = want; this.error = '';
-        if (!this.media()) { if (want !== 'rig') this.error = '莉莉丝窗口未运行'; return; }
+        if (!this.media()) { if (want !== 'rig') this.error = 'Cửa sổ Lilith chưa chạy'; return; }
         if (want === 'variants') this.mountVariants();
         else if (want === 'live2d') await this.mountLive2D(gen).catch(e => { if (gen === this.gen) this.fail(e); });
     }
@@ -128,21 +128,21 @@ export class Portrait {
     // ---------- Live2D ----------
     async ensureRuntime(coreUrl) {
         if (!globalThis.Live2DCubismCore) await loadScript(coreUrl || LIVE2D_CORE_URL, { zhutianLive2d: 'core' });
-        if (!globalThis.Live2DCubismCore) throw Error('Cubism Core 未能初始化');
+        if (!globalThis.Live2DCubismCore) throw Error('Không thể khởi tạo Cubism Core');
         if (this.constructor.PIXI) return this.constructor.PIXI;
         const previous = globalThis.PIXI;                       // do not clobber another extension's PixiJS
         if (previous && !String(previous.VERSION || '').startsWith('6.')) delete globalThis.PIXI;
         await loadScript(this.app.base + 'vendor/live2d/pixi.min.js', { zhutianLive2d: 'pixi' });
         await loadScript(this.app.base + 'vendor/live2d/cubism4.min.js', { zhutianLive2d: 'framework' });
         const ours = globalThis.PIXI;
-        if (!ours?.live2d?.Live2DModel) throw Error('Live2D 框架未能加载');
+        if (!ours?.live2d?.Live2DModel) throw Error('Không thể tải framework Live2D');
         if (previous && previous !== ours) globalThis.PIXI = previous;
         this.constructor.PIXI = ours; return ours;
     }
     async mountLive2D(gen = this.gen) {
         const s = this.settings.get('live2d');
-        if (!s.accepted) throw Error('尚未同意 Live2D Proprietary Software License（Cubism Core）');
-        if (!s.model) throw Error('尚未设置 .model3.json 地址');
+        if (!s.accepted) throw Error('Chưa đồng ý với Live2D Proprietary Software License (Cubism Core)');
+        if (!s.model) throw Error('Chưa đặt địa chỉ .model3.json');
         const PIXI = await this.ensureRuntime(s.coreUrl);
         if (gen !== this.gen) return;                                // a newer apply started while the runtime loaded
         const layer = this.layerBox('zt-live2d'); layer.style.pointerEvents = 'auto'; this.layer = layer;
@@ -151,7 +151,7 @@ export class Portrait {
         const app = new PIXI.Application({ view: canvas, backgroundAlpha: 0, antialias: true, autoDensity: true, resolution: Math.min(2, devicePixelRatio || 1), width: box().width, height: box().height });
         let model;
         try { model = await PIXI.live2d.Live2DModel.from(s.model, { autoInteract: false, autoUpdate: true }); }
-        catch (e) { app.destroy(true); layer.remove(); this.layer = null; throw Error('模型加载失败：' + (e?.message || e)); }
+        catch (e) { app.destroy(true); layer.remove(); this.layer = null; throw Error('Tải mô hình thất bại: ' + (e?.message || e)); }
         if (gen !== this.gen || this.layer !== layer) { model.destroy(); app.destroy(true); if (this.layer === layer) { layer.remove(); this.layer = null; } else layer.remove(); return; }
         app.stage.addChild(model);
         const natural = { width: model.width / model.scale.x, height: model.height / model.scale.y };
@@ -228,19 +228,19 @@ export class Portrait {
     // ---------- settings UI ----------
     openSettings() {
         const f = this.app.features, s = this.settings.get('live2d'), p = this.settings.get('portrait');
-        const el = f.popup(`<h3>莉莉丝立绘 · 真 Live2D / AI 差分</h3>
-<p><label>模式 <select data-f="mode" class="text_pole"><option value="rig">原版分层参数动画</option><option value="variants">AI 差分立绘</option><option value="live2d">真 Live2D</option></select></label></p>
-<fieldset><legend>AI 差分立绘</legend><label>姿势 <select data-f="variant" class="text_pole"><option value="default">标准站姿（表情随语气自动切换）</option>${POSES.map(x => `<option value="${x.id}">${x.label}${x.pending ? '（素材待补，暂回落标准站姿）' : ''}</option>`).join('')}</select></label>
-<label class="checkbox_label"><input type="checkbox" data-f="autoMood"> 表情跟随原版语气/点触</label></fieldset>
-<fieldset><legend>真 Live2D（Cubism 3/4/5）</legend>
-<p class="zt-note">Live2D 需要两样东西：<b>Cubism Core</b>（Live2D 公司的专有运行库，按其许可证不随扩展分发）与<b>绑定好的模型</b>（.model3.json + .moc3 + 贴图，必须在 Cubism Editor 中制作；程序无法凭空生成 .moc3）。把模型文件夹放进酒馆的 <code>data/&lt;用户&gt;/user/files/</code> 后填 <code>/user/files/…/xxx.model3.json</code>。</p>
-<label class="checkbox_label"><input type="checkbox" data-f="accepted"> 我已阅读并同意 <a href="https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html" target="_blank" rel="noopener">Live2D Proprietary Software License</a>（Cubism Core）</label>
-<label>Cubism Core 地址 <input data-f="coreUrl" class="text_pole" placeholder="${LIVE2D_CORE_URL}"></label>
-<label>模型 .model3.json 地址 <input data-f="model" class="text_pole" placeholder="/user/files/lilith/lilith.model3.json"></label>
-<label>缩放 <input type="number" step="0.05" min="0.2" max="4" data-f="scale" class="text_pole"></label> <label>水平偏移 <input type="number" step="0.02" min="-1" max="1" data-f="x" class="text_pole"></label> <label>垂直偏移 <input type="number" step="0.02" min="-1" max="1" data-f="y" class="text_pole"></label>
-<label class="checkbox_label"><input type="checkbox" data-f="follow"> 视线跟随鼠标</label> <label class="checkbox_label"><input type="checkbox" data-f="lipsync"> 口型同步（TTS 音量或文字节奏）</label>
+        const el = f.popup(`<h3>Hình nhân vật Lilith · Live2D thực / Biến thể AI</h3>
+<p><label>Chế độ <select data-f="mode" class="text_pole"><option value="rig">Hoạt ảnh tham số phân lớp nguyên bản</option><option value="variants">Hình nhân vật biến thể AI</option><option value="live2d">Live2D thực</option></select></label></p>
+<fieldset><legend>Hình nhân vật biến thể AI</legend><label>Tư thế <select data-f="variant" class="text_pole"><option value="default">Tư thế đứng tiêu chuẩn (biểu cảm tự động chuyển theo ngữ khí)</option>${POSES.map(x => `<option value="${x.id}">${x.label}${x.pending ? ' (tài nguyên đang chờ bổ sung, tạm quay về tư thế đứng tiêu chuẩn)' : ''}</option>`).join('')}</select></label>
+<label class="checkbox_label"><input type="checkbox" data-f="autoMood"> Biểu cảm đi theo ngữ khí / điểm chạm nguyên bản</label></fieldset>
+<fieldset><legend>Live2D thực (Cubism 3/4/5)</legend>
+<p class="zt-note">Live2D cần hai thứ: <b>Cubism Core</b> (thư viện chạy độc quyền của công ty Live2D, theo giấy phép không được phân phối kèm tiện ích mở rộng) và <b>mô hình đã gắn xương</b> (.model3.json + .moc3 + texture, bắt buộc phải làm trong Cubism Editor; chương trình không thể tự sinh ra .moc3 từ hư không). Hãy đặt thư mục mô hình vào <code>data/&lt;người_dùng&gt;/user/files/</code> của quán rượu rồi điền <code>/user/files/…/xxx.model3.json</code>.</p>
+<label class="checkbox_label"><input type="checkbox" data-f="accepted"> Tôi đã đọc và đồng ý với <a href="https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html" target="_blank" rel="noopener">Live2D Proprietary Software License</a> (Cubism Core)</label>
+<label>Địa chỉ Cubism Core <input data-f="coreUrl" class="text_pole" placeholder="${LIVE2D_CORE_URL}"></label>
+<label>Địa chỉ .model3.json của mô hình <input data-f="model" class="text_pole" placeholder="/user/files/lilith/lilith.model3.json"></label>
+<label>Thu phóng <input type="number" step="0.05" min="0.2" max="4" data-f="scale" class="text_pole"></label> <label>Lệch ngang <input type="number" step="0.02" min="-1" max="1" data-f="x" class="text_pole"></label> <label>Lệch dọc <input type="number" step="0.02" min="-1" max="1" data-f="y" class="text_pole"></label>
+<label class="checkbox_label"><input type="checkbox" data-f="follow"> Ánh mắt dõi theo con trỏ</label> <label class="checkbox_label"><input type="checkbox" data-f="lipsync"> Đồng bộ khẩu hình (âm lượng TTS hoặc nhịp văn bản)</label>
 <div class="zt-moodmap"></div>
-<div class="zt-popup-actions"><div class="menu_button" data-l2d="apply">应用并加载</div><div class="menu_button" data-l2d="psd">导出莉莉丝分层 PSD（供 Cubism Editor 绑定）</div></div>
+<div class="zt-popup-actions"><div class="menu_button" data-l2d="apply">Áp dụng và tải</div><div class="menu_button" data-l2d="psd">Xuất PSD phân lớp của Lilith (để gắn xương trong Cubism Editor)</div></div>
 <p class="zt-out"></p></fieldset>`, true);
         const vals = { mode: p.mode, variant: p.variant, autoMood: p.autoMood, ...s };
         for (const input of el.querySelectorAll('[data-f]')) { const k = input.dataset.f; if (input.type === 'checkbox') input.checked = !!vals[k]; else input.value = vals[k] ?? ''; }
@@ -262,21 +262,21 @@ export class Portrait {
         el.addEventListener('click', async e => {
             const act = e.target.closest('[data-l2d]')?.dataset.l2d; if (!act) return;
             try {
-                if (act === 'apply') { this.settings.patch('portrait', { mode: 'live2d' }); await this.applying; this.renderMoodMap(el); out.textContent = this.l2d ? `已加载：表情 ${this.l2d.expressions.length} 个（${this.l2d.expressions.join('、') || '无'}）；动作组 ${this.l2d.groups.join('、') || '无'}；点触区域 ${this.l2d.hitNames.join('、') || '无'}。` : '未加载：' + this.error; }
-                if (act === 'psd') { const { exportLayeredPsd } = await import('./psd-export.js'); const n = await exportLayeredPsd(this.app.original, this.app.base); out.textContent = `已导出 ${n} 个图层的 PSD。用 Cubism Editor 打开后即可切 ArtMesh、绑定参数，导出 .model3.json 再填回上面。`; }
-            } catch (err) { out.textContent = '未完成：' + errorLine(err); }
+                if (act === 'apply') { this.settings.patch('portrait', { mode: 'live2d' }); await this.applying; this.renderMoodMap(el); out.textContent = this.l2d ? `Đã tải: ${this.l2d.expressions.length} biểu cảm (${this.l2d.expressions.join(', ') || 'không có'}); nhóm chuyển động ${this.l2d.groups.join(', ') || 'không có'}; vùng điểm chạm ${this.l2d.hitNames.join(', ') || 'không có'}.` : 'Chưa tải: ' + this.error; }
+                if (act === 'psd') { const { exportLayeredPsd } = await import('./psd-export.js'); const n = await exportLayeredPsd(this.app.original, this.app.base); out.textContent = `Đã xuất PSD gồm ${n} lớp (layer). Sau khi mở bằng Cubism Editor có thể cắt ArtMesh, gắn tham số, xuất .model3.json rồi điền lại vào phía trên.`; }
+            } catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
         });
     }
     /** Mood → expression table for models whose expression names are opaque (f00…f07) or in another language. */
     renderMoodMap(el) {
         const box = el?.querySelector('.zt-moodmap'); if (!box) return;
-        if (!this.l2d) { box.innerHTML = '<p class="zt-note">加载模型后，这里会列出它的全部表情，可逐个指定莉莉丝的 8 种语气对应哪个表情。</p>'; return; }
+        if (!this.l2d) { box.innerHTML = '<p class="zt-note">Sau khi tải mô hình, tại đây sẽ liệt kê toàn bộ biểu cảm của nó, có thể chỉ định từng cái một xem 8 loại ngữ khí của Lilith tương ứng với biểu cảm nào.</p>'; return; }
         const names = this.l2d.expressions, map = this.settings.get('live2d').moodMap || {};
         const auto = m => pickExpression(m, names, {});
         const label = m => VARIANTS.find(v => v.mood === m)?.label || m;
         const unmatched = MOODS.filter(m => !map[m] && !auto(m)).length;
-        box.innerHTML = `<h4>表情映射</h4><p class="zt-note">${unmatched ? `有 ${unmatched} 种语气无法按表情名自动识别（模型表情名：${names.map(esc).join('、') || '无'}），请手动指定；选中即在模型上预览。` : '全部语气都已对应到模型表情。'}</p>
-<table class="zt-table"><tr><th>语气</th><th>模型表情</th></tr>${MOODS.map(m => `<tr><td>${label(m)}</td><td><select class="text_pole" data-mood-map="${m}"><option value="">${auto(m) ? '自动：' + esc(auto(m)) : '不切换'}</option>${names.map(n => `<option value="${esc(n)}"${map[m] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
+        box.innerHTML = `<h4>Ánh xạ biểu cảm</h4><p class="zt-note">${unmatched ? `Có ${unmatched} loại ngữ khí không thể tự động nhận diện theo tên biểu cảm (tên biểu cảm mô hình: ${names.map(esc).join(', ') || 'không có'}), vui lòng chỉ định thủ công; chọn xong sẽ xem trước ngay trên mô hình.` : 'Toàn bộ ngữ khí đều đã tương ứng với biểu cảm của mô hình.'}</p>
+<table class="zt-table"><tr><th>Ngữ khí</th><th>Biểu cảm mô hình</th></tr>${MOODS.map(m => `<tr><td>${label(m)}</td><td><select class="text_pole" data-mood-map="${m}"><option value="">${auto(m) ? 'Tự động: ' + esc(auto(m)) : 'Không chuyển đổi'}</option>${names.map(n => `<option value="${esc(n)}"${map[m] === n ? ' selected' : ''}>${esc(n)}</option>`).join('')}</select></td></tr>`).join('')}</table>`;
     }
     dispose() { (this.faceTimers || []).forEach(clearTimeout); clearTimeout(this.holdTimer); this.observer?.disconnect(); this.disposers.splice(0).forEach(f => f()); this.teardown(); }
 }

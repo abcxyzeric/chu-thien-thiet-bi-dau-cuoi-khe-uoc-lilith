@@ -59,13 +59,13 @@ test('random recruit: genre and target tier drawn locally, never above budget, r
     const g = normGroup({ 成员: [{ id: 'a', 名称: '叶清寒', 世界: '问剑宗', 档: 2 }], 候选历史: ['孙悟空'] });
     let r = 0; const seq = [0.0, 0.0, 0.99, 0.99];
     const a = recruitPrompt(g, { mode: 'rand', budget: 400, maxTier: affordableTier(400), rand: () => seq[r++] });
-    assert.equal(a.target, 1); assert.match(a.text, /必须是 1/); assert.match(a.text, /【不要选】叶清寒、孙悟空/);
+    assert.equal(a.target, 1); assert.match(a.text, /Bắt buộc phải là 1/); assert.match(a.text, /【Không được chọn】叶清寒, 孙悟空/);
     const b = recruitPrompt(g, { mode: 'rand', budget: 1e6, maxTier: affordableTier(1e6), rand: () => seq[r++] });
     assert.ok(b.target >= 3 && b.target <= 5, String(b.target)); assert.notEqual(a.seed, b.seed);
     const prompts = new Set(Array.from({ length: 20 }, () => recruitPrompt(g, { budget: 1e6, maxTier: 5 }).text));
     assert.ok(prompts.size > 3, 'consecutive random recruits send different prompts');
     const c = recruitPrompt(g, { mode: 'char', hint: '孙悟空', budget: 100, maxTier: 1 });
-    assert.equal(c.target, 0); assert.match(c.text, /如实评估/);
+    assert.equal(c.target, 0); assert.match(c.text, /Đánh giá trung thực/);
 });
 
 test('红包节奏: due every 3–4 rounds; the host asking overrides', () => {
@@ -81,18 +81,18 @@ test('红包节奏: due every 3–4 rounds; the host asking overrides', () => {
 test('story prompt carries the real source of what came through the group', () => {
     const g = normGroup({ 成员: [{ id: 'b', 名称: '白浅', 世界: '青丘', 档: 4 }], 入库记录: [{ t: 1, what: '青丘桃花酿（仙品）×1', src: '白浅@青丘', how: '红包' }] });
     const p = groupStoryPrompt(g, t => '档' + t);
-    assert.match(p, /真实入库记录/); assert.match(p, /青丘桃花酿（仙品）×1（白浅@青丘，红包）/);
-    assert.match(p, /不得改写成捡到、买到/); assert.match(p, /不要替群员编造/);
+    assert.match(p, /Bản ghi nhập kho thực tế/); assert.match(p, /青丘桃花酿（仙品）×1 \(白浅@青丘, 红包\)/);
+    assert.match(p, /không được sửa thành nhặt được, mua được/); assert.match(p, /không được tự bịa ra/);
     assert.equal(normGroup({ 入库记录: Array.from({ length: 30 }, (_, i) => ({ what: 'x' + i })) }).入库记录.length, 20);
 });
 
 test('worldbook: original 35 kept, outdated admin/TH notes patched, 聊天群 entry added', () => {
     const base = original.ZhuTianBuiltinRules, { rules, applied, skipped } = latestRules(base);
     assert.equal(base.length, 35); assert.equal(rules.length, 36); assert.equal(skipped.length, 0); assert.equal(applied.length, 4);   // 1.1.1: +2 神品保底
-    const e05 = rules.find(r => r.comment === '05｜核心｜状态栏规则补充').content;
-    assert.ok(!e05.includes('◆ 连点五次打开') && e05.includes('管理员控制台」打开') && e05.includes('不需要酒馆助手'));
-    const g = rules[35]; assert.equal(g.comment, '36｜联动｜诸天聊天群（插件）'); assert.equal(g.uid, 35); assert.equal(g.constant, true);
-    assert.ok(base.find(r => r.comment === '05｜核心｜状态栏规则补充').content.includes('◆ 连点五次打开'), 'vendor original untouched');
+    const e05 = rules.find(r => r.comment === '05｜Cốt lõi｜Bổ sung quy tắc thanh trạng thái').content;
+    assert.ok(!e05.includes('bấm liên tiếp 5 lần vào biểu tượng ◆') && e05.includes('Bảng điều khiển Quản trị viên」') && e05.includes('không cần Tavern Helper'));
+    const g = rules[35]; assert.equal(g.comment, '36｜Liên kết｜Nhóm Chat Chư Thiên (Tiện ích)'); assert.equal(g.uid, 35); assert.equal(g.constant, true);
+    assert.ok(base.find(r => r.comment === '05｜Cốt lõi｜Bổ sung quy tắc thanh trạng thái').content.includes('bấm liên tiếp 5 lần vào biểu tượng ◆'), 'vendor original untouched');
 });
 
 test('worldbook update merge: built-ins replaced, user entries and on/off kept', () => {
@@ -101,6 +101,6 @@ test('worldbook update merge: built-ins replaced, user entries and on/off kept',
     const r = mergeWorldbook(old, rules);
     const list = Object.values(r.book.entries);
     assert.equal(list.length, 37); assert.equal(r.replaced, 1); assert.equal(r.added, 35); assert.equal(r.kept, 1);
-    const e05 = list.find(e => e.comment === '05｜核心｜状态栏规则补充'); assert.equal(e05.disable, true); assert.notEqual(e05.content, 'old text');
+    const e05 = list.find(e => e.comment === '05｜Cốt lõi｜Bổ sung quy tắc thanh trạng thái'); assert.equal(e05.disable, true); assert.notEqual(e05.content, 'old text');
     assert.equal(list[36].comment, '我的规则'); assert.deepEqual(list.map(e => e.uid), list.map((_, i) => i));
 });

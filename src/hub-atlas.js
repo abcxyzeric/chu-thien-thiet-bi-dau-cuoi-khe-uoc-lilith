@@ -1,27 +1,30 @@
 import { listBonds } from './bonds-data.js';
-// 图谱 (0.7.0): the ledger as explorable spaces — 事件线 · 羁绊图 · 星图 · 能力树.
-// Every node is built from one real record and its detail panel shows that record's raw fields plus a way back to where
-// it lives (engine page / 聊天群 / 外挂管理 / the chat floor). Builders are pure (unit-tested); nothing here invents data:
-// empty ledgers give empty spaces with a hint.  The only write is 星图 → 记录穿越 (world.travel, locked commit + read-back).
+// Đồ phổ (0.7.0): sổ cái dưới dạng không gian có thể khám phá — Dòng sự kiện · Sơ đồ ràng buộc · Tinh đồ · Cây năng lực.
+// Mỗi nút được dựng từ một bản ghi thực tế và bảng chi tiết của nó hiển thị các trường gốc của bản ghi đó kèm theo lối quay về nơi
+// nó tồn tại (trang bộ máy / Nhóm chat / Quản lý phụ trợ / tầng trò chuyện). Các hàm dựng là thuần túy (được kiểm thử đơn vị); không có gì ở đây tự bịa dữ liệu:
+// sổ cái trống sẽ cho ra không gian trống kèm gợi ý. Thao tác ghi duy nhất là Tinh đồ → Ghi nhận xuyên không (world.travel, ghi có khóa + đọc ngược lại).
 import { esc, fmtNum } from './hub.js';
-import { TIERS } from './ledger-ops.js';
+import { TIERS, gradeLabel } from './ledger-ops.js';
 import { THEMES, classifyWorld, WORLD_TYPES } from './world.js';
 import { scrollWithin, resetPageScroll } from './page-scroll.js';
+import { BUILTIN_LABELS } from './hub-plugins.js';
 
 const num = (x, d = 0) => { const n = Number(x); return Number.isFinite(n) ? n : d; };
 const obj = x => (x && typeof x === 'object' && !Array.isArray(x) ? x : {});
 const arr = x => (Array.isArray(x) ? x : []);
 const str = s => String(s ?? '').trim();
 const cut = (s, n) => { const t = str(s); return [...t].length > n ? [...t].slice(0, n - 1).join('') + '…' : t; };
-const EMPTY = /^(|暂无|无|未知|未记录)$/;
+const EMPTY = /^(|暂无|无|未知|未记录|chưa có|không|chưa rõ|chưa ghi nhận)$/i;
 const BUILTIN = ['无限口袋', '诸天打手', '洞察之眼', '分身派遣', '随身洞天', '万物熔炉'];
+const builtinLabel = k => BUILTIN_LABELS[k] || k;
+const taskStateLabel = s => ({ 待接取: 'Chờ nhận', 进行中: 'Đang tiến hành', 已完成: 'Đã hoàn thành', 已失败: 'Đã thất bại', 已取消: 'Đã hủy' }[s] || s || 'Đang tiến hành');
 
 /** Original ztStageOf (statusbar 3.1 part 2), repeated here read-only for labels. */
 export function stageOf(s) {
-    if (!s) return '未入门'; if (s.入道) return '入道';
+    if (!s) return 'Chưa Nhập Môn'; if (s.入道) return 'Nhập Đạo';
     const e = Math.min(num(s.熟练度), 1e4);
-    const st = e >= 1e4 ? '宗师' : e >= 2e3 ? '精通' : e >= 500 ? '熟练' : e >= 100 ? '入门' : '未入门';
-    return num(s.上限) > 0 && num(s.熟练度) >= num(s.上限) && st !== '宗师' ? st + '·圆满' : st;
+    const st = e >= 1e4 ? 'Tông Sư' : e >= 2e3 ? 'Tinh Thông' : e >= 500 ? 'Thuần Thục' : e >= 100 ? 'Nhập Môn' : 'Chưa Nhập Môn';
+    return num(s.上限) > 0 && num(s.熟练度) >= num(s.上限) && st !== 'Tông Sư' ? st + '·Viên Mãn' : st;
 }
 const floorOf = x => { const n = Number(x); return Number.isFinite(n) && n >= 0 ? Math.floor(n) : null; };
 
@@ -40,16 +43,16 @@ export function buildEvents(z) {
         const y = 40 + i * ROW, src = str(t.来源), why = str(t.依据);
         const causeTask = [...byName.entries()].find(([n, tid]) => tid !== id && n && (src.includes(n) || why.includes(n) || src === tid))?.[1];
         const cid = 'cause:' + id;
-        nodes.push({ id: cid, type: 'cause', label: cut(src || (causeTask ? '承接任务' : t.类型 || '剧情'), 9), sub: why ? cut(why, 12) : '', x: X[0], y, rec: { 来源: src || '（未记录）', 依据: why || '（未记录）', 类型: t.类型 || '' }, src: `诸天系统.任务库.${id}.来源` });
-        edges.push({ from: cid, to: 'task:' + id, kind: 'cause', label: '起因' });
-        if (causeTask) edges.push({ from: 'task:' + causeTask, to: 'task:' + id, kind: 'chain', label: '承接' });
-        const state = t.状态 || '进行中';
-        nodes.push({ id: 'task:' + id, type: 'task', label: cut(t.名称 || id, 9), sub: state + (num(t.完成度) ? ` · ${num(t.完成度)}%` : ''), state, x: X[1], y, floor: f, world: worldAt(f), rec: { ID: id, ...t }, src: `诸天系统.任务库.${id}`, task: id });
+        nodes.push({ id: cid, type: 'cause', label: cut(src || (causeTask ? 'Tiếp nối nhiệm vụ' : t.类型 || 'Cốt truyện'), 9), sub: why ? cut(why, 12) : '', x: X[0], y, rec: { 来源: src || '(Chưa ghi nhận)', 依据: why || '(Chưa ghi nhận)', 类型: t.类型 || '' }, src: `诸天系统.任务库.${id}.来源` });
+        edges.push({ from: cid, to: 'task:' + id, kind: 'cause', label: 'Khởi nguồn' });
+        if (causeTask) edges.push({ from: 'task:' + causeTask, to: 'task:' + id, kind: 'chain', label: 'Tiếp nối' });
+        const state = t.状态 || '进行中', stateText = taskStateLabel(state);
+        nodes.push({ id: 'task:' + id, type: 'task', label: cut(t.名称 || id, 9), sub: stateText + (num(t.完成度) ? ` · ${num(t.完成度)}%` : ''), state, x: X[1], y, floor: f, world: worldAt(f), rec: { ID: id, ...t }, src: `诸天系统.任务库.${id}`, task: id });
         const r = paid[id];
-        if (r) { nodes.push({ id: 'result:' + id, type: 'receipt', label: `+${fmtNum(r.点数)} 点`, sub: '已结算' + (floorOf(r.楼层) !== null ? ` · #${r.楼层}` : ''), x: X[2], y, floor: floorOf(r.楼层), rec: { 任务: id, ...r }, src: `诸天系统.任务结算凭据.${id}`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'effect', label: '结算' }); }
-        else if (state === '已失败') { nodes.push({ id: 'result:' + id, type: 'fail', label: '失败', sub: '未结算', x: X[2], y, rec: { 任务: id, 状态: state }, src: `诸天系统.任务库.${id}.状态`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'fail', label: '失败' }); }
-        else if (state === '已完成') { nodes.push({ id: 'result:' + id, type: 'pending', label: '待结算', sub: str(t.奖励) ? cut(t.奖励, 10) : '', x: X[2], y, rec: { 任务: id, 奖励: t.奖励 || '' }, src: `诸天系统.任务库.${id}.奖励`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'effect', label: '完成' }); }
-        else if (str(t.奖励)) { nodes.push({ id: 'result:' + id, type: 'reward', label: cut(t.奖励, 9), sub: '奖励（未达成）', x: X[2], y, rec: { 任务: id, 奖励: t.奖励 }, src: `诸天系统.任务库.${id}.奖励`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'future', label: '奖励' }); }
+        if (r) { nodes.push({ id: 'result:' + id, type: 'receipt', label: `+${fmtNum(r.点数)} điểm`, sub: 'Đã quyết toán' + (floorOf(r.楼层) !== null ? ` · #${r.楼层}` : ''), x: X[2], y, floor: floorOf(r.楼层), rec: { 任务: id, ...r }, src: `诸天系统.任务结算凭据.${id}`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'effect', label: 'Quyết toán' }); }
+        else if (state === '已失败' || state === 'Đã thất bại') { nodes.push({ id: 'result:' + id, type: 'fail', label: 'Thất bại', sub: 'Chưa quyết toán', x: X[2], y, rec: { 任务: id, 状态: stateText }, src: `诸天系统.任务库.${id}.状态`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'fail', label: 'Thất bại' }); }
+        else if (state === '已完成' || state === 'Đã hoàn thành') { nodes.push({ id: 'result:' + id, type: 'pending', label: 'Chờ quyết toán', sub: str(t.奖励) ? cut(t.奖励, 10) : '', x: X[2], y, rec: { 任务: id, 奖励: t.奖励 || '' }, src: `诸天系统.任务库.${id}.奖励`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'effect', label: 'Hoàn thành' }); }
+        else if (str(t.奖励)) { nodes.push({ id: 'result:' + id, type: 'reward', label: cut(t.奖励, 9), sub: 'Phần thưởng (chưa đạt)', x: X[2], y, rec: { 任务: id, 奖励: t.奖励 }, src: `诸天系统.任务库.${id}.奖励`, task: id }); edges.push({ from: 'task:' + id, to: 'result:' + id, kind: 'future', label: 'Phần thưởng' }); }
     });
     // World bands behind the rows (from 万界足迹 首次楼层).
     const bands = []; let cur = null;
@@ -60,11 +63,11 @@ export function buildEvents(z) {
 /** 羁绊图: 宿主 at the centre; Lilith, 恋爱目标, 打手 and 聊天群 members around; edge weight = 好感 / 忠诚. */
 export function buildBonds(z) {
     const nodes = [], edges = [], cx = 300, cy = 230;
-    nodes.push({ id: 'host', type: 'host', label: '宿主', sub: TIERS[num(z?.宿主实力档)]?.n || '实力未确认', x: cx, y: cy, rec: { 当前世界: z?.当前世界 || '', 宿主实力档: z?.宿主实力档 ?? '' }, src: '诸天系统' });
+    nodes.push({ id: 'host', type: 'host', label: 'Ký chủ', sub: TIERS[num(z?.宿主实力档)]?.n || 'Thực lực chưa xác nhận', x: cx, y: cy, rec: { 当前世界: z?.当前世界 || '', 宿主实力档: z?.宿主实力档 ?? '' }, src: '诸天系统' });
     const ring = [];
-    ring.push({ id: 'lilith', type: 'lilith', label: '莉莉丝', sub: '系统契约', rec: { 身份: '诸天系统 · 契约者', 系统点: z?.系统点 ?? '' }, src: '诸天系统', w: 100, kind: 'system' });
-    for (const love of listBonds(z).filter(p => p.source === 'bond')) ring.push({ id: 'bond:p:' + love.id, bond: love.id, type: 'love', label: cut(love.姓名, 6), sub: `${love.世界} · 好感 ${num(love.好感度)}`, rec: love, src: '诸天系统.羁绊库', w: num(love.好感度), kind: 'love', dark: num(love.黑化值) > 0, name: str(love.姓名) });
-    arr(z?.打手).forEach((m, i) => { if (m?.名称) ring.push({ id: 'bond:s:' + i, type: 'summon', label: cut(m.名称, 6), sub: `忠诚 ${num(m.忠诚)}`, rec: m, src: `诸天系统.打手[${i}]`, w: num(m.忠诚), kind: 'summon', name: str(m.名称) }); });
+    ring.push({ id: 'lilith', type: 'lilith', label: 'Lilith', sub: 'Khế ước hệ thống', rec: { 身份: 'Hệ Thống Chư Thiên · Người ký khế ước', 系统点: z?.系统点 ?? '' }, src: '诸天系统', w: 100, kind: 'system' });
+    for (const love of listBonds(z).filter(p => p.source === 'bond')) ring.push({ id: 'bond:p:' + love.id, bond: love.id, type: 'love', label: cut(love.姓名, 6), sub: `${love.世界} · Hảo cảm ${num(love.好感度)}`, rec: love, src: '诸天系统.羁绊库', w: num(love.好感度), kind: 'love', dark: num(love.黑化值) > 0, name: str(love.姓名) });
+    arr(z?.打手).forEach((m, i) => { if (m?.名称) ring.push({ id: 'bond:s:' + i, type: 'summon', label: cut(m.名称, 6), sub: `Trung thành ${num(m.忠诚)}`, rec: m, src: `诸天系统.打手[${i}]`, w: num(m.忠诚), kind: 'summon', name: str(m.名称) }); });
     const g = obj(z?.聊天群);
     // 1.1.2: a member pulled into 羁绊 is drawn once, as that 羁绊 (inner ring); the others stay on the outer ring
     const pulled = new Set(arr(z?.羁绊库).map(p => p?.群员ID).filter(Boolean));
@@ -72,7 +75,7 @@ export function buildBonds(z) {
     const n = ring.length, inner = ring.filter(r => r.kind !== 'member'), outer = ring.filter(r => r.kind === 'member');
     const place = (list, R, off) => list.forEach((r, i) => { const a = off + (i / Math.max(1, list.length)) * Math.PI * 2; r.x = Math.round(cx + Math.cos(a) * R); r.y = Math.round(cy + Math.sin(a) * R * 0.82); });
     place(inner, outer.length ? 110 : 150, -Math.PI / 2); place(outer, 205, -Math.PI / 2 + Math.PI / Math.max(2, outer.length) + (inner.length % 2 ? 0 : 0.35));
-    for (const r of ring) { nodes.push(r); edges.push({ from: 'host', to: r.id, label: { system: '契约', love: '羁绊', summon: '打手', member: '群员' }[r.kind], kind: r.kind, w: Math.max(0, Math.min(100, r.w)), dark: !!r.dark }); }
+    for (const r of ring) { nodes.push(r); edges.push({ from: 'host', to: r.id, label: { system: 'Khế ước', love: 'Ràng buộc', summon: 'Tay đấm', member: 'Thành viên nhóm' }[r.kind], kind: r.kind, w: Math.max(0, Math.min(100, r.w)), dark: !!r.dark }); }
     // Tasks mentioning a person: listed in the detail panel (links back to 事件线).
     const lib = obj(z?.任务库);
     for (const r of ring) if (r.name) r.tasks = Object.entries(lib).filter(([, t]) => t && [t.名称, t.内容, t.来源, t.依据].some(s => str(s).includes(r.name))).map(([id, t]) => ({ id, 名称: t.名称 || id }));
@@ -94,14 +97,14 @@ export function buildStars(z) {
         const theme = isCur ? classifyWorld({ type: wtype, name: x.名称, currency: str(z?.当前货币) }) : wtype ? classifyWorld({ type: wtype, name: x.名称 }) : (x.主题 || classifyWorld({ name: x.名称 }));
         const guess = !wtype;
         // 0.9.3: an explicit 世界类型 is shown as written; a guess from the name is marked「?」so it reads as correctable.
-        nodes.push({ id: 'world:' + x.名称, type: 'world', label: cut(x.名称, 7), sub: (guess ? (THEMES[theme]?.label || '') + '?' : wtype) + (x.次数 > 1 ? ` · ${x.次数}次` : ''), guess, wtype, theme, x: Math.round(cx + Math.cos(a) * r), y: Math.round(cy + Math.sin(a) * r * 0.78), current: isCur, rec: x.synthetic ? { 名称: x.名称, 类型: x.类型 || '', 说明: '当前世界（尚无足迹记录）' } : x, src: x.synthetic ? '诸天系统.当前世界' : '诸天系统.万界足迹', name: x.名称, 次数: x.次数, floor: floorOf(x.首次楼层) });
+        nodes.push({ id: 'world:' + x.名称, type: 'world', label: cut(x.名称, 7), sub: (guess ? (THEMES[theme]?.label || '') + '?' : wtype) + (x.次数 > 1 ? ` · ${x.次数} lần` : ''), guess, wtype, theme, x: Math.round(cx + Math.cos(a) * r), y: Math.round(cy + Math.sin(a) * r * 0.78), current: isCur, rec: x.synthetic ? { 名称: x.名称, 类型: x.类型 || '', 说明: 'Thế giới hiện tại (chưa có bản ghi dấu chân)' } : x, src: x.synthetic ? '诸天系统.当前世界' : '诸天系统.万界足迹', name: x.名称, 次数: x.次数, floor: floorOf(x.首次楼层) });
         if (i > 0) edges.push({ from: 'world:' + list[i - 1].名称, to: 'world:' + x.名称, kind: 'path' });
     });
     const known = new Set(list.map(x => x.名称)), extra = new Map();
     for (const m of arr(obj(z?.聊天群).成员)) { const w = str(m?.世界); if (w && !known.has(w)) { if (!extra.has(w)) extra.set(w, []); extra.get(w).push(m); } }
     [...extra.entries()].forEach(([w, ms], i) => {
         const a = i / Math.max(1, extra.size) * Math.PI * 2 + 0.4, theme = classifyWorld({ name: w });
-        nodes.push({ id: 'world:' + w, type: 'rumor', label: cut(w, 7), sub: '群员出身', theme, x: Math.round(cx + Math.cos(a) * 250), y: Math.round(cy + Math.sin(a) * 175), rec: { 名称: w, 群员: ms.map(m => m.名称).join('、'), 说明: '未去过 · 来自聊天群成员的世界' }, src: '诸天系统.聊天群.成员', name: w, members: ms.map(m => m.id) });
+        nodes.push({ id: 'world:' + w, type: 'rumor', label: cut(w, 7), sub: 'Xuất thân thành viên nhóm', theme, x: Math.round(cx + Math.cos(a) * 250), y: Math.round(cy + Math.sin(a) * 175), rec: { 名称: w, 群员: ms.map(m => m.名称).join(', '), 说明: 'Chưa từng đặt chân tới · Đến từ thế giới của thành viên nhóm chat' }, src: '诸天系统.聊天群.成员', name: w, members: ms.map(m => m.id) });
     });
     return { nodes, edges, w: 600, h: 440 };
 }
@@ -110,16 +113,16 @@ export function buildStars(z) {
 export function buildTree(z, plugins = { off: [], custom: [] }) {
     const nodes = [], edges = [], leaves = [];
     const tier = num(z?.宿主实力档), br = [
-        { id: 'br:tier', label: '实力档', items: tier ? [{ id: 'tier', label: TIERS[tier]?.n || String(tier), sub: `第 ${tier} 档`, rec: { 宿主实力档: tier, ...TIERS[tier] }, src: '诸天系统.宿主实力档', go: 'art' }] : [{ id: 'tier', label: '未确认', sub: '在神通页确认', rec: { 宿主实力档: '未设置' }, src: '诸天系统.宿主实力档', go: 'art', dim: true }] },
-        { id: 'br:skill', label: '功法', items: arr(z?.功法库).filter(s => s?.名称).map(s => ({ id: 'skill:' + str(s.名称), label: cut(s.名称, 8), sub: stageOf(s) + (str(obj(z?.功法).名称) === str(s.名称) ? ' · 主修' : ''), rec: s, src: '诸天系统.功法库', go: 'cult', main: str(obj(z?.功法).名称) === str(s.名称) })) },
-        { id: 'br:art', label: '神通', items: arr(z?.神通记录).slice(-8).map((r, i, a) => ({ id: 'art:' + (arr(z?.神通记录).length - a.length + i), label: cut(r?.摘要 || r?.名称 || '神通', 8), sub: r?.时间 ? new Date(r.时间).toLocaleDateString('zh-CN') : '', rec: r, src: '诸天系统.神通记录', go: 'art' })) },
-        { id: 'br:plug', label: '外挂', items: [...BUILTIN.map(n => ({ id: 'plug:' + n, label: n, sub: plugins.off?.includes(n) ? '本聊天关闭' : '原版', rec: { 名称: n, 状态: plugins.off?.includes(n) ? '本聊天已关闭（外挂管理）' : '启用' }, src: '聊天元数据 · 外挂开关', go: 'plug', dim: plugins.off?.includes(n) })),
-            ...arr(plugins.custom).map(p => ({ id: 'plug:c:' + p.id, label: cut(p.name, 8), sub: '自拟 · ' + (p.grade || ''), rec: { 名称: p.name, 品级: p.grade, 类型: p.type, 规则: p.rule }, src: '外挂库（本机） · 本聊天已装载', go: 'plugmgr' }))] },
+        { id: 'br:tier', label: 'Bậc thực lực', items: tier ? [{ id: 'tier', label: TIERS[tier]?.n || String(tier), sub: `Bậc ${tier}`, rec: { 宿主实力档: tier, ...TIERS[tier] }, src: '诸天系统.宿主实力档', go: 'art' }] : [{ id: 'tier', label: 'Chưa xác nhận', sub: 'Xác nhận tại trang Thần thông', rec: { 宿主实力档: 'Chưa thiết lập' }, src: '诸天系统.宿主实力档', go: 'art', dim: true }] },
+        { id: 'br:skill', label: 'Công pháp', items: arr(z?.功法库).filter(s => s?.名称).map(s => ({ id: 'skill:' + str(s.名称), label: cut(s.名称, 8), sub: stageOf(s) + (str(obj(z?.功法).名称) === str(s.名称) ? ' · Chủ tu' : ''), rec: s, src: '诸天系统.功法库', go: 'cult', main: str(obj(z?.功法).名称) === str(s.名称) })) },
+        { id: 'br:art', label: 'Thần thông', items: arr(z?.神通记录).slice(-8).map((r, i, a) => ({ id: 'art:' + (arr(z?.神通记录).length - a.length + i), label: cut(r?.摘要 || r?.名称 || 'Thần thông', 8), sub: r?.时间 ? new Date(r.时间).toLocaleDateString('zh-CN') : '', rec: r, src: '诸天系统.神通记录', go: 'art' })) },
+        { id: 'br:plug', label: 'Phụ trợ', items: [...BUILTIN.map(n => ({ id: 'plug:' + n, label: builtinLabel(n), sub: plugins.off?.includes(n) ? 'Đã tắt ở trò chuyện này' : 'Bản gốc', rec: { 名称: builtinLabel(n), 状态: plugins.off?.includes(n) ? 'Đã tắt trong cuộc trò chuyện này (Quản lý phụ trợ)' : 'Đang bật' }, src: 'Siêu dữ liệu trò chuyện · Công tắc phụ trợ', go: 'plug', dim: plugins.off?.includes(n) })),
+            ...arr(plugins.custom).map(p => ({ id: 'plug:c:' + p.id, label: cut(p.name, 8), sub: 'Tự tạo · ' + gradeLabel(p.grade || ''), rec: { 名称: p.name, 品级: gradeLabel(p.grade), 类型: p.type, 规则: p.rule }, src: 'Kho phụ trợ (trên máy) · Đã trang bị ở trò chuyện này', go: 'plugmgr' }))] },
     ];
     const LEAF = 44; let y = 34;
-    nodes.push({ id: 'root', type: 'root', label: '宿主', sub: str(z?.当前世界) || '', x: 60, y: 0, rec: { 当前世界: z?.当前世界 || '', 系统点: z?.系统点 ?? '' }, src: '诸天系统' });
+    nodes.push({ id: 'root', type: 'root', label: 'Ký chủ', sub: str(z?.当前世界) || '', x: 60, y: 0, rec: { 当前世界: z?.当前世界 || '', 系统点: z?.系统点 ?? '' }, src: '诸天系统' });
     for (const b of br) {
-        const start = y, items = b.items.length ? b.items : [{ id: b.id + ':empty', label: '暂无', sub: '', rec: { 说明: '账本里还没有记录' }, src: '', dim: true, empty: true }];
+        const start = y, items = b.items.length ? b.items : [{ id: b.id + ':empty', label: 'Chưa có', sub: '', rec: { 说明: 'Trong sổ cái chưa có bản ghi nào' }, src: '', dim: true, empty: true }];
         for (const it of items) { nodes.push({ ...it, type: 'leaf', branch: b.id, x: 390, y }); edges.push({ from: b.id, to: it.id, kind: 'leaf' }); leaves.push(it); y += LEAF; }
         nodes.push({ id: b.id, type: 'branch', label: b.label, sub: `${b.items.length}`, x: 210, y: Math.round((start + y - LEAF) / 2), rec: { 分支: b.label, 数量: b.items.length }, src: '' });
         edges.push({ from: 'root', to: b.id, kind: 'branch' });
@@ -130,14 +133,14 @@ export function buildTree(z, plugins = { off: [], custom: [] }) {
 }
 
 // ---------- the pages ----------
-const PAGES = [['events', '事件线', 'task'], ['bonds', '羁绊图', 'heart'], ['stars', '星图', 'atlas'], ['tree', '能力树', 'lotus']];
+const PAGES = [['events', 'Dòng sự kiện', 'task'], ['bonds', 'Sơ đồ ràng buộc', 'heart'], ['stars', 'Tinh đồ', 'atlas'], ['tree', 'Cây năng lực', 'lotus']];
 const HINT = {
-    events: '还没有任务记录。AI 发布任务后，这里会按楼层画出 起因 → 任务 → 结算。',
-    bonds: '只有你和莉莉丝。锁定羁绊、召唤打手或邀请群员后会出现在这里（群员可在这里「拉入羁绊」）。',
-    stars: '还没有世界记录。AI 写入「当前世界」或在下方记录一次穿越后，星图会点亮。',
+    events: 'Chưa có bản ghi nhiệm vụ nào. Sau khi AI phát hành nhiệm vụ, nơi này sẽ vẽ theo từng tầng: Khởi nguồn → Nhiệm vụ → Quyết toán.',
+    bonds: 'Hiện chỉ có bạn và Lilith. Sau khi khóa mục tiêu ràng buộc, triệu hồi tay đấm hoặc mời thành viên nhóm chat sẽ xuất hiện tại đây (thành viên nhóm có thể bấm 「Kéo vào Ràng buộc」 ngay tại đây).',
+    stars: 'Chưa có bản ghi thế giới nào. Sau khi AI ghi vào 「Thế giới hiện tại」 hoặc bạn ghi nhận một lần xuyên không ở bên dưới, Tinh đồ sẽ sáng lên.',
     tree: '',
 };
-const TYPE_LABEL = { cause: '起因', task: '任务', receipt: '结算凭据', fail: '失败', pending: '待结算', reward: '奖励', host: '宿主', lilith: '莉莉丝', love: '羁绊对象', summon: '打手', member: '群员', world: '世界', rumor: '传闻世界', root: '宿主', branch: '分支', leaf: '记录' };
+const TYPE_LABEL = { cause: 'Khởi nguồn', task: 'Nhiệm vụ', receipt: 'Chứng từ quyết toán', fail: 'Thất bại', pending: 'Chờ quyết toán', reward: 'Phần thưởng', host: 'Ký chủ', lilith: 'Lilith', love: 'Đối tượng ràng buộc', summon: 'Tay đấm', member: 'Thành viên nhóm', world: 'Thế giới', rumor: 'Thế giới đồn đại', root: 'Ký chủ', branch: 'Nhánh', leaf: 'Bản ghi' };
 
 export class HubAtlas {
     constructor(app) { this.app = app; this.sel = {}; this.els = {}; this.disposers = []; this.graphs = {}; }
@@ -145,7 +148,7 @@ export class HubAtlas {
     ledger() { try { const z = this.app.bridge.getVariables({ type: 'chat' })?.诸天系统; return z && typeof z === 'object' ? z : null; } catch { return null; } }
     start() {
         const hub = this.hub; if (!hub) return this;
-        for (const [id, label, ic] of PAGES) hub.addNav('图谱', id, label, ic, { title: label, render: el => { this.els[id] = el; this.paint(id, true); } });
+        for (const [id, label, ic] of PAGES) hub.addNav('Đồ phổ', id, label, ic, { title: label, render: el => { this.els[id] = el; this.paint(id, true); } });
         const repaint = () => { const p = hub.page; if (hub.isOpen && this.els[p]) this.paint(p); };
         this.disposers.push(this.app.bridge.onChange(k => { if (k === 'chat') repaint(); }));
         this.disposers.push(this.app.adapter.subscribe(() => { this.sel = {}; repaint(); }));
@@ -164,7 +167,7 @@ export class HubAtlas {
     paint(id, force = false) {
         const el = this.els[id]; if (!el || (!force && this.hub.page !== id)) return;
         const z = this.ledger();
-        if (!z) { el.innerHTML = `<div class="zt-empty">当前聊天没有诸天账本。<br>在「设置 → 新聊天初始化」创建后，图谱会从账本自动生成。</div>`; return; }
+        if (!z) { el.innerHTML = `<div class="zt-empty">Cuộc trò chuyện hiện tại chưa có sổ cái Chư Thiên.<br>Sau khi tạo tại 「Cài đặt → Khởi tạo cuộc trò chuyện mới」, Đồ phổ sẽ tự động được dựng từ sổ cái.</div>`; return; }
         const g = this.graph(id, z); this.graphs[id] = g;
         const keep = el.querySelector('.zt-atlas-canvas')?.scrollTop || 0, fx = el.querySelector('.zt-atlas-fix');
         // 0.9.3: a ledger write while the 更正 box is open repaints the page — keep what the user was typing.
@@ -183,13 +186,13 @@ ${id === 'events' ? this.historyList() : ''}${id === 'stars' ? this.travelForm(z
         if (!el.__ztBound) { el.__ztBound = true; this.bind(el, id); }
     }
     caption(id, g, z) {
-        if (id === 'events') return `${Object.keys(obj(z.任务库)).length} 个任务 · ${Object.keys(obj(z.任务结算凭据)).length} 条结算凭据 · 数据：任务库 / 任务结算凭据 / 万界足迹`;
-        if (id === 'bonds') return `${g.count} 条羁绊 · 数据：恋爱目标 / 打手 / 聊天群.成员`;
-        if (id === 'stars') return `${g.nodes.filter(n => n.type === 'world').length} 个到访世界 · 当前：${str(z.当前世界) || '未记录'} · 数据：当前世界 / 万界足迹`;
-        return `实力档 · 功法 ${arr(z.功法库).length} · 神通记录 ${arr(z.神通记录).length} · 外挂`;
+        if (id === 'events') return `${Object.keys(obj(z.任务库)).length} nhiệm vụ · ${Object.keys(obj(z.任务结算凭据)).length} chứng từ quyết toán · Dữ liệu: Kho nhiệm vụ / Chứng từ quyết toán nhiệm vụ / Dấu chân Vạn giới`;
+        if (id === 'bonds') return `${g.count} mối ràng buộc · Dữ liệu: Mục tiêu yêu đương / Tay đấm / Nhóm chat.Thành viên`;
+        if (id === 'stars') return `${g.nodes.filter(n => n.type === 'world').length} thế giới đã ghé thăm · Hiện tại: ${str(z.当前世界) || 'Chưa ghi nhận'} · Dữ liệu: Thế giới hiện tại / Dấu chân Vạn giới`;
+        return `Bậc thực lực · Công pháp ${arr(z.功法库).length} · Lịch sử thần thông ${arr(z.神通记录).length} · Phụ trợ`;
     }
     legend(id) {
-        const L = { events: [['cause', '起因'], ['task', '任务'], ['receipt', '结算'], ['fail', '失败']], bonds: [['love', '羁绊'], ['summon', '打手'], ['member', '群员']], stars: [['world', '到访'], ['current', '当前'], ['rumor', '传闻']], tree: [['branch', '分支'], ['leaf', '记录']] }[id] || [];
+        const L = { events: [['cause', 'Khởi nguồn'], ['task', 'Nhiệm vụ'], ['receipt', 'Quyết toán'], ['fail', 'Thất bại']], bonds: [['love', 'Ràng buộc'], ['summon', 'Tay đấm'], ['member', 'Thành viên nhóm']], stars: [['world', 'Đã ghé thăm'], ['current', 'Hiện tại'], ['rumor', 'Đồn đại']], tree: [['branch', 'Nhánh'], ['leaf', 'Bản ghi']] }[id] || [];
         return `<div class="zt-atlas-legend">${L.map(([k, t]) => `<span data-k="${k}"><i></i>${t}</span>`).join('')}</div>`;
     }
     svg(id, g) {
@@ -213,55 +216,55 @@ ${id === 'events' ? this.historyList() : ''}${id === 'stars' ? this.travelForm(z
                 : id === 'stars' ? `<circle r="${n.current ? 15 : n.type === 'rumor' ? 7 : 11}"/>${n.current ? '<circle r="24" class="zt-halo"/>' : ''}`
                     : `<circle r="${n.type === 'host' ? 30 : n.type === 'lilith' ? 24 : 20}"/>${n.descended ? '<circle r="28" class="zt-halo"/>' : ''}`;
             const ty = r ? [-3, 12] : id === 'stars' ? [n.current ? 34 : 26, n.current ? 47 : 39] : [n.type === 'host' ? 4 : 36, n.type === 'host' ? 18 : 49];
-            const aria = `${TYPE_LABEL[n.type] || ''}：${n.label}${n.sub ? '，' + n.sub : ''}`;
+            const aria = `${TYPE_LABEL[n.type] || ''}: ${n.label}${n.sub ? ', ' + n.sub : ''}`;
             return `<g class="zt-node" tabindex="0" role="button" aria-label="${esc(aria)}" data-node="${esc(n.id)}" data-type="${n.type}"${n.state ? ` data-state="${esc(n.state)}"` : ''}${n.theme ? ` data-theme="${n.theme}"` : ''}${n.current ? ' data-current="1"' : ''}${n.dim ? ' data-dim="1"' : ''}${n.main ? ' data-main="1"' : ''}${sel === n.id ? ' data-sel="1"' : ''}${sel && !near.has(n.id) && sel !== n.id ? ' data-far="1"' : ''} transform="translate(${n.x} ${n.y})">${shape}<text y="${ty[0]}" class="l">${esc(n.label)}</text>${n.sub ? `<text y="${ty[1]}" class="s">${esc(n.sub)}</text>` : ''}</g>`;
         };
-        return `<svg class="zt-atlas-svg" viewBox="0 0 ${g.w} ${g.h}" style="aspect-ratio:${g.w}/${g.h}" role="group" aria-label="图谱节点，Tab 或方向键切换，回车查看">${id === 'stars' ? this.starfield(g) : ''}${bands}<g class="zt-edges">${g.edges.map(path).join('')}</g><g class="zt-nodes">${g.nodes.map(node).join('')}</g></svg>`;
+        return `<svg class="zt-atlas-svg" viewBox="0 0 ${g.w} ${g.h}" style="aspect-ratio:${g.w}/${g.h}" role="group" aria-label="Các nút đồ phổ, nhấn Tab hoặc phím mũi tên để chuyển đổi, nhấn Enter để xem">${id === 'stars' ? this.starfield(g) : ''}${bands}<g class="zt-edges">${g.edges.map(path).join('')}</g><g class="zt-nodes">${g.nodes.map(node).join('')}</g></svg>`;
     }
     starfield(g) { let s = 7, out = ''; const r = () => (s = (s * 9301 + 49297) % 233280) / 233280; for (let i = 0; i < 60; i++) out += `<circle class="zt-dust" cx="${(r() * g.w).toFixed(0)}" cy="${(r() * g.h).toFixed(0)}" r="${(r() * 1.3 + .3).toFixed(1)}"/>`; return `<g aria-hidden="true">${out}</g>`; }
     detail(id, g, z) {
         const n = g.nodes.find(x => x.id === this.sel[id]);
-        if (!n) return `<div class="zt-atlas-tip"><b>选择一个节点</b><p>点击或用 Tab / 方向键选中节点，这里会显示它对应的账本原始记录和跳转。</p></div>`;
+        if (!n) return `<div class="zt-atlas-tip"><b>Chọn một nút</b><p>Bấm chuột hoặc dùng phím Tab / phím mũi tên để chọn nút, nơi này sẽ hiển thị bản ghi sổ cái gốc tương ứng và các lối tắt chuyển trang.</p></div>`;
         const rows = Object.entries(obj(n.rec)).filter(([k, v]) => v !== '' && v != null && typeof v !== 'function').slice(0, 14)
             .map(([k, v]) => `<div class="zt-kv"><span>${esc(k)}</span><b>${esc(typeof v === 'object' ? JSON.stringify(v) : k === '首次' || k === '最近' || k === '时间' ? (num(v) ? new Date(num(v)).toLocaleString('zh-CN') : v) : String(v))}</b></div>`).join('');
         const by = new Map(g.nodes.map(x => [x.id, x]));
         const links = [...g.edges.filter(e => e.to === n.id).map(e => ['←', e, by.get(e.from)]), ...g.edges.filter(e => e.from === n.id).map(e => ['→', e, by.get(e.to)])].filter(x => x[2]);
         const acts = this.actions(id, n, z);
         return `<div class="zt-atlas-rec"><small>${esc(TYPE_LABEL[n.type] || '')}${n.src ? ` · <code>${esc(n.src)}</code>` : ''}</small><h4>${esc(n.rec?.名称 || n.rec?.姓名 || n.label)}</h4>
-<div class="zt-kvs">${rows || '<p class="zt-sub">没有更多字段。</p>'}</div>
-${links.length ? `<div class="zt-atlas-links"><small>因果 / 关联</small>${links.map(([d, e, o]) => `<button type="button" class="zt-chip" data-focus="${esc(o.id)}">${d} ${esc(e.label || TYPE_LABEL[o.type] || '')}：${esc(o.label)}</button>`).join('')}</div>` : ''}
-${n.tasks?.length ? `<div class="zt-atlas-links"><small>相关任务</small>${n.tasks.slice(0, 6).map(t => `<button type="button" class="zt-chip" data-jump-task="${esc(t.id)}">${esc(cut(t.名称, 10))}</button>`).join('')}</div>` : ''}
+<div class="zt-kvs">${rows || '<p class="zt-sub">Không có thêm trường nào khác.</p>'}</div>
+${links.length ? `<div class="zt-atlas-links"><small>Nhân quả / Liên kết</small>${links.map(([d, e, o]) => `<button type="button" class="zt-chip" data-focus="${esc(o.id)}">${d} ${esc(e.label || TYPE_LABEL[o.type] || '')}: ${esc(o.label)}</button>`).join('')}</div>` : ''}
+${n.tasks?.length ? `<div class="zt-atlas-links"><small>Nhiệm vụ liên quan</small>${n.tasks.slice(0, 6).map(t => `<button type="button" class="zt-chip" data-jump-task="${esc(t.id)}">${esc(cut(t.名称, 10))}</button>`).join('')}</div>` : ''}
 <div class="zt-actions">${acts}</div>${n.type === 'world' ? this.fixForm(n) : ''}</div>`;
     }
     /** 0.9.3 星图 → 更正: the world name / type was detected wrong (AI wrote it, or the name guess picked a theme). */
     fixForm(n) {
-        const how = n.guess ? `按名称自动猜测为「${THEMES[n.theme]?.label || '诸天'}」，可能不准` : `世界类型：${n.wtype}`;
-        return `<details class="zt-atlas-fix"${n.current && n.guess ? ' open' : ''}><summary>识别错了？更正这个世界</summary>
-<p class="zt-sub">${esc(how)}。更正只改账本里的名称 / 类型（加锁写入并读回），不算一次穿越，也不播放演出。</p>
-<div class="zt-g-row"><input type="text" data-f="fix-name" maxlength="30" value="${esc(n.name)}" aria-label="更正后的世界名"><select data-f="fix-type" aria-label="更正后的世界类型"><option value="">类型（自动判断）</option>${[...WORLD_TYPES, ...(n.wtype && !WORLD_TYPES.includes(n.wtype) ? [n.wtype] : [])].map(t => `<option${t === n.wtype ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select></div>
-<div class="zt-actions"><button type="button" class="zt-btn small primary" data-fix="${esc(n.name)}">保存更正</button>${n.current ? '' : `<button type="button" class="zt-btn small danger" data-forget="${esc(n.name)}">从足迹删除</button>`}</div></details>`;
+        const how = n.guess ? `Tự động đoán theo tên là 「${THEMES[n.theme]?.label || 'Chư Thiên'}」, có thể chưa chuẩn` : `Loại thế giới: ${n.wtype}`;
+        return `<details class="zt-atlas-fix"${n.current && n.guess ? ' open' : ''}><summary>Nhận diện sai? Đính chính thế giới này</summary>
+<p class="zt-sub">${esc(how)}. Đính chính chỉ sửa tên / loại trong sổ cái (khóa và ghi rồi đọc ngược lại), không tính là một lần xuyên không và cũng không phát diễn xuất.</p>
+<div class="zt-g-row"><input type="text" data-f="fix-name" maxlength="30" value="${esc(n.name)}" aria-label="Tên thế giới sau khi đính chính"><select data-f="fix-type" aria-label="Loại thế giới sau khi đính chính"><option value="">Loại (tự động phán đoán)</option>${[...WORLD_TYPES, ...(n.wtype && !WORLD_TYPES.includes(n.wtype) ? [n.wtype] : [])].map(t => `<option${t === n.wtype ? ' selected' : ''}>${esc(t)}</option>`).join('')}</select></div>
+<div class="zt-actions"><button type="button" class="zt-btn small primary" data-fix="${esc(n.name)}">Lưu đính chính</button>${n.current ? '' : `<button type="button" class="zt-btn small danger" data-forget="${esc(n.name)}">Xóa khỏi dấu chân</button>`}</div></details>`;
     }
     actions(id, n, z) {
         const b = (attr, label, primary = false) => `<button type="button" class="zt-btn small${primary ? ' primary' : ''}" ${attr}>${esc(label)}</button>`;
         const out = [];
-        if (n.task) out.push(b(`data-open-task="${esc(n.task)}"`, '在任务页定位', true));
-        if (n.floor !== null && n.floor !== undefined) out.push(b(`data-floor="${n.floor}"`, `跳到楼层 #${n.floor}`));
-        if (n.bond) out.push(b(`data-open-bond="${esc(n.bond)}"`, '查看此人物羁绊', true));
-        if (n.member) out.push(b(`data-pull-bond="${esc(n.member)}"`, '拉入羁绊', true), b(`data-open-member="${esc(n.member)}"`, '在聊天群查看'));
-        if (n.type === 'love' || n.type === 'summon') out.push(b(`data-go="${n.type === 'love' ? 'bond' : 'plug'}"`, n.type === 'love' ? '打开羁绊页' : '打开外挂页（诸天打手）', true));
-        if (n.type === 'lilith') out.push(b('data-go="work"', '去工作台'));
-        if (n.go) out.push(b(`data-go="${n.go}"`, { art: '打开神通页', cult: '打开修行页', plug: '打开外挂页', plugmgr: '打开外挂管理' }[n.go] || '打开', true));
-        if ((n.type === 'world' || n.type === 'rumor') && !n.current) out.push(b(`data-travel="${esc(n.name)}"`, '记录穿越到这里', true));
-        if (n.members?.length) out.push(b(`data-open-member="${esc(n.members[0])}"`, '查看群员'));
+        if (n.task) out.push(b(`data-open-task="${esc(n.task)}"`, 'Định vị ở trang Nhiệm vụ', true));
+        if (n.floor !== null && n.floor !== undefined) out.push(b(`data-floor="${n.floor}"`, `Nhảy tới tầng #${n.floor}`));
+        if (n.bond) out.push(b(`data-open-bond="${esc(n.bond)}"`, 'Xem ràng buộc của nhân vật này', true));
+        if (n.member) out.push(b(`data-pull-bond="${esc(n.member)}"`, 'Kéo vào Ràng buộc', true), b(`data-open-member="${esc(n.member)}"`, 'Xem trong Nhóm chat'));
+        if (n.type === 'love' || n.type === 'summon') out.push(b(`data-go="${n.type === 'love' ? 'bond' : 'plug'}"`, n.type === 'love' ? 'Mở trang Ràng buộc' : 'Mở trang Phụ trợ (Tay Đấm Chư Thiên)', true));
+        if (n.type === 'lilith') out.push(b('data-go="work"', 'Tới Bàn làm việc'));
+        if (n.go) out.push(b(`data-go="${n.go}"`, { art: 'Mở trang Thần thông', cult: 'Mở trang Tu hành', plug: 'Mở trang Phụ trợ', plugmgr: 'Mở Quản lý phụ trợ' }[n.go] || 'Mở', true));
+        if ((n.type === 'world' || n.type === 'rumor') && !n.current) out.push(b(`data-travel="${esc(n.name)}"`, 'Ghi nhận xuyên không tới đây', true));
+        if (n.members?.length) out.push(b(`data-open-member="${esc(n.members[0])}"`, 'Xem thành viên nhóm'));
         return out.join('');
     }
     historyList() {
         const h = this.app.fx?.history || [];
-        return `<section class="zt-card zt-atlas-hist"><h3>本次会话的演出 <small>只在账本读回确认后播放；被回滚的会标为“未入账”</small></h3>${h.length ? h.slice(0, 12).map((x, i) => `<div class="zt-row" data-state="${x.state}"><span><b>${esc(x.title)}</b> ${esc(x.detail)}</span><span class="zt-sub">${x.state === 'dropped' ? '未入账（已回滚）' : '已确认'} · ${new Date(x.t).toLocaleTimeString('zh-CN')}</span>${x.state !== 'dropped' ? `<button type="button" class="zt-btn small" data-hist="${i}">查看</button>` : ''}</div>`).join('') : '<p class="zt-sub">还没有。任务结算、穿越、突破、抽取、入库时会记在这里。</p>'}</section>`;
+        return `<section class="zt-card zt-atlas-hist"><h3>Diễn xuất trong phiên này <small>Chỉ phát sau khi sổ cái đã đọc ngược xác nhận; mục bị hoàn tác sẽ đánh dấu là “Chưa ghi sổ”</small></h3>${h.length ? h.slice(0, 12).map((x, i) => `<div class="zt-row" data-state="${x.state}"><span><b>${esc(x.title)}</b> ${esc(x.detail)}</span><span class="zt-sub">${x.state === 'dropped' ? 'Chưa ghi sổ (đã hoàn tác)' : 'Đã xác nhận'} · ${new Date(x.t).toLocaleTimeString('zh-CN')}</span>${x.state !== 'dropped' ? `<button type="button" class="zt-btn small" data-hist="${i}">Xem</button>` : ''}</div>`).join('') : '<p class="zt-sub">Chưa có. Khi quyết toán nhiệm vụ, xuyên không, đột phá, rút thẻ, nhập kho sẽ được ghi lại tại đây.</p>'}</section>`;
     }
     travelForm(z) {
-        return `<section class="zt-card zt-atlas-travel"><h3>记录穿越 <small>写入 当前世界 / 世界类型 / 万界足迹（加锁写入并读回），界面主题随之切换</small></h3>
-<div class="zt-g-row"><input type="text" data-f="world" maxlength="30" placeholder="世界名，例如：夜之城" aria-label="世界名"><select data-f="wtype" aria-label="世界类型"><option value="">类型（自动判断）</option>${['仙侠', '赛博', '诡异', '都市', '西幻', '末世', '其他'].map(t => `<option>${t}</option>`).join('')}</select><button type="button" class="zt-btn primary small" data-travel-form>记录穿越</button></div></section>`;
+        return `<section class="zt-card zt-atlas-travel"><h3>Ghi nhận xuyên không <small>Ghi vào Thế giới hiện tại / Loại thế giới / Dấu chân Vạn giới (khóa và ghi rồi đọc ngược lại), chủ đề giao diện sẽ đổi theo</small></h3>
+<div class="zt-g-row"><input type="text" data-f="world" maxlength="30" placeholder="Tên thế giới, ví dụ: Night City" aria-label="Tên thế giới"><select data-f="wtype" aria-label="Loại thế giới"><option value="">Loại (tự động phán đoán)</option>${WORLD_TYPES.map(t => `<option>${t}</option>`).join('')}</select><button type="button" class="zt-btn primary small" data-travel-form>Ghi nhận xuyên không</button></div></section>`;
     }
     select(id, nodeId, { focus = true, speak = true } = {}) {
         this.sel[id] = nodeId; this.paint(id, true);
@@ -293,7 +296,7 @@ ${n.tasks?.length ? `<div class="zt-atlas-links"><small>相关任务</small>${n.
             if (d.openTask) return this.openTask(d.openTask);
             if (d.floor) return this.jumpFloor(Number(d.floor));
             if (d.openBond) return this.app.bonds?.open(d.openBond);
-            if (d.pullBond) { t.disabled = true; try { await this.app.bonds?.pull(d.pullBond); } catch (err) { this.hub.toast('拉入羁绊失败：' + err.message, 6000); } finally { t.disabled = false; } return; }
+            if (d.pullBond) { t.disabled = true; try { await this.app.bonds?.pull(d.pullBond); } catch (err) { this.hub.toast('Kéo vào Ràng buộc thất bại: ' + err.message, 6000); } finally { t.disabled = false; } return; }
             if (d.openMember) { this.hub.go('group'); const g = this.app.group; if (g) { g.view = 'members'; g.pm = d.openMember; g.paint(true); } return; }
             if (d.go) return this.hub.go(d.go);
             if (d.hist) { const x = this.app.fx?.history?.[Number(d.hist)]; if (x) this.app.fx.openRecord(x); return; }
@@ -329,13 +332,13 @@ ${n.tasks?.length ? `<div class="zt-atlas-links"><small>相关任务</small>${n.
         try {
             const r = await w.correct(from, { name, type });
             this.sel.stars = 'world:' + r.to; this.paint('stars', true);
-            this.hub.toast(`已更正：${r.from === r.to ? r.to : `${r.from} → ${r.to}`}（${r.type || '类型自动判断'}）${r.current ? '，界面主题已同步' : ''}`, 3000);
+            this.hub.toast(`Đã đính chính: ${r.from === r.to ? r.to : `${r.from} → ${r.to}`} (${r.type || 'tự động phán đoán loại'})${r.current ? ', chủ đề giao diện đã đồng bộ' : ''}`, 3000);
         } catch (e) { this.hub.toast(e.message || String(e), 4000); }
     }
     async forget(name) {
         const w = this.app.world; if (!w) return;
-        if (!globalThis.confirm?.(`从万界足迹里删除「${name}」？只删这条足迹记录，不影响聊天内容。`)) return;
-        try { await w.forget(name); this.sel.stars = null; this.paint('stars', true); this.hub.toast(`已从足迹删除「${name}」`, 2500); }
+        if (!globalThis.confirm?.(`Xóa 「${name}」 khỏi Dấu chân Vạn giới? Chỉ xóa bản ghi dấu chân này, không ảnh hưởng nội dung trò chuyện.`)) return;
+        try { await w.forget(name); this.sel.stars = null; this.paint('stars', true); this.hub.toast(`Đã xóa 「${name}」 khỏi dấu chân`, 2500); }
         catch (e) { this.hub.toast(e.message || String(e), 4000); }
     }
     /** 任务页 in the engine: switch tab, then focus the original row for this task. */
@@ -349,15 +352,15 @@ ${n.tasks?.length ? `<div class="zt-atlas-links"><small>相关任务</small>${n.
     }
     jumpFloor(f) {
         const mes = document.querySelector(`#chat .mes[mesid="${f}"]`);
-        if (!mes) { this.hub.toast(`楼层 #${f} 不在当前加载的聊天里（可能需要先加载更早的消息）。`, 4000); return; }
+        if (!mes) { this.hub.toast(`Tầng #${f} không nằm trong đoạn trò chuyện đang tải hiện tại (có thể cần tải các tin nhắn cũ hơn trước).`, 4000); return; }
         this.hub.close();
         setTimeout(() => { scrollWithin(mes, { block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); resetPageScroll(); mes.classList.add('zt-floor-flash'); setTimeout(() => mes.classList.remove('zt-floor-flash'), 1800); }, 200);
     }
     engineLinks(n, tools) {
-        const map = { 1: ['stars', '星图'], 2: ['bonds', '羁绊图'], 3: ['events', '事件线'], 4: ['tree', '能力树'], 8: ['tree', '能力树'] }, m = map[n];
+        const map = { 1: ['stars', 'Tinh đồ'], 2: ['bonds', 'Sơ đồ ràng buộc'], 3: ['events', 'Dòng sự kiện'], 4: ['tree', 'Cây năng lực'], 8: ['tree', 'Cây năng lực'] }, m = map[n];
         tools.querySelector('.zt-atlas-link')?.remove();
         if (!m) return;
-        const a = document.createElement('button'); a.type = 'button'; a.className = 'zt-btn small zt-atlas-link'; a.textContent = `查看${m[1]} ›`;
+        const a = document.createElement('button'); a.type = 'button'; a.className = 'zt-btn small zt-atlas-link'; a.textContent = `Xem ${m[1]} ›`;
         a.addEventListener('click', () => this.hub.go(m[0]));
         tools.append(a);
     }

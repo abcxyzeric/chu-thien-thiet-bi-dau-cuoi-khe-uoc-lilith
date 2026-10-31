@@ -1,4 +1,4 @@
-// 终端 · 设置页: every switch and tool that used to hide in the Extensions drawer, grouped, in the terminal itself.
+// Thiết bị đầu cuối · Trang Cài đặt: mọi công tắc và công cụ trước đây ẩn trong ngăn kéo Tiện ích mở rộng, được phân nhóm ngay trong thiết bị đầu cuối.
 import { saveEnvironment } from './save-environment.js';
 import { VERSION } from './contracts.js';
 import { HOST_TESTED } from './compat.js';
@@ -17,7 +17,7 @@ const act = (id, label, desc = '', cls = '') => ({ type: 'action', id, label, de
 /** 1.0: 进阶 — shown in the collapsed「进阶设置」group (and found by search). */
 const adv = it => ({ ...it, tier: 'adv' });
 /** 1.0: the three groups of the settings page. Sections default to 常用 unless they say otherwise. */
-export const SETTING_GROUPS = Object.freeze([['common', '常用'], ['adv', '进阶设置'], ['diag', '诊断与维护']]);
+export const SETTING_GROUPS = Object.freeze([['common', 'Thường dùng'], ['adv', 'Cài đặt nâng cao'], ['diag', 'Chẩn đoán & Bảo trì']]);
 /** Items of one group, section by section (pure, for tests): an item's own tier wins, then its section's, then 常用. */
 export function groupSections(sections, tier) {
     return sections.map(sec => ({ ...sec, items: sec.items.filter(it => (it.tier || sec.tier || 'common') === tier) })).filter(sec => sec.items.length);
@@ -37,83 +37,83 @@ export class HubSettings {
     sections() {
         const app = this.app;
         return [
-            { title: '上手', items: [
-                act('guide', '新手引导…', '三步：导入或更新世界书 → 设置 AI 接口 → 在当前聊天启用。每步完成后打勾，可以跳过。'),
-                act('switches', '功能开关…', '1.1.5：所有功能一张表 — 每一项能单独关掉（数据保留），也能把不用的页面从导航里拿掉。'),
-                act('persona', '系统助手人设…', `1.1.5：默认莉莉丝；可换成「系统光球（编号）」或自己写名字、性格、说话方式和头像。当前：${this.app.persona?.name || '莉莉丝'}`),
+            { title: 'Làm quen', items: [
+                act('guide', 'Hướng dẫn tân thủ…', 'Ba bước: Nhập hoặc cập nhật Sách Thế Giới → Cài đặt cổng AI → Bật trong cuộc trò chuyện hiện tại. Hoàn thành bước nào sẽ đánh dấu tích bước đó, có thể bỏ qua.'),
+                act('switches', 'Công tắc tính năng…', '1.1.5: Toàn bộ tính năng nằm trong một bảng — từng mục có thể tắt riêng (vẫn giữ dữ liệu), cũng có thể ẩn các trang không dùng khỏi thanh điều hướng.'),
+                act('persona', 'Thiết lập Trợ lý hệ thống…', `1.1.5: Mặc định là Lilith; có thể đổi sang 「Quả Cầu Ánh Sáng Hệ Thống (Số hiệu)」 hoặc tự viết tên, tính cách, cách ăn nói và ảnh đại diện. Hiện tại: ${this.app.persona?.name || 'Lilith'}`),
             ] },
-            { title: '显示', sub: '终端就是诸天系统；聊天楼层保持干净。', items: [
-                sel('statusbar', '聊天楼层里的系统数据块', [['terminal', '终端记账，楼层只留小标签（推荐）'], ['off', '关闭（不处理数据块）'], ...(this.s.get('statusbar') === 'native' ? [['native', '旧兼容模式（0.7.0 起不再提供，切走后不再显示）']] : [])], '终端模式下 AI 输出的 <ZhuTianPanel> 由终端记账，楼层里不再出现状态栏。'),
-                sw('floorTag', '楼层小标签“系统已记录”', '点击标签直接打开终端。'),
-                sw('voiceBox', '莉莉丝专属语音框（语音美化）'),
-                sw('hud', '输入框上方账本速览'),
-                adv(sw('hotkeys', '快捷键 Alt+Z / Alt+X 开关终端 · Alt+S 总览')),
-                adv(sel('hubOutsideClose', '点击终端外部时关闭', [['auto', '仅手机'], ['always', '总是'], ['never', '从不']])),
-                sel('mobileLayout', '手机上的终端与私聊窗口', MOBILE_LAYOUTS.map(o => [...o]), '全屏时窗口跟着输入法键盘变矮，输入框不会被挡住；横屏时导航移到左侧；私聊也全屏。选「浮动窗口」恢复 0.8.5 的样子。'),
-                adv(sw('hubBackClose', '手机返回手势关闭终端')),
+            { title: 'Hiển thị', sub: 'Thiết bị đầu cuối chính là Hệ Thống Chư Thiên; tầng trò chuyện luôn giữ gọn gàng.', items: [
+                sel('statusbar', 'Khối dữ liệu hệ thống trong tầng trò chuyện', [['terminal', 'Thiết bị đầu cuối ghi sổ, tầng chỉ để lại nhãn nhỏ (Khuyên dùng)'], ['off', 'Tắt (không xử lý khối dữ liệu)'], ...(this.s.get('statusbar') === 'native' ? [['native', 'Chế độ tương thích cũ (từ 0.7.0 không còn cung cấp, chuyển đi sẽ không hiển thị lại)']] : [])], 'Ở chế độ thiết bị đầu cuối, khối <ZhuTianPanel> do AI xuất ra sẽ do thiết bị đầu cuối ghi sổ, trong tầng trò chuyện không còn hiện thanh trạng thái nữa.'),
+                sw('floorTag', 'Nhãn nhỏ ở tầng “Hệ thống đã ghi nhận”', 'Bấm vào nhãn để mở thẳng thiết bị đầu cuối.'),
+                sw('voiceBox', 'Khung thoại chuyên biệt của Lilith (Làm đẹp khung thoại)'),
+                sw('hud', 'Xem nhanh sổ cái phía trên ô nhập liệu'),
+                adv(sw('hotkeys', 'Phím tắt Alt+Z / Alt+X đóng mở thiết bị đầu cuối · Alt+S Tổng quan')),
+                adv(sel('hubOutsideClose', 'Đóng khi bấm bên ngoài thiết bị đầu cuối', [['auto', 'Chỉ điện thoại'], ['always', 'Luôn luôn'], ['never', 'Không bao giờ']])),
+                sel('mobileLayout', 'Cửa sổ thiết bị đầu cuối và trò chuyện riêng trên điện thoại', MOBILE_LAYOUTS.map(o => [...o]), 'Khi toàn màn hình, cửa sổ sẽ tự thu thấp theo bàn phím ảo để ô nhập liệu không bị che; khi xoay ngang, thanh điều hướng chuyển sang bên trái; trò chuyện riêng cũng toàn màn hình. Chọn 「Cửa sổ nổi」 để khôi phục giao diện bản 0.8.5.'),
+                adv(sw('hubBackClose', 'Cử chỉ quay lại trên điện thoại đóng thiết bị đầu cuối')),
             ] },
-            { title: '提示词与世界书', items: [
-                adv(sw('promptStripPanels', '旧楼层数据块不发给 AI（省 token）')),
-                adv(num('promptPanelKeepDepth', '保留最新几层的数据块', 0, 6, 'AI 每轮都会从世界书“实时数据”读到最新账本，所以可以设为 0（数据块全部不回传，最省 token）；保留 1–2 层能让 AI 照抄格式更稳。')),
-                adv(sw('macroLike', '世界书变量宏 {{get_chat_variable::…}}', '酒馆助手宏开启时自动让位。')),
-                adv(sw('worldbookAuto', '诸天存档自动安装并绑定世界书', '不覆盖你改过的条目。')),
-                act('worldbook', '世界书安装 / 绑定 / 解绑…'),
-                act('wb-unbind', '一键解绑世界书', '把“诸天万界最强系统”从所有角色卡、全局和当前聊天上取下（不删除），可在世界书窗口里恢复。'),
-                adv(sw('wbUnbindOnDisable', '关闭插件时自动解绑世界书', '在扩展列表里停用本插件时自动执行上面的解绑（SillyTavern 1.17+；1.16 没有关闭钩子，请手动点一键解绑）。')),
+            { title: 'Lời nhắc & Sách Thế Giới', items: [
+                adv(sw('promptStripPanels', 'Không gửi khối dữ liệu của các tầng cũ cho AI (tiết kiệm token)')),
+                adv(num('promptPanelKeepDepth', 'Giữ lại khối dữ liệu của mấy tầng mới nhất', 0, 6, 'Mỗi lượt AI đều đọc được sổ cái mới nhất từ mục “Dữ liệu thời gian thực” trong Sách Thế Giới, nên có thể đặt là 0 (không gửi lại bất kỳ khối dữ liệu nào, tiết kiệm token nhất); giữ lại 1–2 tầng giúp AI bắt chước định dạng ổn định hơn.')),
+                adv(sw('macroLike', 'Macro biến Sách Thế Giới {{get_chat_variable::…}}', 'Khi macro Tavern Helper đang bật sẽ tự động nhường quyền.')),
+                adv(sw('worldbookAuto', 'Bản lưu Chư Thiên tự động cài đặt và gắn kết Sách Thế Giới', 'Không ghi đè các mục bạn đã tự chỉnh sửa.')),
+                act('worldbook', 'Cài đặt / Gắn kết / Gỡ gắn kết Sách Thế Giới…'),
+                act('wb-unbind', 'Một chạm gỡ gắn kết Sách Thế Giới', 'Tháo “Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới” khỏi tất cả thẻ nhân vật, toàn cục và cuộc trò chuyện hiện tại (không xóa tệp), có thể khôi phục trong cửa sổ Sách Thế Giới.'),
+                adv(sw('wbUnbindOnDisable', 'Tự động gỡ gắn kết Sách Thế Giới khi tắt tiện ích', 'Khi vô hiệu hóa tiện ích này trong danh sách tiện ích mở rộng sẽ tự động thực hiện thao tác gỡ gắn kết ở trên (SillyTavern 1.17+; bản 1.16 không có hook đóng nên vui lòng bấm nút gỡ gắn kết thủ công).')),
             ] },
-            { title: '账本与存档', items: [
-                act('init', '新聊天初始化', '按原版规则创建账本；已存在时只补齐缺失字段。'),
-                act('migrate', '旧存档迁移 / 账本回滚…', '最近 5 份自动备份，可一键回滚。'),
-                act('appraise', '品阶鉴定…', '剧情里得到、角色卡或旧存档带来的功法 / 物品被记成凡品时：让 AI 按诸天标准重新鉴定，或手动修正（只升不降，最高神品）。'),
-                act('data-io', '导出 / 导入存档…', '把设置、账本、记忆存档打包成一个文件（不含 API Key）；导入前会先自动备份当前账本。'),
+            { title: 'Sổ cái & Bản lưu', items: [
+                act('init', 'Khởi tạo cuộc trò chuyện mới', 'Tạo sổ cái theo quy tắc gốc; nếu đã tồn tại thì chỉ bổ sung các trường còn thiếu.'),
+                act('migrate', 'Di chuyển bản lưu cũ / Hoàn tác sổ cái…', '5 bản sao lưu tự động gần nhất, có thể hoàn tác bằng một chạm.'),
+                act('appraise', 'Giám định Phẩm giai…', 'Khi công pháp / vật phẩm nhận được trong cốt truyện, từ thẻ nhân vật hoặc bản lưu cũ bị ghi thành Phàm phẩm: để AI giám định lại theo tiêu chuẩn Chư Thiên, hoặc tự sửa thủ công (chỉ tăng không giảm, tối đa Thần phẩm).'),
+                act('data-io', 'Xuất / Nhập bản lưu…', 'Đóng gói cài đặt, sổ cái, bản lưu ký ức thành một tệp duy nhất (không chứa API Key); trước khi nhập sẽ tự động sao lưu sổ cái hiện tại.'),
             ] },
-            { title: '连接', items: [
-                act('api', 'AI 接口设置（连接页）', '填一次即可：状态栏的 AI 功能和莉莉丝私聊共用；也可以直接用酒馆正在用的模型。常用的接口可以存成预设一键切换；抽卡、聊天群、莉莉丝等也能在「分功能 API」里各用各的。'),
-                adv(sel('apiTimeout', '独立 API 超时（私聊 / 记忆 / 工作台）', [['60', '60 秒（原版）'], ['120', '120 秒'], ['180', '180 秒（默认）'], ['300', '300 秒'], ['600', '600 秒（思考模型）']], '请求一律以流式传输（中途不断流），不会再被反向代理 / Cloudflare 以 502 掐断；超时只在模型一直不出完时生效。')),
+            { title: 'Kết nối', items: [
+                act('api', 'Cài đặt cổng AI (Trang Kết nối)', 'Chỉ cần điền một lần: các tính năng AI của thanh trạng thái và trò chuyện riêng với Lilith dùng chung; hoặc có thể dùng trực tiếp mô hình Quán Rượu đang sử dụng. Các cổng hay dùng có thể lưu thành thiết lập sẵn để chuyển đổi một chạm; rút thẻ, nhóm chat, Lilith… cũng có thể dùng cổng riêng trong mục 「API theo tính năng」.'),
+                adv(sel('apiTimeout', 'Thời gian chờ API độc lập (Trò chuyện riêng / Ký ức / Bàn làm việc)', [['60', '60 giây (Bản gốc)'], ['120', '120 giây'], ['180', '180 giây (Mặc định)'], ['300', '300 giây'], ['600', '600 giây (Mô hình suy luận)']], 'Mọi yêu cầu đều truyền theo luồng (stream, không đứt quãng giữa chừng), không còn bị reverse proxy / Cloudflare ngắt ngang bằng lỗi 502; thời gian chờ chỉ có hiệu lực khi mô hình mãi không xuất xong.')),
             ] },
-            { title: '系统助手', sub: this.app.persona && !this.app.persona.lilith ? `当前人设「${this.app.persona.name}」：悬浮莉莉丝、立绘与触摸只属于莉莉丝，其他人设用圆形头像。` : '', items: [
-                sel('floatLilith', '悬浮窗（切换样子）', [['auto', '自动：手机 / 触屏用悬浮莉莉丝，电脑用头像'], ['on', '悬浮莉莉丝'], ['off', '头像（原版唤醒按钮）'], ['none', '已关闭（页面上不显示悬浮窗）']], '这里是「切换」：莉莉丝 ⇄ 头像。点一下打开终端；长按拖动，拖到屏幕左右边缘会躲起来（位置会记住）；拖到底部有两个目标——「换成头像 / 换成莉莉丝」是切换，「关闭悬浮窗」是关闭（电脑上莉莉丝也可以右键）。关闭后从酒馆「扩展」→ 诸天终端 进入控制台、恢复悬浮窗。'),
-                act('float-close', '关闭悬浮窗…', '关闭 = 莉莉丝和头像都不显示（不是切换）。随时可在上面选回来，或在酒馆「扩展」→ 诸天终端 点「显示悬浮莉莉丝 / 显示头像」。'),
-                sel('floatSize', '悬浮莉莉丝大小', [['p20', '20%（最小）'], ['p30', '30%'], ['p40', '40%'], ['xs', '55%'], ['s', '65%'], ['m', '75%（默认）'], ['l', '90%'], ['xl', '100%']], '最小 20%；改完立即生效，位置保持。'),
-                sel('avatarSize', '头像悬浮窗大小', [['p20', '20%（最小）'], ['p30', '30%'], ['p40', '40%'], ['xs', '55%'], ['s', '65%'], ['m', '75%'], ['l', '90%'], ['xl', '100%（默认）']], '圆形头像（电脑上是左下角唤醒按钮）的大小；最小 20%。'),
-                adv(sw('touchGestures', '真实触摸互动（抚摸 / 长按 / 视线跟随）')),
-                sw('haptics', '触摸震动反馈（手机）'),
-                sel('portrait.mode', '立绘模式', [['rig', '原版分层动画（伪 Live2D）'], ['variants', '原版 + 表情差分（随语气切换）'], ['live2d', '真 Live2D（需自备 Cubism 模型）']]),
-                adv(act('live2d', '立绘 / Live2D 设置…')),
-                adv(sw('lilith.react', '界面角色：对选中任务 / 物品 / 功法和结算成败作出反应', '只用原版表情与分层动作；台词来自账本数据。')),
-                adv(sw('lilith.pageLines', '进入系统页时说一句（每页每次会话一次）')),
-                adv(sw('lilith.camera', '镜头：系统页半身 · 工作台全身 · 私聊面部特写')),
-                adv(sw('lilith.story', '气泡播报：数据块里的「系统播报」由立绘气泡说出；点立绘空白处说剧情台词', '原来在状态栏底部的“莉莉丝：……”一行已移到这里。')),
+            { title: 'Trợ lý hệ thống', sub: this.app.persona && !this.app.persona.lilith ? `Thiết lập hiện tại 「${this.app.persona.name}」: Lilith nổi, chân dung phân lớp và tương tác chạm chỉ thuộc về Lilith, các thiết lập nhân vật khác dùng ảnh đại diện tròn.` : '', items: [
+                sel('floatLilith', 'Cửa sổ nổi (chuyển đổi kiểu dáng)', [['auto', 'Tự động: Điện thoại / màn hình cảm ứng dùng Lilith nổi, máy tính dùng ảnh đại diện'], ['on', 'Lilith nổi'], ['off', 'Ảnh đại diện (nút đánh thức gốc)'], ['none', 'Đã đóng (không hiển thị cửa sổ nổi trên trang)']], 'Ở đây là 「Chuyển đổi」: Lilith ⇄ Ảnh đại diện. Bấm một cái để mở thiết bị đầu cuối; nhấn giữ để kéo, kéo sát mép trái/phải màn hình sẽ tự nấp đi (nhớ vị trí); kéo xuống đáy có hai mục tiêu — 「Đổi sang ảnh đại diện / Đổi sang Lilith」 là chuyển đổi, 「Đóng cửa sổ nổi」 là đóng hẳn (trên máy tính cũng có thể bấm chuột phải vào Lilith). Sau khi đóng, hãy vào Quán Rượu 「Tiện ích mở rộng」 → Thiết Bị Đầu Cuối Chư Thiên để vào bảng điều khiển hoặc khôi phục cửa sổ nổi.'),
+                act('float-close', 'Đóng cửa sổ nổi…', 'Đóng = cả Lilith lẫn ảnh đại diện đều không hiển thị (không phải chuyển đổi). Bất cứ lúc nào cũng có thể chọn lại ở mục trên, hoặc vào Quán Rượu 「Tiện ích mở rộng」 → Thiết Bị Đầu Cuối Chư Thiên bấm 「Hiện Lilith nổi / Hiện ảnh đại diện」.'),
+                sel('floatSize', 'Kích thước Lilith nổi', [['p20', '20% (Nhỏ nhất)'], ['p30', '30%'], ['p40', '40%'], ['xs', '55%'], ['s', '65%'], ['m', '75% (Mặc định)'], ['l', '90%'], ['xl', '100%']], 'Nhỏ nhất 20%; đổi xong có hiệu lực ngay, giữ nguyên vị trí.'),
+                sel('avatarSize', 'Kích thước cửa sổ nổi ảnh đại diện', [['p20', '20% (Nhỏ nhất)'], ['p30', '30%'], ['p40', '40%'], ['xs', '55%'], ['s', '65%'], ['m', '75%'], ['l', '90%'], ['xl', '100% (Mặc định)']], 'Kích thước ảnh đại diện tròn (trên máy tính là nút đánh thức ở góc dưới bên trái); nhỏ nhất 20%.'),
+                adv(sw('touchGestures', 'Tương tác chạm chân thực (xoa đầu / nhấn giữ / mắt nhìn theo)')),
+                sw('haptics', 'Phản hồi rung khi chạm (điện thoại)'),
+                sel('portrait.mode', 'Chế độ chân dung (Standing Art)', [['rig', 'Hoạt ảnh phân lớp gốc (Giả Live2D)'], ['variants', 'Bản gốc + Biến thể biểu cảm (đổi theo ngữ khí)'], ['live2d', 'Live2D thật (cần tự chuẩn bị mô hình Cubism)']]),
+                adv(act('live2d', 'Cài đặt Chân dung / Live2D…')),
+                adv(sw('lilith.react', 'Phản ứng nhân vật giao diện: phản ứng với nhiệm vụ / vật phẩm / công pháp đang chọn và kết quả quyết toán thành bại', 'Chỉ dùng biểu cảm và chuyển động phân lớp gốc; lời thoại lấy từ dữ liệu sổ cái.')),
+                adv(sw('lilith.pageLines', 'Nói một câu khi vào trang hệ thống (mỗi trang một lần trong mỗi phiên)')),
+                adv(sw('lilith.camera', 'Góc máy: Trang hệ thống bán thân · Bàn làm việc toàn thân · Trò chuyện riêng cận cảnh khuôn mặt')),
+                adv(sw('lilith.story', 'Thông báo qua bong bóng thoại: mục 「Thông báo hệ thống」 trong khối dữ liệu được nói ra qua bong bóng thoại của chân dung; bấm vào khoảng trống chân dung để nói lời thoại cốt truyện', 'Dòng “Lilith: ……” trước đây nằm ở đáy thanh trạng thái nay đã chuyển về đây.')),
             ] },
-            { title: '世界与演出', sub: '主题只换颜色和装饰，按钮位置不变。', items: [
-                sel('world.theme', '界面主题', [['auto', '跟随当前世界（自动判断）'], ['default', '诸天（默认）'], ['xianxia', '仙侠 · 玉简 / 星图 / 阵纹'], ['cyber', '赛博 · 全息终端'], ['eerie', '诡异 · 异常与侵蚀']], this.worldDesc()),
-                sel('palette', '配色方案', PALETTE_OPTIONS, '固定配色会覆盖世界主题的颜色（世界装饰保留）；仙侠主题 0.8.4 起改为墨玉金。'),
-                adv(sw('world.prompt', '提示 AI 记录穿越（当前世界 / 世界类型）', '穿越时 AI 在数据块「变量更新」里写一行；星图也可以手动记录。')),
-                sel('fx.mode', '演出', [['full', '完整演出（≤2 秒，可跳过）'], ['brief', '只显示结果卡片'], ['off', '关闭']], '只在账本写入并读回后播放；失败则显示失败。系统开启“减少动态效果”时自动只显示卡片。'),
-                adv(sel('motion', '动态效果', MOTION_OPTIONS.map(o => [...o]), `精简模式下悬浮莉莉丝不再呼吸摆动、世界装饰和终端动画停止、演出只显示结果卡片，功能不变。当前：${this.app.perf ? (this.app.perf.lite ? '精简' : '完整') + '（' + this.app.perf.reason + '）' : '—'}`)),
-                adv(sw('fx.outside', '终端关闭时在聊天角落显示剧情提示卡片')),
-                adv(act('fx-preview', '预览演出', '播放一段示例（不写账本，卡片会标明“预览”）。')),
+            { title: 'Thế giới & Diễn xuất', sub: 'Chủ đề chỉ đổi màu sắc và trang trí, vị trí các nút không đổi.', items: [
+                sel('world.theme', 'Chủ đề giao diện', [['auto', 'Theo thế giới hiện tại (tự động phán đoán)'], ['default', 'Chư Thiên (Mặc định)'], ['xianxia', 'Tiên hiệp · Ngọc giản / Tinh đồ / Trận văn'], ['cyber', 'Cyber · Thiết bị đầu cuối toàn tức'], ['eerie', 'Quỷ dị · Dị thường và xâm thực']], this.worldDesc()),
+                sel('palette', 'Phương án phối màu', PALETTE_OPTIONS, 'Phối màu cố định sẽ ghi đè màu của chủ đề thế giới (họa tiết trang trí thế giới vẫn giữ nguyên); chủ đề Tiên hiệp từ bản 0.8.4 đổi sang tông Mặc Ngọc Kim.'),
+                adv(sw('world.prompt', 'Nhắc AI ghi nhận xuyên không (Thế giới hiện tại / Loại thế giới)', 'Khi xuyên không AI sẽ viết một dòng trong mục 「Cập nhật biến」 của khối dữ liệu; trên Tinh đồ cũng có thể ghi thủ công.')),
+                sel('fx.mode', 'Diễn xuất', [['full', 'Diễn xuất đầy đủ (≤2 giây, có thể bỏ qua)'], ['brief', 'Chỉ hiển thị thẻ kết quả'], ['off', 'Tắt']], 'Chỉ phát sau khi sổ cái đã ghi và đọc ngược lại xác nhận; nếu thất bại sẽ hiển thị thất bại. Khi hệ thống bật “Giảm chuyển động” sẽ tự động chỉ hiển thị thẻ.'),
+                adv(sel('motion', 'Hiệu ứng chuyển động', MOTION_OPTIONS.map(o => [...o]), `Ở chế độ Tinh giản, Lilith nổi không còn nhịp thở đung đưa, họa tiết trang trí thế giới và hoạt ảnh thiết bị đầu cuối dừng lại, diễn xuất chỉ hiện thẻ kết quả, tính năng không đổi. Hiện tại: ${this.app.perf ? (this.app.perf.lite ? 'Tinh giản' : 'Đầy đủ') + ' (' + this.app.perf.reason + ')' : '—'}`)),
+                adv(sw('fx.outside', 'Hiển thị thẻ gợi ý cốt truyện ở góc trò chuyện khi thiết bị đầu cuối đang đóng')),
+                adv(act('fx-preview', 'Xem trước diễn xuất', 'Phát một đoạn mẫu (không ghi vào sổ cái, trên thẻ sẽ ghi rõ “Xem trước”).')),
             ] },
-            { title: '插件开关', items: [
-                act('plugin-off', '一键关闭插件', '和酒馆「扩展 → 管理扩展」里关掉开关一样：插件停用，页面刷新。账本和设置都保留；重新开启也在「管理扩展」里。', 'danger'),
+            { title: 'Công tắc tiện ích', items: [
+                act('plugin-off', 'Một chạm tắt tiện ích', 'Giống hệt như gạt tắt công tắc trong mục 「Tiện ích mở rộng → Quản lý tiện ích mở rộng」 của Quán Rượu: tiện ích dừng hoạt động và làm mới trang. Sổ cái và cài đặt đều được giữ nguyên; khi muốn bật lại cũng vào 「Quản lý tiện ích mở rộng」.', 'danger'),
             ] },
             ...this.extra.map(x => (typeof x === 'function' ? x(app) : x)).map(x => ({ tier: 'adv', ...x })),
-            { title: '高级 · 管理员', sub: '直接改账本，慎用。', tier: 'adv', items: [
-                act('admin', '管理员控制台…', '直接改系统点、专属资源、货币、实力档、主修功法、盲盒保底，以及每一位羁绊人物和群员的好感。只写入改过的项，一次加锁写入并读回核对；页面里还能打开原版面板（原 ◆ 连点五次的入口已从终端里移除）。'),
+            { title: 'Nâng cao · Quản trị viên', sub: 'Sửa trực tiếp sổ cái, hãy thận trọng khi dùng.', tier: 'adv', items: [
+                act('admin', 'Bảng điều khiển Quản trị viên…', 'Sửa trực tiếp Điểm Hệ Thống, Tài nguyên chuyên biệt, tiền tệ, bậc thực lực, công pháp chủ tu, bảo hiểm hộp mù, cùng độ hảo cảm của từng nhân vật Ràng buộc và thành viên nhóm chat. Chỉ ghi những mục đã sửa, khóa và ghi một lần rồi đọc ngược lại đối chiếu; trong trang cũng có thể mở bảng gốc (lối vào bấm 5 lần biểu tượng ◆ trước đây đã được gỡ khỏi thiết bị đầu cuối).'),
             ] },
-            { title: '兼容与维护', tier: 'diag', items: [
-                act('diagnose', '兼容诊断…'),
-                act('unfreeze', '核对并解冻账本', '1.1.4：提示「写入状态不明 / 已冻结」时用。拿服务器上的存档和当前页面比对：完全一致说明没有悬而未决的写入，直接解冻；不一致会告诉你哪几项不同，请重载页面（以服务器存档为准）。只读不写。'),
-                act('copy-diag', '复制诊断信息', '版本、设备、设置和最近的报错，反馈问题时直接粘贴。不含 API Key 和聊天内容。'),
-                act('selftest', '手机真机自检…', '在手机上一步步检查全屏、各页面、键盘、私聊、横屏和返回键，大约 2 分钟；结果可以一键复制。'),
-                act('takeover', '一键接管旧版', '停用（不删除）旧正则与旧酒馆助手脚本。'),
-                act('restore', '恢复旧版', '', 'danger'),
+            { title: 'Tương thích & Bảo trì', tier: 'diag', items: [
+                act('diagnose', 'Chẩn đoán tương thích…'),
+                act('unfreeze', 'Đối chiếu và mở băng sổ cái', '1.1.4: Dùng khi xuất hiện thông báo 「Trạng thái ghi chưa rõ / Đã đóng băng」. Lấy bản lưu trên máy chủ so sánh với trang hiện tại: nếu khớp hoàn toàn nghĩa là không có lệnh ghi nào còn treo, sẽ mở băng ngay; nếu không khớp sẽ báo rõ những mục nào khác biệt, vui lòng tải lại trang (lấy bản lưu trên máy chủ làm chuẩn). Chỉ đọc chứ không ghi.'),
+                act('copy-diag', 'Sao chép thông tin chẩn đoán', 'Phiên bản, thiết bị, cài đặt và các lỗi gần nhất, khi phản hồi lỗi chỉ cần dán thẳng ra. Không chứa API Key và nội dung trò chuyện.'),
+                act('selftest', 'Tự kiểm tra trên máy thật điện thoại…', 'Kiểm tra từng bước trên điện thoại: toàn màn hình, các trang, bàn phím, trò chuyện riêng, xoay ngang và phím quay lại, mất khoảng 2 phút; kết quả có thể sao chép bằng một chạm.'),
+                act('takeover', 'Một chạm tiếp quản bản cũ', 'Tạm dừng (không xóa) các biểu thức chính quy cũ và kịch bản Tavern Helper cũ.'),
+                act('restore', 'Khôi phục bản cũ', '', 'danger'),
             ] },
         ];
     }
     worldDesc() {
         const w = this.app.world?.current?.(); if (!w) return '';
-        return `当前：${w.name || '未记录世界'}${w.type ? '（' + w.type + '）' : ''} → 自动判断为「${({ default: '诸天', xianxia: '仙侠', cyber: '赛博', eerie: '诡异' })[w.auto]}」`;
+        return `Hiện tại: ${w.name || 'Thế giới chưa ghi nhận'}${w.type ? ' (' + w.type + ')' : ''} → Tự động phán đoán là 「${({ default: 'Chư Thiên', xianxia: 'Tiên hiệp', cyber: 'Cyber', eerie: 'Quỷ dị' })[w.auto]}」`;
     }
     read(k) { return k.split('.').reduce((o, x) => o?.[x], this.s.all); }
     write(k, v) { const [head, tail] = k.split('.'); if (tail) this.s.patch(head, { [tail]: v }); else this.s.set(head, v); }
@@ -132,18 +132,18 @@ export class HubSettings {
             const secs = groupSections(all, tier), n = secs.reduce((a, x) => a + x.items.length, 0);
             if (!n) return '';
             return tier === 'common' ? `<div class="zt-set-group" data-tier="common">${grid(secs)}</div>`
-                : `<details class="zt-set-group" data-tier="${tier}"><summary>${esc(title)} <small>${n} 项</small></summary>${grid(secs)}</details>`;
+                : `<details class="zt-set-group" data-tier="${tier}"><summary>${esc(title)} <small>${n} mục</small></summary>${grid(secs)}</details>`;
         }).join('');
-        el.innerHTML = `<div class="zt-eyebrow">TERMINAL SETTINGS</div><h2 class="zt-h">设置</h2><p class="zt-sub">诸天终端 ${VERSION} · 已验收 SillyTavern ${HOST_TESTED.join(' / ')} · 无需酒馆助手<br><small>AI 功能（商城进货 / 许愿 / 抽取、工作台、自动记忆、私聊、聊天群）为<b>实验性</b>：只用模拟模型验收过，第一次用真实模型前请先导出存档。</small></p>
-<div class="zt-set-search"><input type="search" data-f="sset" placeholder="搜索设置，例如：悬浮、世界书、超时" aria-label="搜索设置" enterkeyhint="search"></div>
+        el.innerHTML = `<div class="zt-eyebrow">TERMINAL SETTINGS</div><h2 class="zt-h">Cài đặt</h2><p class="zt-sub">Thiết Bị Đầu Cuối Chư Thiên ${VERSION} · Đã nghiệm thu SillyTavern ${HOST_TESTED.join(' / ')} · Không cần Tavern Helper<br><small>Các tính năng AI (Nhập hàng thương thành / Ước nguyện / Rút thẻ, Bàn làm việc, Ký ức tự động, Trò chuyện riêng, Nhóm chat) mang tính <b>thử nghiệm</b>: mới chỉ nghiệm thu bằng mô hình giả lập, trước khi dùng mô hình thật lần đầu vui lòng xuất bản lưu trước.</small></p>
+<div class="zt-set-search"><input type="search" data-f="sset" placeholder="Tìm kiếm cài đặt, ví dụ: nổi, sách thế giới, thời gian chờ" aria-label="Tìm kiếm cài đặt" enterkeyhint="search"></div>
 ${saveEnvironment().reason ? `<p class="zt-note" role="alert" data-save-warning>${esc(saveEnvironment().reason)}</p>` : ''}
-${groups}<p class="zt-set-none" hidden>没有找到匹配的设置。</p>`;
+${groups}<p class="zt-set-none" hidden>Không tìm thấy cài đặt nào khớp.</p>`;
         const search = el.querySelector('[data-f=sset]');
         search.oninput = () => this.filter(el, search.value);
         el.onchange = e => {
             const input = e.target.closest('[data-k]'); if (!input) return;
             const v = input.type === 'checkbox' ? input.checked : input.type === 'number' ? Math.max(Number(input.min) || 0, Math.min(Number(input.max) || 6, Math.floor(Number(input.value)) || 0)) : input.value;
-            try { this.write(input.dataset.k, v); this.app.hub?.toast('设置已交给酒馆保存；如报错请查看诊断'); }
+            try { this.write(input.dataset.k, v); this.app.hub?.toast('Đã gửi cài đặt cho Quán Rượu lưu; nếu báo lỗi vui lòng xem mục Chẩn đoán'); }
             catch (err) { this.app.hub?.toast(errorLine(err), 7000); this.render(el); }
         };
         el.onclick = e => { const b = e.target.closest('[data-act]'); if (b) this.run(b.dataset.act); };
@@ -165,16 +165,16 @@ ${groups}<p class="zt-set-none" hidden>没有找到匹配的设置。</p>`;
         const app = this.app, t = globalThis.toastr;
         const map = {
             worldbook: () => app.features.openWorldbook(),
-            'wb-unbind': async () => { if (!globalThis.confirm('把“诸天万界最强系统”世界书从所有角色卡、全局世界书和当前聊天上解绑？\n（不删除世界书；同时关闭自动绑定；可在世界书窗口里恢复）')) return; const r = await app.features.unbindWorldbook(); app.hub?.toast(r.count ? `已解绑 ${r.count} 处` : '没有找到需要解绑的地方', 3600); if (r.count) t?.success(`已解绑：${r.chars.length} 张角色卡${r.extra.length ? `、${r.extra.length} 个附加` : ''}${r.global ? '、全局' : ''}${r.chat ? '、当前聊天' : ''}`, '诸天 · 世界书'); if (app.hub?.page === 'set') app.hub.go('set', { silent: true }); }, migrate: () => app.features.openMigration(), diagnose: () => app.features.openDiagnostics(),
+            'wb-unbind': async () => { if (!globalThis.confirm('Gỡ gắn kết Sách Thế Giới “Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới” khỏi tất cả thẻ nhân vật, Sách Thế Giới toàn cục và cuộc trò chuyện hiện tại?\n(Không xóa Sách Thế Giới; đồng thời tắt tự động gắn kết; có thể khôi phục trong cửa sổ Sách Thế Giới)')) return; const r = await app.features.unbindWorldbook(); app.hub?.toast(r.count ? `Đã gỡ gắn kết ${r.count} nơi` : 'Không tìm thấy nơi nào cần gỡ gắn kết', 3600); if (r.count) t?.success(`Đã gỡ gắn kết: ${r.chars.length} thẻ nhân vật${r.extra.length ? `, ${r.extra.length} sách phụ` : ''}${r.global ? ', toàn cục' : ''}${r.chat ? ', cuộc trò chuyện hiện tại' : ''}`, 'Chư Thiên · Sách Thế Giới'); if (app.hub?.page === 'set') app.hub.go('set', { silent: true }); }, migrate: () => app.features.openMigration(), diagnose: () => app.features.openDiagnostics(),
             api: () => app.openApiCenter(), 'go-api': () => app.hub.go('api'), live2d: () => app.portrait?.openSettings(),
             takeover: () => app.runTakeover(), restore: () => app.restoreLegacy(),
             'fx-preview': () => app.fx?.preview(),
             'copy-diag': () => app.features.copyDiagnostics(),
             unfreeze: async () => {
                 const r = await app.bridge.verifyFrozen();
-                if (r.state === 'clear') return t?.info('当前聊天没有被冻结，可以正常操作。', '诸天');
-                if (r.state === 'unfrozen') { t?.success('服务器存档与页面一致，已解冻；可以继续操作（之前那笔如果没生效，请重新提交一次）。', '诸天', { timeOut: 8000 }); app.hub?.reloadEngine?.(); return; }
-                if (globalThis.confirm(`服务器存档与当前页面不一致（${r.keys.join('、')}）。\n以服务器存档为准需要重载页面，重载后冻结自动解除。现在重载？`)) globalThis.location?.reload();
+                if (r.state === 'clear') return t?.info('Cuộc trò chuyện hiện tại không bị đóng băng, có thể thao tác bình thường.', 'Chư Thiên');
+                if (r.state === 'unfrozen') { t?.success('Bản lưu trên máy chủ khớp với trang hiện tại, đã mở băng; có thể tiếp tục thao tác (nếu giao dịch trước đó chưa có hiệu lực, vui lòng gửi lại một lần).', 'Chư Thiên', { timeOut: 8000 }); app.hub?.reloadEngine?.(); return; }
+                if (globalThis.confirm(`Bản lưu trên máy chủ không khớp với trang hiện tại (${r.keys.join(', ')}).\nĐể lấy bản lưu trên máy chủ làm chuẩn cần tải lại trang, sau khi tải lại trạng thái đóng băng sẽ tự động được gỡ bỏ. Tải lại ngay bây giờ?`)) globalThis.location?.reload();
             },
             selftest: () => app.deviceCheck?.run(),
             guide: () => app.guide?.open(),
@@ -185,10 +185,10 @@ ${groups}<p class="zt-set-none" hidden>没有找到匹配的设置。</p>`;
             'plugin-off': () => disablePlugin(app),
             admin: () => app.hub.openAdmin(),
             'float-close': () => closeFloats(app),
-            init: () => app.features.initChat().then(r => { t?.success(r.created ? `已按原版规则初始化账本（系统点 ${r.points}）` : '账本已存在；已按原版规则补齐缺失字段', '诸天'); app.hub.reloadEngine(); }).catch(e => t?.error(errorLine(e), '诸天')),
+            init: () => app.features.initChat().then(r => { t?.success(r.created ? `Đã khởi tạo sổ cái theo quy tắc gốc (Điểm Hệ Thống ${r.points})` : 'Sổ cái đã tồn tại; đã bổ sung các trường còn thiếu theo quy tắc gốc', 'Chư Thiên'); app.hub.reloadEngine(); }).catch(e => t?.error(errorLine(e), 'Chư Thiên')),
         };
         // 1.1.1: sections added by modules can bring their own buttons ({ actions: { id: fn } })
         const own = this.extra.map(x => (typeof x === 'function' ? null : x?.actions?.[id])).find(f => typeof f === 'function');
-        try { const r = (map[id] || own)?.(); r?.catch?.(e => t?.error(errorLine(e), '诸天')); } catch (e) { t?.error(errorLine(e), '诸天'); }
+        try { const r = (map[id] || own)?.(); r?.catch?.(e => t?.error(errorLine(e), 'Chư Thiên')); } catch (e) { t?.error(errorLine(e), 'Chư Thiên'); }
     }
 }

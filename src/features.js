@@ -14,6 +14,7 @@ import { stable } from './ledger-plan.js';
 import { errorLine } from './errors.js';
 
 export const WORLD_NAME = '诸天万界最强系统';
+export const WORLD_DISPLAY_NAME = 'Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
 
 export function buildWorldbook(rules) {
@@ -23,7 +24,7 @@ export function buildWorldbook(rules) {
 }
 export function ledgerSummary(v) {
     const s = v?.诸天系统; if (!s || typeof s !== 'object') return null;
-    const tasks = s.任务库 && typeof s.任务库 === 'object' ? Object.values(s.任务库).filter(t => t && t.状态 !== '已完成' && t.状态 !== '已失败') : [];
+    const tasks = s.任务库 && typeof s.任务库 === 'object' ? Object.values(s.任务库).filter(t => t && t.状态 !== '已完成' && t.状态 !== '已失败' && t.状态 !== 'Đã hoàn thành' && t.状态 !== 'Đã thất bại') : [];
     return { points: s.系统点 ?? 0, world: s.当前世界 || '', tasks: tasks.length, task: tasks[0]?.名称 || '', currency: s.当前货币 || '', amount: s.持有金额 ?? '' };
 }
 
@@ -33,10 +34,10 @@ export class Features {
     get ctx() { return this.app.adapter.context(); }
     popup(html, wide = false) {
         const c = this.ctx, el = document.createElement('div'); el.className = 'zt-popup'; el.innerHTML = html;
-        c.callGenericPopup(el, c.POPUP_TYPE.TEXT, '', { wide, large: wide, allowVerticalScrolling: true, okButton: '关闭' });
+        c.callGenericPopup(el, c.POPUP_TYPE.TEXT, '', { wide, large: wide, allowVerticalScrolling: true, okButton: 'Đóng' });
         return el;
     }
-    toast(kind, text) { globalThis.toastr?.[kind]?.(kind === 'error' ? errorLine(text) : text, '诸天'); }
+    toast(kind, text) { globalThis.toastr?.[kind]?.(kind === 'error' ? errorLine(text) : text, 'Chư Thiên'); }
 
     // ---------- worldbook ----------
     async worldbookStatus() {
@@ -51,13 +52,13 @@ export class Features {
     async staleNotice() {
         if (this.staleShown) return; this.staleShown = true;
         const st = await this.worldbookStatus().catch(() => null);
-        if (st?.exists && !st.current) this.toast('info', `“${WORLD_NAME}”世界书不是插件最新版（缺少聊天群衔接等条目）。可在 设置 → 世界书安装 / 绑定 → 更新到最新版（会先备份）。`);
+        if (st?.exists && !st.current) this.toast('info', `Sách Thế Giới “${WORLD_DISPLAY_NAME}” (${WORLD_NAME}) không phải bản mới nhất của plugin (thiếu các mục kết nối nhóm chat, v.v.). Bạn có thể vào Cài đặt → Cài đặt / Liên kết Sách Thế Giới → Cập nhật lên bản mới nhất (sẽ sao lưu trước).`);
     }
     latestRules() { return latestRules(this.app.original.ZhuTianBuiltinRules).rules; }
     /** Brings an existing book up to this version: backup first (a separate book), then built-in entries replaced,
      *  the user's own entries and on/off choices kept. */
     async updateWorldbook() {
-        if (this.wbUpdating) throw Error('世界书正在升级，请勿重复提交。');
+        if (this.wbUpdating) throw Error('Sách Thế Giới đang được nâng cấp, vui lòng không gửi lặp lại.');
         this.wbUpdating = true;
         try { return await this.writeWorldbookUpgrade(); } finally { this.wbUpdating = false; }
     }
@@ -66,15 +67,15 @@ export class Features {
         // Host loadWorldInfo returns cached data even after failed saves. Verify the server, not its cache.
         const readDisk = async name => {
             const response = await fetch('/api/worldinfo/get', { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: c.getRequestHeaders(), body: JSON.stringify({ name }), signal: AbortSignal.timeout(15000) });
-            if (!response.ok) throw Error('世界书服务器核验失败 HTTP ' + response.status);
+            if (!response.ok) throw Error('Xác minh máy chủ Sách Thế Giới thất bại HTTP ' + response.status);
             return response.json();
         };
         const book = await readDisk(WORLD_NAME);
         if (!book?.entries || !Object.keys(book.entries).length) return { ...(await this.installWorldbook('none')), created: true };
-        const stamp = new Date().toLocaleString('sv-SE').replace(/[-: ]/g, '').slice(0, 14), backup = `${WORLD_NAME}-备份-${stamp}-${crypto.randomUUID().slice(0, 8)}`;
+        const stamp = new Date().toLocaleString('sv-SE').replace(/[-: ]/g, '').slice(0, 14), backup = `${WORLD_NAME}-SaoLuu-${stamp}-${crypto.randomUUID().slice(0, 8)}`;
         await c.saveWorldInfo(backup, structuredClone(book), true);
         const backupRead = await readDisk(backup);
-        if (stable(backupRead?.entries) !== stable(book.entries)) throw Error('世界书备份读回不一致，未更新原书。');
+        if (stable(backupRead?.entries) !== stable(book.entries)) throw Error('Đọc lại bản sao lưu Sách Thế Giới không khớp, chưa cập nhật sách gốc.');
         const legacy = latestRules(this.app.original.ZhuTianBuiltinRules, { legacy: true }).rules;
         // 1.1.1: what the previous version installed is not a user edit either (no false「自定义修改」question)
         const known = [latestRules(this.app.original.ZhuTianBuiltinRules, { previous: true }).rules, latestRules(this.app.original.ZhuTianBuiltinRules, { legacy: true, previous: true }).rules];
@@ -85,14 +86,14 @@ export class Features {
             seen.add(old.comment);
             const base = legacy.find(x => x.comment === old.comment), next = Object.values(r.book.entries).find(x => x.comment === old.comment);
             if (base && next && old.content !== base.content && old.content !== next.content && !known.some(list => list.find(x => x.comment === old.comment)?.content === old.content)) {
-                if (!globalThis.confirm(`「${old.comment}」内容与插件旧版不同，可能有你的自定义修改。已备份到 ${backup}。确定覆盖为新版？取消只保留这一条。`)) { const uid = next.uid; r.book.entries[uid] = { ...structuredClone(old), uid }; preserved++; }
+                if (!globalThis.confirm(`Nội dung 「${old.comment}」 khác với bản cũ của plugin, có thể chứa chỉnh sửa tùy chỉnh của bạn. Đã sao lưu vào ${backup}. Xác nhận ghi đè bằng bản mới? Nhấn Hủy để giữ lại mục này.`)) { const uid = next.uid; r.book.entries[uid] = { ...structuredClone(old), uid }; preserved++; }
             }
         }
-        if (stable(await readDisk(WORLD_NAME)) !== stable(book)) throw Error('升级期间世界书被其它操作改动，已停止覆盖；备份：' + backup);
+        if (stable(await readDisk(WORLD_NAME)) !== stable(book)) throw Error('Trong quá trình nâng cấp, Sách Thế Giới đã bị thao tác khác thay đổi, đã dừng ghi đè; bản sao lưu: ' + backup);
         await c.saveWorldInfo(WORLD_NAME, r.book, true);
         await c.updateWorldInfoList?.();
         const checked = await readDisk(WORLD_NAME);
-        if (stable(checked?.entries) !== stable(r.book.entries)) throw Error('更新结果未核实，请从备份书核对：' + backup);
+        if (stable(checked?.entries) !== stable(r.book.entries)) throw Error('Kết quả cập nhật chưa được xác thực, vui lòng đối chiếu từ sách sao lưu: ' + backup);
         return { ...(await this.worldbookStatus()), backup, preserved, replaced: r.replaced, added: r.added, kept: r.kept };
     }
     /** 0.8.4 强力模块: current on/off of the switchable entries in the installed book (book-wide, all chats). */
@@ -104,7 +105,7 @@ export class Features {
     async setModules(want) {
         const c = this.ctx; let book = null;
         try { book = await c.loadWorldInfo(WORLD_NAME); } catch { book = null; }
-        if (!book?.entries || !Object.keys(book.entries).length) throw Error(`还没有安装“${WORLD_NAME}”世界书：设置 → 世界书安装 / 绑定。`);
+        if (!book?.entries || !Object.keys(book.entries).length) throw Error(`Chưa cài đặt Sách Thế Giới “${WORLD_DISPLAY_NAME}” (${WORLD_NAME}): Cài đặt → Cài đặt / Liên kết Sách Thế Giới.`);
         const allowed = Object.fromEntries(Object.entries(want || {}).filter(([k]) => BALANCE_MODULES.some(m => m.comment === k)));
         const r = applyModules(book, allowed);
         if (r.changed) { await c.saveWorldInfo(WORLD_NAME, r.book, true); await c.updateWorldInfoList?.(); }
@@ -113,7 +114,7 @@ export class Features {
     /** The same book as a SillyTavern world-info JSON file (for manual import / sharing). */
     exportWorldbook() {
         const blob = new Blob([JSON.stringify(buildWorldbook(this.latestRules()), null, 2)], { type: 'application/json' });
-        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${WORLD_NAME}-插件${WORLDBOOK_REV}.json`;
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `${WORLD_NAME}-plugin-${WORLDBOOK_REV}.json`;
         document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
     }
     async installWorldbook(bind) {
@@ -123,7 +124,7 @@ export class Features {
             await c.updateWorldInfoList?.();
         }
         if (bind === 'chat') {
-            if (!this.app.adapter.currentIdentity()) throw Error('请先打开单角色聊天再绑定。');
+            if (!this.app.adapter.currentIdentity()) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước khi liên kết.');
             c.chatMetadata.world_info = WORLD_NAME; await c.saveMetadata();
         }
         return this.worldbookStatus();
@@ -148,9 +149,9 @@ export class Features {
         if ((wi?.selected_world_info || []).includes(WORLD_NAME)) return this.wbAuto = 'global';
         if (charBooks.includes(WORLD_NAME)) return this.wbAuto = 'character';
         const st = await this.installWorldbook('chat');
-        if (st.chatBound) this.toast('info', `已自动安装并绑定“${WORLD_NAME}”世界书（${st.count} 条）到当前聊天。可在设置中关闭自动绑定。`);
+        if (st.chatBound) this.toast('info', `Đã tự động cài đặt và liên kết Sách Thế Giới “${WORLD_DISPLAY_NAME}” (${st.count} mục) vào cuộc trò chuyện hiện tại. Có thể tắt tự động liên kết trong Cài đặt.`);
         const b = await this.worldbookBudget().catch(() => null);
-        if (b && !b.ok) this.toast('warning', `世界书预算只有 ${b.budget} token，诸天常驻规则需要约 ${b.need}，酒馆会整批跳过它们。打开“兼容诊断”可一键调整。`);
+        if (b && !b.ok) this.toast('warning', `Ngân sách Sách Thế Giới chỉ có ${b.budget} token, quy tắc thường trú Chư Thiên cần khoảng ${b.need}, quán rượu sẽ bỏ qua toàn bộ chúng. Mở “Chẩn đoán tương thích” để điều chỉnh bằng một chạm.`);
         return this.wbAuto = st.chatBound ? 'auto-bound' : 'failed';
     }
     /** The 11 constant 诸天 rules (~12k characters) must fit SillyTavern's world-info budget, otherwise ST silently
@@ -172,7 +173,7 @@ export class Features {
         const set = (id, v) => { const el = document.getElementById(id); if (!el) return false; el.value = String(v); el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); return true; };
         const done = set('world_info_budget', pct);
         if (b.cap > 0 && b.cap < b.need) set('world_info_budget_cap', 0);
-        if (pct >= 100 && b.max * 1.0 < b.need * 1.25) this.toast('warning', '上下文长度太小，即使预算 100% 也放不下诸天常驻规则，请在 API 设置中调大上下文。');
+        if (pct >= 100 && b.max * 1.0 < b.need * 1.25) this.toast('warning', 'Độ dài ngữ cảnh quá nhỏ, ngay cả khi ngân sách 100% cũng không đủ chứa quy tắc thường trú Chư Thiên, vui lòng tăng ngữ cảnh trong cài đặt API.');
         return done;
     }
     // ---------- 0.8.2 解绑 ----------
@@ -187,7 +188,7 @@ export class Features {
         return rec;
     }
     async restoreWorldbook() {
-        const rec = this.app.settings.get('wbUnbound'); if (!rec) throw Error('没有可恢复的解绑记录。');
+        const rec = this.app.settings.get('wbUnbound'); if (!rec) throw Error('Không có bản ghi gỡ liên kết nào có thể khôi phục.');
         const r = await restoreBindings(this.ctx, rec);
         this.app.settings.set('wbUnbound', null);
         return r;
@@ -196,48 +197,48 @@ export class Features {
     unbindNotice() {
         const rec = this.app.settings.get('wbUnbound'); if (!rec?.auto || rec.noticed) return;
         this.app.settings.set('wbUnbound', { ...rec, noticed: true });
-        this.toast('info', `上次关闭插件时，已把“${WORLD_NAME}”世界书从 ${describeBindings(rec)} 解绑。需要恢复：终端 → 设置 → 世界书 → 恢复绑定。`);
+        this.toast('info', `Lần trước khi tắt plugin, đã gỡ liên kết Sách Thế Giới “${WORLD_DISPLAY_NAME}” khỏi ${describeBindings(rec)}. Để khôi phục: Thiết bị đầu cuối → Cài đặt → Sách Thế Giới → Khôi phục liên kết.`);
     }
     async openWorldbook() {
         const st = await this.worldbookStatus(), b = await this.bindings().catch(() => null), last = this.app.settings.get('wbUnbound');
-        const bound = b ? [b.chars.length ? `角色卡 ${b.chars.length} 张（${esc(b.chars.slice(0, 6).map(c => c.name).join('、'))}${b.chars.length > 6 ? '…' : ''}）` : '', b.extra.length ? `附加世界书 ${b.extra.length} 张卡` : '', b.global ? '全局世界书' : '', b.chat ? '当前聊天' : ''].filter(Boolean).join('、') : '';
-        const el = this.popup(`<h3>诸天世界书（外挂，不依赖角色卡 MVU）</h3>
-<p>内置规则 ${st.builtin} 条（插件 ${WORLDBOOK_REV} 版）。当前酒馆：${st.exists ? `已存在“${esc(WORLD_NAME)}”（${st.count} 条，${st.current ? '<b>已是最新</b>' : '<b>不是最新版</b>，可点「更新到最新版」'}）` : '尚未安装'}；当前聊天${st.chatBound ? '<b>已绑定</b>' : '未绑定'}。</p>
-<div class="zt-popup-actions"><div class="menu_button" data-wb="install">仅安装世界书</div><div class="menu_button" data-wb="chat">安装并绑定到当前聊天</div><div class="menu_button" data-wb="update">更新到最新版（先备份）</div><div class="menu_button" data-wb="export">导出 JSON</div></div>
-<p class="zt-note">绑定为“聊天世界书”（chat_metadata.world_info），只影响当前聊天，与其他角色卡隔离。已存在同名世界书时只绑定，不覆盖你改过的条目。</p>
-<h4>解绑</h4>
-<p class="zt-wb-bound">现在绑定在：${bound || '没有任何地方'}。</p>
-<div class="zt-popup-actions"><div class="menu_button" data-wb="unbind" ${b?.total ? '' : 'aria-disabled="true"'}>一键解绑全部</div>${last ? `<div class="menu_button" data-wb="restore" title="${esc(describeBindings(last))}">恢复上次解绑（${esc(describeBindings(last))}）</div>` : ''}</div>
-<p class="zt-note">解绑只取消绑定，不删除世界书。会同时关闭“诸天存档自动绑定世界书”，否则当前诸天聊天下一条消息又会自动绑上。其他聊天文件里的聊天世界书不改动（只在那些诸天聊天里生效）。关闭插件时会自动做同样的解绑（设置里可关；需要 SillyTavern 1.17 及以上，1.16 没有关闭钩子）。</p><p class="zt-out"></p>`);
+        const bound = b ? [b.chars.length ? `${b.chars.length} thẻ nhân vật (${esc(b.chars.slice(0, 6).map(c => c.name).join(', '))}${b.chars.length > 6 ? '…' : ''})` : '', b.extra.length ? `Sách Thế Giới phụ trên ${b.extra.length} thẻ` : '', b.global ? 'Sách Thế Giới toàn cục' : '', b.chat ? 'cuộc trò chuyện hiện tại' : ''].filter(Boolean).join(', ') : '';
+        const el = this.popup(`<h3>Sách Thế Giới Chư Thiên (ngoại vi, không phụ thuộc MVU thẻ nhân vật)</h3>
+<p>Quy tắc tích hợp sẵn: ${st.builtin} mục (bản plugin ${WORLDBOOK_REV}). Quán rượu hiện tại: ${st.exists ? `Đã tồn tại “${esc(WORLD_NAME)}” (${st.count} mục, ${st.current ? '<b>đã là bản mới nhất</b>' : '<b>chưa phải bản mới nhất</b>, có thể bấm 「Cập nhật lên bản mới nhất」'})` : 'chưa cài đặt'}; cuộc trò chuyện hiện tại: ${st.chatBound ? '<b>đã liên kết</b>' : 'chưa liên kết'}.</p>
+<div class="zt-popup-actions"><div class="menu_button" data-wb="install">Chỉ cài đặt Sách Thế Giới</div><div class="menu_button" data-wb="chat">Cài đặt và liên kết vào cuộc trò chuyện hiện tại</div><div class="menu_button" data-wb="update">Cập nhật lên bản mới nhất (sao lưu trước)</div><div class="menu_button" data-wb="export">Xuất JSON</div></div>
+<p class="zt-note">Liên kết dưới dạng “Sách Thế Giới trò chuyện” (chat_metadata.world_info), chỉ ảnh hưởng đến cuộc trò chuyện hiện tại, tách biệt với các thẻ nhân vật khác. Khi đã tồn tại Sách Thế Giới cùng tên thì chỉ liên kết, không ghi đè các mục bạn đã sửa.</p>
+<h4>Gỡ liên kết</h4>
+<p class="zt-wb-bound">Hiện đang liên kết tại: ${bound || 'không có nơi nào'}.</p>
+<div class="zt-popup-actions"><div class="menu_button" data-wb="unbind" ${b?.total ? '' : 'aria-disabled="true"'}>Gỡ toàn bộ liên kết bằng 1 chạm</div>${last ? `<div class="menu_button" data-wb="restore" title="${esc(describeBindings(last))}">Khôi phục lần gỡ trước (${esc(describeBindings(last))})</div>` : ''}</div>
+<p class="zt-note">Gỡ liên kết chỉ hủy liên kết chứ không xóa Sách Thế Giới. Sẽ đồng thời tắt “Bản lưu Chư Thiên tự động liên kết Sách Thế Giới”, nếu không ở tin nhắn tiếp theo cuộc trò chuyện Chư Thiên hiện tại sẽ tự động liên kết lại. Sách Thế Giới trò chuyện trong các tệp trò chuyện khác không bị thay đổi (chỉ có hiệu lực trong những cuộc trò chuyện Chư Thiên đó). Khi tắt plugin sẽ tự động thực hiện gỡ liên kết tương tự (có thể tắt trong Cài đặt; yêu cầu SillyTavern 1.17 trở lên, 1.16 không có hook khi tắt).</p><p class="zt-out"></p>`);
         el.addEventListener('click', async e => {
             const act = e.target.closest('[data-wb]')?.dataset.wb; if (!act) return;
             const out = el.querySelector('.zt-out');
             if (act === 'export') { this.exportWorldbook(); return; }
             if (act === 'unbind') {
-                try { const r = await this.unbindWorldbook(); out.textContent = r.count ? `已解绑：${describeBindings(r)}。${r.errors.length ? '部分失败：' + r.errors.join('；') : ''}自动绑定已关闭。` : '没有找到需要解绑的地方。'; el.querySelector('.zt-wb-bound').textContent = '现在绑定在：没有任何地方。'; if (r.count) this.toast('success', `已解绑 ${r.count} 处`); }
-                catch (err) { out.textContent = '未完成：' + errorLine(err); }
+                try { const r = await this.unbindWorldbook(); out.textContent = r.count ? `Đã gỡ liên kết: ${describeBindings(r)}. ${r.errors.length ? 'Một phần thất bại: ' + r.errors.join('; ') : ''}Tự động liên kết đã tắt.` : 'Không tìm thấy nơi nào cần gỡ liên kết.'; el.querySelector('.zt-wb-bound').textContent = 'Hiện đang liên kết tại: không có nơi nào.'; if (r.count) this.toast('success', `Đã gỡ liên kết ${r.count} nơi`); }
+                catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
                 return;
             }
             if (act === 'restore') {
-                try { const r = await this.restoreWorldbook(); out.textContent = `已恢复 ${r.count} 处${r.skipped ? `，${r.skipped} 处跳过（角色卡已删除或换了别的世界书）` : ''}。`; e.target.closest('[data-wb]').remove(); }
-                catch (err) { out.textContent = '未完成：' + errorLine(err); }
+                try { const r = await this.restoreWorldbook(); out.textContent = `Đã khôi phục ${r.count} nơi${r.skipped ? `, bỏ qua ${r.skipped} nơi (thẻ nhân vật đã xóa hoặc đã đổi sang Sách Thế Giới khác)` : ''}.`; e.target.closest('[data-wb]').remove(); }
+                catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
                 return;
             }
             if (act === 'update') {
-                if (!confirm('升级影响：商城改为不强制削弱，禁忌仅获得时有门槛；补充剧情收纳、多人羁绊和盲盒规则。先备份整本世界书；保留你的开关、关键词和插入设置，自改同名正文逐条询问。是否继续？')) return;
-                try { const r = await this.updateWorldbook(); out.textContent = r.created ? `已安装最新版（${r.count} 条）。` : `已更新：同步 ${r.replaced - r.preserved} 条、新增 ${r.added} 条、保留自改正文 ${r.preserved} 条及自定义条目 ${r.kept} 条；旧版已备份为“${r.backup}”。`; this.toast('success', r.preserved ? '世界书已处理；保留的自改条目请手动合并新规则' : '世界书已更新到插件最新版'); }
-                catch (err) { out.textContent = '未完成：' + errorLine(err); }
+                if (!confirm('Ảnh hưởng nâng cấp: Thương thành đổi thành không ép buộc suy yếu, Cấm kỵ chỉ có ngưỡng khi nhận được; bổ sung quy tắc lưu trữ cốt truyện,羁绊 (liên kết) nhiều người và hộp mù. Sao lưu toàn bộ Sách Thế Giới trước; giữ nguyên công tắc, từ khóa và cài đặt chèn của bạn, các mục trùng tên đã tự sửa sẽ hỏi từng mục một. Tiếp tục?')) return;
+                try { const r = await this.updateWorldbook(); out.textContent = r.created ? `Đã cài đặt bản mới nhất (${r.count} mục).` : `Đã cập nhật: đồng bộ ${r.replaced - r.preserved} mục, thêm mới ${r.added} mục, giữ lại ${r.preserved} mục tự sửa và ${r.kept} mục tùy chỉnh; bản cũ đã sao lưu thành “${r.backup}”.`; this.toast('success', r.preserved ? 'Đã xử lý Sách Thế Giới; các mục tự sửa được giữ lại vui lòng tự gộp quy tắc mới' : 'Đã cập nhật Sách Thế Giới lên bản mới nhất của plugin'); }
+                catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
                 return;
             }
-            try { const r = await this.installWorldbook(act === 'chat' ? 'chat' : 'none'); out.textContent = `完成：世界书 ${r.count} 条；当前聊天${r.chatBound ? '已绑定' : '未绑定'}。`; this.toast('success', '世界书已就绪'); }
-            catch (err) { out.textContent = '未完成：' + errorLine(err); }
+            try { const r = await this.installWorldbook(act === 'chat' ? 'chat' : 'none'); out.textContent = `Hoàn tất: Sách Thế Giới ${r.count} mục; cuộc trò chuyện hiện tại ${r.chatBound ? 'đã liên kết' : 'chưa liên kết'}.`; this.toast('success', 'Sách Thế Giới đã sẵn sàng'); }
+            catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
         });
     }
 
     // ---------- new chat init / migration / rollback ----------
     async initChat() {
         const a = this.app.adapter;
-        if (!a.currentIdentity()) throw Error('请先打开单角色聊天。');
+        if (!a.currentIdentity()) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước.');
         const before = a.ledger();
         const ledger = await this.app.statusbar.initializeChat();
         return { created: !before, points: ledger?.系统点 ?? null };
@@ -254,20 +255,20 @@ export class Features {
     }
     openMigration() {
         const r = this.migrationReport();
-        const rows = r.backups.map(b => `<tr><td>${new Date(b.at).toLocaleString()}${b.reason ? `<br><small>${esc(b.reason)}</small>` : ''}</td><td>楼 ${b.floor}</td><td>${esc(b.balance)}</td><td><div class="menu_button" data-restore="${b.at}">回滚到此</div></td></tr>`).reverse().join('') || '<tr><td colspan="4">暂无自动备份（账本首次被原生状态栏改动时自动生成，最多 5 份）。</td></tr>';
-        const el = this.popup(`<h3>旧存档迁移与账本回滚</h3>
-<p>旧存档由酒馆助手写入的聊天变量（chat_metadata.variables）与本扩展使用<b>同一位置</b>，账本、记忆、私聊记录无需转换即可直接读取。</p>
-<ul><li>诸天账本：${r.ledger ? '已检测到' : '无（可用“新聊天初始化”创建）'}</li><li>原版记忆存档：${r.memory ? '已检测到' : '无'}</li><li>莉莉丝私聊记录：${r.companion ? '已检测到' : '无'}</li>
-<li>旧助手脚本配置（API/界面/私聊框）：${r.legacyScript.length ? '找到 ' + esc(r.legacyScript.join('、')) : '未找到'}${r.imported ? '（已导入过）' : ''}</li><li>原生结算凭据：${r.receipts} 条</li><li>酒馆助手：${r.thActive ? '仍在运行（建议停用旧状态栏正则与旧助手脚本）' : '未运行'}</li></ul>
-<div class="zt-popup-actions"><div class="menu_button" data-mig="import">重新导入旧助手配置</div></div>
-<h4>账本自动备份</h4><table class="zt-table"><tr><th>时间</th><th>楼层</th><th>系统点</th><th></th></tr>${rows}</table><p class="zt-out"></p>`, true);
+        const rows = r.backups.map(b => `<tr><td>${new Date(b.at).toLocaleString()}${b.reason ? `<br><small>${esc(b.reason)}</small>` : ''}</td><td>Tầng ${b.floor}</td><td>${esc(b.balance)}</td><td><div class="menu_button" data-restore="${b.at}">Quay lui về đây</div></td></tr>`).reverse().join('') || '<tr><td colspan="4">Chưa có bản sao lưu tự động nào (tự động tạo khi sổ cái lần đầu bị thanh trạng thái nguyên bản thay đổi, tối đa 5 bản).</td></tr>';
+        const el = this.popup(`<h3>Di chuyển bản lưu cũ & Quay lui sổ cái</h3>
+<p>Biến trò chuyện (chat_metadata.variables) do Tavern Helper ghi ở bản lưu cũ và tiện ích mở rộng này sử dụng <b>cùng một vị trí</b>, sổ cái, ký ức và lịch sử trò chuyện riêng có thể đọc trực tiếp mà không cần chuyển đổi.</p>
+<ul><li>Sổ cái Chư Thiên: ${r.ledger ? 'Đã phát hiện' : 'Không có (có thể dùng “Khởi tạo cuộc trò chuyện mới” để tạo)'}</li><li>Bản lưu ký ức gốc: ${r.memory ? 'Đã phát hiện' : 'Không có'}</li><li>Lịch sử trò chuyện riêng với Lilith: ${r.companion ? 'Đã phát hiện' : 'Không có'}</li>
+<li>Cấu hình script trợ lý cũ (API/Giao diện/Khung trò chuyện riêng): ${r.legacyScript.length ? 'Tìm thấy ' + esc(r.legacyScript.join(', ')) : 'Không tìm thấy'}${r.imported ? ' (đã nhập)' : ''}</li><li>Chứng từ quyết toán nguyên bản: ${r.receipts} mục</li><li>Tavern Helper: ${r.thActive ? 'Đang chạy (khuyên dùng tắt regex thanh trạng thái cũ và script trợ lý cũ)' : 'Không chạy'}</li></ul>
+<div class="zt-popup-actions"><div class="menu_button" data-mig="import">Nhập lại cấu hình trợ lý cũ</div></div>
+<h4>Sao lưu tự động sổ cái</h4><table class="zt-table"><tr><th>Thời gian</th><th>Tầng</th><th>Điểm Hệ Thống</th><th></th></tr>${rows}</table><p class="zt-out"></p>`, true);
         el.addEventListener('click', async e => {
             const out = el.querySelector('.zt-out');
             try {
-                if (e.target.closest('[data-mig="import"]')) { this.app.settings.set('legacyImported', false); const d = this.app.assistant?.importLegacyConfig(); out.textContent = d ? '已导入：' + Object.keys(d).join('、') + '；刷新页面后莉莉丝窗口使用新配置。' : '没有找到旧配置。'; }
+                if (e.target.closest('[data-mig="import"]')) { this.app.settings.set('legacyImported', false); const d = this.app.assistant?.importLegacyConfig(); out.textContent = d ? 'Đã nhập: ' + Object.keys(d).join(', ') + '; sau khi tải lại trang cửa sổ Lilith sẽ dùng cấu hình mới.' : 'Không tìm thấy cấu hình cũ.'; }
                 const at = e.target.closest('[data-restore]')?.dataset.restore;
-                if (at && confirm('把诸天账本回滚到这份备份？当前账本会被替换（回滚前的状态也会先自动备份）。')) { await this.app.bridge.restoreBackup(Number(at)); out.textContent = '已回滚并保存。'; this.app.statusbar?.rebuild(); }
-            } catch (err) { out.textContent = '未完成：' + errorLine(err); }
+                if (at && confirm('Quay lui sổ cái Chư Thiên về bản sao lưu này? Sổ cái hiện tại sẽ bị thay thế (trạng thái trước khi quay lui cũng sẽ được tự động sao lưu trước).')) { await this.app.bridge.restoreBackup(Number(at)); out.textContent = 'Đã quay lui và lưu lại.'; this.app.statusbar?.rebuild(); }
+            } catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
         });
     }
     /** 0.9.1: the two AI endpoint configs (for 复制诊断信息: only host + model are reported). */
@@ -276,46 +277,46 @@ export class Features {
     async copyDiagnostics() {
         await this.worldbookBudget().catch(() => null);
         const text = buildReport(this.app);
-        if (await copyText(text)) { this.toast('success', '已复制诊断信息（不含 API Key 和聊天内容），可以直接粘贴发送'); return text; }
-        const el = this.popup(`<h3>诊断信息</h3><p>浏览器不允许自动复制：长按下面的文字框 → 全选 → 复制。</p><textarea class="text_pole" readonly style="width:100%;height:50vh;font:12px/1.4 monospace">${esc(text)}</textarea>`, true);
+        if (await copyText(text)) { this.toast('success', 'Đã sao chép thông tin chẩn đoán (không chứa API Key và nội dung trò chuyện), có thể dán và gửi trực tiếp'); return text; }
+        const el = this.popup(`<h3>Thông tin chẩn đoán</h3><p>Trình duyệt không cho phép tự động sao chép: nhấn giữ khung văn bản bên dưới → Chọn tất cả → Sao chép.</p><textarea class="text_pole" readonly style="width:100%;height:50vh;font:12px/1.4 monospace">${esc(text)}</textarea>`, true);
         el.querySelector('textarea')?.select();
         return text;
     }
     async openDiagnostics() {
         await this.worldbookBudget().catch(() => null);
         const a = this.app.adapter, caps = a.capabilities || [], sb = this.app.statusbar?.state || {};
-        this.popup(`<h3>兼容诊断 · ${VERSION}</h3>
-<p>SillyTavern <b>${esc(a.version)}</b>：${esc(a.support?.reason)}</p><p>已验收版本：${HOST_TESTED.join(' / ')}（每个版本均在隔离真实宿主上跑过浏览器验收）。</p>
-<table class="zt-table"><tr><th>接口</th><th>状态</th></tr>${caps.map(x => `<tr><td>${esc(x.label)}</td><td>${x.ok ? '✅' : '❌ 相关功能自动停用'}</td></tr>`).join('')}</table>
-<p>原生状态栏：${esc(sb.mode)} — ${esc(sb.reason)}</p>${(d => d ? `<p>最新楼层：${d.ok === true ? '✅' : d.ok === false ? '⚠' : 'ℹ'} ${esc(d.text)}</p>` : '')(this.app.statusbar?.diagnoseLast?.())}<p>莉莉丝助手：${(h => h ? (h.ok ? '运行中（原版代码 + 原生桥接）' : '⚠ 窗口已创建但原版未完全启动：' + esc(h.text)) : esc(this.app.assistantError || '未启动'))(this.app.assistant?.health?.())}</p>
-<p>立绘：${esc(this.app.portrait?.describe?.() || '原版分层参数动画')}</p>
-<h4>原版 v1.1 取代情况</h4><table class="zt-table"><tr><th>原版组件</th><th>插件接管</th></tr>${this.replacementRows().map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</table>
-<div class="zt-popup-actions"><div class="menu_button" data-diag="copy">复制诊断信息</div><div class="menu_button" data-diag="selftest">手机真机自检</div><div class="menu_button" data-diag="takeover">一键接管旧版</div><div class="menu_button" data-diag="api">AI 接口设置</div><div class="menu_button" data-diag="rerender">重新渲染楼层</div>${this.wbBudget && !this.wbBudget.ok ? '<div class="menu_button" data-diag="budget">调整世界书预算</div>' : ''}</div>`, true)
-            .addEventListener('click', e => { const act = e.target.closest('[data-diag]')?.dataset.diag; if (act === 'copy') this.copyDiagnostics(); if (act === 'selftest') { e.target.closest('.popup')?.querySelector('.popup-button-ok')?.click(); setTimeout(() => this.app.deviceCheck?.run(), 300); } if (act === 'takeover') this.app.runTakeover?.(); if (act === 'api') this.app.openApiCenter?.(); if (act === 'rerender') { this.app.statusbar?.rebuild(); this.toast('success', '已重新渲染聊天楼层'); } if (act === 'budget' && this.fixWorldbookBudget()) { this.toast('success', '已调整世界书预算。'); this.worldbookBudget(); } });
+        this.popup(`<h3>Chẩn đoán tương thích · ${VERSION}</h3>
+<p>SillyTavern <b>${esc(a.version)}</b>: ${esc(a.support?.reason)}</p><p>Phiên bản đã nghiệm thu: ${HOST_TESTED.join(' / ')} (mỗi phiên bản đều đã chạy nghiệm thu trình duyệt trên host thực tế cô lập).</p>
+<table class="zt-table"><tr><th>Giao diện</th><th>Trạng thái</th></tr>${caps.map(x => `<tr><td>${esc(x.label)}</td><td>${x.ok ? '✅' : '❌ Tính năng liên quan tự động tắt'}</td></tr>`).join('')}</table>
+<p>Thanh trạng thái nguyên bản: ${esc(sb.mode)} — ${esc(sb.reason)}</p>${(d => d ? `<p>Tầng mới nhất: ${d.ok === true ? '✅' : d.ok === false ? '⚠' : 'ℹ'} ${esc(d.text)}</p>` : '')(this.app.statusbar?.diagnoseLast?.())}<p>Trợ lý Lilith: ${(h => h ? (h.ok ? 'Đang chạy (mã nguồn gốc + cầu nối nguyên bản)' : '⚠ Cửa sổ đã tạo nhưng bản gốc chưa khởi động hoàn toàn: ' + esc(h.text)) : esc(this.app.assistantError || 'Chưa khởi động'))(this.app.assistant?.health?.())}</p>
+<p>Hình nhân vật (Portrait): ${esc(this.app.portrait?.describe?.() || 'Hoạt ảnh tham số phân lớp nguyên bản')}</p>
+<h4>Tình trạng thay thế bản gốc v1.1</h4><table class="zt-table"><tr><th>Thành phần gốc</th><th>Plugin tiếp quản</th></tr>${this.replacementRows().map(([k, v]) => `<tr><td>${esc(k)}</td><td>${v}</td></tr>`).join('')}</table>
+<div class="zt-popup-actions"><div class="menu_button" data-diag="copy">Sao chép thông tin chẩn đoán</div><div class="menu_button" data-diag="selftest">Tự kiểm tra trên điện thoại thật</div><div class="menu_button" data-diag="takeover">Tiếp quản bản cũ bằng 1 chạm</div><div class="menu_button" data-diag="api">Cài đặt cổng AI</div><div class="menu_button" data-diag="rerender">Kết xuất lại các tầng</div>${this.wbBudget && !this.wbBudget.ok ? '<div class="menu_button" data-diag="budget">Điều chỉnh ngân sách Sách Thế Giới</div>' : ''}</div>`, true)
+            .addEventListener('click', e => { const act = e.target.closest('[data-diag]')?.dataset.diag; if (act === 'copy') this.copyDiagnostics(); if (act === 'selftest') { e.target.closest('.popup')?.querySelector('.popup-button-ok')?.click(); setTimeout(() => this.app.deviceCheck?.run(), 300); } if (act === 'takeover') this.app.runTakeover?.(); if (act === 'api') this.app.openApiCenter?.(); if (act === 'rerender') { this.app.statusbar?.rebuild(); this.toast('success', 'Đã kết xuất lại các tầng trò chuyện'); } if (act === 'budget' && this.fixWorldbookBudget()) { this.toast('success', 'Đã điều chỉnh ngân sách Sách Thế Giới.'); this.worldbookBudget(); } });
     }
     /** One row per piece of the original v1.1 install: what replaces it now and what is still left over. */
     replacementRows() {
         const app = this.app, st = app.settings, sb = app.statusbar, legacy = (() => { try { return detectLegacy(this.ctx); } catch { return []; } })();
         const left = kind => legacy.filter(i => i.kind === kind);
-        const on = (k, yes, no = '已关闭') => st.get(k) === false ? '⏸ ' + no : '✅ ' + yes;
+        const on = (k, yes, no = 'Đã tắt') => st.get(k) === false ? '⏸ ' + no : '✅ ' + yes;
         let api = { status: {}, assistant: {} }; try { api = readConfigs(app.bridge, app.original.ZhuTianMemoryCore?.NS); } catch { /* bridge gone */ }
-        const apiText = c => c?.url ? (isMainApi(c.url) ? '酒馆主 API' : esc(new URL(c.url).host) + (c.model ? ' · ' + esc(c.model) : '')) : '⚠ 未设置（打开 AI 接口设置）';
+        const apiText = c => c?.url ? (isMainApi(c.url) ? 'API chính của quán rượu' : esc(new URL(c.url).host) + (c.model ? ' · ' + esc(c.model) : '')) : '⚠ Chưa đặt (mở Cài đặt cổng AI)';
         const counts = sb?.counts || {};
         return [
-            ['世界书「诸天万界最强系统」', ({ chat: '✅ 已绑定到当前聊天', 'auto-bound': '✅ 已自动安装并绑定到当前聊天', global: '✅ 已作为全局世界书启用', character: '✅ 已绑定在角色卡上', 'other-chat-book': '⚠ 当前聊天绑定了别的世界书，未自动替换（可在“世界书安装/绑定”手动处理）', 'not-zhutian': '… 当前聊天还不是诸天存档（有账本或状态栏后自动绑定）', off: '⏸ 自动绑定已关闭' })[this.wbAuto] || esc(this.wbAuto || '检查中') + '（内置 35 条，逐条与原版一致）'],
-            ['世界书预算', !this.wbBudget ? '… 未检测' : this.wbBudget.ok ? `✅ ${this.wbBudget.budget} token ≥ 常驻规则约 ${this.wbBudget.need}` : `⚠ 仅 ${this.wbBudget.budget} token，常驻规则需要约 ${this.wbBudget.need}：酒馆会跳过诸天规则 — 点“调整世界书预算”`],
-            ['正则 · 状态栏 3.1', sb ? (sb.state.mode === 'terminal' ? '✅ 终端内原生渲染（8 分页全部功能），楼层只留小标签' : sb.state.mode === 'native' ? '✅ 旧兼容模式：楼层内原生渲染（0.7.0 起设置里不再提供）' : '⏸ ' + esc(sb.state.reason)) : '❌ ' + esc(app.statusbarError || '未启动')],
-            ['正则 · 旧楼层精简显示', sb?.state.mode === 'native' ? on('compactHistory', `原生精简卡（本页已显示 ${counts.compact || 0} 张），点击展开完整状态栏`) : '✅ 终端模式下楼层不再显示状态栏，由“系统已记录”小标签取代（点击打开终端）'],
-            ['正则 · 旧楼层不发给AI', on('promptStripPanels', `生成拦截器（保留最新 ${esc(st.get('promptPanelKeepDepth'))} 层；已处理 ${promptFilterStats.runs} 次生成 / ${promptFilterStats.floors} 层）`)],
-            ['正则 · 莉莉丝专属语音框', on('voiceBox', `原生语音框（已渲染 ${counts.voices || 0} 条），语气头像、不写情绪词`, '已关闭（台词按普通正文显示）')],
-            ['酒馆助手 · 变量宏', st.get('macroLike') === false ? '⏸ 已关闭' : tavernHelperMacrosActive(this.ctx) ? '↪ 酒馆助手在运行，由它处理（插件让位）' : !app.macros ? '⚠ 未启动（见控制台）' : /缺少/.test(app.macros.state || '') ? `⚠ ${esc(app.macros.state)}` : `✅ 原生处理 {{get_chat_variable::…}}（${app.macros?.stats?.prompts || 0} 次生成）`],
-            ['酒馆助手脚本 · 莉莉丝契约空间', app.assistant ? '✅ 原版代码经原生桥接运行（记忆、工作台、私聊、连接、立绘）' : '❌ ' + esc(app.assistantError || '未启用')],
-            ['真实触摸互动', app.touch?.stage ? on('touchGestures', `轻点 + 抚摸 + 长按 + 视线跟随（轻点 ${app.touch.stats.taps} / 抚摸 ${app.touch.stats.strokes} / 长按 ${app.touch.stats.holds}）`) : '… 打开莉莉丝窗口后挂载'],
-            ['数据块格式守卫（1.1.1）', app.panelGuard ? (st.get('panelGuard')?.repair === false ? '⏸ 自动修复已关闭 · ' : '✅ ') + esc(app.panelGuard.diag()) : '⚠ 未启动（见控制台）'],
-            ['重roll 记账回滚（1.1.1）', app.rerollGuard ? `✅ swipe / 重新生成前先回滚本楼快照（本次会话回滚 ${app.rerollGuard.stats.rolled} 次 / 重新记账 ${app.rerollGuard.stats.rebooked} 次）` : '⚠ 未启动（见控制台）'],
-            ['API · 状态栏', apiText(api.status)],
-            ['API · 莉莉丝助手 / 私聊', apiText(api.assistant)],
-            ['仍启用的旧版内容', legacy.length ? '⚠ ' + legacy.map(i => esc(`${i.kind === 'regex' ? '正则' : '脚本'}：${i.name}`)).join('；') + ' — 点“一键接管旧版”停用' + (left('script').length ? '（旧助手脚本与插件同时运行会出现两个莉莉丝）' : '') : '✅ 无，已完全由插件接管'],
+            ['Sách Thế Giới 「诸天万界最强系统」', ({ chat: '✅ Đã liên kết vào cuộc trò chuyện hiện tại', 'auto-bound': '✅ Đã tự động cài đặt và liên kết vào cuộc trò chuyện hiện tại', global: '✅ Đã bật làm Sách Thế Giới toàn cục', character: '✅ Đã liên kết trên thẻ nhân vật', 'other-chat-book': '⚠ Cuộc trò chuyện hiện tại đang liên kết Sách Thế Giới khác, chưa tự động thay thế (có thể xử lý thủ công tại “Cài đặt/Liên kết Sách Thế Giới”)', 'not-zhutian': '… Cuộc trò chuyện hiện tại chưa phải bản lưu Chư Thiên (sẽ tự động liên kết sau khi có sổ cái hoặc thanh trạng thái)', off: '⏸ Tự động liên kết đã tắt' })[this.wbAuto] || esc(this.wbAuto || 'Đang kiểm tra') + ' (tích hợp sẵn 35 mục, khớp từng mục với bản gốc)'],
+            ['Ngân sách Sách Thế Giới', !this.wbBudget ? '… Chưa kiểm tra' : this.wbBudget.ok ? `✅ ${this.wbBudget.budget} token ≥ quy tắc thường trú khoảng ${this.wbBudget.need}` : `⚠ Chỉ có ${this.wbBudget.budget} token, quy tắc thường trú cần khoảng ${this.wbBudget.need}: quán rượu sẽ bỏ qua quy tắc Chư Thiên — bấm “Điều chỉnh ngân sách Sách Thế Giới”`],
+            ['Regex · Thanh trạng thái 3.1', sb ? (sb.state.mode === 'terminal' ? '✅ Kết xuất nguyên bản trong thiết bị đầu cuối (đầy đủ 8 trang tab), tầng chat chỉ giữ nhãn nhỏ' : sb.state.mode === 'native' ? '✅ Chế độ tương thích cũ: kết xuất nguyên bản trong tầng chat (từ 0.7.0 không còn cung cấp trong cài đặt)' : '⏸ ' + esc(sb.state.reason)) : '❌ ' + esc(app.statusbarError || 'Chưa khởi động')],
+            ['Regex · Hiển thị rút gọn tầng cũ', sb?.state.mode === 'native' ? on('compactHistory', `Thẻ rút gọn nguyên bản (trang này đã hiển thị ${counts.compact || 0} thẻ), bấm để mở rộng thanh trạng thái đầy đủ`) : '✅ Ở chế độ thiết bị đầu cuối, các tầng không còn hiển thị thanh trạng thái mà thay bằng nhãn nhỏ “Hệ thống đã ghi nhận” (bấm để mở thiết bị đầu cuối)'],
+            ['Regex · Tầng cũ không gửi cho AI', on('promptStripPanels', `Bộ chặn khi tạo (giữ lại ${esc(st.get('promptPanelKeepDepth'))} tầng mới nhất; đã xử lý ${promptFilterStats.runs} lần tạo / ${promptFilterStats.floors} tầng)`)],
+            ['Regex · Khung giọng nói riêng của Lilith', on('voiceBox', `Khung giọng nói nguyên bản (đã kết xuất ${counts.voices || 0} mục), ảnh đại diện theo ngữ khí, không ghi từ chỉ cảm xúc`, 'Đã tắt (lời thoại hiển thị như văn bản thường)')],
+            ['Tavern Helper · Macro biến số', st.get('macroLike') === false ? '⏸ Đã tắt' : tavernHelperMacrosActive(this.ctx) ? '↪ Tavern Helper đang chạy, do nó xử lý (plugin nhường quyền)' : !app.macros ? '⚠ Chưa khởi động (xem bảng điều khiển)' : /缺少|Thiếu/.test(app.macros.state || '') ? `⚠ ${esc(app.macros.state)}` : `✅ Xử lý nguyên bản {{get_chat_variable::…}} (${app.macros?.stats?.prompts || 0} lần tạo)`],
+            ['Script Tavern Helper · Không Gian Khế Ước Lilith', app.assistant ? '✅ Mã nguồn gốc chạy qua cầu nối nguyên bản (ký ức, bàn làm việc, trò chuyện riêng, kết nối, hình nhân vật)' : '❌ ' + esc(app.assistantError || 'Chưa bật')],
+            ['Tương tác chạm thực tế', app.touch?.stage ? on('touchGestures', `Chạm nhẹ + Vuốt ve + Nhấn giữ + Ánh mắt dõi theo (chạm nhẹ ${app.touch.stats.taps} / vuốt ve ${app.touch.stats.strokes} / nhấn giữ ${app.touch.stats.holds})`) : '… Gắn sau khi mở cửa sổ Lilith'],
+            ['Bảo vệ định dạng khối dữ liệu (1.1.1)', app.panelGuard ? (st.get('panelGuard')?.repair === false ? '⏸ Tự động sửa đã tắt · ' : '✅ ') + esc(app.panelGuard.diag()) : '⚠ Chưa khởi động (xem bảng điều khiển)'],
+            ['Quay lui ghi sổ khi roll lại (1.1.1)', app.rerollGuard ? `✅ Quay lui bản chụp tầng này trước khi swipe / tạo lại (phiên này đã quay lui ${app.rerollGuard.stats.rolled} lần / ghi sổ lại ${app.rerollGuard.stats.rebooked} lần)` : '⚠ Chưa khởi động (xem bảng điều khiển)'],
+            ['API · Thanh trạng thái', apiText(api.status)],
+            ['API · Trợ lý Lilith / Trò chuyện riêng', apiText(api.assistant)],
+            ['Nội dung bản cũ vẫn đang bật', legacy.length ? '⚠ ' + legacy.map(i => esc(`${i.kind === 'regex' ? 'Regex' : 'Script'}: ${i.name}`)).join('; ') + ' — bấm “Tiếp quản bản cũ bằng 1 chạm” để tắt' + (left('script').length ? ' (chạy script trợ lý cũ cùng lúc với plugin sẽ xuất hiện hai Lilith)' : '') : '✅ Không có, đã được plugin tiếp quản hoàn toàn'],
         ];
     }
 
@@ -323,7 +324,7 @@ export class Features {
     mountHud() {
         const form = document.getElementById('send_form'); if (!form || this.hud) return;
         const hud = document.createElement('div'); hud.id = ID + '-hud'; hud.className = 'zt-hud'; hud.setAttribute('role', 'button'); hud.tabIndex = 0;
-        hud.title = '诸天账本速览 · 点击打开诸天终端';
+        hud.title = 'Xem nhanh sổ cái Chư Thiên · Bấm để mở Thiết Bị Đầu Cuối Chư Thiên';
         form.parentElement.insertBefore(hud, form); this.hud = hud;
         const go = () => this.app.openTerminal('ov');
         hud.addEventListener('click', go); hud.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
@@ -333,7 +334,7 @@ export class Features {
         if (!this.hud) return;
         const on = this.app.settings.get('hud'), s = ledgerSummary(this.app.adapter.variables());
         this.hud.hidden = !on || !s || !this.app.adapter.currentIdentity();
-        if (s) this.hud.innerHTML = `<span class="zt-hud-mark">诸天</span><span>系统点 <b>${esc(s.points)}</b></span>${s.world ? `<span>${esc(s.world)}</span>` : ''}${s.currency ? `<span>${esc(s.currency)} ${esc(s.amount)}</span>` : ''}<span>任务 ${s.tasks}${s.task ? ' · ' + esc(s.task) : ''}</span>`;
+        if (s) this.hud.innerHTML = `<span class="zt-hud-mark">Chư Thiên</span><span>Điểm Hệ Thống <b>${esc(s.points)}</b></span>${s.world ? `<span>${esc(s.world)}</span>` : ''}${s.currency ? `<span>${esc(s.currency)} ${esc(s.amount)}</span>` : ''}<span>Nhiệm vụ ${s.tasks}${s.task ? ' · ' + esc(s.task) : ''}</span>`;
     }
 
     // ---------- hotkeys / slash / macros ----------
@@ -351,8 +352,8 @@ export class Features {
         if (typeof c.registerSlashCommand === 'function' && !globalThis.__zhutianSlash) {
             globalThis.__zhutianSlash = true;   // the host has no unregister for legacy commands; callbacks resolve the live app
             c.registerSlashCommand('zt', (_args, value) => {
-                const app = globalThis.__zhutianApp; if (!app) return '诸天扩展未运行';
-                if (app.settings?.get('modules')?.slash === false) return '诸天斜杠命令已在 设置 → 功能开关 里关闭';
+                const app = globalThis.__zhutianApp; if (!app) return 'Tiện ích mở rộng Chư Thiên chưa chạy';
+                if (app.settings?.get('modules')?.slash === false) return 'Lệnh gạch chéo Chư Thiên đã bị tắt trong Cài đặt → Công tắc tính năng';
                 const [cmd, ...rest] = String(value || 'open').trim().split(/\s+/);
                 const f = app.features;
                 switch (cmd) {
@@ -360,7 +361,7 @@ export class Features {
                     case 'status': app.openTerminal('ov'); return '';
                     case 'shop': app.openTerminal('shop'); return '';
                     case 'bag': app.openTerminal('bag'); return '';
-                    case 'init': f.initChat().then(r => f.toast('success', r.created ? '已初始化诸天账本' : '账本已存在，已补齐缺失字段')).catch(e => f.toast('error', e.message)); return '';
+                    case 'init': f.initChat().then(r => f.toast('success', r.created ? 'Đã khởi tạo sổ cái Chư Thiên' : 'Sổ cái đã tồn tại, đã bổ sung các trường còn thiếu')).catch(e => f.toast('error', e.message)); return '';
                     case 'world': f.openWorldbook(); return '';
                     case 'backup': f.openMigration(); return '';
                     case 'export': case 'import': app.dataIO?.open(); return '';
@@ -369,14 +370,14 @@ export class Features {
                     case 'selftest': app.deviceCheck?.run(); return '';
                     case 'points': return String(ledgerSummary(app.adapter.variables())?.points ?? '');
                     case 'live2d': app.portrait?.setMode(rest[0] === 'off' ? 'rig' : 'live2d'); return '';
-                    default: return '用法：/zt open [页面]|status|shop|bag|init|world|backup|export|diag|copydiag|selftest|points|live2d [off]';
+                    default: return 'Cách dùng: /zt open [trang]|status|shop|bag|init|world|backup|export|diag|copydiag|selftest|points|live2d [off]';
                 }
-            }, ['zhutian'], '<span class="monospace">/zt open [页面]|status|shop|bag|init|world|backup|export|diag|copydiag|selftest|points|live2d</span> – 诸天终端', true, true);
+            }, ['zhutian'], '<span class="monospace">/zt open [trang]|status|shop|bag|init|world|backup|export|diag|copydiag|selftest|points|live2d</span> – Thiết Bị Đầu Cuối Chư Thiên', true, true);
         }
         if (!globalThis.__zhutianMacros && (typeof c.macros?.register === 'function' || typeof c.registerMacro === 'function')) {
             globalThis.__zhutianMacros = true;
             const read = f => () => { try { const s = ledgerSummary(globalThis.__zhutianApp?.adapter.variables()); return s ? inert(String(f(s))) : ''; } catch { return ''; } };
-            const defs = [['zt_points', s => s.points, '诸天：当前系统点'], ['zt_world', s => s.world, '诸天：当前世界'], ['zt_task', s => s.task, '诸天：第一个进行中的任务']];
+            const defs = [['zt_points', s => s.points, 'Chư Thiên: Điểm Hệ Thống hiện tại'], ['zt_world', s => s.world, 'Chư Thiên: Thế giới hiện tại'], ['zt_task', s => s.task, 'Chư Thiên: Nhiệm vụ đang tiến hành đầu tiên']];
             // The new macro engine exists from 1.16 but is only ON by default from 1.17 (power_user.experimental_macro_engine).
             // Always register there; add the legacy MacrosParser entry only while the flag is off (1.16 default, or a user
             // who switched it off), re-checked on every settings save so toggling it at runtime keeps {{zt_*}} working.
@@ -403,7 +404,7 @@ export class Features {
         this.scheduleWorldbook();
         setTimeout(() => { if (!this.dead) this.unbindNotice(); }, 2500);
     }
-    scheduleWorldbook() { clearTimeout(this.wbTimer); this.wbTimer = setTimeout(() => this.autoWorldbook().catch(e => { this.wbAuto = 'error: ' + e.message; console.warn('[诸天] 世界书自动绑定失败', e); }), 800); }
+    scheduleWorldbook() { clearTimeout(this.wbTimer); this.wbTimer = setTimeout(() => this.autoWorldbook().catch(e => { this.wbAuto = 'error: ' + e.message; console.warn('[Chư Thiên] Tự động liên kết Sách Thế Giới thất bại', e); }), 800); }
     dispose() { this.dead = true; clearTimeout(this.wbTimer); this.disposers.splice(0).forEach(f => f()); this.hud?.remove(); this.hud = null; }
 }
 export { STORAGE };

@@ -1,96 +1,96 @@
-# 0.1.0 开发检查点：实际验收报告
+# Điểm kiểm tra phát triển 0.1.0: Báo cáo nghiệm thu thực tế
 
-日期：2026-09-29。结论：**原生扩展入口、原版莉莉丝、正文玩家互动和部分原数据读取已经接通；原版全功能迁移尚未完成。**
+Ngày: 2026-09-29. Kết luận: **Lối vào tiện ích mở rộng gốc, Lilith nguyên bản, tương tác người chơi trong chính văn và một phần tính năng đọc dữ liệu gốc đã được kết nối; việc di chuyển toàn bộ tính năng nguyên bản vẫn chưa hoàn tất.**
 
-## 环境
+## Môi trường
 
-- 独立 SillyTavern **1.19.0**，commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127`。
-- 仅为平台内嵌预览，在这份一次性测试宿主中关闭 X-Frame-Options；HTTPS e2b 预览使用 Secure、SameSite=None、Partitioned 会话 Cookie，并保留 CSRF 防护。未改变聊天/发送 API。该预览专用调整及宿主配置不随扩展交付，不应应用于生产酒馆。
-- 全新测试数据目录。只使用带“隔离验收”名称的测试角色/聊天及明确标记的测试账本，不接触用户生产存档。
-- 未安装 Tavern Helper；没有模型凭据；没有发起付费或免费模型生成请求。
-- Playwright / Chromium；桌面 1500×1000、移动视口 390×844。
-- 动画验收使用软件 WebGL 渲染；另外禁用 WebGL 测试静态回退。这不代表真实手机 GPU、帧率或电量表现。
-- 扩展以真正的 `public/scripts/extensions/third-party/zhutian-covenant-terminal` 目录加载，调用真实 getContext 和 sendMessageAsUser；不是模拟宿主 API。
+- SillyTavern độc lập **1.19.0**, commit `06bde939fb1e9c4c8d8641d810f0a916b5bce127`.
+- Chỉ phục vụ xem trước nhúng trên nền tảng, trong máy chủ kiểm thử dùng một lần này đã tắt X-Frame-Options; bản xem trước HTTPS e2b sử dụng Cookie phiên Secure, SameSite=None, Partitioned và giữ nguyên bảo vệ CSRF. Không thay đổi API trò chuyện/gửi tin. Tinh chỉnh dành riêng cho xem trước này cùng cấu hình máy chủ không đi kèm gói tiện ích mở rộng và không nên áp dụng cho SillyTavern sản xuất thực tế.
+- Thư mục dữ liệu kiểm thử hoàn toàn mới. Chỉ sử dụng nhân vật/cuộc trò chuyện kiểm thử mang tên “Nghiệm thu cô lập” và sổ cái kiểm thử được đánh dấu rõ ràng, không chạm tới bản lưu thực tế của người dùng.
+- Chưa cài đặt Tavern Helper; không có thông tin xác thực mô hình; không phát sinh yêu cầu tạo phản hồi mô hình trả phí hay miễn phí.
+- Playwright / Chromium; máy tính 1500×1000, khung nhìn di động 390×844.
+- Nghiệm thu hoạt ảnh sử dụng kết xuất WebGL phần mềm; ngoài ra tắt WebGL để kiểm thử dự phòng tĩnh. Điều này không đại diện cho GPU điện thoại thực tế, tốc độ khung hình hay mức tiêu thụ pin.
+- Tiện ích mở rộng được tải từ thư mục thực tế `public/scripts/extensions/third-party/zhutian-covenant-terminal`, gọi `getContext` và `sendMessageAsUser` thực sự; không mô phỏng API máy chủ.
 
-## 通过的测试
+## Các bài kiểm thử đã đạt
 
-### 静态和纯逻辑
+### Kiểm tra tĩnh và thuần logic
 
-`npm run check` 通过；`npm test` **15/15** 通过：输入界限、宏与 HTML 中和、单角色身份、聊天快照、只读投影、能力边界、原记忆格式/证据/分支有效性、原动画 API 存在，以及五个原始文件 SHA256。
+`npm run check` đạt; `npm test` **15/15** đạt: giới hạn đầu vào, trung hòa macro & HTML, định danh đơn nhân vật, bản chụp nhanh cuộc trò chuyện, chiếu chỉ đọc, ranh giới năng lực, tính hợp lệ của định dạng/bằng chứng/nhánh ký ức gốc, sự tồn tại của API hoạt ảnh gốc, cùng mã băm SHA256 của năm tệp gốc.
 
-### 真实宿主主流程：14 项
+### Luồng chính trên máy chủ thực tế: 14 hạng mục
 
-原始结果：[evidence/acceptance.json](evidence/acceptance.json)。
+Kết quả gốc: [evidence/acceptance.json](evidence/acceptance.json).
 
-1. 原生扩展加载与入口出现。
-2. 原版立绘实际进入 `layers` 分层渲染模式。
-3. 立绘键盘点触产生未发送草稿，不新增聊天回复。
-4. 减少动态效果偏好、窗口关闭均暂停动画。
-5. 读取测试聊天原变量账本。
-6. 确认后发送真实玩家消息。
-7. 向另一剧情角色发送玩家行动。
-8. 保留主聊天输入框已有草稿。
-9. 重载后服务器持久化的 **2 条**玩家互动及其标记仍在。
-10. 明确启用原版回忆提示。
-11. 切换聊天清除旧预览及旧提示。
-12. 手机视口无横向溢出。
-13. 手机能展开原版莉莉丝角色面板。
-14. 停用、重新启用后入口唯一，不删除宿主聊天。
+1. Tiện ích mở rộng gốc tải thành công và xuất hiện lối vào.
+2. Tranh đứng nguyên bản thực sự đi vào chế độ kết xuất phân lớp `layers`.
+3. Chạm/bấm bàn phím vào tranh đứng tạo ra bản nháp chưa gửi, không tự thêm phản hồi trò chuyện mới.
+4. Tùy chọn giảm chuyển động và đóng cửa sổ đều tạm dừng hoạt ảnh.
+5. Đọc sổ cái biến số gốc của cuộc trò chuyện kiểm thử.
+6. Gửi tin nhắn người chơi thực sự sau khi xác nhận.
+7. Gửi hành động người chơi tới một nhân vật cốt truyện khác.
+8. Giữ nguyên bản nháp đang có trong ô nhập liệu trò chuyện chính.
+9. Sau khi tải lại trang, **2 mục** tương tác người chơi đã lưu bền vững trên máy chủ cùng nhãn đánh dấu của chúng vẫn còn nguyên.
+10. Bật rõ ràng gợi ý hồi ức nguyên bản.
+11. Chuyển cuộc trò chuyện sẽ xóa bản xem trước cũ và gợi ý cũ.
+12. Khung nhìn điện thoại không bị tràn ngang.
+13. Điện thoại mở rộng được bảng nhân vật Lilith nguyên bản.
+14. Sau khi tắt rồi bật lại, lối vào vẫn là duy nhất và không xóa cuộc trò chuyện trên máy chủ.
 
-### 发送防护与保存失败：5 组
+### Bảo vệ gửi tin & Lỗi lưu trữ: 5 nhóm
 
-原始结果：[evidence/guards.json](evidence/guards.json)。
+Kết quả gốc: [evidence/guards.json](evidence/guards.json).
 
-- 原附件输入中存在文件时拒绝发送，聊天条数不变。
-- 宿主编辑事件使旧草稿失效，包括非末条历史变化。
-- 宿主生成生命周期事件期间拒绝发送。**这是事件锁测试，不是真实模型生成验收。**
-- 并发提交及已用凭据拒绝，最多新增一条；测试宏/HTML 作为惰性文字，未执行脚本。
-- 仅将聊天读回接口故障注入为 HTTP 503：真实发送/保存依旧走宿主；扩展报告状态无法核实，不自动重试，再次提交原凭据也不会多发。
+- Từ chối gửi khi có tệp trong đầu vào đính kèm gốc, số lượng tin nhắn trò chuyện không đổi.
+- Sự kiện chỉnh sửa của máy chủ làm vô hiệu hóa bản nháp cũ, bao gồm cả thay đổi lịch sử ở tin nhắn không phải cuối cùng.
+- Từ chối gửi trong suốt sự kiện vòng đời tạo phản hồi của máy chủ. **Đây là bài kiểm thử khóa sự kiện, không phải nghiệm thu tạo phản hồi mô hình thực tế.**
+- Từ chối gửi đồng thời và chứng từ đã sử dụng, tối đa chỉ thêm mới một tin; macro/HTML kiểm thử được xử lý như văn bản trơ, không thực thi kịch bản.
+- Chỉ tiêm lỗi HTTP 503 vào giao diện đọc lại cuộc trò chuyện: việc gửi/lưu thực tế vẫn đi qua máy chủ; tiện ích mở rộng báo cáo trạng thái không thể xác minh, không tự động thử lại, gửi lại chứng từ cũ cũng không gây gửi lặp.
 
-### 移动首屏与 UI：9 组
+### Màn hình đầu di động & Giao diện (UI): 9 nhóm
 
-原始结果：[evidence/views.json](evidence/views.json)。
+Kết quả gốc: [evidence/views.json](evidence/views.json).
 
-- 六个视图全部无横向溢出。
-- 35 条内置规则与搜索结果正确。
-- 任务记录生成未发送提问草稿。
-- 背包条目生成未发送观察草稿，明确不消耗物品。
-- WebGL 禁用时仍可看到原版静态立绘。
-- 输入框仍有焦点时切换聊天，旧草稿也清空。
-- 从手机尺寸直接加载酒馆时，悬浮入口可见可点。
-- 未勾选确认时拒绝发送。
-- 快速停用/启用仍只留下一个入口和一个终端。
+- Cả sáu khung nhìn đều không bị tràn ngang.
+- 35 quy tắc tích hợp sẵn và kết quả tìm kiếm chính xác.
+- Bản ghi nhiệm vụ tạo ra bản nháp đặt câu hỏi chưa gửi.
+- Mục túi đồ tạo ra bản nháp quan sát chưa gửi, nêu rõ không tiêu hao vật phẩm.
+- Khi tắt WebGL vẫn nhìn thấy tranh đứng tĩnh nguyên bản.
+- Chuyển cuộc trò chuyện khi ô nhập liệu vẫn đang có tiêu điểm (focus), bản nháp cũ cũng được xóa sạch.
+- Khi tải SillyTavern trực tiếp ở kích thước điện thoại, lối vào nổi hiển thị rõ và bấm được.
+- Từ chối gửi khi chưa tích chọn xác nhận.
+- Tắt/bật nhanh liên tiếp vẫn chỉ để lại một lối vào và một thiết bị đầu cuối.
 
-上述浏览器结果均为 **0 个 pageerror**。模型请求数为 **0**。故障注入产生预期的网络失败，不宣称控制台完全没有任何网络警告。
+Toàn bộ kết quả trình duyệt nêu trên đều có **0 lỗi trang (pageerror)**. Số yêu cầu mô hình là **0**. Việc tiêm lỗi tạo ra lỗi mạng đúng như dự kiến, không tuyên bố bảng điều khiển hoàn toàn không có bất kỳ cảnh báo mạng nào.
 
-## 本轮发现并修复
+## Phát hiện và sửa lỗi trong đợt này
 
-- 原模块闭包缺少浏览器 atob，原权重解码错误走到 Buffer 分支：改为绑定平台 atob，未改动原模块正文。
-- 初始化早于宿主完成：改为等待 APP_READY，并能取消待启动订阅。
-- 手机角色按钮被后置默认样式遮掉：修复 CSS 顺序与平板/手机规则。
-- 酒馆移动布局的 html transform 导致 fixed-bottom 入口跑到屏外：使用动态视口高度定位，并从移动首屏重新测试。
-- 切换聊天时焦点阻碍表单刷新：身份变化强制更新表单。
-- 宿主保存 Promise 可能吞掉失败：增加服务器读回凭据核验。
-- 历史编辑与快速生命周期切换：增加草稿代际失效和待启动实例清理。
+- Bao đóng (closure) mô-đun gốc thiếu `atob` của trình duyệt khiến giải mã trọng số gốc đi nhầm vào nhánh Buffer: đổi sang gắn kết `atob` của nền tảng, không sửa đổi chính văn mô-đun gốc.
+- Khởi tạo sớm hơn thời điểm máy chủ hoàn tất: đổi sang chờ `APP_READY`, và có thể hủy đăng ký đang chờ khởi động.
+- Nút nhân vật trên điện thoại bị kiểu mặc định phía sau che khuất: sửa lại thứ tự CSS và quy tắc máy tính bảng/điện thoại.
+- Thuộc tính `html transform` trong bố cục di động của SillyTavern làm lối vào `fixed-bottom` chạy ra ngoài màn hình: sử dụng định vị chiều cao khung nhìn động và kiểm thử lại từ màn hình đầu di động.
+- Khi chuyển cuộc trò chuyện, tiêu điểm (focus) cản trở việc làm mới biểu mẫu: buộc cập nhật biểu mẫu khi định danh thay đổi.
+- Promise lưu của máy chủ có thể nuốt mất lỗi thất bại: bổ sung kiểm tra đọc lại chứng từ từ máy chủ.
+- Chỉnh sửa lịch sử và chuyển đổi vòng đời nhanh: bổ sung cơ chế vô hiệu hóa thế hệ bản nháp và dọn dẹp thực thể đang chờ khởi động.
 
-## 尚未验收 / 不作承诺
+## Chưa nghiệm thu / Không cam kết
 
-- 新 Git 仓库 URL 安装、远端更新和正式发布。
-- 原商城、抽取、回收、完整工作台、自动记忆整理、私聊 API 和唯一结算引擎。
-- 真实模型回复、流式终止、失败计费与独立连接策略。
-- 用户生产旧存档、多个标签/其他扩展并发事务、群聊。
-- 实体低端手机性能、真实 GPU 帧率、不同浏览器、软键盘和可访问性完整审计。
-- 此适配器有发送前快照及发送后上下文检查，但不能把宿主的全局发送操作变成跨扩展原子事务。其他扩展或多标签并发切换仍是待解决边界。
+- Cài đặt qua URL kho lưu trữ Git mới, cập nhật từ xa và phát hành chính thức.
+- Thương thành gốc, rút thẻ, thu hồi, bàn làm việc đầy đủ, tự động chỉnh lý ký ức, API trò chuyện riêng và động cơ quyết toán duy nhất.
+- Phản hồi mô hình thực tế, ngắt luồng (stream), tính phí khi thất bại và chiến lược kết nối độc lập.
+- Bản lưu cũ thực tế của người dùng, giao dịch đồng thời trên nhiều thẻ trình duyệt/tiiện ích mở rộng khác, trò chuyện nhóm.
+- Hiệu năng trên điện thoại cấu hình thấp thực tế, tốc độ khung hình GPU thật, các trình duyệt khác nhau, bàn phím ảo và kiểm toán khả năng truy cập đầy đủ.
+- Bộ điều hợp này có bản chụp nhanh trước khi gửi và kiểm tra ngữ cảnh sau khi gửi, nhưng không thể biến thao tác gửi toàn cục của máy chủ thành giao dịch nguyên tử xuyên tiện ích mở rộng. Việc chuyển đổi đồng thời từ tiện ích mở rộng khác hoặc nhiều thẻ trình duyệt vẫn là ranh giới cần giải quyết tiếp.
 
-**不能将本报告解读为“原版全功能已经迁移完成”或“可以直接替换生产版本”。**
+**Không được diễn giải báo cáo này thành “toàn bộ tính năng nguyên bản đã di chuyển xong” hoặc “có thể thay thế trực tiếp phiên bản sản xuất”.**
 
-## 截图
+## Ảnh chụp màn hình
 
-以下是实际隔离酒馆中的截图，不是离线概念图：
+Dưới đây là ảnh chụp màn hình từ SillyTavern cô lập thực tế, không phải ảnh ý tưởng ngoại tuyến:
 
-- [桌面终端](evidence/native-terminal.png)
-- [真实正文中的玩家互动](evidence/native-story-message.png)
-- [手机互动编辑](evidence/native-mobile.png)
-- [手机原版莉莉丝](evidence/native-mobile-lilith.png)
+- [Thiết bị đầu cuối máy tính](evidence/native-terminal.png)
+- [Tương tác người chơi trong chính văn thực tế](evidence/native-story-message.png)
+- [Chỉnh sửa tương tác trên điện thoại](evidence/native-mobile.png)
+- [Lilith nguyên bản trên điện thoại](evidence/native-mobile-lilith.png)
 
-截图中的开场白、余额、道具与角色名称都属于有标识的隔离验收样本；开场白不是模型生成。
+Lời mở đầu, số dư, đạo cụ và tên nhân vật trong ảnh chụp màn hình đều thuộc mẫu nghiệm thu cô lập có gắn nhãn; lời mở đầu không phải do mô hình tạo ra.

@@ -19,11 +19,11 @@ const plainObject = value => value && typeof value === 'object' && !Array.isArra
 const ROLE = { system: 0, user: 1, assistant: 2 };
 const POSITION = { none: -1, before_prompt: 2, in_prompt: 0, in_chat: 1 };
 export const NATIVE_SCRIPT_ID = 'zhutian-native-assistant';
-const NOW_FROZEN = '此前原生结算写入状态不明，已冻结此聊天的所有账本写入；请到 设置 → 诊断与维护 →「核对并解冻账本」，或重载页面核对。';
+const NOW_FROZEN = 'Trạng thái ghi kết toán trước đó không rõ, đã đóng băng mọi thao tác ghi sổ cái của cuộc trò chuyện này; vui lòng vào Cài đặt → Chẩn đoán & Bảo trì → 「Kiểm tra và mở khóa sổ cái」, hoặc tải lại trang để kiểm tra.';
 /** JSON round trip: what the server can store (undefined dropped, NaN → null, -0 → 0). */
 const jsonNorm = v => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
 /**
- * 1.1.4 · 假冻结. Read-back after a chat-variable write: only the top-level keys THIS write changed are compared, each
+ * 1.1.4 · Đóng băng giả. Read-back after a chat-variable write: only the top-level keys THIS write changed are compared, each
  * after a JSON round trip (pure, for tests). Before 1.1.4 the whole chat_metadata.variables was compared byte for
  * byte, so a value the server cannot store as-is (undefined / NaN) or another script's variable changing in between
  * froze the chat although the 诸天 ledger was written correctly. Returns the keys that differ ([] = written).
@@ -46,7 +46,7 @@ export function parseRange(range, last) {
     if (typeof range === 'number') return [range, range];
     const text = String(range ?? `0-${last}`).replaceAll('{{lastMessageId}}', String(last)).trim();
     const m = /^(-?\d+)(?:\s*-\s*(-?\d+))?$/.exec(text);
-    if (!m) throw Error('无法识别的楼层范围：' + text);
+    if (!m) throw Error('Không nhận diện được phạm vi tầng tin nhắn: ' + text);
     const norm = n => (n < 0 ? last + 1 + n : n);
     const a = norm(Number(m[1])), b = m[2] === undefined ? a : norm(Number(m[2]));
     return [Math.max(0, Math.min(a, b)), Math.min(last, Math.max(a, b))];
@@ -63,10 +63,10 @@ export function toThMessage(m, i) {
  *  the bridge and the assistant fetch shim answer it through SillyTavern generateRaw. Never used unless selected. */
 export const MAIN_API_HOST = 'st-main.zhutian.invalid';
 export const MAIN_API_URL = `https://${MAIN_API_HOST}/v1`;
-export const MAIN_API_MODEL = '酒馆当前主API';
+export const MAIN_API_MODEL = 'API chính hiện tại của SillyTavern';
 export function isMainApi(url) { try { return new URL(String(url || '').trim()).hostname === MAIN_API_HOST; } catch { return false; } }
 /** 0.9.3: SillyTavern world-info entries ({uid: entry} or an array) → the Tavern Helper style list that the original
- *  规则 → 额外世界背景 page hands to normalizeBook (it reads name|comment, key|strategy.keys, content, enabled/disable,
+ *  Quy tắc → Bối cảnh thế giới bổ sung page hands to normalizeBook (it reads name|comment, key|strategy.keys, content, enabled/disable,
  *  uid). Plain copies only — the ST cache object is never handed out, so nothing can write back into the book. */
 export function toWorldbookEntries(entries) {
     const list = Array.isArray(entries) ? entries : plainObject(entries) ? Object.values(entries) : [];
@@ -83,9 +83,9 @@ export function toWorldbookEntries(entries) {
 /** Chat-completions endpoint normalisation shared by the status bar and the assistant. */
 export function endpointOf(url) {
     const raw = String(url || '').trim().replace(/\/+$/, '');
-    if (!raw) throw Error('请先填写 API 地址');
+    if (!raw) throw Error('Vui lòng điền địa chỉ API trước');
     const u = new URL(raw);
-    if (u.username || u.password) throw Error('API 地址不能包含用户名或密码');
+    if (u.username || u.password) throw Error('Địa chỉ API không được chứa tên người dùng hoặc mật khẩu');
     const href = u.href.replace(/\/+$/, '');   // a bare domain parses as "https://x/" — avoid "https://x//models"
     if (/\/chat\/completions$/.test(u.pathname)) return { chat: href, base: href.replace(/\/chat\/completions$/, '') };
     return { chat: href + '/chat/completions', base: href };
@@ -100,7 +100,7 @@ export class Bridge {
     addScriptFilter(fn) { this.scriptFilters.add(fn); return () => this.scriptFilters.delete(fn); }
     ctx() { return this.adapter.context(); }
     onChange(fn) { this.listeners.add(fn); return () => this.listeners.delete(fn); }
-    emit(kind) { for (const fn of this.listeners) try { fn(kind); } catch (e) { console.warn('[诸天桥接]', e); } }
+    emit(kind) { for (const fn of this.listeners) try { fn(kind); } catch (e) { console.warn('[Chư Thiên Cầu Nối]', e); } }
 
     // ---------- variables ----------
     getVariables({ type = 'chat', message_id } = {}) {
@@ -109,7 +109,7 @@ export class Bridge {
         if (type === 'global') return clone(plainObject(c?.extensionSettings?.variables?.global) ? c.extensionSettings.variables.global : {});
         if (type === 'script') return clone(this.settings.scriptVariables());
         if (type === 'message') { const m = c?.chat?.[message_id ?? c.chat.length - 1]; return clone(m?.variables?.[m.swipe_id ?? 0] || {}); }
-        throw Error('不支持的变量类型：' + type);
+        throw Error('Loại biến không được hỗ trợ: ' + type);
     }
     async replaceVariables(variables, options = {}) { return this.updateVariablesWith(() => clone(variables), options); }
     async insertOrAssignVariables(variables, options = {}) {
@@ -118,10 +118,10 @@ export class Bridge {
     }
     async updateVariablesWith(updater, options = {}) {
         try { assertSaveEnvironment(); return await this.#updateVariablesWith(updater, options); }
-        catch (error) { recordSaveFailure(error, '变量保存'); throw error; }
+        catch (error) { recordSaveFailure(error, 'Lưu biến'); throw error; }
     }
     async #updateVariablesWith(updater, { type = 'chat', verify = false, expectedIdentity, engine = false, replaceLedger = false, frameGuard } = {}) {
-        if (this.dead) throw Error('扩展已停用，未写入。');
+        if (this.dead) throw Error('Tiện ích đã tắt, chưa ghi dữ liệu.');
         frameGuard?.();
         if (type === 'chat') return this.#writeChat(updater, { verify, expectedIdentity, engine, replaceLedger, frameGuard });
         if (type === 'global') {
@@ -129,7 +129,7 @@ export class Bridge {
             const draft = clone(plainObject(c.extensionSettings.variables.global) ? c.extensionSettings.variables.global : {});
             const next = (await updater(draft)) ?? draft;
             frameGuard?.();
-            if (!plainObject(next)) throw Error('全局变量必须是对象，未写入。');
+            if (!plainObject(next)) throw Error('Biến toàn cục phải là đối tượng, chưa ghi dữ liệu.');
             const prev = c.extensionSettings.variables.global;
             c.extensionSettings.variables.global = next;
             try { await c.saveSettingsDebounced(); } catch (e) { c.extensionSettings.variables.global = prev; throw e; }
@@ -139,53 +139,53 @@ export class Bridge {
             const prev = this.settings.scriptVariables(), draft = clone(prev);
             let next = (await updater(draft)) ?? draft;
             frameGuard?.();
-            if (!plainObject(next)) throw Error('脚本变量必须是对象，未写入。');
+            if (!plainObject(next)) throw Error('Biến kịch bản phải là đối tượng, chưa ghi dữ liệu.');
             // 0.9.0: e.g. the phone layout keeps the desktop window box out of a full-screen session's writes
-            for (const f of this.scriptFilters) { try { const v = f(next, prev); if (plainObject(v)) next = v; } catch (e) { console.warn('[诸天] 脚本变量过滤', e); } }
+            for (const f of this.scriptFilters) { try { const v = f(next, prev); if (plainObject(v)) next = v; } catch (e) { console.warn('[Chư Thiên] Lọc biến kịch bản', e); } }
             this.settings.setScriptVariables(next); this.emit('script'); return clone(next);
         }
-        throw Error('不支持写入的变量类型：' + type);
+        throw Error('Loại biến không hỗ trợ ghi: ' + type);
     }
     async #writeChat(updater, { verify = false, expectedIdentity, engine = false, replaceLedger = false, frameGuard } = {}) {
         const expected = identity(this.ctx());
-        if (expectedIdentity && expected !== expectedIdentity) throw Error('聊天已切换；未写入。');
-        if (!expected) throw Error('请先打开单角色聊天；群聊暂不写入。');
+        if (expectedIdentity && expected !== expectedIdentity) throw Error('Trò chuyện đã chuyển; chưa ghi dữ liệu.');
+        if (!expected) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước; nhóm chat tạm không ghi.');
         if (this.adapter.transactions?.uncertain?.has(expected)) throw Error(NOW_FROZEN);
         assertSaveEnvironment({ requireLocks: true });
         return navigator.locks.request('zhutian-ledger:' + expected, { signal: AbortSignal.timeout(20000) }, async () => {
             frameGuard?.();
             const c = this.ctx();
             if (this.adapter.transactions?.uncertain?.has(expected)) throw Error(NOW_FROZEN);
-            if (this.dead || identity(c) !== expected) throw Error('聊天已经切换，取消写入。');
+            if (this.dead || identity(c) !== expected) throw Error('Trò chuyện đã chuyển, hủy ghi dữ liệu.');
             // 1.0: a ledger written by a newer plugin (higher structure version) is read-only here
             const schema = Number(c.chatMetadata?.[STORAGE]?.ledgerSchema) || 0;
-            if (schema > LEDGER_SCHEMA) throw Error(`这个聊天的账本由更新版本的插件写过（结构版本 ${schema}，本插件 ${LEDGER_SCHEMA}），为避免写坏已改为只读。请更新插件。`);
+            if (schema > LEDGER_SCHEMA) throw Error(`Sổ cái của cuộc trò chuyện này được ghi bởi phiên bản tiện ích mới hơn (phiên bản cấu trúc ${schema}, tiện ích hiện tại ${LEDGER_SCHEMA}), để tránh làm hỏng dữ liệu đã chuyển sang chỉ đọc. Vui lòng cập nhật tiện ích.`);
             const metadata = c.chatMetadata, chat = c.chat;
             const before = clone(plainObject(metadata.variables) ? metadata.variables : {});
             const stamp = stable(before);
             const guard = () => {
                 frameGuard?.();
                 const live = this.ctx();
-                if (this.dead || identity(live) !== expected || live.chat !== chat || live.chatMetadata !== metadata) throw Error('聊天已经切换或上下文已变化，取消写入。');
-                if (stable(plainObject(metadata.variables) ? metadata.variables : {}) !== stamp) throw Error('核验期间页面账本已变化，未写入；请刷新数据后重新确认，不会自动重扣。');
-                if ((Number(metadata[STORAGE]?.ledgerSchema) || 0) > LEDGER_SCHEMA || this.adapter.transactions?.uncertain?.has(expected)) throw Error('结算权限已变化，未写入。');
+                if (this.dead || identity(live) !== expected || live.chat !== chat || live.chatMetadata !== metadata) throw Error('Trò chuyện đã chuyển hoặc ngữ cảnh đã thay đổi, hủy ghi dữ liệu.');
+                if (stable(plainObject(metadata.variables) ? metadata.variables : {}) !== stamp) throw Error('Sổ cái trên trang đã thay đổi trong lúc kiểm nghiệm, chưa ghi dữ liệu; vui lòng làm mới dữ liệu rồi xác nhận lại, không tự động trừ điểm lại.');
+                if ((Number(metadata[STORAGE]?.ledgerSchema) || 0) > LEDGER_SCHEMA || this.adapter.transactions?.uncertain?.has(expected)) throw Error('Quyền kết toán đã thay đổi, chưa ghi dữ liệu.');
             };
             const serialized = JSON.stringify(before), draft = clone(before);
             const target = verify ? { avatar_url: c.characters?.[c.characterId]?.avatar, file_name: c.getCurrentChatId() } : null;
             const diskVariables = () => this.#diskVariables(c, target);
             if (verify) {
-                if (this.adapter.isGenerating()) throw Error('主聊天正在生成，请结束后再操作。');
+                if (this.adapter.isGenerating()) throw Error('Cuộc trò chuyện chính đang tạo phản hồi, vui lòng đợi kết thúc rồi mới thao tác.');
                 const disk = await diskVariables();
                 guard();
-                if (stable(disk) !== stamp) throw Error('服务器账本与当前页面不同，请重载后重试；未写入。');
-                if (identity(this.ctx()) !== expected) throw Error('聊天已切换；未写入。');
+                if (stable(disk) !== stamp) throw Error('Sổ cái trên máy chủ khác với trang hiện tại, vui lòng tải lại trang rồi thử lại; chưa ghi dữ liệu.');
+                if (identity(this.ctx()) !== expected) throw Error('Trò chuyện đã chuyển; chưa ghi dữ liệu.');
             }
             guard();
             const next = (await updater(draft)) ?? draft;
             guard();
-            if (!plainObject(next)) throw Error('聊天变量必须是对象，未写入。');
-            if (this.dead || identity(this.ctx()) !== expected) throw Error('聊天已经切换或插件已停用，取消写入。');
-            if (verify && this.adapter.isGenerating()) throw Error('主聊天开始生成，取消写入。');
+            if (!plainObject(next)) throw Error('Biến trò chuyện phải là đối tượng, chưa ghi dữ liệu.');
+            if (this.dead || identity(this.ctx()) !== expected) throw Error('Trò chuyện đã chuyển hoặc tiện ích đã tắt, hủy ghi dữ liệu.');
+            if (verify && this.adapter.isGenerating()) throw Error('Cuộc trò chuyện chính bắt đầu tạo phản hồi, hủy ghi dữ liệu.');
             if (engine) preserveNative(next.诸天系统, before.诸天系统);
             if (!replaceLedger) syncBonds(next.诸天系统, before.诸天系统);
             if (JSON.stringify(next) === serialized) return clone(next);
@@ -198,11 +198,11 @@ export class Bridge {
                     // 1.1.4: SillyTavern may still have had an older save of this chat in flight — save the page state
                     // (which already holds `next`) once more and read again before calling the write uncertain
                     if (diff.length) { await new Promise(r => setTimeout(r, 700)); await c.saveMetadata(); diff = readbackDiff(before, next, await diskVariables()); }
-                    if (diff.length) throw Error(`服务器读回不一致（${diff.join('、')}）`);
+                    if (diff.length) throw Error(`Đọc lại từ máy chủ không khớp (${diff.join(', ')})`);
                 }
-                if (verify && identity(this.ctx()) !== expected) throw Error('写入后聊天已切换');
+                if (verify && identity(this.ctx()) !== expected) throw Error('Trò chuyện đã chuyển sau khi ghi');
             } catch (e) {
-                if (verify) { this.adapter.transactions?.uncertain?.add(expected); throw Error('写入状态未确认，已冻结交易；请重载核对，不要重复提交。' + e.message); }
+                if (verify) { this.adapter.transactions?.uncertain?.add(expected); throw Error('Trạng thái ghi chưa được xác nhận, đã đóng băng giao dịch; vui lòng tải lại trang để kiểm tra, không gửi lặp lại. ' + e.message); }
                 throw e;
             }
             this.emit('chat'); this.adapter.notify();
@@ -211,28 +211,28 @@ export class Bridge {
     }
     async #diskVariables(c, target) {
         const r = await fetch('/api/chats/get', { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: c.getRequestHeaders(), body: JSON.stringify(target), signal: AbortSignal.timeout(15000) });
-        if (!r.ok) throw Error('无法核对服务器账本 HTTP ' + r.status);
+        if (!r.ok) throw Error('Không thể đối chiếu sổ cái máy chủ HTTP ' + r.status);
         const chat = await r.json();
-        if (!Array.isArray(chat) || !chat[0]?.chat_metadata) throw Error('服务器没有返回聊天元数据');
+        if (!Array.isArray(chat) || !chat[0]?.chat_metadata) throw Error('Máy chủ không trả về siêu dữ liệu trò chuyện');
         return chat[0].chat_metadata.variables || {};
     }
     /**
-     * 1.1.4 · 核对并解冻. A frozen chat (a write whose result was unknown) is compared with the server copy: when the
+     * 1.1.4 · Kiểm tra và mở khóa. A frozen chat (a write whose result was unknown) is compared with the server copy: when the
      * server holds exactly what this page shows, nothing is pending and the freeze is lifted without a reload; otherwise
      * the page is stale and must be reloaded (the server copy is the truth). Never writes anything.
      * Returns { state: 'clear' | 'unfrozen' | 'differs', keys }.
      */
     async verifyFrozen() {
         const c = this.ctx(), expected = identity(c);
-        if (!expected) throw Error('请先打开单角色聊天。');
+        if (!expected) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước.');
         const set = this.adapter.transactions?.uncertain;
         if (!set?.has(expected)) return { state: 'clear', keys: [] };
-        if (this.adapter.isGenerating()) throw Error('主聊天正在生成，请结束后再核对。');
+        if (this.adapter.isGenerating()) throw Error('Cuộc trò chuyện chính đang tạo phản hồi, vui lòng đợi kết thúc rồi mới kiểm tra.');
         assertSaveEnvironment({ requireLocks: true });
         return navigator.locks.request('zhutian-ledger:' + expected, { signal: AbortSignal.timeout(20000) }, async () => {
-            const live = this.ctx(); if (identity(live) !== expected) throw Error('聊天已切换，未核对。');
+            const live = this.ctx(); if (identity(live) !== expected) throw Error('Trò chuyện đã chuyển, chưa kiểm tra.');
             const disk = await this.#diskVariables(live, { avatar_url: live.characters?.[live.characterId]?.avatar, file_name: live.getCurrentChatId() });
-            if (identity(this.ctx()) !== expected) throw Error('聊天已切换，未核对。');
+            if (identity(this.ctx()) !== expected) throw Error('Trò chuyện đã chuyển, chưa kiểm tra.');
             const keys = variablesDiff(plainObject(live.chatMetadata?.variables) ? live.chatMetadata.variables : {}, disk);
             if (keys.length) return { state: 'differs', keys };
             set.delete(expected); this.adapter.notify?.();
@@ -249,7 +249,7 @@ export class Bridge {
             if (last && Date.now() - last.at < 90_000) return; // one snapshot per burst of status-bar writes
             list.push({ at: Date.now(), balance: before.诸天系统?.系统点 ?? null, floor: c.chat.length - 1, ledger: clone(before.诸天系统) });
             meta.ledgerBackups = list.slice(-5);
-        } catch (e) { console.warn('[诸天桥接] 备份失败（不影响写入）', e); }
+        } catch (e) { console.warn('[Chư Thiên Cầu Nối] Sao lưu thất bại (không ảnh hưởng việc ghi)', e); }
     }
     backups() { return clone(this.ctx()?.chatMetadata?.[STORAGE]?.ledgerBackups || []); }
     /** 1.0: a forced backup of the current ledger (import / rollback / structure upgrade), not merged into a recent one. */
@@ -267,12 +267,12 @@ export class Bridge {
     async restoreBackup(at) {
         const expected = identity(this.ctx()), before = JSON.stringify(this.getVariables({ type: 'chat' }));
         const item = this.backups().find(x => x.at === at);
-        if (!item) throw Error('备份不存在。');
+        if (!item) throw Error('Bản sao lưu không tồn tại.');
         // 1.0: the state before the rollback is always backed up (it used to be skipped within 90 s of another write)
-        const pre = await this.snapshot('回滚前');
-        if (!expected || identity(this.ctx()) !== expected) throw Error('回滚期间聊天已切换，未写入。');
-        await this.updateVariablesWith(v => { if (JSON.stringify(v) !== before) throw Error('备份后账本已变化，请重新预览回滚。'); v.诸天系统 = clone(item.ledger); return v; }, { verify: true, expectedIdentity: expected, replaceLedger: true });
-        if (identity(this.ctx()) !== expected) throw Error('回滚后聊天已切换，请返回原聊天核对。');
+        const pre = await this.snapshot('Trước khi hoàn tác');
+        if (!expected || identity(this.ctx()) !== expected) throw Error('Trò chuyện đã chuyển trong lúc hoàn tác, chưa ghi dữ liệu.');
+        await this.updateVariablesWith(v => { if (JSON.stringify(v) !== before) throw Error('Sổ cái đã thay đổi sau khi sao lưu, vui lòng xem trước lại thao tác hoàn tác.'); v.诸天系统 = clone(item.ledger); return v; }, { verify: true, expectedIdentity: expected, replaceLedger: true });
+        if (identity(this.ctx()) !== expected) throw Error('Trò chuyện đã chuyển sau khi hoàn tác, vui lòng quay lại cuộc trò chuyện gốc để kiểm tra.');
         const c = this.ctx(); const meta = c.chatMetadata[STORAGE];
         meta.ledgerBackups = (meta.ledgerBackups || []).filter(x => x.at < at || (pre && x.at === pre.at));
         await c.saveMetadata();
@@ -300,11 +300,6 @@ export class Bridge {
     uninjectPrompts(ids) { const c = this.ctx(); for (const id of ids || []) c?.setExtensionPrompt?.(`${ID}/${id}`, '', 1, 0, false, 0); }
 
     // ---------- worldbooks (read-only; 0.9.3) ----------
-    // The original 规则 → 额外世界背景 page calls the Tavern Helper functions getWorldbookNames() (synchronous string[])
-    // and getWorldbook(name) (Promise of entries). The native host never provided them, so the page always said
-    // 「当前助手缺少世界书读取接口」 — on TauriTavern as well as on SillyTavern. Names come from SillyTavern's own
-    // context (getWorldInfoNames, ST 1.19+), its world-info module (live list), then /api/settings/get; entries from getContext().loadWorldInfo, then the module,
-    // then /api/worldinfo/get. Nothing here writes, binds or unbinds a book.
     loadWorldInfoModule() { return import('/scripts/world-info.js'); }
     prefetchWorldbooks() {
         if (this.wbLoading) return this.wbLoading;
@@ -315,7 +310,7 @@ export class Bridge {
                 const r = await fetch('/api/settings/get', { method: 'POST', headers: this.ctx().getRequestHeaders(), credentials: 'same-origin', cache: 'no-store', body: '{}' });
                 const j = r.ok ? await r.json() : null;
                 if (Array.isArray(j?.world_names)) this.wbNames = [...j.world_names];
-            } catch (e) { console.warn('[诸天桥接] 世界书列表读取失败', e); }
+            } catch (e) { console.warn('[Chư Thiên Cầu Nối] Đọc danh sách Sách Thế Giới thất bại', e); }
             if (!this.wbNames) this.wbFailed = true;
         })().finally(() => { this.wbLoading = null; });
         return this.wbLoading;
@@ -326,11 +321,11 @@ export class Bridge {
         const list = Array.isArray(live) ? live : this.wbNames;
         if (!Array.isArray(live)) this.prefetchWorldbooks();     // keep the fallback copy fresh for the next click
         if (Array.isArray(list)) return list.filter(x => typeof x === 'string');
-        if (this.wbFailed) { this.wbFailed = false; throw Error('读取不到世界书列表（宿主没有提供世界书模块或设置接口）；仍可使用内置规则'); }
-        throw Error('世界书列表正在读取，请一秒后再点一次「读取书目」');
+        if (this.wbFailed) { this.wbFailed = false; throw Error('Không đọc được danh sách Sách Thế Giới (máy chủ không cung cấp mô-đun Sách Thế Giới hoặc giao diện cài đặt); vẫn có thể dùng quy tắc tích hợp sẵn'); }
+        throw Error('Đang đọc danh sách Sách Thế Giới, vui lòng bấm lại 「Đọc danh mục sách」 sau 1 giây');
     }
     async getWorldbook(name) {
-        const n = String(name ?? '').trim(); if (!n) throw Error('请先选择背景书');
+        const n = String(name ?? '').trim(); if (!n) throw Error('Vui lòng chọn sách bối cảnh trước');
         const c = this.ctx(); let data = null;
         if (typeof c?.loadWorldInfo === 'function') data = await c.loadWorldInfo(n);
         else {
@@ -341,7 +336,7 @@ export class Bridge {
                 data = r.ok ? await r.json() : null;
             }
         }
-        const missing = Error(`读取不到世界书「${n}」（可能已被删除或改名）`);
+        const missing = Error(`Không đọc được Sách Thế Giới 「${n}」 (có thể đã bị xóa hoặc đổi tên)`);
         if (!data || typeof data.entries !== 'object' || data.entries === null) throw missing;
         // SillyTavern answers a missing file with an empty dummy book ({entries: {}}): tell that apart from a real empty book.
         if (!Object.keys(data.entries).length) { let names = null; try { names = this.getWorldbookNames(); } catch { /* list unknown */ } if (names && !names.includes(n)) throw missing; }
@@ -364,7 +359,7 @@ export class Bridge {
         if (isMainApi(config.url || config.apiurl)) return { text: await this.mainChat(messages, { maxTokens, signal }), via: 'st-main' };
         const { chat, base } = endpointOf(config.url || config.apiurl);
         const model = String(config.model || '').trim();
-        if (!model) throw Error('请先设置独立 API 的模型名称');
+        if (!model) throw Error('Vui lòng thiết lập tên mô hình cho API độc lập trước');
         const cap = Number(config.maxTokens); if (Number.isInteger(cap) && cap >= 64 && cap <= 65536) maxTokens = cap;
         const body = { model, messages, stream: false, max_tokens: maxTokens, ...(temperature === undefined ? (plain ? {} : { temperature: 0 }) : { temperature }) };
         // 0.8.4: streamed on both paths (see api-stream.js) — the non-stream relay was where the 502s came from.
@@ -376,15 +371,15 @@ export class Bridge {
         let response, direct = true;
         try { response = await streamedCompletion(send, body); }
         catch (error) {
-            if (signal?.aborted) throw Error('请求已取消或超时');
+            if (signal?.aborted) throw Error('Yêu cầu đã bị hủy hoặc quá thời gian chờ');
             direct = false;
             try { response = await streamedCompletion(relay, body); }
-            catch (e2) { if (signal?.aborted) throw Error('请求已取消或超时'); throw Error('网络连接失败：浏览器直连被拦截，经酒馆服务器转发也失败（' + (e2?.message || e2) + '）'); }
+            catch (e2) { if (signal?.aborted) throw Error('Yêu cầu đã bị hủy hoặc quá thời gian chờ'); throw Error('Kết nối mạng thất bại: kết nối trực tiếp từ trình duyệt bị chặn, chuyển tiếp qua máy chủ SillyTavern cũng thất bại (' + (e2?.message || e2) + ')'); }
         }
         const data = await response.json().catch(() => null);
-        if (!response.ok) throw Error(`${direct ? '独立 API' : '酒馆转发'}返回 HTTP ${response.status}${data?.error?.message ? ' · ' + data.error.message : ''}`);
-        if (data?.error) throw Error('接口错误：' + (data.error.message || JSON.stringify(data.error)).slice(0, 200));
-        // 1.1.1: why the answer ended (商品生成 tells a cut-off JSON from a wrong one and shrinks its batch)
+        if (!response.ok) throw Error(`${direct ? 'API độc lập' : 'Chuyển tiếp SillyTavern'} trả về HTTP ${response.status}${data?.error?.message ? ' · ' + data.error.message : ''}`);
+        if (data?.error) throw Error('Lỗi cổng kết nối: ' + (data.error.message || JSON.stringify(data.error)).slice(0, 200));
+        // 1.1.1: why the answer ended (Tạo hàng hóa tells a cut-off JSON from a wrong one and shrinks its batch)
         this.lastFinish = { reason: String(data?.choices?.[0]?.finish_reason || ''), maxTokens, at: Date.now() };
         let text;
         try { text = completionText(data, maxTokens); }
@@ -392,7 +387,7 @@ export class Bridge {
             // One bounded retry, only for an empty truncated response. An explicit configured cap is never exceeded.
             if (e.code !== 'EMPTY_LENGTH' || config.maxTokens || maxTokens >= 8192) throw e;
             const next = Math.min(8192, Math.max(2048, maxTokens * 2));
-            globalThis.toastr?.info?.(`未返回正文；仅重试一次，额度 ${next} tokens（服务商可能计费）`, '诸天 · 模型');
+            globalThis.toastr?.info?.(`Chưa trả về chính văn; chỉ thử lại 1 lần với hạn mức ${next} tokens (nhà cung cấp có thể tính phí)`, 'Chư Thiên · Mô hình');
             return this.customChat({ ...config, maxTokens: next }, messages, { signal, maxTokens: next, temperature, plain });
         }
         return { text, via: direct ? 'direct' : 'st-proxy' };
@@ -418,53 +413,53 @@ export class Bridge {
         for (const custom of [base, ...(bare ? [base + '/v1'] : [])]) {
             let r = null;
             try { r = await fetch('/api/backends/chat-completions/status', { method: 'POST', signal, headers: this.ctx().getRequestHeaders(), body: JSON.stringify({ chat_completion_source: 'custom', custom_url: custom, custom_include_headers: key ? JSON.stringify({ Authorization: 'Bearer ' + key }) : '' }) }); }
-            catch (e) { if (signal?.aborted) throw e; error = fail('连不上酒馆服务器（' + (e?.message || e) + '）', 502); continue; }
+            catch (e) { if (signal?.aborted) throw e; error = fail('Không kết nối được máy chủ SillyTavern (' + (e?.message || e) + ')', 502); continue; }
             const t = await r.text().catch(() => ''); let d = null; try { d = JSON.parse(t); } catch { /* not json */ }
             if (!r.ok) {
                 lastStatus = r.status;
-                error = r.status === 403 ? fail('酒馆服务器拒绝了转发请求（HTTP 403，多半是登录/CSRF 失效：刷新酒馆页面后再试）', 403)
-                    : fail(`经酒馆服务器转发：服务商返回 HTTP ${r.status}${r.status === 401 ? ' · Key 无效或缺失' : r.status === 404 ? ' · 地址不对（检查是否少了或多了 /v1）' : ''}`, r.status);
+                error = r.status === 403 ? fail('Máy chủ SillyTavern từ chối yêu cầu chuyển tiếp (HTTP 403, thường do phiên đăng nhập/CSRF hết hạn: vui lòng làm mới trang SillyTavern rồi thử lại)', 403)
+                    : fail(`Chuyển tiếp qua máy chủ SillyTavern: nhà cung cấp trả về HTTP ${r.status}${r.status === 401 ? ' · Key không hợp lệ hoặc bị thiếu' : r.status === 404 ? ' · Sai địa chỉ (kiểm tra xem có thiếu hoặc thừa /v1 không)' : ''}`, r.status);
                 continue;
             }
             const list = pick(d); if (list.length) return list;
-            if (d?.error) error = fail('经酒馆服务器转发也没拿到模型列表：' + (typeof d.error === 'string' ? d.error : d.error?.message || '请检查地址和 Key'), 502);
-            else error = fail('服务商返回了空的模型列表：可以直接手动填写模型名', 404);
+            if (d?.error) error = fail('Chuyển tiếp qua máy chủ SillyTavern vẫn không lấy được danh sách mô hình: ' + (typeof d.error === 'string' ? d.error : d.error?.message || 'vui lòng kiểm tra địa chỉ và Key'), 502);
+            else error = fail('Nhà cung cấp trả về danh sách mô hình trống: bạn có thể tự điền tên mô hình thủ công', 404);
         }
-        throw error || fail('没有拉取到模型', lastStatus || 502);
+        throw error || fail('Không lấy được danh sách mô hình', lastStatus || 502);
     }
-    /** SillyTavern's currently connected main API (generateRaw), for the API center's explicit "酒馆主API" choice and
+    /** SillyTavern's currently connected main API (generateRaw), for the API center's explicit "API chính của SillyTavern" choice and
      *  for status-bar calls without an independent API. Messages keep their roles (system prompts stay separate). */
     async mainChat(messages, { maxTokens, signal } = {}) {
         const raw = this.adapter.host?.generateRaw;
-        if (typeof raw !== 'function') throw Error('当前酒馆没有 generateRaw，无法使用主 API');
-        if (signal?.aborted) throw Error('请求已取消或超时');
+        if (typeof raw !== 'function') throw Error('SillyTavern hiện tại không có generateRaw, không thể sử dụng API chính');
+        if (signal?.aborted) throw Error('Yêu cầu đã bị hủy hoặc quá thời gian chờ');
         const list = (messages || []).filter(m => m && typeof m.content === 'string' && m.content);
         const system = list.filter(m => m.role === 'system').map(m => m.content).join('\n\n');
         const rest = list.filter(m => m.role !== 'system');
         const options = { prompt: rest.length === 1 && rest[0].role === 'user' ? rest[0].content : rest, systemPrompt: system };
         if (Number.isInteger(Number(maxTokens)) && Number(maxTokens) > 0) options.responseLength = Number(maxTokens);
         const text = await raw(options);
-        if (typeof text !== 'string' || !text.trim()) throw Error('酒馆主 API 未返回文字内容');
+        if (typeof text !== 'string' || !text.trim()) throw Error('API chính của SillyTavern không trả về nội dung văn bản');
         return text;
     }
-    /** Subset of Tavern Helper generateRaw used by the 3.1 status bar (AI 进货 / 抽卡 / 许愿 / 天眼 …).
+    /** Subset of Tavern Helper generateRaw used by the 3.1 status bar (AI nhập hàng / rút thẻ / ước nguyện / thiên nhãn …).
      *  The status bar passes its limits inside custom_api (max_tokens, temperature 0.7) — both are honoured. */
     async generateRaw({ user_input = '', ordered_prompts, custom_api, max_tokens, route = '', own_limit = false } = {}) {
         const prompts = Array.isArray(ordered_prompts) ? ordered_prompts : [{ role: 'system', content: '' }, 'user_input'];
         const messages = prompts.map(p => p === 'user_input' ? { role: 'user', content: String(user_input) } : (p && typeof p === 'object' && typeof p.content === 'string' ? { role: p.role || 'system', content: p.content } : null)).filter(m => m && m.content);
         let limit = Number(custom_api?.max_tokens) || Number(max_tokens) || 4096;
-        // 1.0 分功能 API: the status bar still builds custom_api from the default connection; a feature with its own
-        // route (preset / own config / 酒馆主 API) is pointed there on the way out. No route → unchanged.
+        // 1.0 API theo tính năng: the status bar still builds custom_api from the default connection; a feature with its own
+        // route (preset / own config / API chính của SillyTavern) is pointed there on the way out. No route → unchanged.
         const id = route || classifyStatus(messages.find(m => m.role === 'system')?.content);
         const over = id ? resolveRoute(readRoutes(this), id) : null;
         const defaultCap = Number(this.getVariables({ type: 'global' })?.诸天系统_API?.maxTokens);
-        // 1.1.4: `own_limit` — the feature's own explicit limit (聊天群 → 群务 → 输出上限) beats the default connection's cap;
+        // 1.1.4: `own_limit` — the feature's own explicit limit (Nhóm chat → Việc nhóm → Giới hạn đầu ra) beats the default connection's cap;
         // a per-feature route that sets its own maxTokens still wins over both
         const configuredCap = Number(over?.maxTokens) || (!own_limit && Number.isInteger(defaultCap) && defaultCap >= 64 && defaultCap <= 65536 ? defaultCap : 0);
         if (configuredCap) limit = configuredCap;
         if (over) {
             this.lastRoute = { id, via: over.via, at: Date.now() };
-            const tag = e => Object.assign(Error(`${e?.message || e}（${routeLabel(id)} 用的是${over.via}）`), { status: e?.status });
+            const tag = e => Object.assign(Error(`${e?.message || e} (${routeLabel(id)} đang dùng ${over.via})`), { status: e?.status });
             try {
                 if (over.maxTokens) limit = over.maxTokens;
                 if (over.main) return await this.mainChat(messages, { maxTokens: limit });
@@ -512,7 +507,7 @@ export class Bridge {
         const guard = () => {
             const live = self.ctx();
             if (!active || self.dead || identity(live) !== expected || live?.chat !== chat || live?.chatMetadata !== metadata) {
-                dispose(); throw Error('终端页面已失效：聊天已切换、重载或页面已关闭，请在当前聊天重新打开终端。');
+                dispose(); throw Error('Trang thiết bị đầu cuối đã hết hiệu lực: cuộc trò chuyện đã chuyển, tải lại hoặc trang đã đóng, vui lòng mở lại thiết bị đầu cuối trong cuộc trò chuyện hiện tại.');
             }
         };
         const read = fn => { guard(); return fn(); };

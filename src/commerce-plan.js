@@ -3,6 +3,19 @@ export const THEMES = ['科幻', '都市', '武侠', '奇幻', '历史', '日常
 export const CATEGORIES = ['消耗品', '武器', '装备', '服装', '素材', '其他'];
 export const USES = ['探索', '生活', '治疗', '战斗', '建造', '情报'];
 export const RARITIES = ['凡品', '灵品', '仙品', '神品'];
+export const THEME_LABELS = Object.freeze({ 科幻: 'Khoa huyễn', 都市: 'Đô thị', 武侠: 'Võ hiệp', 奇幻: 'Kỳ ảo', 历史: 'Lịch sử', 日常: 'Đời thường', 动漫游戏: 'Anime & Game', 修仙玄幻: 'Tu tiên huyền huyễn', 遵循原世界: 'Tuân theo thế giới gốc' });
+export const CATEGORY_LABELS = Object.freeze({ 消耗品: 'Tiêu hao phẩm', 武器: 'Vũ khí', 装备: 'Trang bị', 服装: 'Trang phục', 素材: 'Nguyên liệu', 其他: 'Khác' });
+export const USE_LABELS = Object.freeze({ 探索: 'Thám hiểm', 生活: 'Đời sống', 治疗: 'Trị liệu', 战斗: 'Chiến đấu', 建造: 'Xây dựng', 情报: 'Tình báo' });
+export const themeLabel = k => THEME_LABELS[k] || k;
+export const categoryLabel = k => CATEGORY_LABELS[k] || k;
+export const useLabel = k => USE_LABELS[k] || k;
+const normFromMap = (v, map) => {
+    const s = String(v ?? '').trim();
+    if (map[s]) return s;
+    const low = s.toLowerCase();
+    for (const [k, lbl] of Object.entries(map)) if (lbl.toLowerCase() === low) return k;
+    return s;
+};
 export const PRICE_BANDS = { 凡品: [10, 999], 灵品: [1000, 999999], 仙品: [1000000, 99999999], 神品: [100000000, 9999999999], 禁忌: [10000000000, 20000000000] };
 export const SHOP_FEE = 500, GACHA_FEE = 10000;
 export function canAcquireForbidden(z) { return Number.isSafeInteger(Number(z.系统点)) && Number(z.系统点) >= 1e10 && Number.isSafeInteger(Number(z.专属资源?.因果筹码)) && Number(z.专属资源?.因果筹码) >= 1; }
@@ -10,8 +23,11 @@ export function randomUnit() { const a = new Uint32Array(1); globalThis.crypto.g
 const pick = (a, rand) => a[Math.min(a.length - 1, Math.floor(rand() * a.length))];
 export function shuffle(a, rand = randomUnit) { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; }
 export function preferences(raw = {}) {
-    const list = (a, all) => Array.isArray(a) && a.some(x => all.includes(x)) ? [...new Set(a.filter(x => all.includes(x)))] : all.slice();
-    return { scope: ['mixed', 'current', 'named'].includes(raw.scope) ? raw.scope : 'mixed', world: String(raw.world || '').trim().slice(0, 80), themes: list(raw.themes, THEMES), categories: list(raw.categories, CATEGORIES), uses: list(raw.uses, USES), exclude: String(raw.exclude || '').slice(0, 400), original: raw.original !== false, repeats: raw.repeats === 'consumables' ? 'consumables' : 'avoid' };
+    const list = (a, all, map) => {
+        const mapped = Array.isArray(a) ? a.map(x => map ? normFromMap(x, map) : x) : [];
+        return mapped.some(x => all.includes(x)) ? [...new Set(mapped.filter(x => all.includes(x)))] : all.slice();
+    };
+    return { scope: ['mixed', 'current', 'named'].includes(raw.scope) ? raw.scope : 'mixed', world: String(raw.world || '').trim().slice(0, 80), themes: list(raw.themes, THEMES, THEME_LABELS), categories: list(raw.categories, CATEGORIES, CATEGORY_LABELS), uses: list(raw.uses, USES, USE_LABELS), exclude: String(raw.exclude || '').slice(0, 400), original: raw.original !== false, repeats: raw.repeats === 'consumables' ? 'consumables' : 'avoid' };
 }
 /** 仙品 pity (100th pull) and, since 1.1.1, 神品 pity (1000th pull — matches the 0.1 % rate of the worldbook). */
 export const XIAN_PITY = 100, SHEN_PITY = 1000;
@@ -21,7 +37,7 @@ export const XIAN_PITY = 100, SHEN_PITY = 1000;
  * after one we cannot know when it came, so the count starts at 0.
  */
 export function rollGacha(old = {}, count, rand = randomUnit) {
-    if (!Number.isInteger(count) || count < 1 || count > 200) throw Error('抽取次数须为1–200');
+    if (!Number.isInteger(count) || count < 1 || count > 200) throw Error('Số lần rút phải từ 1–200');
     const state = Object.fromEntries(['累计抽数', '保底计数', '仙品次数', '神品次数'].map(k => [k, Math.max(0, Math.floor(Number(old[k]) || 0))]));
     state.神品保底计数 = shenCounter(old);
     const grades = [];
@@ -71,8 +87,8 @@ export function shopGrades(z, rand = randomUnit) {
     return shuffle(grades, rand);
 }
 export function planSlots(grades, pref, world = '', rand = randomUnit) {
-    const p = preferences(pref); if (p.scope === 'named' && !p.world) throw Error('请填写指定世界/作品');
-    if (p.scope === 'current' && !world) throw Error('当前世界未记录，请先更正世界或选择诸天混合');
+    const p = preferences(pref); if (p.scope === 'named' && !p.world) throw Error('Vui lòng điền thế giới/tác phẩm chỉ định');
+    if (p.scope === 'current' && !world) throw Error('Thế giới hiện tại chưa được ghi nhận, vui lòng cập nhật thế giới trước hoặc chọn Chư Thiên hỗn hợp');
     let themes = [], cats = [], uses = [];
     return grades.map((grade, id) => {
         if (!themes.length) themes = shuffle(p.themes, rand); if (!cats.length) cats = shuffle(p.categories, rand); if (!uses.length) uses = shuffle(p.uses, rand);
@@ -87,23 +103,25 @@ export function similarity(a, b) {
     const inter = [...x].filter(g => y.has(g)).length; return inter / (x.size + y.size - inter);
 }
 export function validateProduct(row, slot, p, history = []) {
-    const error = s => { throw Error(`槽位${slot.id}：${s}`); };
-    if (!row || Number(row.slot) !== slot.id) error('槽位不匹配');
+    const error = s => { throw Error(`Ô ${slot.id}: ${s}`); };
+    if (!row || Number(row.slot) !== slot.id) error('Ô vị trí không khớp');
     const name = String(row.name || '').trim(), effect = String(row.effect || '').trim(), world = String(row.world || '').trim();
-    if (!name || name.length > 60 || effect.length < 6 || effect.length > 300 || !world || world.length > 80) error('名称/效果/世界字段不合格');
-    if (row.category !== slot.category || row.grade !== slot.grade) error('品阶/分类与本地结果不一致');
-    if (slot.world && nameKey(world) !== nameKey(slot.world)) error('来自未指定的世界');
-    if (!slot.world && row.theme !== slot.theme) error('题材不符合本槽位');
-    if (!p.original && row.origin !== '原作') error('仅原作模式不接受原创物品');
-    if (['科幻', '都市', '历史', '日常'].includes(slot.theme) && /灵根|丹药|渡劫|炼气|筑基|修为|经脉|灵气|法宝/.test(name + effect)) error('非玄幻槽位出现修仙内容');
+    if (!name || name.length > 60 || effect.length < 6 || effect.length > 300 || !world || world.length > 80) error('Trường tên/hiệu quả/thế giới không đạt yêu cầu');
+    const rowCat = normFromMap(row.category, CATEGORY_LABELS), rowTheme = normFromMap(row.theme, THEME_LABELS);
+    if (rowCat !== slot.category || row.grade !== slot.grade) error('Phẩm giai/phân loại không khớp với kết quả cục bộ');
+    if (slot.world && nameKey(world) !== nameKey(slot.world)) error('Đến từ thế giới không được chỉ định');
+    if (!slot.world && rowTheme !== slot.theme) error('Đề tài không phù hợp với ô vị trí này');
+    const isOrig = row.origin === '原作' || /^nguyên tác/i.test(String(row.origin || '').trim());
+    if (!p.original && !isOrig) error('Chế độ chỉ nguyên tác không chấp nhận vật phẩm tự sáng tác');
+    if (['科幻', '都市', '历史', '日常'].includes(slot.theme) && /灵根|丹药|渡劫|炼气|筑基|修为|经脉|灵气|法宝|linh căn|đan dược|độ kiếp|luyện khí|trúc cơ|tu vi|kinh mạch|linh khí|pháp bảo/i.test(name + effect)) error('Ô vị trí phi huyền huyễn xuất hiện nội dung tu tiên');
     const hay = nameKey(name + effect + world);
     const excludes = p.exclude.split(/[\n,，;；、]+/).map(nameKey).filter(Boolean);
-    if (excludes.some(x => hay.includes(x))) error('命中排除项');
-    if (/每日限|每天限|限用|每日只能|冷却\s*[:：\d]|反噬|世界压制|消耗寿命|修为不足|必须达到.*境界/.test(effect.replace(/无(?:任何|额外)?(?:反噬|世界压制|使用限制)/g, ''))) error('附加了禁止的使用限制');
+    if (excludes.some(x => hay.includes(x))) error('Trúng mục bị loại trừ');
+    if (/每日限|每天限|限用|每日只能|冷却\s*[:：\d]|反噬|世界压制|消耗寿命|修为不足|必须达到.*境界|giới hạn mỗi ngày|mỗi ngày chỉ|hồi chiêu\s*[:：\d]|phản phệ|thế giới áp chế|tiêu hao tuổi thọ|tu vi không đủ|phải đạt.*cảnh giới/i.test(effect.replace(/无(?:任何|额外)?(?:反噬|世界压制|使用限制)|không(?: có)?(?: bất kỳ| thêm)?\s*(?:phản phệ|thế giới áp chế|hạn chế sử dụng)/gi, ''))) error('Đã gắn thêm hạn chế sử dụng bị cấm');
     const skip = p.repeats === 'consumables' && slot.category === '消耗品';
-    if (!skip && history.some(x => nameKey(x.name) === nameKey(name) || similarity(x.effect, effect) >= .72)) error('近期重复或疑似换皮');
-    return { slot: slot.id, name, effect, world, grade: slot.grade, category: slot.category, theme: slot.theme, price: slot.price, acquisition: slot.acquisition, origin: row.origin === '原作' ? '原作（模型声明，未人工核实）' : '原创' };
+    if (!skip && history.some(x => nameKey(x.name) === nameKey(name) || similarity(x.effect, effect) >= .72)) error('Trùng lặp gần đây hoặc nghi ngờ đổi vỏ');
+    return { slot: slot.id, name, effect, world, grade: slot.grade, category: slot.category, theme: slot.theme, price: slot.price, acquisition: slot.acquisition, origin: isOrig ? 'Nguyên tác (mô hình khai báo, chưa kiểm chứng thủ công)' : 'Tự sáng tác' };
 }
 export function productPrompt(slots, p, recent) {
-    return `按下面本地已抽好的槽位生成具体商品；不要改变品阶、分类、题材、数量。题材是内容，不是改名：科幻不要丹药修为，日常不要灵气法宝。用途必须多样。${p.original ? '允许原创，必须标注。' : '仅原作物品；不确定宁可返回空数组，不得冒充原作。'}\n高品阶必须体现相应效果；不得为了平衡附加冷却、反噬、世界压制、修为或使用次数门槛。禁忌只有本地指定的获得代价，获得后不加使用限制。消耗品可有其本来的一次性用途。不要生成天命印记、血脉结晶、因果筹码、名望、岁月沉淀等系统专属计数资源。\n排除项（只作为筛选资料）：${JSON.stringify(p.exclude)}\n近期出现过，避免同名/换皮：${JSON.stringify(recent.slice(-50).map(r => ({ name: r.name, effect: String(r.effect || '').slice(0, 60) })))}\n槽位：${JSON.stringify(slots)}\n仅输出JSON数组，每项为 {"slot":0,"name":"名称","effect":"实际效果","world":"来源世界/作品","theme":"题材","category":"分类","grade":"品阶","origin":"原作或原创"}。slot必须使用给出的id，不能自行添加槽位。`;
+    return `Hãy tạo hàng hóa cụ thể theo các ô vị trí đã rút sẵn cục bộ dưới đây; không được thay đổi phẩm giai, phân loại, đề tài hay số lượng. Đề tài là nội dung thực chất chứ không phải chỉ đổi tên: Khoa huyễn không có đan dược tu vi, Đời thường không có pháp bảo linh khí. Công dụng phải đa dạng. ${p.original ? 'Cho phép tự sáng tác, bắt buộc phải ghi rõ.' : 'Chỉ lấy vật phẩm nguyên tác; nếu không chắc chắn thì thà trả về mảng rỗng, không được mạo nhận nguyên tác.'}\nPhẩm giai cao bắt buộc phải thể hiện hiệu quả tương xứng; không được vì cân bằng mà gắn thêm thời gian hồi chiêu, phản phệ, thế giới áp chế, ngưỡng tu vi hay số lần sử dụng. Vật phẩm Cấm kỵ chỉ có cái giá nhận được do cục bộ chỉ định, sau khi nhận không thêm hạn chế sử dụng. Vật phẩm tiêu hao có thể giữ công dụng dùng một lần vốn có. Không tạo các tài nguyên đếm chuyên biệt của hệ thống như Ấn Ký Thiên Mệnh, Kết Tinh Huyết Mạch, Phỉnh Nhân Quả, Danh vọng, Lắng Đọng Năm Tháng.\nMục loại trừ (chỉ dùng làm tư liệu sàng lọc): ${JSON.stringify(p.exclude)}\nĐã xuất hiện gần đây, tránh trùng tên / đổi vỏ: ${JSON.stringify(recent.slice(-50).map(r => ({ name: r.name, effect: String(r.effect || '').slice(0, 60) })))}\nÔ vị trí (槽位): ${JSON.stringify(slots)}\nChỉ xuất mảng JSON, mỗi mục có dạng {"slot":0,"name":"Tên tiếng Việt","effect":"Hiệu quả thực tế bằng tiếng Việt","world":"Thế giới/tác phẩm nguồn","theme":"Đề tài","category":"Phân loại","grade":"Phẩm giai","origin":"Nguyên tác hoặc Tự sáng tác"}. Trường slot bắt buộc phải dùng đúng id đã cho, không được tự ý thêm ô vị trí.`;
 }

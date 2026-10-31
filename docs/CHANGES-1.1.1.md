@@ -1,173 +1,87 @@
-# 1.1.1 · 玩家反馈修复（bug 修复小版本）
+# 1.1.1 · Sửa lỗi từ phản hồi người chơi (Phiên bản nhỏ sửa lỗi)
 
-基于 GitHub main `bfa4807`（1.1.0-patch4）增量修改，不是拿旧版本重做的。插件版本 1.1.1，账本结构版本 2 不变，世界书规则版本 1.1.1。扩展 ID、存储键和账本字段都没有改名。
+Sửa đổi tăng thêm dựa trên GitHub main `bfa4807` (1.1.0-patch4). Phiên bản plugin 1.1.1, phiên bản cấu trúc sổ cái 2 giữ nguyên, phiên bản quy tắc Sách Thế Giới 1.1.1. ID tiện ích mở rộng, khóa lưu trữ và các trường sổ cái đều không đổi tên.
 
-## 1. 神品保底：1000 抽
+## 1. Bảo hiểm Thần phẩm: 1000 lượt rút
 
-- 盲盒新增**神品保底**。连续 1000 抽没有出神品，第 1000 抽必定是神品，和世界书写的 0.1% 出率对应。
-- 仙品保底不变，仍是第 100 抽必出仙品。神品出货不重置仙品保底，出仙品也不重置神品保底。两个保底同时到期时先给神品，仙品顺延到下一抽。
-- 新字段 `诸天系统.盲盒状态.神品保底计数`。旧存档在下一次抽取时补算：
-  - 从没出过神品的，按累计抽数计（最多 999）；
-  - 出过神品的，因为无法知道是哪一抽出的，从 0 开始计。
-- 盲盒卡片的神品计数旁边会显示「距神品保底 N 抽」；商品定制页的说明里加了「1000 抽必出神品」。
-- 世界书「11｜商城｜万界盲盒」加了一行神品保底进度和对应规则，规则版本升到 1.1.1。旧书在 设置 → 世界书 → 更新到最新版 后生效，更新前会先备份。
-  - 1.1.1 以前由插件安装且没有改过的条目，不会再被误当成「自定义修改」来询问。
+- Hộp mù thêm mới **Bảo hiểm Thần phẩm**. Rút liên tiếp 1000 lượt không ra Thần phẩm thì lượt thứ 1000 chắc chắn ra Thần phẩm, tương ứng với tỷ lệ rơi 0.1% ghi trong Sách Thế Giới.
+- Bảo hiểm Tiên phẩm giữ nguyên, vẫn là lượt thứ 100 chắc chắn ra Tiên phẩm. Nổ Thần phẩm không đặt lại bảo hiểm Tiên phẩm, nổ Tiên phẩm cũng không đặt lại bảo hiểm Thần phẩm. Khi cả hai bảo hiểm cùng chạm mốc một lúc sẽ ưu tiên trao Thần phẩm trước, còn Tiên phẩm dời sang lượt rút kế tiếp.
+- Trường mới `诸天系统.盲盒状态.神品保底计数`. Bản lưu cũ sẽ được tính bù trong lần rút thẻ tiếp theo:
+  - Nếu chưa từng nổ Thần phẩm lần nào: tính theo tổng số lượt rút tích lũy (tối đa 999);
+  - Nếu đã từng nổ Thần phẩm: do không thể biết nổ ở lượt thứ mấy nên bắt đầu tính từ 0.
+- Bên cạnh bộ đếm Thần phẩm trên thẻ Hộp mù sẽ hiển thị 「Còn N lượt tới bảo hiểm Thần phẩm」; trong thuyết minh ở trang tùy chỉnh hàng hóa bổ sung cụm 「1000 lượt rút chắc chắn ra Thần phẩm」.
+- Mục từ 「11｜Thương thành｜Hộp Mù Vạn Giới」 trong Sách Thế Giới bổ sung một dòng tiến độ bảo hiểm Thần phẩm và quy tắc tương ứng, nâng phiên bản quy tắc lên 1.1.1. Sách cũ sẽ có hiệu lực sau khi vào Cài đặt → Sách Thế Giới → Cập nhật lên bản mới nhất (trước khi cập nhật sẽ tự động sao lưu).
+  - Các mục từ do plugin cài đặt từ trước bản 1.1.1 và chưa từng bị người dùng chỉnh sửa sẽ không còn bị nhận nhầm là 「sửa đổi tùy chỉnh」 để hỏi xác nhận nữa.
 
-## 2. 聊天群红包领不了
+## 2. Lì xì trong Nhóm chat không nhận được
 
-**原因**：1.0 的格式要求非常严格，只认 `[红包] 系统点|物品 …` 这一种写法。模型常见的写法都会被当成普通文字，于是没有「抢」按钮。常见写法包括：
-- 用 `【红包】` 或 `［红包］` 做标签；
-- 省略「物品」二字，例如 `[红包] 浸血古铜钱/凡品/… 5枚`；
-- `5000系统点 3个`、`1.5万`；
-- `**@名称**:`、`@名称（世界）:`。
+**Nguyên nhân**: Yêu cầu định dạng của bản 1.0 rất khắt khe, chỉ nhận diện duy nhất cách viết `[红包] 系统点|物品 …`. Các cách viết phổ biến của mô hình đều bị coi là văn bản thông thường nên không hiện nút 「Giật」, bao gồm:
+- Dùng `【红包】` hoặc `［红包］` (hoặc `[Lì xì]`, `【Lì xì】`) làm nhãn;
+- Lược bỏ hai chữ 「物品」 (Vật phẩm), ví dụ `[红包] Đồng Tiền Cổ Thấm Máu/Phàm phẩm/… 5 đồng`;
+- `5000 Điểm Hệ Thống 3 phần`, `1.5 vạn`;
+- `**@Tên**:`, `@Tên (Thế giới):`.
 
-**修复**：
-- 标签、类型、数额（支持 万 / 亿 和千分位）和数量（支持 × 和量词）都按宽松规则读取。
-- 群规上限、品阶上限和今日红包上限照旧执行。
-- 实在读不出来的红包，会在群消息后标注「（红包格式不完整，未入账）」，不会再静默变成文字。
-- 1.1.1 以前没识别出来的旧红包消息，下方会出现「补登」按钮。补登遵守同样的上限和每日次数，每条只能补登一次。
-- 群聊提示词里加了一行完整示例。
+**Cách sửa**:
+- Nhãn, loại, số tiền (hỗ trợ vạn / ức và dấu phân cách hàng nghìn) cùng số lượng (hỗ trợ dấu × và lượng từ) đều được đọc theo quy tắc nới lỏng.
+- Giới hạn nội quy nhóm, giới hạn phẩm giai và giới hạn lì xì trong ngày vẫn thực thi nghiêm ngặt như cũ.
+- Những lì xì thực sự thiếu thông tin không thể đọc được sẽ được ghi chú ngay sau tin nhắn nhóm là 「（Định dạng lì xì không đầy đủ, chưa ghi sổ）」, không còn âm thầm biến thành văn bản thường nữa.
+- Các tin nhắn lì xì cũ từ trước bản 1.1.1 chưa được nhận diện sẽ hiện nút 「Ghi bù」 ở bên dưới. Việc ghi bù tuân thủ cùng giới hạn trần và số lần mỗi ngày, mỗi tin chỉ có thể ghi bù một lần.
+- Trong lời nhắc trò chuyện nhóm đã bổ sung một dòng ví dụ đầy đủ.
 
-## 3. 剧情里学会的功法没入账 · 7. 数据块被正文或思维链污染 · 4. 状态栏消失
+## 3. Công pháp học được trong cốt truyện không vào sổ · 7. Khối dữ liệu bị nhiễu chính văn hoặc chuỗi tư duy · 4. Thanh trạng thái biến mất
 
-新增**数据块格式守卫**（`src/panel-guard.js`）。
+Thêm mới **Bộ bảo vệ định dạng khối dữ liệu** (`src/panel-guard.js`).
 
-**自动整理新回复**（默认开启，只改刚生成的最新一层）：
+**Tự động chỉnh lý phản hồi mới** (mặc định bật, chỉ sửa tầng mới nhất vừa tạo ra):
 
-| 问题 | 处理 |
+| Vấn đề | Xử lý |
 |---|---|
-| 正文段落、`<think>`、MVU `<UpdateVariable>`、HTML 或注释写进了 `<ZhuTianPanel>` | 挪到块前面的正文里。`<think>` 内容放进酒馆的思维链框（只在原本为空时）。 |
-| 没有结束标签（原版因此认不出整个块，状态栏就消失了） | 补上结束标签，块后的正文挪到块前。 |
-| 只有结束标签 / 标签大小写或空格不对 / 被包在 ``` 代码块里 | 规范成标准标签。 |
-| 一条回复里写了多个块 | 保留最后一个有字段的块。 |
-| 块只写在思维链（`extra.reasoning`）里 | 搬回正文末尾。 |
-| 完全没写标签，但末尾有 6 行以上字段（含系统点） | 包上标签。 |
-| `功法修炼` 写成「激活:X」「领悟《X》[仙品]」「新收录：收录:X」（原版只认 收录 / 习得 / 学会 加冒号） | 改写为 `收录:X[品阶]`。 |
+| Đoạn chính văn, `<think>`, MVU `<UpdateVariable>`, HTML hoặc chú thích bị viết nhầm vào bên trong `<ZhuTianPanel>` | Chuyển ra phần chính văn phía trước khối dữ liệu. Nội dung `<think>` được đưa vào khung chuỗi tư duy của SillyTavern (chỉ khi khung đó đang trống). |
+| Thiếu thẻ đóng (khiến bản gốc không nhận diện được cả khối và làm thanh trạng thái biến mất) | Bổ sung thẻ đóng, chuyển phần chính văn phía sau khối lên phía trước khối. |
+| Chỉ có thẻ đóng / viết sai chữ hoa-thường hoặc khoảng trắng trong thẻ / bị bọc trong khối mã ``` | Chuẩn hóa thành thẻ tiêu chuẩn. |
+| Trong một phản hồi viết nhiều khối dữ liệu | Giữ lại khối cuối cùng có trường hợp lệ. |
+| Khối dữ liệu chỉ được viết bên trong chuỗi tư duy (`extra.reasoning`) | Chuyển về cuối phần chính văn. |
+| Hoàn toàn không viết thẻ nhưng ở cuối có từ 6 dòng trường hợp lệ trở lên (có chứa Điểm Hệ Thống) | Bọc thẻ chuẩn vào. |
+| Dòng `功法修炼` viết thành 「Kích hoạt:X」, 「Lĩnh ngộ 《X》[Tiên phẩm]」, 「Thu lục mới: 收录:X」 | Viết lại thành `收录:X[Phẩm giai]`. |
 
-- **健康的块一字不改**。终端按块文本的哈希给每层记账，改动健康的块会导致重复记账。
-- AI 原文备份在该楼层的 `extra.zhutianCovenantTerminal.panelRepair` 里。可以在 设置 → 进阶设置 → 数据块格式守卫 → 「还原最新一次自动修复」恢复。
-- **旧楼层不改写**：只在显示和提示词过滤时按整理后的块处理。块里的正文照常显示，「旧楼层不发给 AI」也只去掉数据行、保留正文；一个字段都没有的块按正文处理。剧情收纳、修行熟练度、聊天群闲聊读到的也是这份正文。
-- **每轮格式提醒**：在聊天深度 0 注入一行系统提示。上一轮出错时，提示会写明具体问题。
-- **剧情功法提示**：正文写了「获得 / 学会 / 领悟…《某功法》」，但数据块和功法库里都没有这门功法时，会弹出提示，可以直接去「剧情收纳」登记。
-- **数据块补记**（实验性）：回复里完全没有数据块时，按世界书「[状态栏数据]模版」把当前数值、上一轮的块、本轮宿主输入和正文发给模型，让它补写一次。
-  - 默认「只在缺失时补记」，每条回复最多一次，可以关闭，也可以在设置里手动「补记最新一层数据块」。
-  - 走分功能 API 新增的「数据块补记」接口，默认跟随状态栏接口。
-  - 写入前会核对聊天、楼层、分页和正文都没有变化，否则放弃写入。
-  - 不会补开场白和系统消息。
-  - 「每次都补记」**没有实现**。
-- 复制诊断信息和诊断表格里新增「数据块格式守卫」一行，只有计数和问题类型，不含正文。
+- **Khối dữ liệu lành mạnh giữ nguyên từng chữ**. Thiết bị đầu cuối ghi sổ cho từng tầng dựa theo mã băm văn bản của khối dữ liệu, việc sửa đổi khối lành mạnh sẽ dẫn tới ghi sổ lặp lại.
+- Nguyên văn của AI được sao lưu tại `extra.zhutianCovenantTerminal.panelRepair` của tầng đó. Có thể khôi phục trong Cài đặt → Cài đặt nâng cao → Bảo vệ định dạng khối dữ liệu → 「Khôi phục lần tự động sửa gần nhất」.
+- **Tầng cũ không ghi đè vào tệp**: chỉ xử lý theo khối đã chỉnh lý khi hiển thị và lọc lời nhắc.
+- **Nhắc nhở định dạng mỗi lượt**: tiêm một dòng lời nhắc hệ thống. Khi lượt trước vừa gặp lỗi, lời nhắc sẽ nêu rõ vấn đề cụ thể.
+- **Gợi ý công pháp cốt truyện**: khi chính văn viết 「nhận được / học được / lĩnh ngộ… 《Công pháp X》」 nhưng cả trong khối dữ liệu lẫn kho công pháp đều chưa có môn công pháp đó, hệ thống sẽ bật thông báo để bạn đi thẳng tới trang 「Thu nạp cốt truyện」 đăng ký.
+- **Bổ sung khối dữ liệu (Ghi bù)** (Tính năng thử nghiệm): khi trong phản hồi hoàn toàn không có khối dữ liệu, hệ thống sẽ gửi các con số hiện tại, khối của lượt trước, đầu vào của Ký chủ và chính văn lượt này theo bản mẫu `[状态栏数据]模版` trong Sách Thế Giới cho mô hình để nó viết bù một lần.
 
-## 5. 页面整体上移（许愿 / 外挂工坊按钮）
+## 5. Toàn bộ trang bị trượt lên trên (Nút Ước nguyện / Công xưởng ngoại quải)
 
-**原因**：`scrollIntoView()` 和原版 `insertIntoChatInput` 里的 `textarea.focus()` 会滚动所有可滚动的祖先，包括 `<html>` 和 `<body>`。酒馆页面本来不该滚动，被滚上去以后没有任何代码会把它滚回来。
+**Nguyên nhân**: `scrollIntoView()` và `textarea.focus()` trong `insertIntoChatInput` nguyên bản làm cuộn tất cả các phần tử cha có thể cuộn, bao gồm cả `<html>` và `<body>`.
 
-**修复**（新文件 `src/page-scroll.js`）：
-- 所有 `scrollIntoView` 改成只滚动终端内部滚动框的 `scrollWithin`，涉及：外挂工坊编辑 / 新建、莉莉丝核验引导、图谱定位、跳转楼层、Alt+S、手机输入框避让。
-- 终端写入主输入框时：终端开着就不聚焦（文字照常写入）；终端关着时聚焦也不会滚动页面。写完后把页面滚动归零。
-- 终端打开期间，如果页面仍被滚动，下一帧会自动复位（正在输入时除外，避免和手机键盘冲突）。关闭终端时也会复位一次。
-- 操作记录对 `insertIntoChatInput` 的包装链保持不变。
+**Cách sửa** (tệp mới `src/page-scroll.js`):
+- Toàn bộ lệnh `scrollIntoView` được đổi thành `scrollWithin` chỉ cuộn khung cuộn bên trong thiết bị đầu cuối.
+- Khi thiết bị đầu cuối ghi vào ô nhập liệu chính: nếu thiết bị đầu cuối đang mở thì chỉ ghi văn bản mà không đặt tiêu điểm; nếu thiết bị đầu cuối đang đóng thì đặt tiêu điểm không cuộn trang (`preventScroll`). Sau khi ghi xong đưa vị trí cuộn trang về 0.
 
-## 8. 手机上终端左上角的莉莉丝头像点不到（追加反馈）
+## 8. Ảnh đại diện Lilith ở góc trên bên trái thiết bị đầu cuối trên điện thoại không bấm được
 
-**原因**：终端打开时，莉莉丝头像会停靠在标题栏左边，点它进私聊。原版代码按**窗口最顶端**计算头像位置：取标题栏高度，让头像在窗口顶部往下这段里居中。手机全屏时，窗口顶部给状态栏留了一段空白（safe-area），标题栏在这段空白下面，头像却还按窗口顶端放，于是落进了时间 / 信号那一条状态栏，手指一点就变成下拉通知栏。
+**Nguyên nhân**: Khi mở thiết bị đầu cuối, ảnh đại diện Lilith neo ở bên trái thanh tiêu đề để bấm vào trò chuyện riêng. Mã gốc tính vị trí ảnh đại diện theo **đỉnh trên cùng của cửa sổ**, nên khi toàn màn hình trên điện thoại có vùng trống `safe-area` dành cho thanh trạng thái hệ thống, ảnh đại diện bị rơi vào trong thanh trạng thái (giờ / cột sóng).
 
-隔离酒馆复现：手机竖屏，模拟 40px 状态栏。标题栏在 40–95px，头像在 14–58px，上半截压在状态栏里。另外，原版是在打开动画进行中量的位置，电脑上也会偏下约 8px。
+**Cách sửa** (`src/window-controls.js`, không sửa mã gốc):
+- Sau khi ảnh đại diện neo vào, căn chỉnh lại theo vị trí của **chính thanh tiêu đề**: căn giữa theo chiều dọc trong thanh tiêu đề và nằm bên phải vùng tai thỏ theo chiều ngang, đảm bảo không bị rơi vào thanh trạng thái.
 
-**修复**（`src/window-controls.js`，不改原版代码）：
-- 头像停靠后，按**标题栏本身**的位置重新对齐：竖直方向在标题栏里居中，水平方向留在刘海右边，保证不会落进状态栏。用 transform 微调，不和原版的定位代码互相覆盖。
-- 手机私聊页盖在终端上面时，头像正好叠在私聊标题栏自己的头像上，不会出现两个圈。
-- 打开 / 切换动画结束后再对齐一次，所以打开动画中量错的位置也会被纠正（电脑上会往上回正约 8px）。
-- 触屏浮窗和圆形入口的可放置区域扣掉状态栏、刘海和底部横条，浮窗不会再放到状态栏底下。
+## 6. Rút Hộp mù từ 10 lượt trở lên bị thất bại
 
-## 6. 盲盒 10 抽以上失败
+**Nguyên nhân**: Khi tạo một lô 8 món hàng mà văn bản mô tả hiệu quả lại dài, đầu ra của mô hình dễ vượt quá hạn mức và bị cắt cụt, làm hỏng quá trình phân tích JSON của cả đoạn.
 
-**原因**：一批 8 个商品、效果文字又长时，模型输出会超过额度被截断，整段 JSON 解析失败。重试三次都失败后，整次抽取报错。
+**Cách sửa**:
+- Nhận diện cắt cụt: khi cổng kết nối trả về `finish_reason` là `length` / `max_tokens`, hoặc mảng JSON chưa đóng ngoặc.
+- Khi bị cắt cụt sẽ giữ lại các món hàng đã hoàn chỉnh, chỉ tạo lại các ô còn thiếu và giảm một nửa kích thước lô.
+- Phẩm giai, phân loại và đề tài do ô cục bộ quyết định, việc mô hình viết sai mấy trường này không còn làm hỏng cả lô nữa.
+- Hộp mù **quyết toán mỗi 10 lượt một lần**: mỗi chặng tung xúc xắc từ sổ cái hiện tại, kiểm tra trạng thái bảo hiểm không đổi rồi trừ phí của chặng đó và đưa vào mục chờ xử lý. Nếu thất bại giữa chừng, phần đã hoàn thành vẫn được ghi sổ bình thường và thông báo rõ 「Đã hoàn thành X/N lượt rút và ghi sổ, N−X lượt còn lại chưa trừ phí」.
 
-**修复**：
-- 识别截断：接口返回 `finish_reason` 为 length / max_tokens，或 JSON 数组没有闭合。
-- 截断时保留已经完整的商品，只重做缺少的槽位，并把批次减半。盲盒起始批次 5，商店 8，最小减到 1。
-- 品阶、分类、题材由本地槽位决定，模型写错这几个字段不再导致整批失败（`validateProduct` 本身仍然严格）。
-- 盲盒**每 10 抽结算一次**：每一段从当前账本掷骰，保底状态必须没有变化，然后扣这一段的费用并放入待处理物品。中途失败时，已完成的部分照常入账，提示「已完成 X/N 抽并入账，剩余 N−X 抽未扣费」。操作记录在最后合并写一条。
+## Các bản sửa lỗi qua đợt thẩm tra trước khi phát hành (Số phiên bản vẫn là 1.1.1)
 
-## 发布前审查修复（版本号仍是 1.1.1）
-
-审查报告列出 7 个问题和 1 个次要问题，下面按报告编号说明。报告附带的 4 个反例（#2、#3、#4、#6）修复后全部不成立。新增单测见 `tests/v111-audit.test.js`，真实酒馆专项见 `tests/native_v111_audit.py`。
-
-### 1. 保留 / 分解 / 回收 吞奖励或重复奖励（旧问题）
-
-原版这几个按钮分几次保存：先删待处理物品或背包行，再加系统点或背包。后一次保存失败时，物品没了，奖励也没到。「全部保留」可能先存进背包、再清待处理时失败，重载后再点一次，1 份奖励就变成 2 份。
-
-- 新增 `src/item-actions.js`，接管 保留、分解、品阶分解、全部保留、回收 五个按钮。
-  - 点击时按玩家点的那一件物品（含完整内容的指纹）生成计划，再用**一次**加锁写入加服务器读回提交。要么物品和奖励一起生效，要么什么都不变。
-  - 失败时提示「物品与系统点都没有变化」，可以直接重试。
-  - 写入结果无法确认时冻结本聊天的交易，提示重载核对，不要重复点击。
-- 同一次点击不会记两次账：物品已经变了（例如被处理过），提示「已变化」，不写入。
-- 下标过期时（列表在点击前刷新过），按指纹找到同一件物品。找不到就不动。
-
-### 2. 补记把等待期间完成的交易余额写回去（新问题）
-
-补记要等模型返回。期间如果扣了系统点（1000 → 800 并已保存），旧版会用补记模板里的 1000 覆盖回去。
-
-- 补记开始时记下账本指纹。指纹不包括 界面渲染时间、面板账本、待处理折叠 这类显示字段。
-- 模型返回时如果指纹变了，提示「补记期间账本有变化…本次补记未写入」，**什么都不写**，800 保持不变。
-
-### 3. 聊天 A 排队的补记在聊天 B 执行（新问题）
-
-旧版的延迟任务执行时重新读取「当前聊天」，切到 B 以后会往 B 追加数据块、保存，还多一次模型调用。
-
-- 补记固定到发起时的聊天数组、角色身份和一个代数。切换聊天和插件停用都会让代数加一。
-- 代数不符、聊天对不上时，任务直接放弃：不调用模型，不写任何聊天。
-
-### 4. 「还原原文」把长回复截断（新问题）
-
-旧版备份只存前 60000 字，还原时却当完整原文写回，然后删掉备份（63084 字 → 60000 字，无法挽回）。
-
-- 备份保存完整原文和长度 `len`。
-- 还原前校验：备份不完整（含旧版的截断备份）时拒绝，提示「备份不完整」；备份属于另一条 swipe 时拒绝，提示「不是被修复的那一条」。拒绝时楼层和备份都保持原样。
-
-### 5. 同名物品错误合并（旧问题）
-
-原版只按 名称 + 品级 叠加，剧情得到的价格 1 的仙品和盲盒抽到的价格 10000000 的仙品合成一行，只保留一个价格。回收 2 件只得 2 点，应得 1000001 点。反过来合并会虚增价值。
-
-- `ledger-ops.js` 新增 `stackKey`：名称、品级、实际价格（缺失时按品级价）、来源、分类、效果全部相同才叠加。鉴定过、收纳的物品从不叠加。
-- 原版 `bagAdd`（无限口袋等仍在用）在终端里改走同一条规则，仍是引擎的一次保存（`commerce.js` 的 `strictStacking`）。
-- 旧存档里已经合并的行不会自动拆开（无法知道原来的价格）。
-
-### 6. 停用插件后补记仍然写入聊天（新问题）
-
-- 插件停用会让补记代数失效。桥接已关闭时，补记一律不写、不保存。
-
-### 7. 重roll 叠加非系统点资产
-
-不开神豪时，swipe 或重新生成会让 天命印记、因果筹码、名望、模块货币、持有金额 等再加一遍。
-
-原因：引擎只在**新回复的数据块到达时**才回滚本楼。但新回复的提示词已经按被换掉的那条回复的数值生成（数据块模板里的资源行、世界书实时数据、模块变量），模型在马上要撤销的收益上再加一次收益。
-
-- 新增 `src/reroll-guard.js`。酒馆开始 swipe / 重新生成时（这个事件在拼提示词前被等待），先把本楼恢复成楼层快照（专属资源、功法、模块变量等），再重算资源行。这是引擎稍后本来就会做的回滚，只是提前了。
-- 持有金额 / 当前货币 不在引擎快照里。只有当账本里还是被换掉那条回复的数值时，才改回上一楼的值；手动改过的不动。神豪的 ∞、系统点不动。
-- 本楼的记账标记不在开始时清掉，否则旧回复还在的状态栏会在流式生成期间把自己重新记一遍。等生成结束约 2 秒后，如果没有新回复入账（失败、停止、没有数据块、数据块相同），才清掉标记并重新渲染，让屏幕上那条回复按快照重新记账。
-- 真实酒馆里：首条回复 名望 100 → 150；swipe 时提示词里是 名望 100，结果 150；滑回第一条仍是 150；重新生成仍是 150，持有金额 600 不叠加。关闭这个守卫时同样操作会叠到 200。
-
-### 次要：抽卡保存未确认却提示「未扣系统点」
-
-已扣费并保存了 10 件物品、但保存读回失败时，旧提示说「未扣系统点，保底未变化」（交易冻结本身是生效的）。现在保存结果未知时提示「…保存结果未能确认，交易已冻结，请重载核对，不要重复抽取」，已确认的前几段照实说明。
-
-### 测试中顺带修的
-
-- 状态栏楼层重新渲染时，已被释放的旧页面里还没发出的后台写入会被拒绝；原版代码没有接这个错误，浏览器里会出现一条未捕获异常。现在**已被宿主释放**的页面再发起写入时直接不执行、也不报错。还挂在页面上的过期页面，或者写到一半被释放的，仍然照常拒绝并报错（`th-bridge.js`）。
-
-## 其他
-
-- 分功能 API 从 11 处变为 12 处（新增「数据块补记」）。
-- 设置页的模块分组可以带自己的按钮（`addSection({ actions })`）。
-- 新增测试 `tests/v111.test.js`、`tests/v111-audit.test.js`（审查修复）。`group060.test.js` 的叠加断言按新规则改为「来源不同各占一行」。旧测试只改了版本相关的断言：`version.test.js` 的版本号、`v084` 的世界书规则版本、`v081` 的世界书补丁数（2 → 4）。
-- 新增隔离浏览器专项 `tests/native_v111.py` 和 `tests/native_v111_mobile.py`（后者用 CDP 模拟手机状态栏 / 刘海）；`tests/qa/mock_model.py` 加了两条只在最后一条用户消息带「【1.1.1污染】/【1.1.1缺块】」时触发的模拟回复，其他套件不受影响；审查专项 `tests/native_v111_audit.py` 另加「【审计重roll】」触发的重roll回复。结果见 [ACCEPTANCE-1.1.1](ACCEPTANCE-1.1.1.md)。
-
-## 已知限制
-
-- #4「MVU / 角色卡状态栏消失」：数据块本身的问题（没闭合、写进思维链、大小写、缺失）已经处理。如果是酒馆助手 / MVU 和本插件在同一回合竞争写变量，没有复现条件，**无法确认已经修好**，列为残余风险。
-- 自动整理只处理新回复。旧楼层只在显示上整理，不会写回聊天文件。
-- 数据块补记依赖真实模型的质量，只用模拟模型验收过。
-- 旧存档在第一次抽取前，世界书里的「神品保底进度」会显示为空值（null）。
-- 审查 #5：修复前已经错误合并的背包行无法自动拆开。
-- 审查 #7：重roll 守卫只回滚引擎快照覆盖的字段和持有金额 / 当前货币；角色卡自己用别的方式记的数值不在范围内。
+1. **Giữ lại / Phân giải / Thu hồi làm mất phần thưởng hoặc nhân đôi phần thưởng**: Thêm mới `src/item-actions.js`, tiếp quản 5 nút Giữ lại, Phân giải, Phân giải theo phẩm giai, Giữ lại toàn bộ, Thu hồi bằng **một lần** ghi có khóa duy nhất kèm đọc lại xác nhận từ máy chủ.
+2. **Ghi bù ghi đè mất số dư giao dịch vừa hoàn tất trong lúc chờ**: Khi bắt đầu ghi bù sẽ lưu lại dấu vân tay sổ cái; khi mô hình trả về nếu dấu vân tay đã thay đổi sẽ từ chối ghi và giữ nguyên số dư mới.
+3. **Tác vụ ghi bù xếp hàng ở cuộc trò chuyện A lại chạy sang cuộc trò chuyện B**: Cố định tác vụ ghi bù vào mảng trò chuyện, định danh nhân vật và số thế hệ lúc phát khởi.
+4. **「Khôi phục nguyên văn」 làm cắt cụt phản hồi dài**: Lưu trọn vẹn toàn bộ nguyên văn và độ dài `len` trong bản sao lưu, kiểm tra tính toàn vẹn trước khi khôi phục.
+5. **Vật phẩm cùng tên bị gộp nhầm**: `ledger-ops.js` thêm mới `stackKey`: chỉ gộp khi Tên, Phẩm cấp, Giá thực tế, Nguồn gốc, Phân loại và Hiệu quả giống hệt nhau hoàn toàn. Các vật phẩm đã qua giám định hoặc thu nạp cốt truyện không bao giờ bị gộp.
+6. **Sau khi tắt plugin, tác vụ ghi bù vẫn ghi vào cuộc trò chuyện**: Khi tắt plugin sẽ làm vô hiệu hóa số thế hệ ghi bù ngay lập tức.
+7. **Roll lại (Reroll) làm cộng dồn tài sản phi Điểm Hệ Thống**: Thêm mới `src/reroll-guard.js`. Ngay khi SillyTavern bắt đầu swipe / tạo lại phản hồi (trước khi ghép lời nhắc), khôi phục tầng hiện tại về bản chụp nhanh của tầng trước đó và tính lại dòng tài nguyên.

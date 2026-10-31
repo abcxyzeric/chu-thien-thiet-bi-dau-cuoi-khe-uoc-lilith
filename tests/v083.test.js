@@ -45,7 +45,7 @@ test('terminal open: a tap only talks — no move, no open, no close (also when 
 test('terminal closed: tap the peek → she comes out (saved); tap again → opens the terminal', () => {
     const { f, calls } = fake({ open: false, temp: false });
     f.tap();
-    assert.deepEqual(calls, ['place:out:save', 'say:被你发现了～']);
+    assert.deepEqual(calls, ['place:out:save', 'say:Bị ngài phát hiện mất rồi~']);
     const b = fake({ open: false, tucked: false, temp: false }); b.f.tap();
     assert.deepEqual(b.calls, ['open']);
 });
@@ -65,7 +65,7 @@ test('setting floatSize: default m, offered in 设置 → 莉莉丝, applied liv
 
 test('version ≥ 0.8.3 and the floating Lilith capability row mentions it', () => {
     assert.match(VERSION, /^(?:0\.8\.[3-9]|0\.(?:9|\d{2,})\.\d+|[1-9]\d*\.\d+\.\d+)$/);
-    assert.ok(CAPABILITIES.some(c => c.name.includes('悬浮莉莉丝') && c.scope.includes('0.8.3')));
+    assert.ok(CAPABILITIES.some(c => c.name.includes('Lilith nổi') && c.scope.includes('0.8.3')));
 });
 
 test('a saved "out" spot near the edge stays out (was: re-tucked after every terminal close / reload)', async () => {

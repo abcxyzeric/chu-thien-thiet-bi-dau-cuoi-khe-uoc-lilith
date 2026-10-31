@@ -23,7 +23,7 @@ test('review: worldbook duplicate built-in comments do not silently delete a cus
 });
 for(const n of [undefined,NaN,'broken',0.5]) test(`review: forbidden purchase rejects invalid acquisition resource ${String(n)}`,async()=>{
  const v={诸天系统:{系统点:2e10,背包:[],专属资源:{因果筹码:n},商城库存:[{名称:'禁忌测试',品阶:'禁忌',价格:1e10,特殊代价:{resource:'因果筹码',amount:1}}]}};
- await assert.rejects(()=>planOperation(v,[],'buy',0),/获得条件/);
+ await assert.rejects(()=>planOperation(v,[],'buy',0),/điều kiện nhận/);
 });
 test('review: export preserves a literal __proto__ world key without changing prototypes',()=>{
  const x=JSON.parse('{"世界品阶映射":{"__proto__":{"天阶":"仙品"}}}');const out=stripSecrets(x);
@@ -33,16 +33,16 @@ test('review: appraisal result arriving in another chat must not invoke writer',
  let id='a',writes=0;const chat=[{mes:'evidence'}],z={系统点:10,背包:[]};
  const app={adapter:{currentIdentity:()=>id,context:()=>({chat}),ledger:()=>z,isGenerating:()=>false},bridge:{getVariables:()=>({诸天系统:z}),generateRaw:async()=>{id='b';return '仙品|明确证据';}}};
  const a=new Appraise(app);a.write=async()=>{writes++;return [];};
- await assert.rejects(()=>a.appraise({kind:'item',name:'钥匙',grade:'凡品',desc:'剧情钥匙'}),/变化|切换/);assert.equal(writes,0);
+ await assert.rejects(()=>a.appraise({kind:'item',name:'钥匙',grade:'凡品',desc:'剧情钥匙'}),/thay đổi|đã chuyển/);assert.equal(writes,0);
 });
 function context(id) {return {characterId:0,characters:[{avatar:'fixture'}],getCurrentChatId:()=>id,chat:[],chatMetadata:{variables:{诸天系统:{系统点:100,背包:[]}},[STORAGE]:{ledgerSchema:2}},saveMetadata:async()=>{}};}
 test('review: import chat switch during backup rejects before writer',async()=>{
  let c=context('a'),writes=0;const app={adapter:{context:()=>c,currentIdentity:()=>identity(c),notify(){}},settings:{all:{},get(){},set(){}},bridge:{snapshot:async()=>{c=context('b');},getVariables:()=>c.chatMetadata.variables,updateVariablesWith:async f=>{writes++;c.chatMetadata.variables=f(copy(c.chatMetadata.variables));}}};
- const io=new DataIO(app);await assert.rejects(()=>io.import({format:BACKUP_FORMAT,formatVersion:1,chat:{ledgerSchema:2,variables:{诸天系统:{系统点:1,背包:[]}}}},{settings:false}),/切换|变化/);assert.equal(writes,0);
+ const io=new DataIO(app);await assert.rejects(()=>io.import({format:BACKUP_FORMAT,formatVersion:1,chat:{ledgerSchema:2,variables:{诸天系统:{系统点:1,背包:[]}}}},{settings:false}),/đã chuyển|thay đổi/);assert.equal(writes,0);
 });
 test('review: rollback chat switch during backup rejects before writer',async()=>{
  let c=context('a'),writes=0;const b=new Bridge({context:()=>c,currentIdentity:()=>identity(c)},{});b.backups=()=>[{at:1,ledger:{系统点:1}}];b.snapshot=async()=>{c=context('b');return {at:2};};b.updateVariablesWith=async()=>{writes++;};
- await assert.rejects(()=>b.restoreBackup(1),/切换|变化/);assert.equal(writes,0);
+ await assert.rejects(()=>b.restoreBackup(1),/đã chuyển|thay đổi/);assert.equal(writes,0);
 });
 test('review: whole-ledger replacement must not merge previous romance into imported save',async()=>{
  const c=context('a');c.chatMetadata.variables.诸天系统.恋爱目标={姓名:'旧目标',世界:'甲'};const oldNav=globalThis.navigator;
@@ -66,7 +66,7 @@ test('review: guarded ledger service cannot downgrade schema or write newer sche
  const {LedgerService}=await import('../src/ledger-service.js');const c=context('a');c.chatMetadata[STORAGE].ledgerSchema=99;
  const oldNav=globalThis.navigator,oldDoc=globalThis.document;
  Object.defineProperty(globalThis,'navigator',{value:{locks:{}},configurable:true});globalThis.document={querySelector:()=>null,querySelectorAll:()=>[]};
- try {const service=new LedgerService({isGenerating:()=>false,currentIdentity:()=>identity(c),context:()=>c,settings:()=>({nativeLedgerEnabled:true})});assert.throws(()=>service.ready(),/结构版本|更新版本/);}
+ try {const service=new LedgerService({isGenerating:()=>false,currentIdentity:()=>identity(c),context:()=>c,settings:()=>({nativeLedgerEnabled:true})});assert.throws(()=>service.ready(),/Phiên bản cấu trúc|bản cập nhật mới hơn/);}
  finally{Object.defineProperty(globalThis,'navigator',{value:oldNav,configurable:true});globalThis.document=oldDoc;}
 });
 test('review: pending duplicate source retains explicit additional-lot consent',async()=>{
@@ -81,19 +81,19 @@ test('review: retired frame scopes release resources once and remain bounded',as
 });
 test('review: schema marker is not reported saved when server readback fails',async()=>{
  const c=context('a');c.chatMetadata[STORAGE].ledgerSchema=1; c.getRequestHeaders=()=>({});const uncertain=new Set();const old=globalThis.fetch;globalThis.fetch=async()=>new Response('{}',{status:503});
- try{const io=new DataIO({adapter:{context:()=>c,currentIdentity:()=>identity(c),transactions:{uncertain}}});await assert.rejects(()=>io.setSchema(2),/未确认/);assert.ok(uncertain.has(identity(c)));}
+ try{const io=new DataIO({adapter:{context:()=>c,currentIdentity:()=>identity(c),transactions:{uncertain}}});await assert.rejects(()=>io.setSchema(2),/chưa được xác nhận/);assert.ok(uncertain.has(identity(c)));}
  finally{globalThis.fetch=old;}
 });
 test('review: import refuses an intervening write after its backup',async()=>{
  const c=context('a');const app={adapter:{context:()=>c,currentIdentity:()=>identity(c),notify(){}},settings:{all:{},get(){},set(){}},bridge:{snapshot:async()=>{c.chatMetadata.variables.诸天系统.系统点=200;},getVariables:()=>copy(c.chatMetadata.variables),updateVariablesWith:async f=>{const draft=copy(c.chatMetadata.variables);c.chatMetadata.variables=f(draft);}}};
- const io=new DataIO(app);await assert.rejects(()=>io.import({format:BACKUP_FORMAT,formatVersion:1,chat:{ledgerSchema:2,variables:{诸天系统:{系统点:1,背包:[]}}}},{settings:false}),/账本已变化/);assert.equal(c.chatMetadata.variables.诸天系统.系统点,200);
+ const io=new DataIO(app);await assert.rejects(()=>io.import({format:BACKUP_FORMAT,formatVersion:1,chat:{ledgerSchema:2,variables:{诸天系统:{系统点:1,背包:[]}}}},{settings:false}),/Sổ cái đã thay đổi/);assert.equal(c.chatMetadata.variables.诸天系统.系统点,200);
 });
 test('review: appraisal uses item source-world mapping, not current travel world',async()=>{
  const {candidates,appraisePrompt}=await import('../src/appraise.js');const z={当前世界:'乙',世界品阶映射:{甲:{天阶:'仙品'},乙:{天阶:'灵品'}},背包:[{名称:'钥匙',来源:'剧情收纳',来源世界:'甲',原世界品阶:'天阶',品级:'凡品',数量:1}]};
- const [entry]=candidates(z).items;assert.equal(entry.world,'甲');const prompt=appraisePrompt(entry,z).user;assert.match(prompt,/原世界品阶：天阶/);assert.match(prompt,/"天阶":"仙品"/);assert.doesNotMatch(prompt,/"天阶":"灵品"/);
+ const [entry]=candidates(z).items;assert.equal(entry.world,'甲');const prompt=appraisePrompt(entry,z).user;assert.match(prompt,/Phẩm giai thế giới gốc: 天阶/);assert.match(prompt,/"天阶":"仙品"/);assert.doesNotMatch(prompt,/"天阶":"灵品"/);
 });
 test('review: module switches do not depend on upgrade-local disk reader',async()=>{
- const {Features}=await import('../src/features.js');const book={entries:{0:{comment:'08｜核心｜神豪挥霍',content:'keep',disable:true}}};let saved;
+ const {Features}=await import('../src/features.js');const book={entries:{0:{comment:'08｜Cốt lõi｜Thần Hào Tiêu Xài',content:'keep',disable:true}}};let saved;
  const c={loadWorldInfo:async()=>saved||book,saveWorldInfo:async(_n,b)=>{saved=b;},updateWorldInfoList:async()=>{}};
- const f=new Features({adapter:{context:()=>c}});await f.setModules({'08｜核心｜神豪挥霍':true});assert.equal(saved.entries[0].disable,false);
+ const f=new Features({adapter:{context:()=>c}});await f.setModules({'08｜Cốt lõi｜Thần Hào Tiêu Xài':true});assert.equal(saved.entries[0].disable,false);
 });

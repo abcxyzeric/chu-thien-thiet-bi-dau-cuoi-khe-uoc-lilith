@@ -34,14 +34,17 @@ export function splitPanels(text) {
 /** Reads "字段: 值" / "字段：值" lines of a panel. */
 export function panelFields(panel) {
     const out = {};
-    for (const line of String(panel ?? '').split(/\r?\n/)) { const m = /^\s*([^:：\n]{1,12}?)\s*[:：]\s*(.*?)\s*$/.exec(line); if (m && !(m[1] in out)) out[m[1]] = m[2]; }
+    for (const line of String(panel ?? '').split(/\r?\n/)) { const m = /^\s*([^:：\n]{1,28}?)\s*[:：]\s*(.*?)\s*$/.exec(line); if (m && !(m[1] in out)) out[m[1]] = m[2]; }
     return out;
 }
 /** The compact floor summary of the original "旧楼层精简显示" regex (same look; tolerant of missing fields). */
 export function compactSummary(panel) {
     const f = panelFields(panel);
-    if (!('系统点' in f) && !('当前任务' in f) && !('好感度' in f)) return null;
-    return { points: f.系统点 ?? '—', favor: f.好感度 ?? '—', task: f.当前任务 ?? '暂无任务' };
+    const pts = f.系统点 ?? f['Điểm Hệ Thống'] ?? f['Điểm hệ thống'];
+    const fav = f.好感度 ?? f['Độ hảo cảm'] ?? f['Hảo cảm'];
+    const tsk = f.当前任务 ?? f['Nhiệm vụ hiện tại'];
+    if (pts === undefined && tsk === undefined && fav === undefined) return null;
+    return { points: pts ?? '—', favor: fav ?? '—', task: tsk ?? 'Chưa có nhiệm vụ' };
 }
 /** Is the old regex (TH-rendered) status bar still active? Global or character-scoped regex with the panel pattern. */
 export function legacyRegexActive(c) {
@@ -198,7 +201,7 @@ export class StatusBarHost {
     ctx() { return this.adapter.context(); }
     async start() {
         const r = await fetch(this.base + 'vendor/original/statusbar-v3.1-shell.html', { cache: 'no-cache' });
-        if (!r.ok) throw Error('原版状态栏模板缺失：HTTP ' + r.status);
+        if (!r.ok) throw Error('Thiếu mẫu thanh trạng thái gốc: HTTP ' + r.status);
         this.template = (await r.text()).replaceAll('__ZT_VENDOR__/', this.base + 'vendor/original/');
         const registry = globalThis[BRIDGE_KEY] ||= { frames: new Map() };
         this.registry = registry;
@@ -218,10 +221,10 @@ export class StatusBarHost {
     }
     decideMode() {
         const want = this.settings.get('statusbar'), c = this.ctx();
-        if (want === 'off') return { mode: 'off', reason: '已在设置中关闭诸天系统面板处理。' };
-        if (want !== 'native' && legacyRegexActive(c) && tavernHelperPresent()) return { mode: 'yield', reason: '检测到旧状态栏正则与酒馆助手同时启用：插件自动让位，避免两个引擎写同一账本。请在终端「设置」里用“一键接管旧版”停用旧正则。' };
-        if (want === 'native') return { mode: 'native', reason: '兼容模式：聊天楼层内仍渲染原版 3.1 状态栏（终端里同样可操作）。' };
-        return { mode: 'terminal', reason: '终端模式：系统数据块由终端记账，楼层内只留一个小标签，不再显示状态栏。' };
+        if (want === 'off') return { mode: 'off', reason: 'Đã tắt xử lý bảng dữ liệu Hệ Thống Chư Thiên trong Cài đặt.' };
+        if (want !== 'native' && legacyRegexActive(c) && tavernHelperPresent()) return { mode: 'yield', reason: 'Phát hiện regex thanh trạng thái cũ và Tavern Helper cùng bật: plugin tự động nhường quyền để tránh hai engine cùng ghi vào một sổ cái. Vui lòng vào 「Cài đặt」 trong thiết bị đầu cuối và dùng “Tiếp quản bản cũ bằng 1 chạm” để tắt regex cũ.' };
+        if (want === 'native') return { mode: 'native', reason: 'Chế độ tương thích: trong tầng trò chuyện vẫn kết xuất thanh trạng thái 3.1 gốc (trong thiết bị đầu cuối cũng có thể thao tác).' };
+        return { mode: 'terminal', reason: 'Chế độ thiết bị đầu cuối: khối dữ liệu hệ thống do thiết bị đầu cuối ghi sổ, trong tầng trò chuyện chỉ để lại một nhãn nhỏ, không hiển thị thanh trạng thái nữa.' };
     }
     get active() { return this.state.mode === 'native' || this.state.mode === 'terminal'; }
     schedule(ms = 120) { if (this.dead) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.scan(), ms); }
@@ -264,12 +267,12 @@ export class StatusBarHost {
     diagnoseLast() {
         const chat = this.ctx().chat || [];
         let id = -1; for (let i = chat.length - 1; i >= Math.max(0, chat.length - 10); i--) if (/<ZhuTianPanel>/.test(chat[i]?.mes || '')) { id = i; break; }
-        if (id < 0) return { ok: null, text: '最近 10 层里没有 <ZhuTianPanel> 数据块（模型这几轮没输出，或被别的正则改掉了）。' };
+        if (id < 0) return { ok: null, text: 'Trong 10 tầng gần nhất không có khối dữ liệu <ZhuTianPanel> (mô hình mấy lượt này không xuất ra, hoặc đã bị regex khác sửa mất).' };
         const el = document.querySelector(`#chat .mes[mesid="${id}"]`), t = el?.querySelector('.mes_text');
-        if (!t) return { ok: null, text: `第 ${id} 层不在当前已加载的聊天里。` };
-        if (!this.active) return { ok: false, floor: id, text: `第 ${id} 层没有处理：${this.state.reason || this.state.mode}` };
-        if (t.querySelector(':scope > .zt-render-mark')) return { ok: true, floor: id, text: `第 ${id} 层已正常显示为诸天数据标签。` };
-        return { ok: false, floor: id, text: `第 ${id} 层还没处理${this.adapter.isGenerating() ? '（插件认为主聊天仍在生成）' : ''}。点「重新渲染楼层」。` };
+        if (!t) return { ok: null, text: `Tầng ${id} không nằm trong cuộc trò chuyện đang được tải hiện tại.` };
+        if (!this.active) return { ok: false, floor: id, text: `Tầng ${id} chưa được xử lý: ${this.state.reason || this.state.mode}` };
+        if (t.querySelector(':scope > .zt-render-mark')) return { ok: true, floor: id, text: `Tầng ${id} đã hiển thị bình thường dưới dạng nhãn dữ liệu Chư Thiên.` };
+        return { ok: false, floor: id, text: `Tầng ${id} chưa được xử lý${this.adapter.isGenerating() ? ' (plugin cho rằng cuộc trò chuyện chính vẫn đang tạo)' : ''}. Bấm 「Kết xuất lại các tầng」.` };
     }
     unmount(el, m, id) {
         for (const f of el.querySelectorAll('.' + STATUSBAR_CLASS + ' iframe')) this.release(f);
@@ -318,15 +321,15 @@ export class StatusBarHost {
             const sum = this.settings.get('compactHistory') !== false ? compactSummary(panel) : null;
             if (sum) {
                 const card = document.createElement('div'); card.className = 'zt-sb-compact'; card.setAttribute('role', 'button'); card.tabIndex = 0;
-                card.title = `楼 ${id} · 历史状态栏（点击展开；只有最新楼层会结算）`;
+                card.title = `Tầng ${id} · Thanh trạng thái lịch sử (bấm để mở rộng; chỉ tầng mới nhất mới quyết toán)`;
                 card.setAttribute('style', 'margin:8px 0;padding:9px 12px;border:1px solid rgba(124,153,135,.28);background:rgba(124,153,135,.09);border-radius:10px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;font-size:12px;line-height:1.7;color:inherit;overflow-wrap:anywhere;cursor:pointer;');
-                card.innerHTML = `<span style="font-weight:600;letter-spacing:.5px;">◇ 诸天系统</span><span>系统点 <b>${escapeText(sum.points)}</b></span><span>好感 ${escapeText(sum.favor)}</span><span style="flex:1 1 150px;min-width:0;">任务：${escapeText(sum.task)}</span><span class="zt-sb-expand" style="opacity:.6">展开 ▾</span>`;
+                card.innerHTML = `<span style="font-weight:600;letter-spacing:.5px;">◇ Hệ Thống Chư Thiên</span><span>Điểm Hệ Thống <b>${escapeText(sum.points)}</b></span><span>Hảo cảm ${escapeText(sum.favor)}</span><span style="flex:1 1 150px;min-width:0;">Nhiệm vụ: ${escapeText(sum.task)}</span><span class="zt-sb-expand" style="opacity:.6">Mở rộng ▾</span>`;
                 const open = () => card.replaceWith(this.frame(panel, id));
                 card.addEventListener('click', open); card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
                 box.append(card); this.counts.compact++; return box;
             }
             const b = document.createElement('button'); b.type = 'button'; b.className = 'zt-sb-history menu_button';
-            b.textContent = `楼 ${id} · 历史状态栏（点击展开；只有最新楼层会结算）`;
+            b.textContent = `Tầng ${id} · Thanh trạng thái lịch sử (bấm để mở rộng; chỉ tầng mới nhất mới quyết toán)`;
             b.addEventListener('click', () => { b.replaceWith(this.frame(panel, id)); });
             box.append(b); return box;
         }
@@ -338,8 +341,8 @@ export class StatusBarHost {
         if (this.settings.get('floorTag') === false) { box.hidden = true; return box; }
         const sum = compactSummary(panel), chip = document.createElement('button');
         chip.type = 'button'; chip.className = 'zt-floor-tag'; chip.dataset.floor = String(id);
-        chip.title = '诸天系统 · 本楼数据已由终端记录（点击打开终端）';
-        chip.innerHTML = `<span class="zt-floor-tag-mark">✧</span><span>系统已记录</span>${sum ? `<span class="zt-floor-tag-v">系统点 ${escapeText(sum.points)}</span><span class="zt-floor-tag-v">${escapeText(sum.task)}</span>` : ''}<span class="zt-floor-tag-go">查看 ›</span>`;
+        chip.title = 'Hệ Thống Chư Thiên · Dữ liệu tầng này đã được thiết bị đầu cuối ghi nhận (bấm để mở thiết bị đầu cuối)';
+        chip.innerHTML = `<span class="zt-floor-tag-mark">✧</span><span>Hệ thống đã ghi nhận</span>${sum ? `<span class="zt-floor-tag-v">Điểm Hệ Thống ${escapeText(sum.points)}</span><span class="zt-floor-tag-v">${escapeText(sum.task)}</span>` : ''}<span class="zt-floor-tag-go">Xem ›</span>`;
         chip.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); this.openHub?.('ov', id); });
         box.append(chip); this.counts.compact++; return box;
     }
@@ -358,7 +361,7 @@ export class StatusBarHost {
         const token = 'f' + (++this.seq) + '-' + Date.now().toString(36);
         const iframe = document.createElement('iframe');
         iframe.dataset.ztFloor = String(id);
-        iframe.className = 'zt-sb-frame'; iframe.dataset.ztFrame = token; iframe.title = '诸天系统状态栏 · 楼 ' + id;
+        iframe.className = 'zt-sb-frame'; iframe.dataset.ztFrame = token; iframe.title = 'Thanh trạng thái Hệ Thống Chư Thiên · Tầng ' + id;
         iframe.setAttribute('scrolling', 'no'); iframe.style.cssText = 'width:100%;border:0;display:block;height:560px;background:transparent;';
         const c = this.ctx(); let content = panel;
         try { content = c.substituteParams(panel); } catch { /* same as the regex engine; keep raw on failure */ }
@@ -369,7 +372,7 @@ export class StatusBarHost {
         const fit = `<script>(function(){var f=frameElement;if(!f)return;var last=0;function fit(){var h=Math.ceil(Math.max(document.body?document.body.scrollHeight:0,document.documentElement.scrollHeight));if(h&&Math.abs(h-last)>1){last=h;f.style.height=h+'px';}}new ResizeObserver(fit).observe(document.documentElement);if(document.body)new ResizeObserver(fit).observe(document.body);addEventListener('load',fit);setTimeout(fit,50);setTimeout(fit,600);})();<\/script>`;
         let html = this.template.replace('$1', () => escapeText(content));
         html = html.replace(/<head>/i, m => m + boot).replace(/<\/body>/i, m => (opts.fill ? '' : fit) + m);
-        if (opts.fill) { iframe.removeAttribute('scrolling'); iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;background:transparent;'; iframe.className = 'zt-engine-frame'; iframe.title = '诸天系统引擎 · 楼 ' + id; }
+        if (opts.fill) { iframe.removeAttribute('scrolling'); iframe.style.cssText = 'width:100%;height:100%;border:0;display:block;background:transparent;'; iframe.className = 'zt-engine-frame'; iframe.title = 'Engine Hệ Thống Chư Thiên · Tầng ' + id; }
         // 0.8.4: the status bar's own ⚙ API dialog wrote only the status-bar copy of the API config (a third place).
         // Its gear now opens the one API 中心 (terminal 连接 page when the terminal is open, otherwise the popup).
         iframe.addEventListener('load', () => {
@@ -390,13 +393,13 @@ export class StatusBarHost {
     focusLatest() { if (this.openHub) { this.openHub('ov'); return true; } const box = this.latestFrame(); if (!box) return false; scrollWithin(box, { behavior: 'smooth', block: 'center' }); resetPageScroll(); box.querySelector('button.zt-sb-history,.zt-sb-compact')?.click(); return true; }
     /** New-chat initialization using the ORIGINAL ensureSystemVars() of the status bar (same defaults, same schema). */
     async initializeChat() {
-        if (!this.template) throw Error('原版状态栏模板未加载。');
+        if (!this.template) throw Error('Mẫu thanh trạng thái gốc chưa được tải.');
         const iframe = this.frame('', -1); iframe.style.cssText = 'position:fixed;left:-9999px;top:0;width:360px;height:200px;border:0;visibility:hidden';
         document.body.append(iframe);
         try {
-            await new Promise((resolve, reject) => { const t = setTimeout(() => reject(Error('状态栏初始化超时')), 20000); iframe.addEventListener('load', () => { clearTimeout(t); resolve(); }, { once: true }); });
+            await new Promise((resolve, reject) => { const t = setTimeout(() => reject(Error('Khởi tạo thanh trạng thái quá thời gian')), 20000); iframe.addEventListener('load', () => { clearTimeout(t); resolve(); }, { once: true }); });
             const w = iframe.contentWindow;
-            if (typeof w.ensureSystemVars !== 'function') throw Error('原版 ensureSystemVars 不可用。');
+            if (typeof w.ensureSystemVars !== 'function') throw Error('ensureSystemVars gốc không khả dụng.');
             await w.ensureSystemVars();
             return this.bridge.getVariables({ type: 'chat' }).诸天系统 || null;
         } finally { this.release(iframe); iframe.remove(); }

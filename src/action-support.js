@@ -3,18 +3,18 @@ import { readConfigs } from './api-center.js';
 export const cleanText = (s, n = 500) => String(s ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 export function capture(app) {
     const a = app.adapter, c = a.context(), id = a.currentIdentity();
-    if (!id || !a.ledger()) throw Error('请先打开已初始化的单角色聊天。');
-    if (a.isGenerating()) throw Error('主聊天正在生成，请结束后再操作。');
+    if (!id || !a.ledger()) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật đã khởi tạo trước.');
+    if (a.isGenerating()) throw Error('Cuộc trò chuyện chính đang tạo phản hồi, vui lòng đợi kết thúc rồi mới thao tác.');
     return { id, chat: c.chat, tail: JSON.stringify(c.chat.map(m => [m.mes, m.swipe_id])) };
 }
 export function assertCapture(app, token) {
-    if (app.bridge.dead || app.adapter.currentIdentity() !== token.id || app.adapter.context().chat !== token.chat || app.adapter.isGenerating() || JSON.stringify(token.chat.map(m => [m.mes, m.swipe_id])) !== token.tail) throw Error('聊天、正文或生成状态已变化；操作取消，未提交。');
+    if (app.bridge.dead || app.adapter.currentIdentity() !== token.id || app.adapter.context().chat !== token.chat || app.adapter.isGenerating() || JSON.stringify(token.chat.map(m => [m.mes, m.swipe_id])) !== token.tail) throw Error('Trò chuyện, chính văn hoặc trạng thái tạo đã thay đổi; thao tác bị hủy, chưa lưu.');
 }
 export async function checkedCommit(app, token, mutate) {
     assertCapture(app, token); let result;
     await app.bridge.updateVariablesWith(v => {
         assertCapture(app, token); const z = v.诸天系统;
-        if (!z) throw Error('账本不存在');
+        if (!z) throw Error('Sổ cái không tồn tại');
         result = mutate(z, v); z.界面记账时间 = Date.now(); return v;
     }, { type: 'chat', verify: true, expectedIdentity: token.id });
     return result;
@@ -28,7 +28,7 @@ export async function askFeature(app, route, system, user, maxTokens = 4096) {
 }
 export function parseObject(text) {
     const s = String(text || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
-    const x = JSON.parse(s); if (!x || typeof x !== 'object') throw Error('模型未返回 JSON 对象'); return x;
+    const x = JSON.parse(s); if (!x || typeof x !== 'object') throw Error('Mô hình không trả về đối tượng JSON'); return x;
 }
 export function audit(z, kind, text) {
     z.操作日志 ||= []; z.操作日志.push({ id: crypto.randomUUID(), at: Date.now(), kind, text: cleanText(text, 1500) });

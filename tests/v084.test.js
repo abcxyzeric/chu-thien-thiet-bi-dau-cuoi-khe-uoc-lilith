@@ -50,7 +50,7 @@ test('streamedCompletion: a provider that rejects streaming is retried once with
 
 test('streamedCompletion: HTTP errors keep their status with a readable reason; in-stream error → 502', async () => {
     const r = await streamedCompletion(async () => jsonResponse({ error: { message: 'Incorrect API key' } }, 401), { model: 'm' });
-    assert.equal(r.status, 401); assert.match((await r.json()).error.message, /Key 无效.*Incorrect API key/);
+    assert.equal(r.status, 401); assert.match((await r.json()).error.message, /Key không hợp lệ.*Incorrect API key/);
     const e = await streamedCompletion(async () => streamResponse(sse([{ error: { message: 'upstream overloaded' } }])), { model: 'm' });
     assert.equal(e.status, 502); assert.match((await e.json()).error.message, /overloaded/);
     const empty = await streamedCompletion(async () => streamResponse(''), { model: 'm' });
@@ -61,8 +61,8 @@ test('streamedCompletion: HTTP errors keep their status with a readable reason; 
 });
 
 test('errorText: html error pages are reduced to text, common statuses get a hint', () => {
-    assert.match(errorText('<html><body><h1>502 Bad Gateway</h1></body></html>', 502), /网关错误.*502 Bad Gateway/);
-    assert.match(errorText('{"error":"quota"}', 429), /余额不足.*quota/);
+    assert.match(errorText('<html><body><h1>502 Bad Gateway</h1></body></html>', 502), /Lỗi cổng kết nối.*502 Bad Gateway/);
+    assert.match(errorText('{"error":"quota"}', 429), /hết số dư.*quota/);
     assert.equal(errorText('', 418), 'HTTP 418');
 });
 
@@ -99,7 +99,7 @@ test('shim: relay failure on chat returns a JSON error (status), not a throw tha
     try {
         const f = proxiedFetch({ ctx: () => ({ getRequestHeaders: () => ({}) }) });
         const r = await f('https://api.example.com/v1/chat/completions', { method: 'POST', body: JSON.stringify({ model: 'm', messages: [] }) });
-        assert.equal(r.status, 502); assert.match((await r.json()).error.message, /转发也失败/);
+        assert.equal(r.status, 502); assert.match((await r.json()).error.message, /chuyển tiếp qua máy chủ quán rượu cũng thất bại/);
     } finally { globalThis.fetch = real; }
 });
 
@@ -124,7 +124,7 @@ test('bridge.listModels: bare array / {models} shapes; 403 from ST explains the 
         globalThis.fetch = async url => String(url).startsWith('https://') ? jsonResponse({ models: [{ name: 'g' }] }) : null;
         assert.deepEqual(await b.listModels('https://x.example/v1', 'k'), ['g']);
         globalThis.fetch = async url => { if (String(url).startsWith('https://')) throw new TypeError('Failed to fetch'); return new Response('Forbidden', { status: 403 }); };
-        await assert.rejects(b.listModels('https://x.example/v1', 'k'), e => /403/.test(e.message) && /刷新/.test(e.message) && e.status === 403);
+        await assert.rejects(b.listModels('https://x.example/v1', 'k'), e => /403/.test(e.message) && /làm mới/.test(e.message) && e.status === 403);
         globalThis.fetch = async url => { if (String(url).startsWith('https://')) throw new TypeError('Failed to fetch'); return new Response('nope', { status: 404 }); };
         await assert.rejects(b.listModels('https://x.example', 'k'), e => /\/v1/.test(e.message) && e.status === 404);
     } finally { globalThis.fetch = real; }
@@ -139,7 +139,7 @@ test('bridge.customChat: streamed (direct), relay fallback also streamed, error 
         assert.equal(r.text, '好'); assert.equal(r.via, 'direct'); assert.deepEqual(seen[0], ['https://x.example/v1/chat/completions', true]);
         seen.length = 0;
         globalThis.fetch = async (url, init) => { if (String(url).startsWith('https://')) throw new TypeError('Failed to fetch'); seen.push(JSON.parse(init.body).stream); return jsonResponse({ error: { message: 'model not found' } }, 404); };
-        await assert.rejects(b.customChat({ url: 'https://x.example/v1', key: 'k', model: 'm' }, []), e => /酒馆转发返回 HTTP 404/.test(e.message) && /model not found/.test(e.message));
+        await assert.rejects(b.customChat({ url: 'https://x.example/v1', key: 'k', model: 'm' }, []), e => /Chuyển tiếp SillyTavern trả về HTTP 404/.test(e.message) && /model not found/.test(e.message));
         assert.deepEqual(seen, [true]);
     } finally { globalThis.fetch = real; }
 });
@@ -189,7 +189,7 @@ test('API: the terminal 连接 page hosts the API 中心 form; the original form
 test('强力模块: new installs start with 神豪挥霍 and 诸天打手 off; every listed entry exists in the book', () => {
     const rules = latestRules(original.ZhuTianBuiltinRules).rules;
     assert.equal(WORLDBOOK_REV, '1.1.1');
-    assert.deepEqual(DEFAULT_OFF, ['08｜核心｜神豪挥霍', '13｜外挂｜诸天打手']);
+    assert.deepEqual(DEFAULT_OFF, ['08｜Cốt lõi｜Thần Hào Tiêu Xài', '13｜Phụ trợ｜Tay Đấm Chư Thiên']);
     for (const m of BALANCE_MODULES) assert.ok(rules.some(r => r.comment === m.comment), m.comment);
     assert.deepEqual(rules.filter(r => r.disable).map(r => r.comment), DEFAULT_OFF);
     assert.equal(rules.length, 36);
@@ -199,13 +199,13 @@ test('强力模块: an existing book keeps the user\'s on/off on update (never s
     const rules = latestRules(original.ZhuTianBuiltinRules).rules;
     const old = { entries: Object.fromEntries(rules.map((r, i) => [i, { ...r, disable: false }])) };   // v1.1 copy: all on
     const merged = mergeWorldbook(old, rules).book;
-    assert.equal(moduleStates(merged).find(m => m.name === '神豪挥霍').on, true);
+    assert.equal(moduleStates(merged).find(m => m.name === 'Thần Hào Tiêu Xài').on, true);
 });
 
 test('强力模块: applyModules only flips disable of the listed entries', () => {
     const rules = latestRules(original.ZhuTianBuiltinRules).rules;
     const book = { entries: Object.fromEntries(rules.map((r, i) => [i, r])) };
-    const r = applyModules(book, { '08｜核心｜神豪挥霍': true, '13｜外挂｜诸天打手': false });
+    const r = applyModules(book, { '08｜Cốt lõi｜Thần Hào Tiêu Xài': true, '13｜Phụ trợ｜Tay Đấm Chư Thiên': false });
     assert.equal(r.changed, 1);
     const st = moduleStates(r.book); assert.equal(st[0].on, true); assert.equal(st[1].on, false);
     assert.equal(JSON.stringify(Object.values(r.book.entries).map(e => e.content)), JSON.stringify(rules.map(e => e.content)), 'content untouched');

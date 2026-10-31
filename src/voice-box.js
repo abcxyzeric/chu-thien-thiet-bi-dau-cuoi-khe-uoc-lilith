@@ -1,14 +1,11 @@
-// 莉莉丝专属语音框 (Lilith voice box) — native replacement for the v1.1 regex script
+// Khung thoại độc quyền của Lilith (Lilith voice box) — native replacement for the v1.1 regex script
 // "莉莉丝专属语音框" (id bd2a75db-7ddd-4311-9f5b-db21afec623a, placement AI output, markdownOnly).
-// The match pattern below is the original findRegex, byte for byte; cue = $1$2$4 and text = $3$5 exactly like the
-// original replaceString. The card is the same markup the regex produced; the original ZhuTianLilithVoice.decorate()
-// (v1.7.1) then adds the tone avatar and removes the mood word, so the look is identical to the old install.
-// Differences: it is a setting (可开关) instead of a regex, and it works without the Lilith window being enabled.
+// Supports both 【莉莉丝】 and 【Lilith】 as well as Chinese and Vietnamese speech verbs/cues.
 
-export const VOICE_SOURCE = "(?:(?:\\*\\*)?(?:【[ \\t]*莉莉[丝絲][ \\t]*】|\\[[ \\t]*莉莉[丝絲][ \\t]*\\]|莉莉[丝絲]|Lilith)(?:\\*\\*)?(?:[ \\t]*[（(]([^）)\\n:：\"<>]{1,12})[）)])?[ \\t]*[:：][ \\t]*(?:\\*\\*)?[ \\t]*|莉莉[丝絲](轻声|笑着|微笑着|轻笑着?|低声|柔声|小声|害羞地|红着脸|惊讶地|得意地|坏笑着|嘟着嘴|哼了一声|眨眨眼|俏皮地)?(?:说|道|回应|回答)[：:][ \\t]*)[“\"「『]((?:(?!\\r?\\n[ \\t]*(?:【[^】\\n]{1,30}】|\\[[^\\]\\n]{1,30}\\]|[^\\s：:<>\\n]{1,20})[ \\t]*[:：])[^<>]){1,8000}?)[”\"」』](?=[ \\t]*(?:\\r?\\n|$|<|【莉莉[丝絲]】))|^[ \\t]*(?:>[ \\t]*)?(?:\\*\\*)?(?:【[ \\t]*莉莉[丝絲][ \\t]*】|\\[[ \\t]*莉莉[丝絲][ \\t]*\\]|莉莉[丝絲]|Lilith)(?:\\*\\*)?(?:[ \\t]*[（(]([^）)\\n:：\"<>]{1,12})[）)])?[ \\t]*[:：][ \\t]*(?:\\*\\*)?[ \\t]*([^\\r\\n<>]{1,4000})";
+export const VOICE_SOURCE = "(?:(?:\\*\\*)?(?:【[ \\t]*(?:莉莉[丝絲]|Lilith)[ \\t]*】|\\[[ \\t]*(?:莉莉[丝絲]|Lilith)[ \\t]*\\]|莉莉[丝絲]|Lilith)(?:\\*\\*)?(?:[ \\t]*[（(]([^）)\\n:：\"<>]{1,24})[）)])?[ \\t]*[:：][ \\t]*(?:\\*\\*)?[ \\t]*|(?:莉莉[丝絲]|Lilith)[ \\t]*(轻声|笑着|微笑着|轻笑着?|低声|柔声|小声|害羞地|红着脸|惊讶地|得意地|坏笑着|嘟着嘴|哼了一声|眨眨眼|俏皮地|khẽ|cười|mỉm cười|cười khẽ|nhỏ giọng|dịu dàng|ngượng ngùng|đỏ mặt|kinh ngạc|đắc ý|cười xấu xa|bĩu môi|hừ nhẹ|nháy mắt|tinh nghịch)?[ \\t]*(?:说|道|回应|回答|nói|bảo|đáp|trả lời)[：:][ \\t]*)[“\"「『]((?:(?!\\r?\\n[ \\t]*(?:【[^】\\n]{1,30}】|\\[[^\\]\\n]{1,30}\\]|[^\\s：:<>\\n]{1,20})[ \\t]*[:：])[^<>]){1,8000}?)[”\"」』](?=[ \\t]*(?:\\r?\\n|$|<|【(?:莉莉[丝絲]|Lilith)】))|^[ \\t]*(?:>[ \\t]*)?(?:\\*\\*)?(?:【[ \\t]*(?:莉莉[丝絲]|Lilith)[ \\t]*】|\\[[ \\t]*(?:莉莉[丝絲]|Lilith)[ \\t]*\\]|莉莉[丝絲]|Lilith)(?:\\*\\*)?(?:[ \\t]*[（(]([^）)\\n:：\"<>]{1,24})[）)])?[ \\t]*[:：][ \\t]*(?:\\*\\*)?[ \\t]*([^\\r\\n<>]{1,4000})";
 export const VOICE_FLAGS = 'gmi';
 export const LEGACY_VOICE_ID = 'bd2a75db-7ddd-4311-9f5b-db21afec623a';
-// 1.1.5 系统助手人设: with a persona other than 莉莉丝 the same pattern matches 「名称：“…”」 / 【名称】：… (and the
+// 1.1.5 Nhân cách trợ lý hệ thống: with a persona other than Lilith the same pattern matches 「Tên：“…”」 / 【Tên】：… (and the
 // English name instead of Lilith); the card shows the persona's name and avatar. null = the original pattern, unchanged.
 let PERSONA = null;
 export function setVoicePersona(p) { PERSONA = p && !p.lilith && p.name ? { name: String(p.name), en: String(p.en || ''), avatar: String(p.avatar || '') } : null; }
@@ -17,18 +14,15 @@ const escRe = s => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 export function voiceSourceFor(p) {
     if (!p) return VOICE_SOURCE;
     const name = escRe(p.name), en = p.en ? '|' + escRe(p.en) : '';
+    const cnOrb = /^Hệ thống\s+(.+)$/i.test(p.name) ? '|系统\\s*' + escRe(p.name.replace(/^Hệ thống\s+/i, '')) : '';
+    const pat = `(?:${name}${en}${cnOrb})`;
     // function replacers: a `$&` / `$1` in the name must stay literal (string replacements expand them)
-    return VOICE_SOURCE.replaceAll('莉莉[丝絲]', () => name).replaceAll('|Lilith)', () => en + ')');
+    return VOICE_SOURCE.replaceAll('(?:莉莉[丝絲]|Lilith)|莉莉[丝絲]|Lilith', () => pat).replaceAll('(?:莉莉[丝絲]|Lilith)', () => pat).replaceAll('莉莉[丝絲]', () => pat);
 }
 export const voiceRegex = () => new RegExp(voiceSourceFor(PERSONA), VOICE_FLAGS);
 export const VOICE_SLOT = i => `ZTVOICESLOT${i}ZT`;
 
 /** Replaces every voice line with a slot token. Returns the new source text and the extracted voices. */
-// 0.9.2: code is not dialogue. A 莉莉丝：… line inside a fenced code block (a character card's front-end status bar that
-// Tavern Helper / 小白X renders) or inside <script>/<style>/<textarea>/<pre> stays exactly as written — turning it into a
-// slot broke that renderer's code and put the card somewhere else in the floor.
-// 1.1.4: a reasoning block (<think>/<thinking>/<reasoning>/<analysis>… left in the reply) is not dialogue either — a
-// 莉莉丝：… line the model drafted there stays inside the reasoning instead of being pulled out as a voice card.
 export const CODE_RE = /(^|\n)[ \t]*(```|~~~)[^\n]*\n[\s\S]*?(?:\n[ \t]*\2[ \t]*(?=\n|$)|$)|<(script|style|textarea|pre|think|thinking|thought|thoughts|reasoning|analysis)\b[\s\S]*?(?:<\/\3\s*>|$)/gi;
 /** Splits text into [prose, code, prose, code, …] (pure, for tests). */
 export function splitCode(text) {
@@ -68,14 +62,12 @@ export function buildVoiceCard(doc, { cue, text }, voice) {
     const avatar = doc.createElement('span'); avatar.dataset.lilithAvatar = '1'; avatar.setAttribute('style', voice?.avatarStyle || AVATAR); avatar.textContent = '✧';
     if (P?.avatar) { avatar.style.backgroundImage = `url("${P.avatar}")`; avatar.style.backgroundSize = 'cover'; avatar.textContent = ''; }
     const names = doc.createElement('span'); names.setAttribute('style', 'display:flex;flex-direction:column;min-width:0;');
-    const name = doc.createElement('span'); name.setAttribute('style', 'color:#e3c7f0;font-size:13px;font-weight:600;letter-spacing:3px;'); name.textContent = (P ? P.name : '莉莉丝') + ' ';
+    const name = doc.createElement('span'); name.setAttribute('style', 'color:#e3c7f0;font-size:13px;font-weight:600;letter-spacing:3px;'); name.textContent = (P ? P.name : 'Lilith') + ' ';
     const en = doc.createElement('span'); en.setAttribute('style', 'font-size:9px;color:#aa91b8;letter-spacing:2px;font-weight:400;'); en.textContent = P ? P.en : 'LILITH';
     name.append(en); names.append(name); head.append(avatar, names);
     const body = doc.createElement('span'); body.dataset.lilithText = '1'; body.setAttribute('style', TEXT);
     body.innerHTML = inlineMarkdown(String(text ?? '').replace(/^\s+|\s+$/g, ''));
     box.append(head, body);
-    // Original 1.7.x presentation: tone avatar (expression crop) + tone border colour, no mood word.
-    // (a persona keeps its own avatar: the original tone avatars are Lilith's expressions)
     if (!P) try { voice?.decorate?.(box, voice.avatars); } catch { /* plain card still fine */ }
     return box;
 }

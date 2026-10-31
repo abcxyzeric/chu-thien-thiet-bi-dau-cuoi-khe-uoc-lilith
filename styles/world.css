@@ -1,4 +1,4 @@
-/* 诸天终端 0.8.0 · 世界主题 + 布局.  Loaded after hub.css inside the Lilith window's shadow root.
+/* Thiết Bị Đầu Cuối Chư Thiên 0.8.0 · Chủ đề thế giới + Bố cục.  Loaded after hub.css inside the Lilith window's shadow root.
    Rule of this file: themes change colour, texture and decoration only — no rule here moves, hides or resizes a
    control based on the theme (positions stay fixed across worlds). Motion is off under prefers-reduced-motion. */
 
@@ -13,17 +13,17 @@
 :host([data-zt-world]) .nav-button[aria-selected=true]{background:linear-gradient(90deg,color-mix(in srgb,var(--zt-sel) 17%,transparent),color-mix(in srgb,var(--zt-sel) 2%,transparent))!important;border-color:color-mix(in srgb,var(--zt-sel) 20%,transparent)!important;color:var(--zt-ink2)!important}
 :host([data-zt-world]) .nav-button[aria-selected=true]::before{background:var(--zt-sel-bar)!important}
 
-/* ---------- 仙侠 · 玉简 / 星图 / 阵纹 (0.8.4: 墨玉金 — ink + gold, jade only as the second colour; was mint green) ---------- */
+/* ---------- Tiên hiệp · Ngọc giản / Tinh đồ / Trận văn (0.8.4: Mặc Ngọc Kim — ink + gold, jade only as the second colour; was mint green) ---------- */
 :host([data-zt-world=xianxia]){--accent:#d4b46c;--gold:#9fcfbf;--ink:#f1ece0;--muted:#b0aa98;--line:#e8d9b01a;
   --zt-win:#111315;--zt-win-line:#d4b46c55;--zt-head:linear-gradient(110deg,#1d1f1f,#121416);--zt-side:#141618;--zt-main:radial-gradient(ellipse at 100% 0,#d4b46c10,transparent 60%),radial-gradient(ellipse at 0 100%,#9fcfbf0a,transparent 55%);
   --zt-surface:#1f2222;--zt-surface-h:#2a2d2b;--zt-input:#0b0c0d;--zt-top-a:#1a1c1c;--zt-top-b:#121415;--zt-bar:#151718;--zt-primary-a:#8a6f36;--zt-primary-b:#4f7f72;--zt-nav:#b9b19c;--zt-ink2:#f5efe2;--zt-text2:#d9d2c0;--zt-panel2:#181a1b;--zt-sel:#d4b46c;--zt-sel-bar:#9fcfbf;--zt-switch:#a2853f;--zt-switch-off:#2a2c2b;--zt-deco:#d4b46c;--zt-deco2:#9fcfbf;--zt-title-font:"Songti SC","STKaiti","KaiTi",Georgia,serif}
 :host([data-zt-world=xianxia]) .zt-card{background:linear-gradient(180deg,#d4b46c08,#9fcfbf04);border-color:#dcc48a26;border-radius:4px 14px 4px 14px}
 :host([data-zt-world=xianxia]) .zt-card h3{font-family:var(--zt-title-font)}
 :host([data-zt-world=xianxia]) .zt-hub-top{border-bottom-color:#dcc48a2e}
-/* 玉简: bamboo-slip ruling on the sidebar */
+/* Ngọc giản: bamboo-slip ruling on the sidebar */
 :host([data-zt-world=xianxia]) .sidebar nav.zt-hub-nav{background-image:repeating-linear-gradient(90deg,transparent 0 31px,#dcc48a0d 31px 32px)}
 
-/* ---------- 赛博 · 全息终端 ---------- */
+/* ---------- Cyberpunk · Thiết bị đầu cuối toàn ảnh ---------- */
 :host([data-zt-world=cyber]){--accent:#4fe3ff;--gold:#ffd166;--ink:#e8f8ff;--muted:#8db3c6;--line:#5fe3ff1c;
   --zt-win:#060e16;--zt-win-line:#4fe3ff66;--zt-head:linear-gradient(110deg,#0b1d2b,#07121c);--zt-side:#08131d;--zt-main:radial-gradient(ellipse at 100% 0,#4fe3ff10,transparent 60%),radial-gradient(ellipse at 0 100%,#ff5fae0a,transparent 55%);
   --zt-surface:#0e2536;--zt-surface-h:#143550;--zt-input:#040a10;--zt-top-a:#0b1c2a;--zt-top-b:#08141f;--zt-bar:#0a1824;--zt-primary-a:#0f8fb3;--zt-primary-b:#8a3fd1;--zt-nav:#86b0c4;--zt-ink2:#e9fbff;--zt-text2:#c7e2ee;--zt-panel2:#0c1d2b;--zt-sel:#4fe3ff;--zt-sel-bar:#4fe3ff;--zt-switch:#1aa6cc;--zt-switch-off:#17303f;--zt-deco:#4fe3ff;--zt-deco2:#ff5fae;--zt-title-font:"Consolas","SF Mono",ui-monospace,monospace}
@@ -33,7 +33,7 @@
 :host([data-zt-world=cyber]) .zt-hub-top b{font-family:var(--zt-title-font)}
 :host([data-zt-world=cyber]) .zt-hub-top{border-bottom-color:#4fe3ff33;box-shadow:inset 0 -1px 0 #4fe3ff14}
 
-/* ---------- 诡异 · 克制的异常与侵蚀 ---------- */
+/* ---------- Quỷ dị · Dị thường và ăn mòn ---------- */
 :host([data-zt-world=eerie]){--accent:#c27a6a;--gold:#bba77c;--ink:#ebe4de;--muted:#a39990;--line:#ffffff10;
   --zt-win:#0e0c0c;--zt-win-line:#8a3a3a55;--zt-head:linear-gradient(110deg,#1a1414,#110e0e);--zt-side:#131010;--zt-main:radial-gradient(ellipse at 50% 120%,#5a1f1f14,transparent 60%);
   --zt-surface:#221a1a;--zt-surface-h:#2f2222;--zt-input:#090707;--zt-top-a:#181313;--zt-top-b:#120f0f;--zt-bar:#151111;--zt-primary-a:#7a3030;--zt-primary-b:#5a4a3a;--zt-nav:#a39990;--zt-ink2:#efe6df;--zt-text2:#d4cac2;--zt-panel2:#1a1515;--zt-sel:#b86a5c;--zt-sel-bar:#c27a6a;--zt-switch:#8a4a40;--zt-switch-off:#2a2020;--zt-deco:#8a2f2f;--zt-deco2:#bba77c}
@@ -52,7 +52,7 @@
 .zt-deco-scan{left:0;right:0;height:120px;top:-120px;background:linear-gradient(180deg,transparent,#4fe3ff0d 60%,#4fe3ff1a,transparent)}
 :host([data-zt-world=cyber]) .zt-deco-grid{display:block}
 :host([data-zt-world=cyber]) .zt-deco-scan{display:block;animation:zt-scan 7s linear infinite}
-/* 诡异: the edges slowly creep in and recede; the centre (where you read) is never covered */
+/* Quỷ dị: the edges slowly creep in and recede; the centre (where you read) is never covered */
 :host([data-zt-world=eerie]) .zt-deco-rot{display:block;inset:0;background:radial-gradient(ellipse at 50% 50%,transparent 58%,#0000 62%,#3a0e0e38 88%,#1a0505aa 100%);animation:zt-creep 18s ease-in-out infinite}
 :host([data-zt-world=eerie]) .zt-deco-grid{display:block;background:repeating-radial-gradient(circle at 12% 88%,#8a2f2f0a 0 2px,transparent 2px 9px);mask-image:radial-gradient(circle at 0 100%,#000,transparent 40%)}
 @keyframes zt-spin{to{transform:rotate(360deg)}}
@@ -75,7 +75,7 @@
 .zt-hub-page h2.zt-h,.zt-atlas-head b{font-family:var(--zt-title-font)}
 .zt-card{transition:border-color .3s,background-color .3s}
 
-/* ---------- camera (镜头): the box clips the same original stage; the rig itself is never scaled ---------- */
+/* ---------- camera (Góc máy): the box clips the same original stage; the rig itself is never scaled ---------- */
 .sidebar .portrait{transition:aspect-ratio .45s cubic-bezier(.2,.7,.2,1)}
 :host([data-zt-cam]) .sidebar .portrait .zt-stage{position:absolute!important;left:0;right:0;top:0;bottom:auto!important;height:auto!important;aspect-ratio:424/632}
 :host([data-zt-cam=mid]) .sidebar .portrait{aspect-ratio:424/400}
@@ -83,7 +83,7 @@
 :host([data-zt-cam=mid]) .sidebar .portrait .portrait-caption{bottom:4px}
 @media (prefers-reduced-motion:reduce){.sidebar .portrait{transition:none}}
 
-/* 私聊 close-up strip under the chat header (expression stills; cross-fade like the variants mode) */
+/* Trò chuyện riêng close-up strip under the chat header (expression stills; cross-fade like the variants mode) */
 .zt-lc-cam{position:relative;height:118px;flex:none;overflow:hidden;border-bottom:1px solid var(--zt-line);background:var(--zt-side)}
 /* face rect of the 424×632 art is (118,30)-(278,190); shown at 1.4× and centred in the strip */
 .zt-lc-cam i{position:absolute;left:50%;top:-92px;width:594px;height:885px;margin-left:-277px;background-repeat:no-repeat;background-size:100% auto;opacity:0;transition:opacity .6s}
@@ -96,8 +96,8 @@ dialog[data-compact=true] .zt-top-world{max-width:none!important;flex:none}
 dialog[data-compact=true] .zt-top-world small{white-space:nowrap}
 dialog[data-compact=true] .zt-top-world b{max-width:9em}
 
-/* ---------- 0.8.0 theme bridge: the original Lilith pages (工作台 / 记忆 / 规则 / 连接 / 环境), the window status line and
-   the 私聊 panel follow the same world colours as the terminal pages. Colour, border and font only — sizes, spacing and
+/* ---------- 0.8.0 theme bridge: the original Lilith pages (Bàn làm việc / Ký ức / Quy tắc / Kết nối / Môi trường), the window status line and
+   the Trò chuyện riêng panel follow the same world colours as the terminal pages. Colour, border and font only — sizes, spacing and
    positions are untouched. The default theme keeps the original purple exactly as shipped. ---------- */
 :host([data-zt-world]:not([data-zt-world=default])){--panel:var(--zt-panel2);--violet:var(--zt-primary-a)}
 :host([data-zt-world]:not([data-zt-world=default])) .page:not(.zt-hub-page) .card{background:linear-gradient(135deg,var(--zt-surface),var(--zt-panel2));border-color:color-mix(in srgb,var(--accent) 16%,transparent)}
@@ -133,10 +133,10 @@ dialog[data-compact=true] .zt-top-world b{max-width:9em}
 :host([data-zt-world]:not([data-zt-world=default])) #lc-send{background:linear-gradient(135deg,var(--zt-primary-a),var(--zt-primary-b))}
 :host([data-zt-world]:not([data-zt-world=default])) .lc-suggestions button{background:color-mix(in srgb,var(--accent) 8%,transparent);border-color:color-mix(in srgb,var(--accent) 24%,transparent);color:var(--zt-text2)}
 
-/* 莉莉丝气泡 (0.8.0): the line that used to sit as a row inside the status bar now speaks from the portrait */
+/* Bong bóng thoại Lilith (0.8.0): the line that used to sit as a row inside the status bar now speaks from the portrait */
 .zt-say[data-zt-story=true]{border-color:color-mix(in srgb,var(--zt-deco2) 55%,transparent)!important}
 :host([data-zt-world]:not([data-zt-world=default])) .zt-say .zt-bubble{background:color-mix(in srgb,var(--zt-win) 92%,transparent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);color:var(--ink)}
-/* 1.0 动态效果「精简」：与系统“减少动态效果”相同的处理 */
+/* 1.0 Hiệu ứng động 「Tinh giản」: xử lý giống giảm chuyển động của hệ thống */
 :host([data-zt-lite]) .zt-world-deco>*{animation:none!important}
 :host([data-zt-lite][data-zt-world=eerie]) #zt-top-world{animation:none}
 :host([data-zt-lite]) .sidebar .portrait,:host([data-zt-lite]) .zt-lc-cam i{transition:none}

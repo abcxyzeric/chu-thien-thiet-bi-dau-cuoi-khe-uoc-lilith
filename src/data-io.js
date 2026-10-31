@@ -1,13 +1,11 @@
 import { migrateBonds } from './bonds-data.js';
-// 1.0 导出 / 导入存档 + 账本结构版本号.
+// 1.0 Xuất / Nhập bản lưu + Phiên bản cấu trúc sổ cái.
 //
-// 导出：一个 JSON 文件 = 插件设置 + 当前聊天的诸天账本（含聊天群、星图足迹等，都在账本里）+ 可选的记忆存档 / 莉莉丝私聊记录。
-//       一律不含 API Key：键名像 key / token / secret / password 的字段删除，看起来像密钥的字符串删除，网址去掉 ? 之后的参数。
-//       宿主相关的记录（一键接管日志、解绑记录、结算凭据）不导出——它们只对原来那台酒馆有意义。
-// 导入：先校验文件，再显示“将要覆盖什么”的预览；确认后先强制备份当前账本（不受 90 秒合并限制），写入，读回核对。
-//       读到比本插件新的结构版本：拒绝导入。
-// 结构版本：chatMetadata[STORAGE].ledgerSchema（不放进账本本身，AI 看不到也改不到）。没有记录 = 0，打开聊天时按
-//       LEDGER_MIGRATIONS 逐级升级（升级前先备份）；记录比插件新 = 这个聊天只读（th-bridge 写入前检查）。
+// Xuất: một tệp JSON = cài đặt tiện ích + sổ cái Chư Thiên của cuộc trò chuyện hiện tại (gồm Nhóm chat, dấu chân Bản đồ sao…) + tùy chọn bản lưu ký ức / lịch sử trò chuyện riêng Lilith.
+//       Tuyệt đối không chứa API Key: xóa các trường có tên giống key / token / secret / password, xóa các chuỗi có dạng khóa bảo mật, cắt bỏ tham số sau dấu ? trong URL.
+//       Không xuất các bản ghi gắn với máy chủ (nhật ký tiếp quản một chạm, bản ghi gỡ gắn kết, chứng từ kết toán).
+// Nhập: kiểm tra tệp trước, sau đó hiện bản xem trước "những gì sắp bị ghi đè"; sau khi xác nhận sẽ cưỡng chế sao lưu sổ cái hiện tại trước, ghi dữ liệu và đọc lại kiểm tra.
+//       Nếu gặp phiên bản cấu trúc mới hơn tiện ích hiện tại: từ chối nhập.
 import { VERSION, STORAGE, LEDGER_SCHEMA } from './contracts.js';
 import { errorLine } from './errors.js';
 import { copyText } from './diag-report.js';
@@ -19,14 +17,14 @@ export { LEDGER_SCHEMA };
 /** Ordered upgrade steps: `to` = the version after the step; `up(z)` mutates a clone of the 诸天系统 ledger. */
 export const LEDGER_MIGRATIONS = Object.freeze([
     // 0 → 1 (1.0): the structure 0.1–0.9 already wrote; only repairs types the old engine relies on.
-    { to: 1, note: '1.0 起记录结构版本；修正类型（背包 / 任务库 / 万界足迹）', up(z) {
+    { to: 1, note: 'Từ 1.0 ghi nhận phiên bản cấu trúc; chuẩn hóa kiểu dữ liệu (Túi đồ / Kho nhiệm vụ / Dấu chân vạn giới)', up(z) {
         if (z.背包 !== undefined && !Array.isArray(z.背包)) z.背包 = [];
         if (z.任务库 !== undefined && (typeof z.任务库 !== 'object' || Array.isArray(z.任务库) || z.任务库 === null)) z.任务库 = {};
         if (z.万界足迹 !== undefined && !Array.isArray(z.万界足迹)) z.万界足迹 = [];
         if (z.系统点 !== undefined && !Number.isFinite(Number(z.系统点))) z.系统点 = 0;
         return z;
     } },
-    { to: 2, note: '1.1 多人羁绊与来源记录（保留旧目标）', up: migrateBonds },
+    { to: 2, note: '1.1 Gắn kết nhiều người & bản ghi nguồn gốc (giữ nguyên mục tiêu cũ)', up: migrateBonds },
 ]);
 const HOST_ONLY = new Set(['takeoverLog', 'wbUnbound', 'legacyImported', 'migrated070', 'ledgerReceipts']);
 const SECRET_KEY = /^(api[_-]?key|key|apikey|token|access[_-]?token|secret|password|passwd|authorization|auth)$/i;
@@ -41,7 +39,7 @@ export function stripSecrets(v, depth = 0) {
     if (plain(v)) {
         const out = {};
         for (const [k, x] of Object.entries(v)) {
-            const memoryKey = k === 'key' && ['事件','承诺','关系','线索','地点','规则','任务','其他'].includes(v.kind) && ['active','resolved'].includes(v.status) && typeof v.text === 'string' && typeof v.evidence === 'string';
+            const memoryKey = k === 'key' && ['事件','承诺','关系','线索','地点','规则','任务','其他','Sự kiện','Lời hứa','Quan hệ','Manh mối','Địa điểm','Quy tắc','Nhiệm vụ','Khác'].includes(v.kind) && ['active','resolved'].includes(v.status) && typeof v.text === 'string' && typeof v.evidence === 'string';
             if (SECRET_KEY.test(k) && !memoryKey) continue;
             const y = stripSecrets(x, depth + 1);
             if (y !== undefined) Object.defineProperty(out, k, { value: y, enumerable: true, configurable: true, writable: true });
@@ -59,7 +57,7 @@ export function stripSecrets(v, depth = 0) {
 /** Runs the upgrade steps from `from` to LEDGER_SCHEMA on a copy (pure). */
 export function migrateLedger(z, from = 0) {
     if (!plain(z)) return { ledger: z, from, to: from, steps: [] };
-    if (from > LEDGER_SCHEMA) throw Error(`这个账本的结构版本是 ${from}，比本插件支持的 ${LEDGER_SCHEMA} 新。请先更新插件，在那之前只读。`);
+    if (from > LEDGER_SCHEMA) throw Error(`Phiên bản cấu trúc của sổ cái này là ${from}, mới hơn phiên bản ${LEDGER_SCHEMA} mà tiện ích hiện tại hỗ trợ. Vui lòng cập nhật tiện ích trước, trước đó sổ cái ở chế độ chỉ đọc.`);
     let out = clone(z); const steps = [];
     for (const m of LEDGER_MIGRATIONS) if (m.to > from && m.to <= LEDGER_SCHEMA) { out = m.up(out) ?? out; steps.push(m.to); }
     return { ledger: out, from, to: LEDGER_SCHEMA, steps };
@@ -83,31 +81,31 @@ export function buildBackup({ settings = {}, variables = {}, meta = {}, chat = '
 /** Validates a backup file's text; returns the parsed object or throws a readable error (pure). */
 export function parseBackup(text) {
     let o;
-    try { o = typeof text === 'string' ? JSON.parse(text) : text; } catch { throw Error('不是有效的 JSON 文件。请选择「导出存档」得到的 .json 文件。'); }
-    if (!plain(o) || o.format !== BACKUP_FORMAT) throw Error('这不是诸天终端的存档文件（缺少 format 标记）。');
-    if (!(Number(o.formatVersion) >= 1)) throw Error('存档文件版本无法识别。');
-    if (Number(o.formatVersion) > BACKUP_FORMAT_VERSION) throw Error(`存档文件来自更新的插件（文件格式 ${o.formatVersion}），请先更新插件再导入。`);
+    try { o = typeof text === 'string' ? JSON.parse(text) : text; } catch { throw Error('Không phải tệp JSON hợp lệ. Vui lòng chọn tệp .json lấy từ chức năng 「Xuất bản lưu」.'); }
+    if (!plain(o) || o.format !== BACKUP_FORMAT) throw Error('Đây không phải tệp bản lưu của Thiết Bị Đầu Cuối Chư Thiên (thiếu dấu hiệu format).');
+    if (!(Number(o.formatVersion) >= 1)) throw Error('Không nhận diện được phiên bản tệp bản lưu.');
+    if (Number(o.formatVersion) > BACKUP_FORMAT_VERSION) throw Error(`Tệp bản lưu được tạo từ phiên bản tiện ích mới hơn (định dạng tệp ${o.formatVersion}), vui lòng cập nhật tiện ích trước khi nhập.`);
     const schema = Number(o.chat?.ledgerSchema) || 0;
-    if (schema > LEDGER_SCHEMA) throw Error(`存档里账本的结构版本是 ${schema}，比本插件支持的 ${LEDGER_SCHEMA} 新，请先更新插件再导入。`);
-    if (o.chat?.variables !== undefined && !plain(o.chat.variables)) throw Error('存档里的聊天数据格式不对。');
-    if (o.settings !== undefined && !plain(o.settings)) throw Error('存档里的设置格式不对。');
+    if (schema > LEDGER_SCHEMA) throw Error(`Phiên bản cấu trúc sổ cái trong bản lưu là ${schema}, mới hơn mức ${LEDGER_SCHEMA} mà tiện ích hiện tại hỗ trợ, vui lòng cập nhật tiện ích trước khi nhập.`);
+    if (o.chat?.variables !== undefined && !plain(o.chat.variables)) throw Error('Định dạng dữ liệu trò chuyện trong bản lưu không đúng.');
+    if (o.settings !== undefined && !plain(o.settings)) throw Error('Định dạng cài đặt trong bản lưu không đúng.');
     const z = o.chat?.variables?.诸天系统;
-    if (z !== undefined && !plain(z)) throw Error('存档里的诸天账本格式不对。');
+    if (z !== undefined && !plain(z)) throw Error('Định dạng sổ cái Chư Thiên trong bản lưu không đúng.');
     return o;
 }
 
 const n = v => (Number.isFinite(Number(v)) ? Number(v) : null);
-const fmt = v => (v === null || v === undefined ? '—' : typeof v === 'number' ? v.toLocaleString('zh-CN') : String(v));
+const fmt = v => (v === null || v === undefined ? '—' : typeof v === 'number' ? v.toLocaleString('en-US') : String(v));
 /** What an import would change, as readable rows [label, now, after] (pure). */
 export function backupPreview(cur = {}, file) {
     const a = cur.variables?.诸天系统 || null, b = file.chat?.variables?.诸天系统 || null, rows = [];
     const take = (label, f) => { const x = a ? f(a) : null, y = b ? f(b) : null; rows.push([label, fmt(x), fmt(y)]); };
-    take('系统点', z => n(z.系统点));
-    take('当前世界', z => z.当前世界 || null);
-    take('背包物品', z => (Array.isArray(z.背包) ? z.背包.length : null));
-    take('任务', z => (plain(z.任务库) ? Object.keys(z.任务库).length : null));
-    take('聊天群成员', z => (Array.isArray(z.聊天群?.成员) ? z.聊天群.成员.length : null));
-    take('万界足迹', z => (Array.isArray(z.万界足迹) ? z.万界足迹.length : null));
+    take('Điểm Hệ Thống', z => n(z.系统点));
+    take('Thế giới hiện tại', z => z.当前世界 || null);
+    take('Vật phẩm túi đồ', z => (Array.isArray(z.背包) ? z.背包.length : null));
+    take('Nhiệm vụ', z => (plain(z.任务库) ? Object.keys(z.任务库).length : null));
+    take('Thành viên nhóm chat', z => (Array.isArray(z.聊天群?.成员) ? z.聊天群.成员.length : null));
+    take('Dấu chân vạn giới', z => (Array.isArray(z.万界足迹) ? z.万界足迹.length : null));
     const extra = Object.keys(file.chat?.variables || {}).filter(k => k !== '诸天系统');
     const changed = Object.keys(file.settings || {}).filter(k => JSON.stringify(file.settings[k]) !== JSON.stringify(cur.settings?.[k]));
     return { rows, hasLedger: !!b, extra, settingsChanged: changed.length, from: { plugin: file.plugin, at: file.at, chat: file.chat?.name || '' } };
@@ -118,7 +116,7 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': 
 export class DataIO {
     constructor(app) { this.app = app; this.disposers = []; this.schemaState = null; }
     start() {
-        const c = this.ctx(), ev = c?.eventTypes, run = () => { clearTimeout(this.t); this.t = setTimeout(() => this.checkSchema().then(r => { this.schemaState = r; if (r.state === 'newer') globalThis.toastr?.warning(`这个聊天的账本由更新版本的插件写过（结构版本 ${r.from}），本插件只读，不会写入。请更新插件。`, '诸天'); }).catch(e => { this.schemaState = { state: 'error', error: e.message }; console.warn('[诸天] 账本结构检查', e); }), 1200); };
+        const c = this.ctx(), ev = c?.eventTypes, run = () => { clearTimeout(this.t); this.t = setTimeout(() => this.checkSchema().then(r => { this.schemaState = r; if (r.state === 'newer') globalThis.toastr?.warning(`Sổ cái của cuộc trò chuyện này được ghi bởi phiên bản tiện ích mới hơn (phiên bản cấu trúc ${r.from}), tiện ích hiện tại chỉ đọc và không ghi dữ liệu. Vui lòng cập nhật tiện ích.`, 'Chư Thiên'); }).catch(e => { this.schemaState = { state: 'error', error: e.message }; console.warn('[Chư Thiên] Kiểm tra cấu trúc sổ cái', e); }), 1200); };
         if (ev?.CHAT_CHANGED) { c.eventSource.on(ev.CHAT_CHANGED, run); this.disposers.push(() => c.eventSource.removeListener(ev.CHAT_CHANGED, run)); }
         run();
         return this;
@@ -138,7 +136,7 @@ export class DataIO {
         const settings = clone(cur.settings); settings.scriptVariables = stripSecrets(settings.scriptVariables || {});
         return buildBackup({ settings, variables: cur.variables, meta: this.meta(), chat: c?.getCurrentChatId?.() || '', host: `SillyTavern ${c?.version?.pkgVersion || ''}`.trim(), memoryNs: this.memoryNs(), companionKey: this.companionKey(), include });
     }
-    fileName() { const d = new Date().toLocaleString('sv-SE').replace(/[-: ]/g, '').slice(0, 12); return `诸天存档-${d}.json`; }
+    fileName() { const d = new Date().toLocaleString('sv-SE').replace(/[-: ]/g, '').slice(0, 12); return `BanLuu-ChuThien-${d}.json`; }
     /** Download (or, when the browser refuses, hand back the text to copy). */
     export(include = {}) {
         const file = this.snapshotFile(include), text = JSON.stringify(file, null, 1);
@@ -146,12 +144,12 @@ export class DataIO {
             const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
             const a = document.createElement('a'); a.href = url; a.download = this.fileName(); document.body.append(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(url), 4000);
-        } catch (e) { console.warn('[诸天] 导出下载失败，改为显示文本', e); }
+        } catch (e) { console.warn('[Chư Thiên] Tải tệp xuất thất bại, chuyển sang hiển thị văn bản', e); }
         return { file, text };
     }
     /** Import after preview: forced backup → write ledger (+ memory) → settings → read back. */
     async import(file, options = {}) {
-        if (this.importing) throw Error('存档正在导入，请勿重复提交。');
+        if (this.importing) throw Error('Đang nhập bản lưu, vui lòng không gửi lặp lại.');
         this.importing = true;
         try { return await this.importOnce(file, options); } finally { this.importing = false; }
     }
@@ -160,15 +158,15 @@ export class DataIO {
         const expected = this.app.adapter.currentIdentity(), before = JSON.stringify(this.bridge.getVariables({ type: 'chat' }));
         const vars = file.chat?.variables || {}, out = { ledger: false, settings: 0, extra: [] };
         if (ledger && Object.keys(vars).length) {
-            if (!this.ctx()?.chatMetadata) throw Error('请先打开要导入到的聊天。');
-            await this.bridge.snapshot?.('导入前');
-            if (!expected || this.app.adapter.currentIdentity() !== expected) throw Error('导入期间聊天已切换，未写入。');
+            if (!this.ctx()?.chatMetadata) throw Error('Vui lòng mở cuộc trò chuyện cần nhập bản lưu vào trước.');
+            await this.bridge.snapshot?.('Trước khi nhập');
+            if (!expected || this.app.adapter.currentIdentity() !== expected) throw Error('Trò chuyện đã chuyển trong lúc nhập, chưa ghi dữ liệu.');
             const mig = vars.诸天系统 ? migrateLedger(vars.诸天系统, Number(file.chat?.ledgerSchema) || 0) : null;
             const want = { ...vars, ...(mig ? { 诸天系统: mig.ledger } : {}) };
-            await this.bridge.updateVariablesWith(v => { if (JSON.stringify(v) !== before) throw Error('备份后账本已变化，请重新预览导入。'); for (const [k, x] of Object.entries(want)) v[k] = clone(x); return v; }, { type: 'chat', verify: true, expectedIdentity: expected, replaceLedger: true });
-            if (this.app.adapter.currentIdentity() !== expected) throw Error('导入后聊天已切换，请核对原聊天。');
+            await this.bridge.updateVariablesWith(v => { if (JSON.stringify(v) !== before) throw Error('Sổ cái đã thay đổi sau khi sao lưu, vui lòng xem trước lại trước khi nhập.'); for (const [k, x] of Object.entries(want)) v[k] = clone(x); return v; }, { type: 'chat', verify: true, expectedIdentity: expected, replaceLedger: true });
+            if (this.app.adapter.currentIdentity() !== expected) throw Error('Trò chuyện đã chuyển sau khi nhập, vui lòng kiểm tra cuộc trò chuyện gốc.');
             const back = this.bridge.getVariables({ type: 'chat' }) || {};
-            for (const [k, x] of Object.entries(want)) if (JSON.stringify(back[k]) !== JSON.stringify(x)) throw Error(`导入后读回不一致（${k}）。当前账本已在导入前备份，可以在「账本回滚」里恢复。`);
+            for (const [k, x] of Object.entries(want)) if (JSON.stringify(back[k]) !== JSON.stringify(x)) throw Error(`Đọc lại sau khi nhập không khớp (${k}). Sổ cái hiện tại đã được sao lưu trước khi nhập, có thể khôi phục trong mục 「Hoàn tác sổ cái」.`);
             await this.setSchema(LEDGER_SCHEMA, expected);
             out.ledger = !!vars.诸天系统; out.extra = Object.keys(vars).filter(k => k !== '诸天系统');
         }
@@ -185,7 +183,7 @@ export class DataIO {
         return out;
     }
     async setSchema(v, expected = this.app.adapter.currentIdentity()) {
-        if (!expected || this.app.adapter.currentIdentity() !== expected) throw Error('聊天已切换，未标记结构版本。');
+        if (!expected || this.app.adapter.currentIdentity() !== expected) throw Error('Trò chuyện đã chuyển, chưa đánh dấu phiên bản cấu trúc.');
         const c = this.ctx(); if (!c?.chatMetadata) return;
         const meta = c.chatMetadata[STORAGE] = { schema: 1, ...(c.chatMetadata[STORAGE] || {}) };
         if (meta.ledgerSchema === v) return;
@@ -194,8 +192,8 @@ export class DataIO {
         try {
             await c.saveMetadata?.();
             const r = await fetch('/api/chats/get', { method: 'POST', credentials: 'same-origin', cache: 'no-store', headers: c.getRequestHeaders(), body: JSON.stringify(target), signal: AbortSignal.timeout(15000) });
-            if (!r.ok || Number((await r.json())?.[0]?.chat_metadata?.[STORAGE]?.ledgerSchema) !== v || this.app.adapter.currentIdentity() !== expected) throw Error('结构版本读回不一致或聊天已切换');
-        } catch (e) { this.app.adapter.transactions?.uncertain?.add(expected); throw Error('结构版本保存未确认，已冻结写入，请重载核对。' + e.message); }
+            if (!r.ok || Number((await r.json())?.[0]?.chat_metadata?.[STORAGE]?.ledgerSchema) !== v || this.app.adapter.currentIdentity() !== expected) throw Error('Đọc lại phiên bản cấu trúc không khớp hoặc trò chuyện đã chuyển');
+        } catch (e) { this.app.adapter.transactions?.uncertain?.add(expected); throw Error('Lưu phiên bản cấu trúc chưa được xác nhận, đã đóng băng ghi dữ liệu, vui lòng tải lại trang để kiểm tra. ' + e.message); }
     }
     /** On chat open: upgrade an old ledger (backup first); a newer one makes the chat read-only (th-bridge checks). */
     async checkSchema() {
@@ -206,26 +204,26 @@ export class DataIO {
         if (from === LEDGER_SCHEMA) return { state: 'current', from };
         const mig = migrateLedger(z, from);
         if (JSON.stringify(mig.ledger) !== JSON.stringify(z)) {
-            await this.bridge.snapshot?.(`结构升级 ${from}→${LEDGER_SCHEMA} 前`);
+            await this.bridge.snapshot?.(`Trước khi nâng cấp cấu trúc ${from}→${LEDGER_SCHEMA}`);
             await this.bridge.updateVariablesWith(v => { v.诸天系统 = migrateLedger(v.诸天系统, from).ledger; return v; }, { type: 'chat', verify: true, expectedIdentity: expected, replaceLedger: true });
         }
-        if (this.app.adapter.currentIdentity() !== expected) throw Error('迁移期间聊天已切换，未标记结构版本。');
+        if (this.app.adapter.currentIdentity() !== expected) throw Error('Trò chuyện đã chuyển trong lúc di chuyển dữ liệu, chưa đánh dấu phiên bản cấu trúc.');
         await this.setSchema(LEDGER_SCHEMA, expected);
         return { state: 'upgraded', from, to: LEDGER_SCHEMA, steps: mig.steps };
     }
     popup(html) { return this.app.features.popup(html, true); }
     open() {
-        const el = this.popup(`<h3>导出 / 导入存档</h3>
-<p>存档是一个 .json 文件，包含插件设置和<b>当前聊天</b>的诸天账本（聊天群、星图足迹都在账本里）。<b>不含 API Key</b>，换设备后需要重新填写接口。</p>
-<h4>导出</h4>
-<label class="checkbox_label"><input type="checkbox" data-io="memory" checked> 包含记忆存档（剧情记忆）</label>
-<label class="checkbox_label"><input type="checkbox" data-io="companion" checked> 包含莉莉丝私聊记录</label>
-<div class="zt-popup-actions"><div class="menu_button" data-io="export">导出存档文件</div><div class="menu_button" data-io="copy">复制存档文本</div></div>
-<h4>导入到当前聊天</h4>
-<p>导入前会先自动备份当前账本（在「旧存档迁移 / 账本回滚」里可以恢复）。</p>
+        const el = this.popup(`<h3>Xuất / Nhập bản lưu</h3>
+<p>Bản lưu là một tệp .json chứa cài đặt tiện ích và sổ cái Chư Thiên của <b>cuộc trò chuyện hiện tại</b> (Nhóm chat, dấu chân Bản đồ sao đều nằm trong sổ cái). <b>Không chứa API Key</b>, khi đổi thiết bị cần điền lại cổng kết nối.</p>
+<h4>Xuất</h4>
+<label class="checkbox_label"><input type="checkbox" data-io="memory" checked> Bao gồm bản lưu ký ức (ký ức cốt truyện)</label>
+<label class="checkbox_label"><input type="checkbox" data-io="companion" checked> Bao gồm lịch sử trò chuyện riêng với Lilith</label>
+<div class="zt-popup-actions"><div class="menu_button" data-io="export">Xuất tệp bản lưu</div><div class="menu_button" data-io="copy">Sao chép văn bản bản lưu</div></div>
+<h4>Nhập vào cuộc trò chuyện hiện tại</h4>
+<p>Trước khi nhập hệ thống sẽ tự động sao lưu sổ cái hiện tại (có thể khôi phục trong mục 「Di chuyển bản lưu cũ / Hoàn tác sổ cái」).</p>
 <input type="file" accept=".json,application/json" data-io="file" style="display:none">
-<div class="zt-popup-actions"><div class="menu_button" data-io="pick">选择存档文件…</div><div class="menu_button" data-io="paste">粘贴存档文本…</div></div>
-<textarea class="text_pole" data-io="text" placeholder="把存档文本粘贴到这里" style="display:none;width:100%;height:120px;font:12px/1.4 monospace"></textarea>
+<div class="zt-popup-actions"><div class="menu_button" data-io="pick">Chọn tệp bản lưu…</div><div class="menu_button" data-io="paste">Dán văn bản bản lưu…</div></div>
+<textarea class="text_pole" data-io="text" placeholder="Dán văn bản bản lưu vào đây" style="display:none;width:100%;height:120px;font:12px/1.4 monospace"></textarea>
 <div data-io="preview"></div><p class="zt-out"></p>`);
         const $ = s => el.querySelector(`[data-io="${s}"]`), out = el.querySelector('.zt-out');
         let pending = null, pendingIdentity = '';
@@ -234,13 +232,13 @@ export class DataIO {
             try {
                 pending = parseBackup(text); pendingIdentity = this.app.adapter.currentIdentity();
                 const p = backupPreview(this.current(), pending);
-                $('preview').innerHTML = `<h4>将要导入</h4><p>来自插件 ${esc(p.from.plugin)} · ${esc(new Date(p.from.at).toLocaleString())}${p.from.chat ? ' · 聊天「' + esc(p.from.chat) + '」' : ''}</p>
-<table class="zt-table"><tr><th></th><th>现在</th><th>导入后</th></tr>${p.rows.map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table>
-<p>${p.hasLedger ? '' : '存档里没有诸天账本。'}${p.extra.length ? '同时写入：' + esc(p.extra.join('、')) + '。' : ''}设置变化 ${p.settingsChanged} 项（API Key 不会被清空）。</p>
-<label class="checkbox_label"><input type="checkbox" data-io="ledger" checked> 写入账本和记忆</label><label class="checkbox_label"><input type="checkbox" data-io="settings" checked> 导入设置</label>
-<div class="zt-popup-actions"><div class="menu_button" data-io="apply">确认导入</div></div>`;
+                $('preview').innerHTML = `<h4>Sắp nhập</h4><p>Từ tiện ích ${esc(p.from.plugin)} · ${esc(new Date(p.from.at).toLocaleString())}${p.from.chat ? ' · Trò chuyện 「' + esc(p.from.chat) + '」' : ''}</p>
+<table class="zt-table"><tr><th></th><th>Hiện tại</th><th>Sau khi nhập</th></tr>${p.rows.map(r => `<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td></tr>`).join('')}</table>
+<p>${p.hasLedger ? '' : 'Trong bản lưu không có sổ cái Chư Thiên.'}${p.extra.length ? 'Ghi đồng thời: ' + esc(p.extra.join(', ')) + '.' : ''} Thay đổi cài đặt ${p.settingsChanged} mục (API Key sẽ không bị xóa).</p>
+<label class="checkbox_label"><input type="checkbox" data-io="ledger" checked> Ghi sổ cái và ký ức</label><label class="checkbox_label"><input type="checkbox" data-io="settings" checked> Nhập cài đặt</label>
+<div class="zt-popup-actions"><div class="menu_button" data-io="apply">Xác nhận nhập</div></div>`;
                 out.textContent = '';
-            } catch (e) { pending = null; $('preview').innerHTML = ''; out.textContent = '无法导入：' + e.message; }
+            } catch (e) { pending = null; $('preview').innerHTML = ''; out.textContent = 'Không thể nhập: ' + e.message; }
         };
         el.addEventListener('change', async e => {
             if (e.target === $('file') && e.target.files?.[0]) show(await e.target.files[0].text());
@@ -249,18 +247,18 @@ export class DataIO {
         el.addEventListener('click', async e => {
             const act = e.target.closest('[data-io]')?.dataset.io;
             try {
-                if (act === 'export') { const r = this.export(include()); out.textContent = `已导出：${this.fileName()}（${Math.ceil(r.text.length / 1024)} KB，不含 API Key）。手机上如果没有弹出下载，请用「复制存档文本」。`; }
-                else if (act === 'copy') { const t = JSON.stringify(this.snapshotFile(include()), null, 1); const ok = await copyText(t); out.textContent = ok ? '已复制存档文本（不含 API Key）。' : '浏览器不允许自动复制。'; if (!ok) { $('text').style.display = ''; $('text').value = t; $('text').select(); } }
+                if (act === 'export') { const r = this.export(include()); out.textContent = `Đã xuất: ${this.fileName()} (${Math.ceil(r.text.length / 1024)} KB, không chứa API Key). Trên điện thoại nếu không tự bật tải xuống, vui lòng dùng nút 「Sao chép văn bản bản lưu」.`; }
+                else if (act === 'copy') { const t = JSON.stringify(this.snapshotFile(include()), null, 1); const ok = await copyText(t); out.textContent = ok ? 'Đã sao chép văn bản bản lưu (không chứa API Key).' : 'Trình duyệt không cho phép sao chép tự động.'; if (!ok) { $('text').style.display = ''; $('text').value = t; $('text').select(); } }
                 else if (act === 'pick') $('file').click();
                 else if (act === 'paste') { $('text').style.display = ''; $('text').value = ''; $('text').focus(); }
                 else if (act === 'apply' && pending) {
-                    if (this.app.adapter.currentIdentity() !== pendingIdentity) throw Error('聊天已切换，请重新预览存档后再导入。');
-                    if (!globalThis.confirm('用这个存档覆盖当前聊天的账本和设置？当前账本会先自动备份。')) return;
+                    if (this.app.adapter.currentIdentity() !== pendingIdentity) throw Error('Trò chuyện đã chuyển, vui lòng xem trước lại bản lưu rồi mới nhập.');
+                    if (!globalThis.confirm('Dùng bản lưu này ghi đè sổ cái và cài đặt của cuộc trò chuyện hiện tại? Sổ cái hiện tại sẽ được tự động sao lưu trước.')) return;
                     const r = await this.import(pending, { ledger: $('ledger')?.checked !== false, settings: $('settings')?.checked !== false });
-                    out.textContent = `已导入：${r.ledger ? '账本已写入并读回一致' : '没有写入账本'}${r.extra.length ? '，' + r.extra.join('、') : ''}；设置 ${r.settings} 项。`;
+                    out.textContent = `Đã nhập: ${r.ledger ? 'sổ cái đã ghi và đọc lại khớp hoàn toàn' : 'không ghi sổ cái'}${r.extra.length ? ', ' + r.extra.join(', ') : ''}; cài đặt ${r.settings} mục.`;
                     $('preview').innerHTML = ''; pending = null; this.app.hub?.reloadEngine?.();
                 }
-            } catch (err) { out.textContent = '未完成：' + errorLine(err); }
+            } catch (err) { out.textContent = 'Chưa hoàn tất: ' + errorLine(err); }
         });
         return el;
     }

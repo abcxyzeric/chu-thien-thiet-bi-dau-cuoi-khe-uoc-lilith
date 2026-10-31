@@ -1,6 +1,6 @@
 {
-  "display_name": "诸天 · 莉莉丝契约终端",
-  "author": "诸天系统项目",
+  "display_name": "Chư Thiên · Thiết Bị Đầu Cuối Khế Ước Lilith",
+  "author": "Dự Án Hệ Thống Chư Thiên",
   "version": "1.1.5",
   "loading_order": 200,
   "js": "index.js",
@@ -14,5 +14,5 @@
     "disable": "deactivate",
     "delete": "deactivate"
   },
-  "homePage": "https://github.com/falingzhi1-boop/zhutianxitongchajianban"
+  "homePage": "https://github.com/abcxyzeric/chu-thien-thiet-bi-dau-cuoi-khe-uoc-lilith"
 }

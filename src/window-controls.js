@@ -49,12 +49,12 @@ export class WindowControls {
         // 1.1.3: avatar size (setting avatarSize, 20 %–100 %) and the drag targets 「换成莉莉丝」 / 「关闭悬浮窗」
         const size = document.createElement('style'); size.id = 'zt-avatar-size'; this.sizeStyle = size;
         const binStyle = document.createElement('style'); binStyle.textContent = BIN_CSS.replaceAll('.bin', '#zt-entry-bin');
-        const holder = document.createElement('div'); holder.innerHTML = binHtml('换成莉莉丝', 'zt-entry-bin', 'zt-entry-bin'); this.bin = holder.firstElementChild;
+        const holder = document.createElement('div'); holder.innerHTML = binHtml('đổi thành Lilith', 'zt-entry-bin', 'zt-entry-bin'); this.bin = holder.firstElementChild;
         this.sh.append(size, binStyle, this.bin); this.off.push(() => { size.remove(); binStyle.remove(); this.bin.remove(); });
         this.applySize();
-        const b = document.createElement('button'); b.type = 'button'; b.id = 'zt-layout-toggle'; b.title = '切换全屏 / 可拖动浮窗'; h.shell.header?.prepend(b); this.toggle = b;
+        const b = document.createElement('button'); b.type = 'button'; b.id = 'zt-layout-toggle'; b.title = 'Chuyển đổi toàn màn hình / cửa sổ nổi có thể kéo'; h.shell.header?.prepend(b); this.toggle = b;
         this.on(b, 'click', e => { e.stopPropagation(); this.app.settings.set('mobileLayout', this.app.mobile?.full ? 'window' : 'full'); this.app.mobile?.apply(); this.sync(true); });
-        const grip = document.createElement('button'); grip.type = 'button'; grip.id = 'zt-touch-resize'; grip.textContent = '⤡'; grip.setAttribute('aria-label', '拖动调整窗口大小'); this.d.append(grip); this.off.push(() => { b.remove(); grip.remove(); });
+        const grip = document.createElement('button'); grip.type = 'button'; grip.id = 'zt-touch-resize'; grip.textContent = '⤡'; grip.setAttribute('aria-label', 'Kéo để điều chỉnh kích thước cửa sổ'); this.d.append(grip); this.off.push(() => { b.remove(); grip.remove(); });
         this.off.push(this.app.bridge.addScriptFilter((next, prev) => this.coarse() ? keepWindowBox(next, prev) : next));
         const schedule = () => { if (!this.raf) this.raf = requestAnimationFrame(() => { this.raf = 0; this.sync(); }); };
         this.on(window, 'resize', schedule); this.on(visualViewport, 'resize', schedule); this.on(visualViewport, 'scroll', schedule);
@@ -82,7 +82,7 @@ export class WindowControls {
         if (this.dead) return;
         const touch = this.coarse(), floating = touch && !this.app.mobile?.full;
         this.sh.host.toggleAttribute('data-zt-touch-window', floating);
-        this.toggle.textContent = this.app.mobile?.full ? '浮窗' : '全屏'; this.toggle.setAttribute('aria-label', this.app.mobile?.full ? '切换浮窗，支持拖动缩放' : '切换全屏');
+        this.toggle.textContent = this.app.mobile?.full ? 'Cửa sổ nổi' : 'Toàn màn hình'; this.toggle.setAttribute('aria-label', this.app.mobile?.full ? 'Chuyển sang cửa sổ nổi, hỗ trợ kéo và thu phóng' : 'Chuyển sang toàn màn hình');
         if (!this.g) this.ins = this.insets(); // re-read on rotation / resize, not on every drag move
         const view = this.viewport(), sig = JSON.stringify(view), resized = sig !== this.viewSig; this.viewSig = sig;
         if (floating && !this.g && (force || resized || !this.wasFloat)) this.placeWindow(this.app.settings.get('touchWindowBox') || {});
@@ -163,7 +163,7 @@ export class WindowControls {
         if (target) {   // 1.1.3: dropped on 「换成莉莉丝」(切换) or 「关闭悬浮窗」(关闭) — the avatar goes back to where it was
             this.placeLauncher();
             if (target === 'swap' && this.app.persona?.lilith === false) { this.sync(true); return; }   // 1.1.5: no floating figure for other personas
-            if (target === 'swap') { swapFloat(this.app, 'lilith'); globalThis.toastr?.info('拖动莉莉丝到屏幕底部可以换回头像，或关闭悬浮窗。', '诸天 · 已切换成悬浮莉莉丝', { timeOut: 5000 }); }
+            if (target === 'swap') { swapFloat(this.app, 'lilith'); globalThis.toastr?.info('Kéo Lilith xuống đáy màn hình để đổi lại thành ảnh đại diện, hoặc đóng cửa sổ nổi.', 'Chư Thiên · Đã chuyển thành Lilith nổi', { timeOut: 5000 }); }
             else void closeFloats(this.app);
             return;
         }

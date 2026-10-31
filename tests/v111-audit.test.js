@@ -60,7 +60,7 @@ test('audit #2: a transaction booked during the 补记 wait is never overwritten
     const f = twoChats(); let finish; f.app.bridge.generateRaw = () => new Promise(r => { finish = r; });
     const p = f.g.backfill(1, 'manual'); while (!finish) await tick(1);
     f.a.chatMetadata.variables.诸天系统.系统点 = 800; finish(P(F));
-    await assert.rejects(p, /账本有变化/);
+    await assert.rejects(p, /Sổ cái có thay đổi/);
     assert.deepEqual(f.saves, []); assert.ok(!f.a.chat[1].mes.includes('<ZhuTianPanel>')); assert.equal(f.a.chatMetadata.variables.诸天系统.系统点, 800);
     // engine bookkeeping alone (render clock / floor table / folds) is not a transaction
     const f2 = twoChats(); f2.app.bridge.generateRaw = () => new Promise(r => { finish = r; }); finish = null;
@@ -82,11 +82,11 @@ test('audit #4: 还原原文 restores a long reply completely; partial (old) bac
     const fixed = m.mes = '已修复'; m.extra[STORAGE] = { panelRepair: { v: 1, raw: 'x'.repeat(60000), swipe: 0, issues: ['polluted'] } };
     let asked = false; const toasts = []; f.g.toast = t => toasts.push(t); globalThis.confirm = () => { asked = true; return true; };
     try { await f.g.restore(); } finally { delete globalThis.confirm; }
-    assert.equal(asked, false); assert.equal(m.mes, fixed); assert.ok(m.extra[STORAGE].panelRepair); assert.match(toasts[0], /备份不完整/);
+    assert.equal(asked, false); assert.equal(m.mes, fixed); assert.ok(m.extra[STORAGE].panelRepair); assert.match(toasts[0], /không đầy đủ/);
     // another swipe is on screen: refused as well
     m.extra[STORAGE] = { panelRepair: { v: 1, raw: '原文', len: 2, swipe: 1, issues: [] } };
     try { globalThis.confirm = () => true; await f.g.restore(); } finally { delete globalThis.confirm; }
-    assert.equal(m.mes, fixed); assert.match(toasts[1], /不是被修复的那一条/);
+    assert.equal(m.mes, fixed); assert.match(toasts[1], /khác với nhánh đã được sửa/);
     assert.equal(backupComplete({ raw: 'abc', len: 3 }), true); assert.equal(backupComplete({ raw: 'abc', len: 4 }), false); assert.equal(backupComplete({ raw: 'a'.repeat(60000) }), false);
     f.g.dispose();
 });
@@ -108,7 +108,7 @@ test('audit #1: 保留 / 分解 / 品阶分解 / 全部保留 / 回收 are one p
     const fresh = () => ({ 系统点: 0, 背包: [structuredClone(story)], 待处理物品: [structuredClone(box), { 名称: '草', 品级: '凡品', 来源: '盲盒', 价格: 100, 数量: 2 }, { 名称: '果', 品级: '灵品', 来源: '盲盒', 价格: 1e4, 数量: 1 }] });
     let z = fresh(); let plan = planFromButton(btn('btn-keep-item', { idx: '0' }), z);
     let r = applyItemPlan(z, plan); assert.equal(r.kept, 1); assert.equal(z.待处理物品.length, 2); assert.equal(z.背包.length, 2, 'blind-box 仙品 is not merged into the story 仙品');
-    assert.throws(() => applyItemPlan(z, plan), /已变化/, 'the same click cannot be booked twice');
+    assert.throws(() => applyItemPlan(z, plan), /đã thay đổi/, 'the same click cannot be booked twice');
     plan = planFromButton(btn('btn-recycle-item', { idx: '1' }), z, { querySelector: () => ({ value: '1' }) });
     r = applyItemPlan(z, plan); assert.equal(r.gain, 1e6); assert.equal(z.系统点, 1e6);
     z = fresh(); plan = planFromButton(btn('btn-decomp-item', { idx: '1' }), z); r = applyItemPlan(z, plan);
@@ -117,7 +117,7 @@ test('audit #1: 保留 / 分解 / 品阶分解 / 全部保留 / 回收 are one p
     assert.equal(r.gain, 1e6); assert.ok(z.待处理物品.every(x => x.品级 !== '仙品'));
     z = fresh(); plan = planFromButton(btn('btn-keep-all'), z); r = applyItemPlan(z, plan);
     assert.equal(r.kept, 4); assert.deepEqual(z.待处理物品, []); assert.equal(z.背包.length, 4);
-    assert.throws(() => applyItemPlan(z, plan), /已变化/, '全部保留 twice → the second click books nothing');
+    assert.throws(() => applyItemPlan(z, plan), /đã thay đổi/, '全部保留 twice → the second click books nothing');
     // a stale index finds the identical row, never a look-alike
     z = fresh(); plan = planFromButton(btn('btn-keep-item', { idx: '2' }), z); z.待处理物品.unshift({ 名称: '新', 品级: '凡品', 数量: 1 });
     applyItemPlan(z, plan); assert.equal(z.背包.at(-1).名称, '果');
@@ -140,17 +140,17 @@ test('audit #1: the commerce takeover books 保留 with ONE verified write; a fa
     const ok = commerceApp(); await new Commerce(ok.app).item(btn('btn-keep-item', { idx: '0' }), frame);
     assert.equal(ok.writes, 1); assert.equal(ok.ctx.chatMetadata.variables.诸天系统.背包.length, 1); assert.equal(ok.ctx.chatMetadata.variables.诸天系统.待处理物品.length, 0);
     const bad = commerceApp({ failSaveAfter: 0, uncertainOnFail: false });
-    await assert.rejects(new Commerce(bad.app).item(btn('btn-decomp-item', { idx: '0' }), frame), /物品与系统点都没有变化/);
+    await assert.rejects(new Commerce(bad.app).item(btn('btn-decomp-item', { idx: '0' }), frame), /Vật phẩm và Điểm Hệ Thống đều không thay đổi/);
     assert.equal(bad.ctx.chatMetadata.variables.诸天系统.待处理物品.length, 1); assert.equal(bad.ctx.chatMetadata.variables.诸天系统.系统点, 0);
     const unk = commerceApp({ failSaveAfter: 0 });
-    await assert.rejects(new Commerce(unk.app).item(btn('btn-keep-all'), frame), /未能确认，交易已冻结/);
+    await assert.rejects(new Commerce(unk.app).item(btn('btn-keep-all'), frame), /chưa thể xác nhận, giao dịch đã đóng băng/);
     assert.equal(isUncertain(unk.app, { id: 'c1' }), true);
 });
 test('audit P2: an unverified gacha save is reported as unconfirmed, never as 未扣系统点', () => {
     const c = src('src/commerce.js');
-    const i = c.indexOf('isUncertain(this.app, token)) throw Error(`${doneCount'), j = c.indexOf("'。未扣系统点，保底未变化。'");
+    const i = c.indexOf('isUncertain(this.app, token)) throw Error(`${doneCount'), j = c.indexOf("'. Chưa trừ Điểm Hệ Thống, bảo hiểm không thay đổi.'");
     assert.ok(i > 0 && j > i, 'the uncertain branch is checked before the 未扣 message');
-    assert.match(c.slice(i, j), /保存结果未能确认（可能已扣点并写入待处理）/);
+    assert.match(c.slice(i, j), /chưa thể xác nhận \(có thể đã trừ điểm và ghi vào mục chờ xử lý\)/);
 });
 
 // ---------- #7 重roll ----------
@@ -222,6 +222,6 @@ test('audit QA: a frame the host already released refuses new writes silently (n
         await tick(20);
         assert.equal(settled, false); assert.equal(calls, 0); assert.equal(saves, 0);
         assert.equal(ctx.chatMetadata.variables.诸天系统.系统点, 1000);
-        assert.throws(() => api.getVariables(), /失效/);
+        assert.throws(() => api.getVariables(), /hết hiệu lực/);
     } finally { bridge.dispose(); }
 });

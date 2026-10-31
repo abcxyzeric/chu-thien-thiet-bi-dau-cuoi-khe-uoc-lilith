@@ -1,19 +1,19 @@
-// 1.1.5 聊天群 × 世界书: summon a character from a worldbook entry into the group, let the group read the books, and
-// carry what happened in the group back into the story when that character shows up there.
-//   * 召唤   — the user picks an entry (book + uid); the model turns its text into the usual member card. The member
-//              keeps `来源 {book, uid, comment}`; nothing is written to the worldbook (read-only everywhere).
-//   * 群聊   — every group round / private chat gets an excerpt of each summoned member's own entry, plus entries
-//              of those books whose keywords appear in the conversation (budget-limited).
-//   * 记忆   — 群员记忆注入: when a summoned member's name or keywords appear in the latest story messages, the story
-//              prompt gets a short recap of their group chat / private chat with the host, so the story remembers.
-// Pure helpers are exported for tests; GroupWorld caches book reads for a minute.
+// 1.1.5 Nhóm chat × Sách Thế Giới: triệu hồi một nhân vật từ mục Sách Thế Giới vào nhóm, cho phép nhóm đọc sách, và
+// mang những gì đã xảy ra trong nhóm quay lại cốt truyện khi nhân vật đó xuất hiện trong truyện.
+//   * Triệu hồi — người dùng chọn một mục (book + uid); mô hình chuyển văn bản mục đó thành thẻ thành viên thông thường. Thành viên
+//                 giữ trường `来源 {book, uid, comment}`; không ghi bất cứ thứ gì vào Sách Thế Giới (chỉ đọc ở mọi nơi).
+//   * Nhóm chat — mỗi lượt trò chuyện nhóm / trò chuyện riêng đều nhận một đoạn trích mục riêng của từng thành viên được triệu hồi, cộng thêm các mục
+//                 trong những cuốn sách đó có từ khóa xuất hiện trong cuộc hội thoại (giới hạn theo ngân sách ký tự).
+//   * Ký ức     — Tiêm ký ức thành viên nhóm: khi tên hoặc từ khóa của một thành viên được triệu hồi xuất hiện trong các tin nhắn cốt truyện mới nhất,
+//                 lời nhắc cốt truyện sẽ nhận được bản tóm tắt ngắn về cuộc trò chuyện nhóm / trò chuyện riêng của họ với Ký chủ, để cốt truyện ghi nhớ.
+// Các hàm thuần túy được xuất ra cho kiểm thử; GroupWorld lưu đệm kết quả đọc sách trong một phút.
 export const WB_MODE = 'wb';
 export const ZT_BOOK = '诸天万界最强系统';
 const clip = (v, n) => { const s = String(v ?? '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1) + '…' : s; };
 const low = s => String(s ?? '').toLowerCase();
 
 /** Entry title shown to the user (comment, else first keyword, else uid). */
-export function entryTitle(e) { return clip(e?.comment || e?.name || (e?.key || [])[0] || `条目 ${e?.uid}`, 40); }
+export function entryTitle(e) { return clip(e?.comment || e?.name || (e?.key || [])[0] || `Mục ${e?.uid}`, 40); }
 /** Keywords of an entry worth matching (≥ 2 chars, no regex-style keys). */
 export function entryKeys(e) {
     const keys = Array.isArray(e?.key) ? e.key : Array.isArray(e?.strategy?.keys) ? e.strategy.keys : [];
@@ -34,16 +34,16 @@ export function searchEntries(entries, q, limit = 30) {
 }
 /** Prompt that turns an entry into a member card line (same format as 招募). Pure. */
 export function summonPrompt(entry, book, { maxTier = 8, tiers = '', name = '' } = {}) {
-    return `把世界书「${clip(book, 40)}」里的这个条目召唤进宿主的聊天群：根据条目内容整理成群员资料。
-【条目】${entryTitle(entry)}${entryKeys(entry).length ? `（关键词：${entryKeys(entry).slice(0, 8).join('、')}）` : ''}
+    return `Hãy triệu hồi mục này trong Sách Thế Giới 「${clip(book, 40)}」 vào nhóm chat của Ký chủ: dựa theo nội dung mục để tổng hợp thành hồ sơ thành viên nhóm.
+【Mục】${entryTitle(entry)}${entryKeys(entry).length ? ` (Từ khóa: ${entryKeys(entry).slice(0, 8).join(', ')})` : ''}
 ${clip(entry?.content, 1800)}
-${name ? `【指定名字】${clip(name, 20)}\n` : ''}要求：名称用条目里的角色名（条目写的是地点 / 势力时，选其中最有代表性的一位人物）；出处世界写条目所在的世界或作品；实力档按条目如实评估（参考：${tiers}），${maxTier < 8 ? `高于 ${maxTier} 档也照实写（入群费另算）；` : ''}性格 20 字内；特产写该角色世界里可以当礼物的一种物品。
-只输出一行，用竖线分隔：名称|出处世界|实力档数字|性格（20字内）|特产（20字内）`;
+${name ? `【Tên chỉ định】${clip(name, 20)}\n` : ''}Yêu cầu: Tên dùng đúng tên nhân vật trong mục (nếu mục viết về địa điểm / thế lực thì chọn một nhân vật tiêu biểu nhất trong đó); Thế giới xuất xứ ghi thế giới hoặc tác phẩm chứa mục đó; Bậc thực lực đánh giá trung thực theo mục (tham khảo: ${tiers}), ${maxTier < 8 ? `cao hơn bậc ${maxTier} cũng ghi trung thực (phí vào nhóm tính riêng); ` : ''}Tính cách trong vòng 20 chữ; Đặc sản ghi một loại vật phẩm trong thế giới của nhân vật đó có thể dùng làm quà tặng.
+Chỉ xuất đúng một dòng, phân cách bằng dấu gạch đứng: Tên|Thế giới xuất xứ|Con số bậc thực lực|Tính cách (trong 20 chữ)|Đặc sản (trong 20 chữ)`;
 }
 /** Excerpt of a member's own entry for group prompts. Pure. */
 export function memberSourceLine(m, entry, n = 360) {
     if (!m?.来源 || !entry) return '';
-    return `- ${m.名称}（世界书「${clip(m.来源.book, 30)}」·${entryTitle(entry)}）：${clip(entry.content, n)}`;
+    return `- ${m.名称} (Sách Thế Giới 「${clip(m.来源.book, 30)}」·${entryTitle(entry)}): ${clip(entry.content, n)}`;
 }
 /** Entries whose keywords appear in the text (case-insensitive), excluding `skip` uids. Pure. */
 export function matchKeys(entries, text, skip = new Set(), limit = 4) {
@@ -60,10 +60,10 @@ export function matchKeys(entries, text, skip = new Set(), limit = 4) {
 export function groupWorldBlock(sources, background, budget = 1600) {
     const lines = [], add = l => { if (!l) return; const used = lines.reduce((a, x) => a + x.length, 0); if (used + l.length <= budget) lines.push(l); };
     for (const s of sources) add(memberSourceLine(s.m, s.entry));
-    const bg = background.map(x => `- ${entryTitle(x.entry)}（${clip(x.book, 30)}）：${clip(x.entry.content, 260)}`);
+    const bg = background.map(x => `- ${entryTitle(x.entry)} (${clip(x.book, 30)}): ${clip(x.entry.content, 260)}`);
     for (const l of bg) add(l);
     if (!lines.length) return '';
-    return `【世界书资料（只读参考）】群员的说话方式、经历和人际关系以这里为准：\n${lines.join('\n')}`;
+    return `【Tư liệu Sách Thế Giới (chỉ đọc tham khảo)】Cách nói chuyện, trải nghiệm và quan hệ nhân mạch của thành viên nhóm lấy tư liệu tại đây làm chuẩn:\n${lines.join('\n')}`;
 }
 /** Does the text mention this member (name or one of the entry keywords)? Pure. */
 export function mentions(text, m, entry) {
@@ -74,19 +74,20 @@ export function mentions(text, m, entry) {
 /** 群员记忆注入: recap lines for summoned members mentioned in the latest story text. Pure. */
 export function worldMemoryPrompt(g, storyText, entryOf = () => null, { maxMembers = 3, perMember = 5 } = {}) {
     if (!g || !Array.isArray(g.成员)) return '';
-    const host = '宿主', out = [];
+    const host = 'Ký chủ', out = [];
     for (const m of g.成员) {
         if (!m?.来源 || out.length >= maxMembers) continue;
         if (!mentions(storyText, m, entryOf(m))) continue;
         const said = (g.消息 || []).filter(x => x.from === m.id || (x.from === 'me' && String(x.text).includes(m.名称))).slice(-perMember)
-            .map(x => `${x.from === 'me' ? host : m.名称}：${clip(x.text, 60)}`);
-        const pm = (g.私聊?.[m.id] || []).slice(-4).map(x => `${x.me ? host : m.名称}（私聊）：${clip(x.text, 60)}`);
-        const gifts = (g.入库记录 || []).filter(r => String(r.src || '').includes(m.名称)).slice(-3).map(r => `${r.what}（${r.how}）`);
+            .map(x => `${x.from === 'me' ? host : m.名称}: ${clip(x.text, 60)}`);
+        const pm = (g.私聊?.[m.id] || []).slice(-4).map(x => `${x.me ? host : m.名称} (Trò chuyện riêng): ${clip(x.text, 60)}`);
+        const gifts = (g.入库记录 || []).filter(r => String(r.src || '').includes(m.名称)).slice(-3).map(r => `${r.what} (${r.how})`);
         if (!said.length && !pm.length && !gifts.length) continue;
-        out.push(`· ${m.名称}（好感 ${Number(m.好感) || 20}，${m.身份 || '群员'}）${said.length ? '｜群聊：' + said.join(' / ') : ''}${pm.length ? '｜' + pm.join(' / ') : ''}${gifts.length ? '｜经聊天群给宿主的东西：' + gifts.join('、') : ''}`);
+        const role = m.身份 === '管理员' ? 'Quản trị viên' : (!m.身份 || m.身份 === '群员') ? 'Thành viên nhóm' : m.身份;
+        out.push(`· ${m.名称} (Hảo cảm ${Number(m.好感) || 20}, ${role})${said.length ? '｜Trò chuyện nhóm: ' + said.join(' / ') : ''}${pm.length ? '｜' + pm.join(' / ') : ''}${gifts.length ? '｜Đồ đã đưa cho Ký chủ qua nhóm chat: ' + gifts.join(', ') : ''}`);
     }
     if (!out.length) return '';
-    return `【诸天聊天群 · 群员记忆】以下角色也是宿主聊天群的群员（从世界书召唤），在剧情里出现时应记得与宿主在群里的交流，态度与好感保持一致；不要编造记录之外的群聊：\n${out.join('\n')}`;
+    return `【Nhóm Chat Chư Thiên · Ký ức thành viên nhóm】Các nhân vật dưới đây đồng thời là thành viên trong nhóm chat của Ký chủ (được triệu hồi từ Sách Thế Giới), khi xuất hiện trong cốt truyện cần nhớ những trao đổi với Ký chủ ở trong nhóm, thái độ và độ hảo cảm phải nhất quán; không được tự bịa ra cuộc trò chuyện nhóm ngoài bản ghi:\n${out.join('\n')}`;
 }
 /** Books active for the current chat (chat → character → global), without the 诸天 book. */
 export function activeBooks(ctx, wi) {

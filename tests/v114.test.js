@@ -57,9 +57,9 @@ test('1.1.4 截断: the half line is dropped', () => {
     assert.equal(dropLastLine('@甲: 只有一行'), '');
 });
 test('1.1.4 重roll: blocked once a packet was grabbed or a gift claimed; otherwise everything comes back', () => {
-    assert.match(roundBlocked(groupWithRound({ grabbed: true }), groupWithRound({ grabbed: true }).轮次.at(-1)), /红包你已经抢过/);
-    assert.match(roundBlocked(groupWithRound({ claimed: true }), groupWithRound({ claimed: true }).轮次.at(-1)), /赠礼你已经领取/);
-    assert.match(roundBlocked(normGroup({}), undefined), /没有可以重新生成/);
+    assert.match(roundBlocked(groupWithRound({ grabbed: true }), groupWithRound({ grabbed: true }).轮次.at(-1)), /Lì xì của lượt này bạn đã giật rồi/);
+    assert.match(roundBlocked(groupWithRound({ claimed: true }), groupWithRound({ claimed: true }).轮次.at(-1)), /Quà tặng của lượt này bạn đã nhận rồi/);
+    assert.match(roundBlocked(normGroup({}), undefined), /Không có lượt nào có thể tạo lại/);
     const g = groupWithRound(), r = g.轮次.at(-1);
     assert.equal(roundBlocked(g, r), '');
     undoRound(g, r);
@@ -72,12 +72,12 @@ test('1.1.4 重roll: blocked once a packet was grabbed or a gift claimed; otherw
 });
 test('1.1.4 删除单条: ledger records stay, unclaimed packets / gifts go with their message', () => {
     let g = groupWithRound({ grabbed: true });
-    assert.throws(() => deleteMessage(g, 'g2'), /已经抢过/);
+    assert.throws(() => deleteMessage(g, 'g2'), /bạn đã giật rồi/);
     g = groupWithRound({ claimed: true });
-    assert.throws(() => deleteMessage(g, 'g3'), /已经领取入库/);
+    assert.throws(() => deleteMessage(g, 'g3'), /đã được nhận nhập kho/);
     g = groupWithRound();
     g.消息.push({ id: 'g9', from: 'me', text: '发红包', kind: 'packet', ref: 'rp9' }); g.红包.rp9 = { id: 'rp9', from: 'me', grabs: [{ who: 'm1', v: 1 }], shares: [1] };
-    assert.throws(() => deleteMessage(g, 'g9'), /已经扣账/, 'a packet you paid for');
+    assert.throws(() => deleteMessage(g, 'g9'), /đã trừ sổ và được thành viên nhóm nhận/, 'a packet you paid for');
     deleteMessage(g, 'g2');
     assert.equal(g.红包.rp1, undefined); assert.equal(g.日计.收, 0);
     assert.deepEqual(g.轮次[0].packets, [], 'the round forgets the packet');
@@ -86,7 +86,7 @@ test('1.1.4 删除单条: ledger records stay, unclaimed packets / gifts go with
     assert.equal(roundBlocked(g, g.轮次[0]), '', 'a deleted gift is not a claimed gift');
     deleteMessage(g, 'g0'); deleteMessage(g, 'g1');
     assert.equal(g.轮次.length, 1, 'round kept while it still has your input to re-ask');
-    assert.throws(() => deleteMessage(g, 'nope'), /不在了/);
+    assert.throws(() => deleteMessage(g, 'nope'), /không còn nữa/);
 });
 test('1.1.4 group wiring: round records, own output limit, UI hooks', () => {
     const s = src('src/hub-group.js');
@@ -116,10 +116,10 @@ test('1.1.4 核对并解冻: read-only check, retry before freezing, settings bu
     assert.match(b, /async verifyFrozen\(\)/);
     assert.match(b, /if \(keys\.length\) return \{ state: 'differs', keys \};\s*set\.delete\(expected\)/, 'only an identical server copy lifts the freeze');
     assert.match(b, /if \(diff\.length\) \{ await new Promise\(r => setTimeout\(r, 700\)\); await c\.saveMetadata\(\);/);
-    assert.match(src('src/hub-settings.js'), /act\('unfreeze', '核对并解冻账本'/);
+    assert.match(src('src/hub-settings.js'), /act\('unfreeze', 'Đối chiếu và mở băng sổ cái'/);
     assert.match(src('src/hub-settings.js'), /unfreeze: async \(\) => \{\s*const r = await app\.bridge\.verifyFrozen\(\);/);
     assert.match(src('src/ledger-service.js'), /1\.1\.4: one more read/);
-    assert.match(src('src/errors.js'), /核对并解冻账本[\s\S]*回滚/);
+    assert.match(src('src/errors.js'), /Kiểm tra và mở khóa sổ cái[\s\S]*Hoàn tác/);
 });
 
 // ---------- 记忆键 ----------
@@ -199,11 +199,11 @@ test('1.1.4 楼层检查: says whether the plugin rewrote / rendered the floor a
     const m = { mes: '<think>x</think>正文', swipe_id: 0, extra: { reasoning: '', [STORAGE]: { panelRepair: { issues: ['polluted'] } } } };
     const prompts = { [`${ID}/panelguard`]: { value: '提醒', position: 1, depth: 1, role: 0 }, 'other-ext/x': { value: '别的扩展', position: 1, depth: 0, role: 0 }, [`${ID}/group`]: { value: '' } };
     const text = floorReport({ floor: 7, m, zhutian: true, prompts, rendered: false, voices: 0 });
-    assert.match(text, /第 7 层/); assert.match(text, /被数据块守卫改写过/); assert.match(text, /正文里 1 段/);
-    assert.match(text, /\[诸天\] zhutian-covenant-terminal\/panelguard — 聊天中 深度 1/);
-    assert.match(text, /other-ext\/x — 聊天中 深度 0/);
+    assert.match(text, /Tầng 7/); assert.match(text, /Đã được bảo vệ khối dữ liệu chỉnh sửa/); assert.match(text, /Trong chính văn có 1 đoạn/);
+    assert.match(text, /\[Chư Thiên\] zhutian-covenant-terminal\/panelguard — Trong cuộc trò chuyện độ sâu 1/);
+    assert.match(text, /other-ext\/x — Trong cuộc trò chuyện độ sâu 0/);
     assert.ok(!text.includes(`${ID}/group`), 'empty prompts are not listed');
-    assert.match(floorReport({ floor: 1, m: { mes: 'x' }, zhutian: false }), /不会动这个聊天[\s\S]*插件没有改写过/);
+    assert.match(floorReport({ floor: 1, m: { mes: 'x' }, zhutian: false }), /không can thiệp vào cuộc trò chuyện này[\s\S]*Tiện ích không hề sửa đổi/);
     assert.match(src('src/panel-guard.js'), /id: 'pg-inspect', tier: 'diag'/);
 });
 
@@ -253,7 +253,7 @@ test('1.1.4 截断 end to end: the half line is dropped and a notice offers 重r
         g.ask = async () => { f.bridge.lastFinish = { reason: 'length', maxTokens: 1200, at: Date.now() }; return '@群员: 完整的一句\n@群员: 说到一'; };
         await g.round('你好');
         const msgs = f.diskGroup().消息;
-        assert.deepEqual(msgs.map(m => m.text.slice(0, 5)), ['完整的一句', '⚠ 这一轮']);
+        assert.deepEqual(msgs.map(m => m.text.slice(0, 5)), ['完整的一句', '⚠ Phả']);
         assert.equal(f.diskGroup().轮次[0].cut, true);
         g.ask = async () => { f.bridge.lastFinish = { reason: 'stop', at: Date.now() }; return '@群员: 好的'; };
         await g.reroll();
@@ -276,9 +276,9 @@ test('1.1.4 假冻结: a stale in-flight save is re-saved once instead of freezi
         await f.bridge.updateVariablesWith(v => { v.诸天系统.系统点 = 90; return v; }, { verify: true });
         assert.equal(f.disk.variables.诸天系统.系统点, 90); assert.equal(f.adapter.transactions.uncertain.size, 0);
         f.stale = 2;
-        await assert.rejects(f.bridge.updateVariablesWith(v => { v.诸天系统.系统点 = 80; return v; }, { verify: true }), /已冻结[\s\S]*服务器读回不一致（诸天系统）/);
+        await assert.rejects(f.bridge.updateVariablesWith(v => { v.诸天系统.系统点 = 80; return v; }, { verify: true }), /đã đóng băng[\s\S]*Đọc lại từ máy chủ không khớp \(诸天系统\)/);
         assert.equal(f.adapter.transactions.uncertain.size, 1);
-        await assert.rejects(f.bridge.updateVariablesWith(v => v, { verify: true }), /核对并解冻账本/);
+        await assert.rejects(f.bridge.updateVariablesWith(v => v, { verify: true }), /Kiểm tra và mở khóa sổ cái/);
         // 核对: the server still has 90, the page shows 80 → reload needed, still frozen
         let r = await f.bridge.verifyFrozen();
         assert.equal(r.state, 'differs'); assert.deepEqual(r.keys, ['诸天系统']); assert.equal(f.adapter.transactions.uncertain.size, 1);
@@ -304,7 +304,7 @@ test('1.1.4 说明书: docs/MANUAL.md renders to escaped HTML with a table of co
     assert.match(md.split('\n')[0], /1\.1\.\d+/);   // 1.1.5+: the title follows the current version
     const { html, toc } = renderManual(md);
     assert.ok(toc.length >= 15, 'every chapter is in the table of contents');
-    for (const k of ['↻ 重roll', '核对并解冻账本', '检查最新楼层', '群聊生成', '说明书']) assert.ok(html.includes(k), k);
+    for (const k of ['↻ Reroll', 'Đối chiếu và mở khóa sổ cái', 'Kiểm tra tầng mới nhất', 'Tạo trò chuyện nhóm', 'Cẩm nang']) assert.ok(html.includes(k), k);
     assert.ok(!/<script|<ZhuTianPanel>/i.test(html), 'tags written in the manual are shown as text');
     const evil = renderManual('## a\n<img src=x onerror=alert(1)> **b** [x](javascript:alert(1)) [y](#a)\n\n| h |\n|---|\n| <b>c</b> |');
     assert.ok(!evil.html.includes('<img') && !evil.html.includes('javascript:') && !evil.html.includes('<b>c</b>'), evil.html);

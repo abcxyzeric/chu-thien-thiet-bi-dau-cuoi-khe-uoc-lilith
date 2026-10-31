@@ -1,4 +1,4 @@
-// Native replacement for Tavern Helper's "macro-likes" (酒馆助手宏). The original 诸天 worldbook uses
+// Native replacement for Tavern Helper's "macro-likes" (macro Tavern Helper). The original 诸天 worldbook uses
 // {{get_chat_variable::诸天系统.xxx}} 80 times (实时数据, 系统点, 资源行, 盲盒保底 …). SillyTavern itself does not know these
 // macros, so without Tavern Helper the model used to receive the literal text instead of the ledger.
 //
@@ -154,15 +154,15 @@ export class MacroLikeHost {
     constructor(adapter, settings) { this.adapter = adapter; this.settings = settings; this.engine = new MacroLike(() => adapter.context()); this.disposers = []; this.stats = { prompts: 0, replaced: 0, last: 0, yielded: 0 }; }
     start() {
         const c = this.adapter.context(), ev = c.eventTypes?.GENERATE_AFTER_DATA;
-        if (!ev) { this.state = '宿主缺少 GENERATE_AFTER_DATA，助手宏仅在显示时替换'; return this; }
+        if (!ev) { this.state = 'Máy chủ thiếu GENERATE_AFTER_DATA, macro trợ lý chỉ thay thế khi hiển thị'; return this; }
         const fn = (data, dryRun) => {
             if (dryRun || this.settings.get('macroLike') === false) return;
             if (tavernHelperMacrosActive(this.adapter.context())) { this.stats.yielded++; return; }
             try { const n = this.engine.demacroPrompt(data); this.stats.prompts++; this.stats.replaced += n; this.stats.last = Date.now(); }
-            catch (e) { console.warn('[诸天] 助手宏替换失败（提示词保持原样）', e); }
+            catch (e) { console.warn('[Chư Thiên] Thay thế macro trợ lý thất bại (prompt giữ nguyên)', e); }
         };
         c.eventSource.on(ev, fn); this.disposers.push(() => c.eventSource.removeListener(ev, fn));
-        this.state = '运行中（提示词 + 楼层显示）';
+        this.state = 'Đang chạy (prompt + hiển thị tầng tin nhắn)';
         const api = { registerMacroLike: (r, f) => this.engine.register(r, f), unregisterMacroLike: r => this.engine.unregister(r) };
         globalThis.ZhuTianMacroLike = api;
         return this;

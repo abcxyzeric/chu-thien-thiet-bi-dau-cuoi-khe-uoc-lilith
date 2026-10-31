@@ -27,19 +27,19 @@ export function settingsSnapshot(all = {}) {
     for (const [k, v] of Object.entries(all || {})) {
         if (SKIP.has(k)) continue;
         if (v === null || ['string', 'number', 'boolean'].includes(typeof v)) out[k] = v;
-        else if (Array.isArray(v)) out[k] = `[${v.length} 项]`;
+        else if (Array.isArray(v)) out[k] = `[${v.length} mục]`;
         else if (typeof v === 'object') out[k] = Object.fromEntries(Object.entries(v).filter(([, x]) => x === null || ['string', 'number', 'boolean'].includes(typeof x)));
     }
-    out.takeoverLog = `[${(all?.takeoverLog || []).length} 项]`;
-    out.live2d = all?.live2d ? { accepted: !!all.live2d.accepted, model: all.live2d.model ? '已设置' : '' } : null;
+    out.takeoverLog = `[${(all?.takeoverLog || []).length} mục]`;
+    out.live2d = all?.live2d ? { accepted: !!all.live2d.accepted, model: all.live2d.model ? 'Đã đặt' : '' } : null;
     out.wbUnbound = !!all?.wbUnbound;
     return out;
 }
 /** "host · model" for an endpoint config — never the key or the path (pure, for tests). */
 export function endpointText(c) {
-    if (!c?.url) return '未设置';
-    if (c.key === 'st-main' || /^st-main|酒馆主/.test(String(c.url))) return '酒馆主 API';
-    try { return new URL(c.url).host + (c.model ? ' · ' + c.model : ''); } catch { return '地址无法解析'; }
+    if (!c?.url) return 'Chưa đặt';
+    if (c.key === 'st-main' || /^st-main|酒馆主|API chính của quán rượu/i.test(String(c.url))) return 'API chính của quán rượu';
+    try { return new URL(c.url).host + (c.model ? ' · ' + c.model : ''); } catch { return 'Không thể phân giải địa chỉ'; }
 }
 
 /** Last plugin errors: console.error / console.warn lines tagged [诸天…] and page errors from the plugin's files. */
@@ -53,7 +53,7 @@ export class ErrorLog {
     start() {
         for (const kind of ['error', 'warn']) {
             const orig = console[kind], self = this;
-            const wrapped = function (...args) { try { if (typeof args[0] === 'string' && /^\[诸天/.test(args[0])) self.push(kind, args); else if (typeof args[0] === 'string' && /^(?:Error saving settings:|Failed to save settings:)/.test(args[0])) self.push('save', ['[宿主设置保存] 保存失败，请检查服务器连接并重载核对；宿主延迟保存失败，不记录请求内容或密钥。']); } catch { /* never break logging */ } return orig.apply(this, args); };
+            const wrapped = function (...args) { try { if (typeof args[0] === 'string' && /^\[(诸天|Chư Thiên)/i.test(args[0])) self.push(kind, args); else if (typeof args[0] === 'string' && /^(?:Error saving settings:|Failed to save settings:)/.test(args[0])) self.push('save', ['[Lưu cài đặt host] Lưu thất bại, vui lòng kiểm tra kết nối máy chủ và tải lại để đối chiếu; lưu trễ của host thất bại, không ghi lại nội dung yêu cầu hoặc khóa bảo mật.']); } catch { /* never break logging */ } return orig.apply(this, args); };
             console[kind] = wrapped;
             this.disposers.push(() => { if (console[kind] === wrapped) console[kind] = orig; });
         }
@@ -85,8 +85,8 @@ export function environment(app) {
     return {
         ua: navigator.userAgent, lang: navigator.language, ...saveEnvironment(), standalone,
         inner: `${innerWidth}×${innerHeight}`, screen: `${screen?.width}×${screen?.height}`, dpr: devicePixelRatio, coarse,
-        visual: vv ? `${box.w}×${box.h} @${box.top},${box.left} (键盘 ${box.kb}px)` : '不支持 visualViewport',
-        safe: safeArea(), layout: phoneLayout(app?.settings?.get('mobileLayout') || 'auto', { w: innerWidth, h: innerHeight, coarse }) || '浮动窗口',
+        visual: vv ? `${box.w}×${box.h} @${box.top},${box.left} (bàn phím ${box.kb}px)` : 'Không hỗ trợ visualViewport',
+        safe: safeArea(), layout: phoneLayout(app?.settings?.get('mobileLayout') || 'auto', { w: innerWidth, h: innerHeight, coarse }) || 'Cửa sổ nổi',
         current: app?.mobile?.mode || '', kbMode: app?.mobile?.kbMode || '',
     };
 }
@@ -94,22 +94,22 @@ export function environment(app) {
 const line = (k, v) => `${k}：${v}`;
 /** The whole report as text. Every source is optional; a broken part is reported, never thrown. */
 export function buildReport(app, { errors = app?.errorLog?.items || [] } = {}) {
-    const out = [`【诸天终端诊断信息】${new Date().toISOString()}`];
-    const safe = (title, fn) => { try { const r = fn(); if (r !== undefined && r !== null && r !== '') out.push(...(Array.isArray(r) ? r : [r])); } catch (e) { out.push(`${title}：读取失败（${e.message}）`); } };
-    safe('版本', () => [line('插件', VERSION), line('修订', PATCH_REV), line('SillyTavern', `${app.adapter?.version || '?'} — ${app.adapter?.support?.reason || ''}`)]);
-    safe('设备', () => { const e = environment(app); return ['', '— 设备 —', line('浏览器', e.ua), line('语言', e.lang), line('窗口', `${e.inner}（屏幕 ${e.screen}，像素比 ${e.dpr}）`), line('可见区域', e.visual),
-        line('触摸屏', e.coarse ? '是' : '否'), line('安全区', e.safe ? `上 ${e.safe.top} 右 ${e.safe.right} 下 ${e.safe.bottom} 左 ${e.safe.left}` : '未知'), line('安全上下文', e.secure ? '是' : '否'), line('连接协议', e.protocol), line('Web Locks', e.locks ? '可用' : '不可用'), line('保存能力', e.canSave ? '环境预检通过（不代表服务器已保存）' : e.reason || '未检测'),
-        line('添加到主屏幕运行', e.standalone ? '是' : '否'), line('手机布局', `${e.layout}${e.current ? '（当前 ' + e.current + '）' : ''}${e.kbMode ? '，键盘方式 ' + e.kbMode : ''}`)]; });
-    safe('接口', () => ['', '— 宿主接口 —', ...(app.adapter?.capabilities || []).map(c => `${c.ok ? '✅' : '❌'} ${c.label}`)]);
-    safe('状态栏', () => { const sb = app.statusbar?.state || {}, d = app.statusbar?.diagnoseLast?.(); return ['', '— 运行状态 —', line('状态栏', `${sb.mode || '?'} — ${sb.reason || ''}`), d ? line('最新楼层', `${d.ok === true ? '✅' : d.ok === false ? '⚠' : 'ℹ'} ${d.text}`) : line('最新楼层', '无'),
-        line('终端', app.hub ? (app.hub.isOpen ? `打开（${app.hub.page || ''}）` : '已启动') : `未启动 ${app.hubError || ''}`), line('莉莉丝助手', app.assistant ? '运行中' : `未启用 ${app.assistantError || ''}`), line('悬浮莉莉丝', app.float?.active ? '开启' : '关闭')]; });
-    safe('数据块', () => line('数据块格式守卫', app.panelGuard ? app.panelGuard.diag() : '未启动'));
-    safe('动态效果', () => line('动态效果', app.perf ? `${app.perf.lite ? '精简' : '完整'}（${app.perf.reason}）` : '未启动'));
-    safe('API', () => { const c = app.features?.apiConfigs?.() || {}; return [line('AI 接口 · 状态栏', endpointText(c.status)), line('AI 接口 · 莉莉丝', endpointText(c.assistant))]; });
-    safe('分功能 API', () => { if (!app.bridge) return ''; const r = readRoutes(app.bridge), on = ROUTES.filter(x => r.routes[x.id]); const last = app.bridge.lastRoute; return [line('接口预设', `${r.presets.length} 个`), line('分功能 API', on.length ? on.map(x => `${x.label} → ${routeText(r, x.id)}`).join('；') : '全部跟随默认'), ...(last ? [line('最近一次分功能请求', `${routeLabel(last.id)} · ${last.via}`)] : [])]; });
-    safe('设置', () => ['', '— 插件设置 —', JSON.stringify(settingsSnapshot(app.settings?.all))]);
-    safe('自检', () => { const d = app.settings?.get('deviceCheck'); return d?.text ? ['', `— 上次真机自检（${d.at || ''}）—`, d.text] : ['', '— 真机自检 —', '没有运行过（设置 → 兼容与维护 → 手机真机自检）']; });
-    out.push('', `— 最近的插件报错（${errors.length} 条）—`, ...(errors.length ? errors.map(e => `[${e.t}] ${e.kind}: ${e.text}`) : ['无']));
+    const out = [`【Thông tin chẩn đoán Thiết Bị Đầu Cuối Chư Thiên】${new Date().toISOString()}`];
+    const safe = (title, fn) => { try { const r = fn(); if (r !== undefined && r !== null && r !== '') out.push(...(Array.isArray(r) ? r : [r])); } catch (e) { out.push(`${title}：Đọc thất bại (${e.message})`); } };
+    safe('Phiên bản', () => [line('Plugin', VERSION), line('Bản sửa đổi', PATCH_REV), line('SillyTavern', `${app.adapter?.version || '?'} — ${app.adapter?.support?.reason || ''}`)]);
+    safe('Thiết bị', () => { const e = environment(app); return ['', '— Thiết bị —', line('Trình duyệt', e.ua), line('Ngôn ngữ', e.lang), line('Cửa sổ', `${e.inner} (Màn hình ${e.screen}, tỷ lệ điểm ảnh ${e.dpr})`), line('Vùng hiển thị', e.visual),
+        line('Màn hình cảm ứng', e.coarse ? 'Có' : 'Không'), line('Vùng an toàn', e.safe ? `Trên ${e.safe.top} Phải ${e.safe.right} Dưới ${e.safe.bottom} Trái ${e.safe.left}` : 'Không rõ'), line('Ngữ cảnh an toàn', e.secure ? 'Có' : 'Không'), line('Giao thức kết nối', e.protocol), line('Web Locks', e.locks ? 'Khả dụng' : 'Không khả dụng'), line('Khả năng lưu', e.canSave ? 'Kiểm tra môi trường đạt (không đại diện máy chủ đã lưu)' : e.reason || 'Chưa kiểm tra'),
+        line('Chạy từ màn hình chính', e.standalone ? 'Có' : 'Không'), line('Bố cục điện thoại', `${e.layout}${e.current ? ' (hiện tại ' + e.current + ')' : ''}${e.kbMode ? ', chế độ bàn phím ' + e.kbMode : ''}`)]; });
+    safe('Giao diện', () => ['', '— Giao diện Host —', ...(app.adapter?.capabilities || []).map(c => `${c.ok ? '✅' : '❌'} ${c.label}`)]);
+    safe('Thanh trạng thái', () => { const sb = app.statusbar?.state || {}, d = app.statusbar?.diagnoseLast?.(); return ['', '— Trạng thái hoạt động —', line('Thanh trạng thái', `${sb.mode || '?'} — ${sb.reason || ''}`), d ? line('Tầng mới nhất', `${d.ok === true ? '✅' : d.ok === false ? '⚠' : 'ℹ'} ${d.text}`) : line('Tầng mới nhất', 'Không có'),
+        line('Thiết bị đầu cuối', app.hub ? (app.hub.isOpen ? `Đang mở (${app.hub.page || ''})` : 'Đã khởi động') : `Chưa khởi động ${app.hubError || ''}`), line('Trợ lý Lilith', app.assistant ? 'Đang chạy' : `Chưa bật ${app.assistantError || ''}`), line('Lilith nổi', app.float?.active ? 'Đang bật' : 'Đã tắt')]; });
+    safe('Khối dữ liệu', () => line('Bảo vệ định dạng khối dữ liệu', app.panelGuard ? app.panelGuard.diag() : 'Chưa khởi động'));
+    safe('Hiệu ứng động', () => line('Hiệu ứng động', app.perf ? `${app.perf.lite ? 'Rút gọn' : 'Đầy đủ'} (${app.perf.reason})` : 'Chưa khởi động'));
+    safe('API', () => { const c = app.features?.apiConfigs?.() || {}; return [line('Cổng AI · Thanh trạng thái', endpointText(c.status)), line('Cổng AI · Lilith', endpointText(c.assistant))]; });
+    safe('API theo tính năng', () => { if (!app.bridge) return ''; const r = readRoutes(app.bridge), on = ROUTES.filter(x => r.routes[x.id]); const last = app.bridge.lastRoute; return [line('Preset cổng', `${r.presets.length}`), line('API theo tính năng', on.length ? on.map(x => `${x.label} → ${routeText(r, x.id)}`).join('; ') : 'Tất cả theo mặc định'), ...(last ? [line('Yêu cầu theo tính năng gần nhất', `${routeLabel(last.id)} · ${last.via}`)] : [])]; });
+    safe('Cài đặt', () => ['', '— Cài đặt Plugin —', JSON.stringify(settingsSnapshot(app.settings?.all))]);
+    safe('Tự kiểm tra', () => { const d = app.settings?.get('deviceCheck'); return d?.text ? ['', `— Lần tự kiểm tra trên máy thật trước (${d.at || ''}) —`, d.text] : ['', '— Tự kiểm tra trên máy thật —', 'Chưa từng chạy (Cài đặt → Tương thích & Bảo trì → Tự kiểm tra trên điện thoại thật)']; });
+    out.push('', `— Báo lỗi plugin gần đây (${errors.length} mục) —`, ...(errors.length ? errors.map(e => `[${e.t}] ${e.kind}: ${e.text}`) : ['Không có']));
     return redact(out.join('\n'));
 }
 

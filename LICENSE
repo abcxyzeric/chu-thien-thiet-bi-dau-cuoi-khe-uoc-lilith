@@ -1,47 +1,38 @@
-诸天 · 莉莉丝契约终端 源码可见许可（保留所有权利）1.0
+Giấy phép Hiển thị Mã nguồn Chư Thiên · Thiết Bị Đầu Cuối Khế Ước Lilith (Bảo lưu mọi quyền) 1.0
 SPDX-License-Identifier: LicenseRef-Zhutian-SourceAvailable-1.0
 
-Copyright © 2026 falingzhi1-boop（诸天系统项目）。保留所有权利。
+Copyright © 2026 falingzhi1-boop (Dự án Hệ Thống Chư Thiên). Bảo lưu mọi quyền.
 
-本仓库公开源码只是为了方便安装、审阅和自用修改，**不是开源软件**。除本许可明确授予的权利外，其余权利全部保留。
+Kho lưu trữ này công khai mã nguồn chỉ nhằm thuận tiện cho việc cài đặt, xem xét và sửa đổi tự dùng cá nhân, **không phải phần mềm mã nguồn mở**. Ngoài các quyền được cấp rõ ràng trong giấy phép này, toàn bộ các quyền còn lại đều được bảo lưu.
 
-一、你可以
-  1. 为个人、非商业用途，在你自己控制的 SillyTavern 上安装和使用本插件（包括通过 SillyTavern 的“安装扩展”从本仓库安装）。
-  2. 为个人自用而阅读、修改本插件；修改后的版本只能自己使用。
-  3. 为报告问题或提交修改建议，在本仓库的 issue / pull request 中引用必要的代码片段。
-     提交 pull request 即表示你同意权利人以本许可或其他条款使用你提交的内容。
+I. Bạn được phép
+  1. Cài đặt và sử dụng tiện ích này trên SillyTavern do chính bạn kiểm soát cho mục đích cá nhân, phi thương mại (bao gồm cài đặt từ kho lưu trữ này thông qua chức năng “Cài đặt tiện ích” của SillyTavern).
+  2. Đọc và sửa đổi tiện ích này để tự sử dụng cá nhân; phiên bản sau khi sửa đổi chỉ được phép dùng cho riêng bạn.
+  3. Trích dẫn các đoạn mã cần thiết trong issue / pull request của kho lưu trữ này nhằm báo cáo lỗi hoặc gửi đề xuất sửa đổi.
+     Việc gửi pull request đồng nghĩa với việc bạn đồng ý để chủ sở hữu quyền sử dụng nội dung bạn đã gửi theo giấy phép này hoặc các điều khoản khác.
 
-二、未经权利人书面许可，你不可以
-  1. 再分发：以任何形式公开或向他人提供本插件或其修改版的全部或部分（包括上传到其他仓库、网盘、群文件、
-     扩展市场、整合包、镜像站点），也不得去掉本许可后再发布。复刻（fork）只允许用于向本仓库提交修改。
-  2. 商业使用：出售、出租、收费分发、作为付费服务或付费产品的一部分、用于商业运营的酒馆 / 角色平台 / 机器人。
-  3. 人工智能用途：把本仓库的任何内容（源码、文档、提示词、世界书文本、图像、测试数据）
-     用于训练、微调、蒸馏、评测或改进任何机器学习 / 人工智能模型，
-     收录进任何数据集、语料库、向量库或检索增强（RAG）知识库，
-     或通过自动抓取（爬虫、批量下载）为上述目的收集本仓库内容。
-     这一条同样适用于使用本仓库内容生成“改写版”“同功能版”代码再发布的行为。
-  4. 冒名：把本插件或其修改版以你自己的作品名义发布，或删除、修改其中的版权与来源说明。
+II. Nếu không có sự cho phép bằng văn bản của chủ sở hữu quyền, bạn không được phép
+  1. Phân phối lại: Công khai hoặc cung cấp cho người khác toàn bộ hoặc một phần tiện ích này hay bản sửa đổi của nó dưới bất kỳ hình thức nào (bao gồm tải lên kho lưu trữ khác, dịch vụ lưu trữ đám mây, tệp nhóm, chợ tiện ích mở rộng, gói tổng hợp, trang web phản chiếu), và cũng không được xóa bỏ giấy phép này rồi phát hành lại. Việc tạo nhánh (fork) chỉ được phép dùng để gửi sửa đổi về kho lưu trữ này.
+  2. Sử dụng thương mại: Bán, cho thuê, phân phối có thu phí, dùng làm một phần của dịch vụ trả phí hoặc sản phẩm trả phí, sử dụng cho quán rượu / nền tảng nhân vật / bot vận hành thương mại.
+  3. Sử dụng cho Trí tuệ nhân tạo: Đem bất kỳ nội dung nào của kho lưu trữ này (mã nguồn, tài liệu, prompt, văn bản Sách Thế Giới, hình ảnh, dữ liệu kiểm thử) dùng để huấn luyện, tinh chỉnh (fine-tune), chưng cất (distill), đánh giá hoặc cải tiến bất kỳ mô hình học máy / trí tuệ nhân tạo nào, đưa vào bất kỳ bộ dữ liệu, kho ngữ liệu, cơ sở dữ liệu vector hay cơ sở tri thức tăng cường truy xuất (RAG) nào, hoặc thu thập nội dung kho lưu trữ này bằng công cụ tự động (crawler, tải hàng loạt) cho các mục đích nêu trên. Điều khoản này cũng áp dụng đối với hành vi sử dụng nội dung của kho lưu trữ này để tạo ra mã nguồn “bản viết lại” hoặc “bản cùng tính năng” rồi phát hành lại.
+  4. Mạo danh: Phát hành tiện ích này hoặc bản sửa đổi của nó dưới danh nghĩa tác phẩm của riêng bạn, hoặc xóa bỏ, sửa đổi thông tin bản quyền và nguồn gốc bên trong.
 
-三、第三方内容（不由本许可授予，各归其权利人）
-  - `vendor/original/` 中的“诸天万界最强系统”v1.1 原版代码与提示词，以及由它提取、生成的运行文件；
-  - 莉莉丝原版立绘与分层素材（`assets/original/`、`assets/lilith/`，含 1.0 抠图素材与 AI 差分立绘）——
-    这些图像随插件显示，不得单独提取、再分发或用于上述人工智能用途；
-  - Live2D Cubism Core：插件不附带，用户按 Live2D 的许可自行加载；
-  - SillyTavern（AGPL-3.0）及其接口：本插件只是在其上运行的扩展，不包含 SillyTavern 代码。
+III. Nội dung của bên thứ ba (Không thuộc phạm vi cấp phép của giấy phép này, thuộc về chủ sở hữu quyền tương ứng)
+  - Mã nguồn và prompt bản gốc “Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới” v1.1 trong `vendor/original/`, cùng các tệp thực thi được trích xuất và tạo ra từ đó;
+  - Tranh đứng bản gốc và tài nguyên phân lớp của Lilith (`assets/original/`, `assets/lilith/`, bao gồm tài nguyên tách nền 1.0 và tranh đứng biến thể AI) — những hình ảnh này hiển thị kèm theo tiện ích, không được trích xuất riêng lẻ, phân phối lại hoặc sử dụng cho các mục đích trí tuệ nhân tạo nêu trên;
+  - Live2D Cubism Core: Tiện ích không đính kèm, người dùng tự tải theo giấy phép của Live2D;
+  - SillyTavern (AGPL-3.0) và giao diện của nó: Tiện ích này chỉ là phần mở rộng chạy trên đó, không chứa mã nguồn của SillyTavern.
 
-四、免责声明
-  本插件按“现状”提供，不作任何明示或默示担保。因使用或无法使用本插件造成的任何损失（包括聊天存档、
-  账本数据、API 费用），权利人不承担责任。请自行备份；插件提供 设置 → 导出 / 导入存档。
+IV. Tuyên bố miễn trừ trách nhiệm
+  Tiện ích này được cung cấp theo “nguyên trạng” mà không có bất kỳ bảo đảm rõ ràng hay ngụ ý nào. Chủ sở hữu quyền không chịu trách nhiệm đối với bất kỳ tổn thất nào phát sinh từ việc sử dụng hoặc không thể sử dụng tiện ích này (bao gồm bản lưu trò chuyện, dữ liệu sổ cái, chi phí API). Vui lòng tự sao lưu dữ liệu; tiện ích có cung cấp chức năng Cài đặt → Xuất / Nhập bản lưu.
 
-五、终止
-  违反本许可的，授予你的权利自动终止，你应删除持有的本插件全部副本。
+V. Chấm dứt
+  Nếu bạn vi phạm giấy phép này, các quyền được cấp cho bạn sẽ tự động chấm dứt và bạn phải xóa toàn bộ các bản sao của tiện ích này đang nắm giữ.
 
-六、说明（不改变以上条款）
-  许可证只能在法律上约束使用方式，**无法在技术上阻止抓取或复制**。公开仓库里的任何内容都可能被他人违规获取；
-  发现违规使用时，权利人可依据本许可和著作权法主张权利（例如向托管平台发出删除通知）。
-  如需上述“不可以”范围内的授权（转载、整合包、商用等），请在本仓库 issue 中联系权利人。
+VI. Giải thích thêm (Không làm thay đổi các điều khoản trên)
+  Giấy phép chỉ có thể ràng buộc phương thức sử dụng về mặt pháp lý, **không thể ngăn chặn việc thu thập hoặc sao chép về mặt kỹ thuật**. Bất kỳ nội dung nào trong kho lưu trữ công khai đều có khả năng bị người khác lấy trái phép; khi phát hiện hành vi sử dụng trái phép, chủ sở hữu quyền có thể căn cứ vào giấy phép này và luật bản quyền để đòi quyền lợi (ví dụ gửi thông báo yêu cầu gỡ bỏ tới nền tảng lưu trữ). Nếu cần cấp phép cho các phạm vi thuộc mục “không được phép” nêu trên (đăng lại, gói tổng hợp, thương mại, v.v.), vui lòng liên hệ với chủ sở hữu quyền trong phần issue của kho lưu trữ này.
 
-—— English summary (the Chinese text above prevails) ——
+—— English summary (the text above prevails) ——
 Source-available, all rights reserved. You may install, use and privately modify this extension for personal,
 non-commercial use. Without written permission you may NOT redistribute it (modified or not), use it commercially,
 or use any part of this repository to train, fine-tune, distill or evaluate machine-learning / AI models, include it in

@@ -28,7 +28,7 @@ test('1.1 named/current scope requires identity, excludes other worlds', () => {
     assert.throws(() => planSlots(['凡品'], { scope:'current' }, ''));
     const [s] = planSlots(['凡品'], { scope:'named',world:'三体' }, '', () => .5);
     const row = { slot:0, name:'测试', effect:'可用来进行远距离探测', world:'另一个世界', grade:s.grade, category:s.category };
-    assert.throws(() => validateProduct(row,s,preferences({})), /未指定/);
+    assert.throws(() => validateProduct(row,s,preferences({})), /không được chỉ định/);
 });
 test('1.1 non-forbidden items ignore old shop level; forbidden has explicit acquisition', () => {
     assert.ok(shopGrades({系统点:0,商城等级:1},()=>.5).includes('仙品'));
@@ -40,32 +40,32 @@ const good = {slot:0,name:'航道镜',effect:'实时标注星际跃迁安全路�
 test('1.1 validates exact slot, grade, categories and excludes',()=>{
     assert.equal(validateProduct(good,slot,preferences()).price,slot.price);
     for(const bad of [{grade:'凡品'},{slot:3},{category:'其他'},{theme:'修仙玄幻'}]) assert.throws(()=>validateProduct({...good,...bad},slot,preferences()));
-    assert.throws(()=>validateProduct(good,slot,preferences({exclude:'航道镜'})),/排除/);
-    assert.throws(()=>validateProduct(good,slot,preferences({original:false})),/原作/);
+    assert.throws(()=>validateProduct(good,slot,preferences({exclude:'航道镜'})),/bị loại trừ/);
+    assert.throws(()=>validateProduct(good,slot,preferences({original:false})),/nguyên tác/);
 });
 test('1.1 repeat names normalized; reskins and imposed restrictions rejected',()=>{
-    assert.throws(()=>validateProduct(good,slot,preferences(),[{name:'航 道 镜',effect:'别的作用'}]),/重复/);
-    assert.throws(()=>validateProduct({...good,name:'宇宙雷达'},slot,preferences(),[good]),/换皮/);
-    assert.throws(()=>validateProduct({...good,effect:good.effect+'但每日限一次'},slot,preferences()),/使用限制/);
+    assert.throws(()=>validateProduct(good,slot,preferences(),[{name:'航 道 镜',effect:'别的作用'}]),/Trùng lặp/);
+    assert.throws(()=>validateProduct({...good,name:'宇宙雷达'},slot,preferences(),[good]),/đổi vỏ/);
+    assert.throws(()=>validateProduct({...good,effect:good.effect+'但每日限一次'},slot,preferences()),/hạn chế sử dụng/);
     assert.equal(similarity('甲乙丙丁戊','甲乙丙丁戊'),1);
 });
 const sources=[{floor:3,sig:'abc',text:'你收下了青铜钥匙一枚，可开启古城大门。'}];
 const sourceRow={floor:3,name:'青铜钥匙',evidence:'你收下了青铜钥匙一枚',owned:true,kind:'item',quantity:1,originalGrade:'天阶',grade:'待鉴定',effect:'开启古城大门'};
 test('1.1 collect requires source evidence, ownership, bounded integer quantity',()=>{
     for(const bad of [{evidence:'敌人拿着金剑'},{owned:false},{quantity:0},{quantity:1.5},{floor:1}]) assert.throws(()=>collectCandidates([{...sourceRow,...bad}],sources,'古城'));
-    assert.throws(()=>collectCandidates([sourceRow,sourceRow],sources,'古城'),/重复/);
+    assert.throws(()=>collectCandidates([sourceRow,sourceRow],sources,'古城'),/trùng lặp/);
 });
 test('1.1 local world rank is preserved; explicit mapping wins; unknown is pending not mortal',()=>{
     const [p]=collectCandidates([sourceRow],sources,'古城',{'天阶':'神品'});assert.equal(p.originalGrade,'天阶');assert.equal(p.grade,'神品');
     const [q]=collectCandidates([sourceRow],sources,'古城');const z={系统点:99};putStory(z,q);assert.equal(z.剧情收纳库[0].status,'pending');assert.equal(z.背包,undefined);assert.equal(z.系统点,99);
 });
 test('1.1 same source cannot duplicate; existing same-name defaults to refusal',()=>{
-    const [r]=collectCandidates([{...sourceRow,grade:'灵品'}],sources,'古城');const z={背包:[]};putStory(z,r);assert.throws(()=>putStory(z,r),/已经收纳/);
-    assert.throws(()=>putStory(z,{...r,receipt:'other'}),/已在/);putStory(z,{...r,receipt:'other'},{additional:true});assert.equal(z.背包.length,2);assert.equal(z.背包[0].价格,1);
+    const [r]=collectCandidates([{...sourceRow,grade:'灵品'}],sources,'古城');const z={背包:[]};putStory(z,r);assert.throws(()=>putStory(z,r),/đã được thu thập rồi/);
+    assert.throws(()=>putStory(z,{...r,receipt:'other'}),/đã có trong/);putStory(z,{...r,receipt:'other'},{additional:true});assert.equal(z.背包.length,2);assert.equal(z.背包[0].价格,1);
 });
 test('1.1 pending identification does not duplicate and imported skill survives original snapshots',()=>{
     const [r]=collectCandidates([{...sourceRow,kind:'skill',grade:'仙品'}],sources,'古城');const z={功法库:[],面板账本:{3:{snap:{功法库:[]}}}};putStory(z,r);assert.equal(z.功法库[0].上限,2000);assert.equal(z.面板账本[3].snap.功法库.length,1);
-    assert.throws(()=>bookStory(z,r,true),/同名功法/);
+    assert.throws(()=>bookStory(z,r,true),/Công pháp trùng tên/);
 });
 test('1.1 migration preserves legacy target, creates stable identities, repeat migration idempotent',()=>{
     const z={当前世界:'甲',恋爱目标:{姓名:'小雨',好感度:40}};const m=migrateLedger(z,1);assert.equal(m.to,2);assert.equal(m.ledger.羁绊库.length,1);assert.equal(z.羁绊库,undefined);
@@ -83,7 +83,7 @@ test('1.1 manual person edits not overwritten by stale active mirror on view',()
     const z={当前世界:'甲',恋爱目标:{姓名:'小雨',好感度:40}};migrateBonds(z);keepPerson(z,{姓名:'小雨',世界:'甲',好感度:70});assert.equal(listBonds(z)[0].好感度,70);
 });
 test('1.1 record summaries exclude refresh, include only selected, merge recycle',()=>{
-    const s=summarizeRecords([{kind:'refresh',selected:true,text:'商城刷新'},{kind:'items',selected:false,text:'未选择的购买'},{kind:'recycle',selected:true,text:'回收：A'},{kind:'recycle',selected:true,text:'分解：B'}]);assert.doesNotMatch(s,/商城刷新|未选择/);assert.match(s,/2 条/);
+    const s=summarizeRecords([{kind:'refresh',selected:true,text:'商城刷新'},{kind:'items',selected:false,text:'未选择的购买'},{kind:'recycle',selected:true,text:'回收：A'},{kind:'recycle',selected:true,text:'分解：B'}]);assert.doesNotMatch(s,/商城刷新|未选择/);assert.match(s,/2 mục/);
 });
 test('1.1 historical input cleanup only recognizes exact system wrapper',()=>{
     const story='正文中有人说：商城刷新';assert.equal(compactLegacyOperation(story),story);
@@ -94,24 +94,24 @@ test('1.1 touch window geometry allows real resizing and remains visible',()=>{
     assert.equal(launcherPosition({edge:'left',tucked:true},v).x,-46);assert.equal(launcherPosition({edge:'right',tucked:true},v).x,372);
 });
 test('1.1 output parser does not call every empty response reasoning',()=>{
-    assert.throws(()=>completionText({choices:[{finish_reason:'length',message:{content:''}}]},300),/未提供足够信息/);
-    assert.throws(()=>completionText({zt_reasoning_present:true,choices:[{finish_reason:'length',message:{content:''}}]},300),/思考内容/);
+    assert.throws(()=>completionText({choices:[{finish_reason:'length',message:{content:''}}]},300),/không cung cấp đủ thông tin/);
+    assert.throws(()=>completionText({zt_reasoning_present:true,choices:[{finish_reason:'length',message:{content:''}}]},300),/nội dung suy nghĩ/i);
     assert.equal(completionText({choices:[{message:{content:[{text:'成功'}]}}]},4096),'成功');
 });
 test('1.1 memory aliases accepted but original evidence and schema gates remain',()=>{
     const obj={upserts:[{key:'test',kind:'event',status:'已完成',text:'取得钥匙',evidence:'你收下了青铜钥匙'}]};const core=memoryCore(original.ZhuTianMemoryCore);assert.equal(core.validate(JSON.stringify(obj),sources[0].text)[0].status,'resolved');
-    obj.upserts[0].kind='unknown';assert.throws(()=>core.validate(JSON.stringify(obj),sources[0].text),/旧记忆保留/);
-    obj.upserts[0].kind='event';obj.upserts[0].evidence='虚构的事件';assert.throws(()=>core.validate(JSON.stringify(obj),sources[0].text),/证据/);
+    obj.upserts[0].kind='unknown';assert.throws(()=>core.validate(JSON.stringify(obj),sources[0].text),/Ký ức cũ vẫn được giữ nguyên/);
+    obj.upserts[0].kind='event';obj.upserts[0].evidence='虚构的事件';assert.throws(()=>core.validate(JSON.stringify(obj),sources[0].text),/Bằng chứng/i);
 });
 test('1.1 worldbook native update preserves custom entries, flags and top-level metadata',()=>{
     const originalRules=original.ZhuTianBuiltinRules, next=latestRules(originalRules).rules;
-    const shop=next.find(r=>r.comment==='09｜商城｜系统商城');assert.match(shop.content,/禁止为了平衡/);assert.doesNotMatch(shop.content,/灵品及以上必须至少带一条限制/);
+    const shop=next.find(r=>r.comment==='09｜Thương thành｜Thương Thành Hệ Thống');assert.match(shop.content,/Cấm vì lý do cân bằng/);assert.doesNotMatch(shop.content,/Linh phẩm trở lên bắt buộc phải kèm ít nhất một hạn chế/);
     const old={name:'custom',entries:{0:{comment:shop.comment,content:'my edit',disable:true},1:{comment:'我的条目',content:'不要删除',disable:false}}};const m=mergeWorldbook(old,next);assert.equal(m.book.name,'custom');assert.ok(Object.values(m.book.entries).some(e=>e.comment==='我的条目'));assert.equal(Object.values(m.book.entries).find(e=>e.comment===shop.comment).disable,true);
 });
 test('1.1 late model results reject changed chat before invoking a writer',async()=>{
     const chat=[{mes:'原文'}];let writes=0;
     const app={adapter:{context:()=>({chat}),currentIdentity:()=> 'a',ledger:()=>({}),isGenerating:()=>false},bridge:{updateVariablesWith:()=>writes++}};
-    const token=capture(app);chat[0].mes='改过';assert.throws(()=>assertCapture(app,token),/已变化/);await assert.rejects(()=>checkedCommit(app,token,()=>{}));assert.equal(writes,0);
+    const token=capture(app);chat[0].mes='改过';assert.throws(()=>assertCapture(app,token),/đã thay đổi/);await assert.rejects(()=>checkedCommit(app,token,()=>{}));assert.equal(writes,0);
 });
 
 test('1.1 inherited legacy ID/stats do not overwrite another person on bind',()=>{
@@ -132,8 +132,8 @@ test('1.1 model variable directives cannot erase native receipts/catalog',async(
 });
 test('1.1 guarded purchase also enforces forbidden acquisition (no alternate-path bypass)',async()=>{
     const {planOperation}=await import('../src/ledger-plan.js');const v={诸天系统:{系统点:2e10,背包:[],专属资源:{因果筹码:2},商城库存:[{名称:'测试禁忌',品阶:'禁忌',价格:1e10,特殊代价:{resource:'因果筹码',amount:1}}]}};
-    const p=await planOperation(v,[],'buy',0);assert.equal(p.balance,1e10);assert.equal(p.variables.诸天系统.专属资源.因果筹码,1);assert.match(p.detail,/一次性支付/);
-    delete v.诸天系统.商城库存[0].特殊代价;await assert.rejects(()=>planOperation(v,[],'buy',0),/获得代价/);
+    const p=await planOperation(v,[],'buy',0);assert.equal(p.balance,1e10);assert.equal(p.variables.诸天系统.专属资源.因果筹码,1);assert.match(p.detail,/một lần duy nhất/);
+    delete v.诸天系统.商城库存[0].特殊代价;await assert.rejects(()=>planOperation(v,[],'buy',0),/cái giá nhận được/);
 });
 
  test('1.1 input shim removes only module hint wrapper, leaves operation/body intact',async()=>{

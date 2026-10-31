@@ -59,11 +59,11 @@
     "ZT_SNAP_KEYS",
     "TIER_PRICE"
   ],
-  "sourceSha256": "8c4b64c100f15cb1c8765a842e3675ff97ca2294f528149c25f90e4e1146f8c8",
-  "helperSha256": "6c844bd92ec6d4aa4d6210ed6b76054ea370c23bd0eb8fc02967d7205e978cd0",
+  "sourceSha256": "c170c8cfd230aacb72f192e835047dd4ad1b23d2fcddca372381782d386c4688",
+  "helperSha256": "3a25621dfecc479dfd4342d8553fed227aacf12cddcc43fd60166bad4a0db5b3",
   "overlay": "Protect 任务实物凭据 from model variable directives; extract grant callback into synchronous clone-only mutation. Caller performs source and persistence guards.",
   "outputs": {
-    "ledger-kernel.js": "f8a6a59d5a2375c6812417109fb132c82885b55d622e64902b8563eda0a84ca2",
-    "reward-kernel.js": "5c6077691dd8505eb30d02e7a08afd15cfdbee979536561682f1e66da7d3c62f"
+    "ledger-kernel.js": "eaf576145dea03b4f528054611e38e03b81874e42ab9eaf5ed4e0341de7a60f0",
+    "reward-kernel.js": "8a7e4640069128ec73076eb0a8b5da1b605eb75f2fe19d7737a91fb303256e75"
   }
 }

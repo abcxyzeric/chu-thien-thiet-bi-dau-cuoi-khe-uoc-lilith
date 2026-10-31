@@ -1,145 +1,113 @@
-# 0.8.4 变更（API 修复 · 私聊 · 配色 · 强力模块 · 美化兼容）
+# Thay đổi 0.8.4 (Sửa lỗi API · Trò chuyện riêng · Phối màu · Mô-đun mạnh · Tương thích làm đẹp)
 
-0.8.4 处理用户在 0.8.3 之后反馈的六个问题。验收见 [ACCEPTANCE-0.8.4](ACCEPTANCE-0.8.4.md)。
+Bản 0.8.4 xử lý sáu vấn đề mà người dùng phản hồi sau bản 0.8.3. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.8.4](ACCEPTANCE-0.8.4.md).
 
-- 账本字段没有变化。
-- 世界书条目内容没有变化，**不需要重新导入**。
-- 唯一的世界书相关变化：**新安装**的世界书默认关闭「神豪挥霍」「诸天打手」两条。已有的世界书不会被自动修改，见第五节。
+- Các trường sổ cái không thay đổi.
+- Nội dung mục từ Sách Thế Giới không thay đổi, **không cần nhập lại**.
+- Thay đổi duy nhất liên quan tới Sách Thế Giới: Sách Thế Giới **cài đặt mới** sẽ mặc định tắt hai mục 「Thần Hào Tiêu Xài」 và 「Đả Thủ Chư Thiên」. Sách Thế Giới đã có sẵn sẽ không bị tự động sửa đổi, xem tại Mục V.
 
-## 一、填好 API 后拉模型仍报「截断」、聊天 502、私聊容易超时（Bug，已修复）
+## I. Sau khi điền xong API, lấy mô hình vẫn báo 「cắt cụt」, trò chuyện báo lỗi 502, trò chuyện riêng dễ bị quá hạn (Lỗi, đã sửa)
 
-### 症状
+### Triệu chứng
 
-1. 填好接口地址和密钥后，点「拉取模型」浏览器报截断 / Failed to fetch；
-2. 聊天时返回 502；
-3. 勾选「附带当前剧情」再和莉莉丝私聊，特别容易超时。
+1. Sau khi điền xong địa chỉ cổng kết nối và khóa bảo mật, bấm 「Lấy mô hình」 thì trình duyệt báo cắt cụt / Failed to fetch;
+2. Khi trò chuyện trả về lỗi 502;
+3. Tích chọn 「Đính kèm cốt truyện hiện tại」 rồi trò chuyện riêng với Lilith rất dễ bị hết thời gian chờ (timeout).
 
-### 原因
+### Nguyên nhân
 
-1. **请求不是流式的。**
-   - 非流式请求在模型写完整段回答之前，一个字节都不会传回来。
-   - 附带剧情的私聊提示很长，模型需要很久才写完。这期间，中间的反向代理、隧道或手机热点会把「空闲」连接掐断，一般在 60–100 秒。
-   - SillyTavern 自己的转发在上游请求断开时会回 502。
-2. **原版私聊写死了 60 秒取消。** 思考模型或长上下文经常超过这个时间。
-3. **失败时只有一个状态码。** 拉模型时，浏览器直连被服务商拦截（CORS）后报的是网络错误，看不出原因。
+1. **Yêu cầu không phải dạng phân luồng (streaming).**
+   - Yêu cầu không phân luồng sẽ không truyền về bất kỳ byte nào cho tới khi mô hình viết xong toàn bộ câu trả lời.
+   - Lời nhắc trò chuyện riêng có đính kèm cốt truyện rất dài, mô hình cần nhiều thời gian mới viết xong. Trong khoảng thời gian đó, reverse proxy ở giữa, đường hầm (tunnel) hoặc điểm phát sóng di động sẽ ngắt kết nối bị coi là 「nhàn rỗi」, thường ở mốc 60–100 giây.
+   - Bộ chuyển tiếp của chính SillyTavern khi yêu cầu thượng nguồn bị ngắt sẽ trả về lỗi 502.
+2. **Trò chuyện riêng nguyên bản gán cứng mức hủy sau 60 giây.** Các mô hình suy luận (thinking models) hoặc ngữ cảnh dài thường xuyên vượt quá thời gian này.
+3. **Khi thất bại chỉ có một mã trạng thái.** Khi lấy mô hình, kết nối trực tiếp từ trình duyệt bị nhà cung cấp chặn (CORS) chỉ báo lỗi mạng chung chung, không nhìn ra nguyên nhân.
 
-### 修复
+### Cách sửa
 
-- **所有对话请求一律流式传输**，包括状态栏 AI 功能和莉莉丝的私聊 / 记忆 / 工作台，浏览器直连和经酒馆服务器转发两条路都是。
-  - 流式期间数据持续传回，代理不会把连接当成空闲而掐掉。
-  - 回复在插件里拼回成普通 JSON，原版莉莉丝代码不用改。
-  - 极少数不支持流式的服务商：自动改回非流式重试一次。
-  - 代码见 `src/api-stream.js`、`src/assistant-host.js`、`src/th-bridge.js`。
-- **超时可设置**：终端「设置」页 →「独立 API 超时（私聊 / 记忆 / 工作台）」。
-  - 可选 60（原版）、120、**180（默认）**、300、600 秒；思考模型建议 300 或 600。
-  - 原版的「超过60秒」提示会跟着显示实际秒数。
-  - 只改原版写死的 60 秒，其他计时器不受影响。
-- **拉取模型**：浏览器被拦截时自动经酒馆服务器转发（0.8.1 已有）。
-  - 转发也失败时，现在返回可读的原因（「经酒馆服务器转发也没拿到模型列表：请检查地址和 Key」，或 401 / 404 / 429 等状态的中文说明），并弹出提示，而不是浏览器的网络错误。
-  - 手机上 datalist 下拉不可靠，拉取后会额外显示一个普通下拉框。
+- **Toàn bộ yêu cầu hội thoại nhất loạt truyền dưới dạng luồng (stream)**, bao gồm cả các tính năng AI của thanh trạng thái và Trò chuyện riêng / Ký ức / Bàn làm việc của Lilith, trên cả hai đường kết nối trực tiếp từ trình duyệt và chuyển tiếp qua máy chủ SillyTavern.
+  - Trong quá trình truyền luồng, dữ liệu liên tục gửi về nên proxy không coi kết nối là nhàn rỗi mà ngắt ngang.
+  - Phản hồi được ghép lại thành JSON thông thường ngay bên trong plugin, mã nguồn Lilith nguyên bản không cần sửa đổi.
+  - Với số ít nhà cung cấp không hỗ trợ phân luồng: tự động chuyển về không phân luồng để thử lại một lần.
+  - Mã nguồn xem tại `src/api-stream.js`, `src/assistant-host.js`, `src/th-bridge.js`.
+- **Có thể cài đặt thời gian chờ**: Trang 「Cài đặt」 của thiết bị đầu cuối → 「Thời gian chờ API độc lập (Trò chuyện riêng / Ký ức / Bàn làm việc)」.
+  - Có thể chọn 60 (nguyên bản), 120, **180 (mặc định)**, 300, 600 giây; với mô hình suy luận khuyên dùng 300 hoặc 600.
+  - Thông báo 「quá 60 giây」 nguyên bản sẽ hiển thị theo số giây thực tế đã chọn.
+- **Lấy mô hình**: Khi trình duyệt bị chặn sẽ tự động chuyển tiếp qua máy chủ SillyTavern (đã có từ bản 0.8.1).
+  - Khi chuyển tiếp cũng thất bại, hiện tại sẽ trả về nguyên nhân dễ đọc và bật thông báo thay vì lỗi mạng trình duyệt.
+  - Trên điện thoại, danh sách gợi ý `datalist` hoạt động không ổn định, nên sau khi lấy mô hình xong sẽ hiển thị thêm một hộp chọn thả xuống thông thường.
 
-## 二、手机上打开终端后点「私聊」，有时整个终端被关掉（Bug，已修复）
+## II. Trên điện thoại sau khi mở thiết bị đầu cuối, bấm 「Trò chuyện riêng」 đôi khi làm đóng luôn cả thiết bị đầu cuối (Lỗi, đã sửa)
 
-手机上，莉莉丝按钮停靠在终端标题栏左上角，标题是「莉莉丝 · 点击进入私聊」。
+Trên điện thoại, nút Lilith neo ở góc trên bên trái thanh tiêu đề của thiết bị đầu cuối với dòng chữ 「Lilith · Bấm để vào trò chuyện riêng」.
 
-**原因**：原版私聊打开时会先关闭「工作台」窗口。0.8.x 里这个窗口就是诸天终端，所以一点私聊，整个终端就被关了。在手机上，关闭时的附带动作（返回手势记录、悬浮莉莉丝归位）有时还会把刚打开的私聊面板一起带走。
+**Nguyên nhân**: Khi mở trò chuyện riêng nguyên bản, nó sẽ đóng cửa sổ 「Bàn làm việc」 trước. Trong bản 0.8.x, cửa sổ này chính là Thiết Bị Đầu Cuối Chư Thiên, nên vừa bấm vào trò chuyện riêng là cả thiết bị đầu cuối bị đóng lại.
 
-**修复**：私聊面板直接盖在终端上方打开，终端保持打开。私聊里点「返回」回到终端。私聊的请求和存档逻辑仍然用原版代码，没有改动（`src/assistant-host.js`）。
+**Cách sửa**: Bảng trò chuyện riêng mở phủ trực tiếp lên phía trên thiết bị đầu cuối, thiết bị đầu cuối vẫn giữ nguyên trạng thái mở. Trong trò chuyện riêng bấm 「Quay lại」 sẽ trở về thiết bị đầu cuối (`src/assistant-host.js`).
 
-## 三、API 设置有两处（已合并为一处）
+## III. Cài đặt API ở hai nơi (Đã hợp nhất thành một nơi)
 
-**原来的两处**：
+**Hai nơi trước đây**:
 
-1. 原版 v1.1 莉莉丝「连接」页的表单，只写莉莉丝那一份配置；
-2. 插件的「API 中心」，可以同时写状态栏和莉莉丝两份。
+1. Biểu mẫu ở trang 「Kết nối」 của Lilith v1.1 nguyên bản, chỉ ghi bản cấu hình của riêng Lilith;
+2. 「Trung tâm API」 của plugin, có thể ghi đồng thời cả hai bản của thanh trạng thái và Lilith.
 
-两处各存各的，改了一处另一处不变，容易出现「状态栏能用，私聊不能用」。
+Hai nơi lưu riêng rẽ khiến sửa một nơi thì nơi kia không đổi, dễ xảy ra tình trạng 「thanh trạng thái dùng được nhưng trò chuyện riêng không dùng được」.
 
-**现在**：
+**Hiện tại**:
 
-- 终端「连接」页显示的就是 API 中心表单（标题「连接 · API 中心」），一次保存同时写入状态栏和莉莉丝两份。
-- 原版表单隐藏，DOM 原样保留，不删除。
-- 两份配置不一致时，表单顶部提示「两处配置不一致：保存一次即可统一」。
-- 状态栏齿轮里的「API」：终端开着时跳到「连接」页；终端关着时弹出同一张表单。
-- 配置仍然保存在原版位置（全局变量 `诸天系统_API` 和脚本变量 `诸天记忆助手_v1_API`），所以旧版本和旧脚本读得到。
+- Trang 「Kết nối」 của thiết bị đầu cuối hiển thị chính biểu mẫu Trung tâm API (tiêu đề 「Kết nối · Trung tâm API」), lưu một lần sẽ ghi đồng thời vào cả hai bản của thanh trạng thái và Lilith.
+- Biểu mẫu nguyên bản được ẩn đi, giữ nguyên DOM chứ không xóa.
+- Khi hai bản cấu hình không đồng nhất, đầu biểu mẫu sẽ nhắc 「Cấu hình hai nơi không đồng nhất: lưu một lần để thống nhất」.
+- Nút 「API」 trong biểu tượng bánh răng của thanh trạng thái: khi thiết bị đầu cuối đang mở sẽ nhảy tới trang 「Kết nối」; khi thiết bị đầu cuối đang đóng sẽ bật lên cùng một biểu mẫu đó.
+- Cấu hình vẫn được lưu tại vị trí nguyên bản (biến toàn cục `诸天系统_API` và biến kịch bản `诸天记忆助手_v1_API`), nên phiên bản cũ và kịch bản cũ vẫn đọc được.
 
-## 四、配色方案（新增）
+## IV. Phương án phối màu (Mới)
 
-终端「设置」页 →「配色方案」：
+Trang 「Cài đặt」 của thiết bị đầu cuối → 「Phương án phối màu」:
 
-| 选项 | 说明 |
+| Tùy chọn | Thuyết minh |
 |---|---|
-| 跟随世界主题（默认） | 和以前一样，按当前世界自动换色 |
-| 紫夜 · 莉莉丝 | 原版紫 |
-| 墨金 · 玄墨鎏金 | 黑底金字 |
-| 青瓷 · 雨过天青 | 青灰 |
-| 绯樱 · 夜樱 | 暗粉 |
-| 霜蓝 · 星夜 | 冷蓝 |
-| 赤霞 · 绛红琥珀 | 暗红 + 琥珀 |
-| 石墨 · 低饱和灰 | 中性灰，适合长时间看 |
+| Theo chủ đề thế giới (Mặc định) | Giống như trước đây, tự động đổi màu theo thế giới hiện tại |
+| Đêm Tím · Lilith | Màu tím nguyên bản |
+| Đen Vàng · Huyền Mặc Lưu Kim | Nền đen chữ vàng kim |
+| Men Ngọc · Vũ Quá Thiên Thanh | Xanh xám men ngọc |
+| Anh Đào Đỏ · Dạ Anh | Hồng sẫm |
+| Xanh Sương · Đêm Sao | Xanh lạnh |
+| Ráng Đỏ · Đỏ Thẫm Hổ Phách | Đỏ sẫm + hổ phách |
+| Than Chì · Xám Độ Bão Hòa Thấp | Xám trung tính, thích hợp nhìn lâu |
 
-- 固定配色只换颜色，覆盖终端、原版状态栏页面（引擎页）、演出卡片。世界装饰保留（例如仙侠的云纹、赛博的扫描线）。
-- **仙侠世界的默认配色从绿色改为「墨玉金」**：墨色底、金色强调、玉青作点缀，图谱节点和演出卡片同步改色。
+- Phối màu cố định chỉ đổi màu sắc, bao phủ thiết bị đầu cuối, các trang thanh trạng thái nguyên bản (trang động cơ) và thẻ trình diễn. Họa tiết trang trí thế giới vẫn được giữ nguyên (ví dụ vân mây của Tiên hiệp, đường quét của Cyber).
+- **Phối màu mặc định của thế giới Tiên hiệp được đổi từ xanh lá sang 「Vàng Mặc Ngọc」**: nền màu mực, nhấn màu vàng kim, điểm xuyết xanh ngọc, nút đồ phổ và thẻ trình diễn cũng đổi màu đồng bộ.
 
-## 五、强力外挂可以开关（新增）
+## V. Có thể bật/tắt các ngoại quải mạnh (Mới)
 
-位置：终端 → 外挂 → 外挂管理 →「强力模块」卡片。
+Vị trí: Thiết bị đầu cuối → Ngoại quải → Quản lý ngoại quải → thẻ 「Mô-đun mạnh」.
 
-| 模块 | 世界书条目 | 新安装默认 | 说明 |
+| Mô-đun | Mục từ Sách Thế Giới | Mặc định khi cài mới | Thuyết minh |
 |---|---|---|---|
-| 神豪挥霍 | `08｜核心｜神豪挥霍` | **关** | 常驻注入：无限财富、消费返利，会让系统点 / 物价失去意义 |
-| 诸天打手 | `13｜外挂｜诸天打手` | **关** | 常驻注入：随时召唤强力打手代打 |
-| 现实状态改写 | `20｜成长｜现实状态改写` | 开 | 关键词触发 |
-| 言灵改字 | `21｜成长｜言灵改字` | 开 | 关键词触发 |
-| 系统点万用 | `10｜商城｜系统点万用` | 开 | 关键词触发：兜底许愿（溢价） |
-| 本源复刻·图鉴复刻 | `19｜成长｜本源复刻·图鉴复刻` | 开 | 关键词触发 |
+| Thần Hào Tiêu Xài | `08｜Cốt lõi｜Thần Hào Tiêu Xài` | **Tắt** | Tiêm thường trực: tài phú vô hạn, hoàn trả tiêu dùng, dễ làm Điểm Hệ Thống / vật giá mất đi ý nghĩa |
+| Đả Thủ Chư Thiên | `13｜Phụ trợ｜Tay Đấm Chư Thiên` | **Tắt** | Tiêm thường trực: triệu hồi tay đấm mạnh mẽ đánh thay bất cứ lúc nào |
+| Cải Biên Trạng Thái Thực Tại | `20｜Trưởng thành｜Cải Biên Trạng Thái Thực Tại` | Bật | Kích hoạt theo từ khóa |
+| Ngôn Linh Cải Tự | `21｜Trưởng thành｜Ngôn Linh Cải Tự` | Bật | Kích hoạt theo từ khóa |
+| Điểm Hệ Thống Vạn Dụng | `10｜Thương thành｜Điểm Hệ Thống Vạn Dụng` | Bật | Kích hoạt theo từ khóa: ước nguyện dự phòng (có phụ phí) |
+| Sao Chép Bản Nguyên · Sao Chép Đồ Giám | `19｜Trưởng thành｜Sao Chép Bản Nguyên · Sao Chép Đồ Giám` | Bật | Kích hoạt theo từ khóa |
 
-- 开关直接改世界书条目的启用状态，**对所有聊天生效**，并立即保存世界书。
-- 关掉的模块：
-  - 不再发给 AI；
-  - 终端里对应的入口隐藏（例如基础概览上的神豪卡片）；
-  - 外挂提示里额外告诉 AI「宿主当前关闭了：……，剧情中不得出现或使用这些外挂」。
-- **已有的世界书不会被自动修改**（v1.1 和 ≤0.8.3 装的世界书里这两条都是开的）。外挂管理会提示「当前开启，会明显破坏数值平衡，建议关闭」，并给一个「一键平衡」按钮，点了才改。
-- 「原版外挂（本聊天）」开关和以前一样，只对当前聊天生效。
+- Công tắc sửa trực tiếp trạng thái bật của mục từ Sách Thế Giới, **có hiệu lực với mọi cuộc trò chuyện**, và lưu Sách Thế Giới ngay lập tức.
+- Mô-đun đã tắt:
+  - Không còn gửi cho AI nữa;
+  - Lối vào tương ứng trong thiết bị đầu cuối được ẩn đi (ví dụ thẻ Thần Hào trên trang Tổng quan cơ bản);
+  - Trong lời nhắc ngoại quải báo thêm cho AI biết: 「Ký chủ hiện đã tắt: ……, không được xuất hiện hoặc sử dụng các ngoại quải này trong cốt truyện」.
+- **Sách Thế Giới đã có sẵn sẽ không bị tự động sửa đổi** (trong Sách Thế Giới cài từ bản v1.1 và ≤0.8.3 thì hai mục này đều đang bật). Trang Quản lý ngoại quải sẽ hiện gợi ý và cung cấp nút 「Cân bằng 1 chạm」, chỉ khi người dùng bấm vào mới sửa đổi.
 
-## 六、部分酒馆美化显示不正常（已兼容）
+## VI. Một số tiện ích làm đẹp giao diện SillyTavern hiển thị bất thường (Đã tương thích)
 
-**原因**：插件为了显示莉莉丝台词卡和诸天数据块，会按 SillyTavern 的原始渲染重建这一层楼的内容。别的扩展在 SillyTavern 渲染之后对楼层做的改动会被冲掉，或者出现两份（原始代码块 + 渲染好的卡片）。0.8.2 只保护了酒馆助手的 `div.TH-render`。
+**Nguyên nhân**: Để hiển thị thẻ lời thoại Lilith và khối dữ liệu Chư Thiên, plugin dựng lại nội dung tầng dựa theo kết xuất gốc của SillyTavern, khiến các thay đổi do tiện ích mở rộng khác thực hiện trên tầng sau khi SillyTavern kết xuất bị xóa mất hoặc bị nhân đôi. Bản 0.8.2 mới chỉ bảo vệ `div.TH-render` của Tavern Helper.
 
-**现在**（`src/statusbar-host.js` 的 `swapContent`）：插件拿 SillyTavern 自己对同一条消息的渲染作对照，逐个节点比较：
+**Hiện tại** (`swapContent` trong `src/statusbar-host.js`): Plugin lấy bản kết xuất của chính SillyTavern cho cùng tin nhắn đó làm đối chiếu và so sánh từng nút DOM:
 
-| 情况 | 例子 | 处理 |
+| Trường hợp | Ví dụ | Xử lý |
 |---|---|---|
-| 别的扩展新加 / 替换的节点 | 把代码块换成 iframe 卡片的渲染器（小白X、前端卡一类）；酒馆助手 | 原地保留：同一个节点，iframe 不重新加载；被它替换掉的原始代码块不再重复显示 |
-| 原地修改的节点（文字不变、标记变了） | JS 美化脚本给段落包 span、加类名 / 样式、把 `<p>` 换成 `<div>` | 保留修改后的版本 |
-| SillyTavern 正则美化（仅显示） | 「」引号上色之类 | 插件重建时用的就是 SillyTavern 的 `messageFormatting`，正则照常生效 |
-
-- 顺序与原文一致。
-- 莉莉丝台词卡、诸天数据块照常显示。
-
-**仍然不覆盖**：在插件重建之后才异步改写、并且依赖自身内部状态的脚本（极少见）。这类美化的效果会保留，但插件下一次重建这层楼时，它不会再执行一次。
-
-## 新增设置
-
-| 名称 | 说明 |
-|---|---|
-| 扩展设置 `apiTimeout` | `60` / `120` / `180`（默认）/ `300` / `600` 秒 |
-| 扩展设置 `palette` | `auto`（默认）/ `lilith` / `inkgold` / `celadon` / `sakura` / `frost` / `crimson` / `slate` |
-| 世界书条目启用状态 | 强力模块开关直接写世界书条目的 `disable` |
-
-## 修改的文件
-
-**新增**：
-
-- `src/api-stream.js`、`src/palettes.js`
-- `tests/v084.test.js`、`tests/native_v084.py`
-- 本文档、`docs/ACCEPTANCE-0.8.4.md`
-
-**修改**：
-
-- 根目录：`index.js`、`manifest.json`、`package.json`、`package-lock.json`、`README.md`
-- `src/`：`api-center.js`、`assistant-host.js`、`th-bridge.js`、`statusbar-host.js`、`worldbook.js`、`features.js`、`hub.js`、`hub-plugins.js`、`hub-settings.js`、`settings.js`、`world.js`、`fx.js`、`contracts.js`
-- `styles/`：`hub.css`、`world.css`、`fx.css`、`atlas.css`
-- `tools/extract_original.py`（只改包装前缀），以及据此重新生成的 `vendor/original/assistant-runtime.js` 和 `vendor/original/provenance.json`。原版代码段的哈希不变。
-- `tests/`：`v080.test.js`、`v083.test.js`（版本号断言）、`native_v080.py`（仙侠颜色断言改为墨玉金数值）、`qa/mock_model.py`（新增慢速回复模式）
-- 文档：`docs/FEATURE_MATRIX.md`、`docs/evidence/guards.json`（1.19 守卫证据）
+| Nút do tiện ích mở rộng khác thêm mới / thay thế | Bộ kết xuất đổi khối mã thành thẻ iframe (Tiểu Bạch X, thẻ frontend, v.v.); Tavern Helper | Giữ nguyên tại chỗ: cùng một nút DOM, iframe không tải lại; khối mã gốc đã được nó thay thế không bị hiển thị lặp lại |
+| Nút được sửa đổi tại chỗ (văn bản không đổi, thẻ đánh dấu thay đổi) | Kịch bản JS làm đẹp bọc `span` vào đoạn văn, thêm tên lớp / kiểu dáng, đổi `<p>` thành `<div>` | Giữ nguyên phiên bản đã sửa đổi |
+| Làm đẹp bằng biểu thức chính quy của SillyTavern (chỉ hiển thị) | Tô màu dấu ngoặc kép `「」`, v.v. | Khi dựng lại, plugin sử dụng chính `messageFormatting` của SillyTavern nên biểu thức chính quy vẫn có hiệu lực bình thường |

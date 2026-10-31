@@ -34,15 +34,15 @@ test('settingsSnapshot: never script variables (API keys); lists become counts; 
         fx: { mode: 'full', outside: true }, live2d: { accepted: true, model: 'C:/secret/model.json' }, wbUnbound: { cards: ['a'] }, floatPos: { x: 1 }, deviceCheck: { text: 'x' } });
     const s = JSON.stringify(snap);
     assert.ok(!s.includes(FAKE_KEY) && !s.includes('scriptVariables') && !s.includes('secret'));
-    assert.equal(snap.takeoverLog, '[3 项]'); assert.equal(snap.hud, true); assert.deepEqual(snap.fx, { mode: 'full', outside: true });
-    assert.deepEqual(snap.live2d, { accepted: true, model: '已设置' }); assert.equal(snap.wbUnbound, true);
+    assert.equal(snap.takeoverLog, '[3 mục]'); assert.equal(snap.hud, true); assert.deepEqual(snap.fx, { mode: 'full', outside: true });
+    assert.deepEqual(snap.live2d, { accepted: true, model: 'Đã đặt' }); assert.equal(snap.wbUnbound, true);
     assert.equal('floatPos' in snap, false); assert.equal('deviceCheck' in snap, false);
 });
 test('endpointText: host + model only, never the key or the path', () => {
     assert.equal(endpointText({ url: 'https://api.example.com/v1/chat/completions', key: FAKE_KEY, model: 'm-1' }), 'api.example.com · m-1');
-    assert.equal(endpointText({ url: 'st-main://x', key: 'st-main' }), '酒馆主 API');
-    assert.equal(endpointText({}), '未设置'); assert.equal(endpointText(null), '未设置');
-    assert.equal(endpointText({ url: 'not a url' }), '地址无法解析');
+    assert.equal(endpointText({ url: 'st-main://x', key: 'st-main' }), 'API chính của quán rượu');
+    assert.equal(endpointText({}), 'Chưa đặt'); assert.equal(endpointText(null), 'Chưa đặt');
+    assert.equal(endpointText({ url: 'not a url' }), 'Không thể phân giải địa chỉ');
 });
 
 // ---------- error log ----------
@@ -76,7 +76,7 @@ test('buildReport: version, interfaces, endpoints (host only), settings, errors;
     assert.ok(r.includes('api.example.com · m-1') && r.includes('relay.example'));
     assert.ok(r.includes('第 6 层正常') && r.includes('✅ 全屏') && r.includes('[诸天] x'));
     assert.ok(!r.includes(FAKE_KEY.slice(3)) && !r.includes('pw@') && !r.includes('zzz'));
-    assert.match(r, /设备：读取失败|— 设备 —/, 'no browser in node: the device part is reported, not thrown');
+    assert.match(r, /Thiết bị：Đọc thất bại|— Thiết bị —/, 'no browser in node: the device part is reported, not thrown');
     assert.doesNotThrow(() => buildReport({}));
 });
 
@@ -91,8 +91,8 @@ test('fillsView: ±2 px of the visible area', () => {
 test('summarize: counts, one line per result, device line, redacted', () => {
     const t = summarize([{ title: '全屏', state: 'ok', text: '铺满' }, { title: '键盘', state: 'fail', text: '挡住', data: { kb: 'visual' } }, { title: '横屏', state: 'skip', text: '已跳过' }],
         { ua: 'UA ' + FAKE_KEY, inner: '390×844', visual: '390×844', dpr: 3, safe: { top: 24, right: 0, bottom: 16, left: 0 } });
-    assert.match(t, /✅ 1 · ⚠ 0 · ❌ 1 · 跳过 1/); assert.match(t, /❌ 键盘：挡住  \{"kb":"visual"\}/); assert.match(t, /⏭ 横屏/);
-    assert.match(t, /安全区 24\/0\/16\/0/); assert.ok(!t.includes(FAKE_KEY.slice(3)));
+    assert.match(t, /✅ 1 · ⚠ 0 · ❌ 1 · Bỏ qua 1/); assert.match(t, /❌ 键盘: 挡住  \{"kb":"visual"\}/); assert.match(t, /⏭ 横屏/);
+    assert.match(t, /vùng an toàn 24\/0\/16\/0/); assert.ok(!t.includes(FAKE_KEY.slice(3)));
 });
 
 // ---------- keyboard on page-resizing WebViews ----------
@@ -139,5 +139,5 @@ test('CI workflow runs check, unit tests, FILELIST check, line-ending and secret
     for (const s of ['npm ci', 'npm run check', 'npm test', 'npm run filelist:check', 'git ls-files --eol', 'git grep']) assert.ok(ci.includes(s), s);
 });
 test('capabilities list the 0.9.1 rows', () => {
-    for (const n of ['复制诊断信息', '手机真机自检']) assert.ok(CAPABILITIES.some(c => c.name === n && c.state === 'implemented'), n);
+    for (const n of ['Sao chép thông tin chẩn đoán', 'Tự kiểm tra trên điện thoại thật']) assert.ok(CAPABILITIES.some(c => c.name === n && c.state === 'implemented'), n);
 });

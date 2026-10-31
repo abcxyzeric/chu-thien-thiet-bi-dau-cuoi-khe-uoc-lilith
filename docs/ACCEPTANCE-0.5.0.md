@@ -1,87 +1,87 @@
-# 0.5.0 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.5.0
 
-## 环境
+## Môi trường
 
-与 [0.4.0](ACCEPTANCE-0.4.0.md) 相同：四个一次性的 SillyTavern 实例（官方仓库按 tag 全新安装，扩展以符号链接加载仓库工作区），Playwright Chromium 无头 + swiftshader，本地模拟模型 `tests/qa/mock_model.py`，密钥 `qa-key-not-real`。**没有调用任何真实模型，没有使用任何真实密钥，没有使用真实存档。**
+Giống với [0.4.0](ACCEPTANCE-0.4.0.md): bốn thực thể SillyTavern dùng một lần (cài đặt mới hoàn toàn theo tag từ kho lưu trữ chính thức, tiện ích mở rộng tải không gian làm việc kho lưu trữ qua liên kết tượng trưng), Playwright Chromium headless + swiftshader, mô hình mô phỏng cục bộ `tests/qa/mock_model.py`, khóa `qa-key-not-real`. **Không gọi bất kỳ mô hình thực tế nào, không sử dụng bất kỳ khóa thực tế nào, không sử dụng bản lưu thực tế.**
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.17.0 | `e3f41666c69db032e17e079fcddcf40cf47e8593` |
 | 1.18.0 | `51ad27fb86d39a3daca3adaa970375c9670c12df` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.17 | 1.18 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.17 | 1.18 | 1.19 |
 | --- | --- | --- | --- | --- |
-| `native_terminal050.py`（0.5.0 终端，58 项） | 58/58 | 58/58 | 58/58 | 58/58 |
-| `native_replace040.py`（v1.1 整体替代，兼容模式，70 项） | 70/70 | 70/70 | 70/70 | 70/70 |
-| `native_guards.py`（发送保护） | ✅ | ✅ | ✅ | ✅ |
-| `node --test tests/*.test.js`（纯逻辑，与宿主版本无关） | 54/54 | 54/54 | 54/54 | 54/54 |
+| `native_terminal050.py` (Thiết bị đầu cuối 0.5.0, 58 hạng mục) | 58/58 | 58/58 | 58/58 | 58/58 |
+| `native_replace040.py` (Thay thế toàn diện v1.1, chế độ tương thích, 70 hạng mục) | 70/70 | 70/70 | 70/70 | 70/70 |
+| `native_guards.py` (Bảo vệ gửi tin) | ✅ | ✅ | ✅ | ✅ |
+| `node --test tests/*.test.js` (Thuần logic, không phụ thuộc phiên bản máy chủ) | 54/54 | 54/54 | 54/54 | 54/54 |
 
-`native_acceptance.py`、`native_views.py`、`native_ledger.py`、`native_ledger_guards.py` 驱动的是已删除的旧终端界面，本版退役，覆盖关系见 [CHANGES-0.5.0](CHANGES-0.5.0.md#文件)。
+`native_acceptance.py`, `native_views.py`, `native_ledger.py`, `native_ledger_guards.py` điều khiển giao diện thiết bị đầu cuối cũ đã bị xóa nên ngừng sử dụng từ bản này, quan hệ bao phủ xem tại [CHANGES-0.5.0](CHANGES-0.5.0.md#文件).
 
-## `native_terminal050.py` 覆盖项
+## Các hạng mục bao phủ của `native_terminal050.py`
 
-**单窗口**
-- 莉莉丝窗口标题为「诸天终端」，页面里只有一个 `dialog`，旧终端窗口和旧入口按钮都不存在。
-- 导航顺序固定：总览 任务 羁绊 修行 · 商城 背包 · 外挂 神通 · 工作台 记忆 规则 · 连接 状态 设置。
-- 扩展设置抽屉只有「打开诸天终端」「紧急恢复旧版」两个按钮、0 个输入控件；按钮能打开终端。
+**Cửa sổ đơn**
+- Tiêu đề cửa sổ Lilith là 「Thiết Bị Đầu Cuối Chư Thiên」, trên trang chỉ có duy nhất một `dialog`, cửa sổ thiết bị đầu cuối cũ và nút lối vào cũ đều không còn tồn tại.
+- Thứ tự điều hướng cố định: Tổng quan Nhiệm vụ Gắn kết Tu hành · Thương thành Túi đồ · Ngoại quải Thần thông · Bàn làm việc Ký ức Quy tắc · Kết nối Trạng thái Cài đặt.
+- Ngăn kéo cài đặt tiện ích mở rộng chỉ có hai nút 「Mở Thiết Bị Đầu Cuối Chư Thiên」 và 「Khôi phục khẩn cấp bản cũ」, 0 điều khiển nhập liệu; nút bấm mở được thiết bị đầu cuối.
 
-**楼层**
-- 终端模式：聊天里 0 个 iframe（不再有状态栏），3 个带数据块的楼层各有一个「✧ 系统已记录 · 系统点 … · 查看 ›」小标签，楼层文字里没有原始数据块；语音框照常 3 个。
-- 点小标签打开终端总览；小标签可关闭。
-- 切到兼容模式后楼层内状态栏回来，切回后消失。
+**Tầng tin nhắn**
+- Chế độ thiết bị đầu cuối: trong cuộc trò chuyện có 0 iframe (không còn thanh trạng thái), 3 tầng có khối dữ liệu mỗi tầng đều có một nhãn nhỏ 「✧ Hệ thống đã ghi nhận · Điểm Hệ Thống … · Xem ›」, trong văn bản tầng không còn khối dữ liệu thô; khung thoại vẫn có 3 cái như bình thường.
+- Bấm vào nhãn nhỏ sẽ mở Tổng quan thiết bị đầu cuối; nhãn nhỏ có thể tắt đi.
+- Sau khi chuyển sang chế độ tương thích, thanh trạng thái trong tầng xuất hiện trở lại, chuyển về lại thì biến mất.
 
-**引擎**
-- 引擎绑定最新带数据块的楼层（5），并写入 `面板账本` 键 `5`（与旧的楼层内状态栏同一份账本）。
-- 8 个原版分页都能从终端导航到达（对应单选框选中、分页可见且有内容）；原版标题栏和分页标签被隐藏。
-- 顶栏的世界和系统点与账本一致；引擎填满内容区。
+**Động cơ**
+- Động cơ gắn kết với tầng mới nhất có khối dữ liệu (5), và ghi vào khóa `5` của `面板账本` (cùng một sổ cái với thanh trạng thái trong tầng cũ).
+- Cả 8 trang nguyên bản đều đi tới được từ thanh điều hướng thiết bị đầu cuối (nút radio tương ứng được chọn, trang hiển thị rõ và có nội dung); thanh tiêu đề nguyên bản và nhãn phân trang được ẩn đi.
+- Thế giới và Điểm Hệ Thống trên thanh đỉnh khớp với sổ cái; động cơ lấp đầy vùng nội dung.
 
-**原版操作（每项都从账本读回核对）**
-- 单抽：扣 1 万点，奖励生成器被调用 1 次；一键保留进入背包。
-- 十连：扣 10 万点，结果进入待处理奖励。
-- 一键进货：扣 500 点，商品按模型输出渲染。
-- 购买：扣点，物品入包（或进入待结算）。
-- 许愿：询价 20,000，支付后扣 20,000。
-- 物品回收：加点。
-- AI 背包整理：每件物品重新分类。
-- 无限口袋：存入后取出 ×3 写入背包。
-- 诸天打手召唤、万物熔炉、AI 评估实力档：模型各调用 1 次，结果写回。
-- 洞察之眼：扣点 → 进入购物车 → 结算写入聊天输入框；终端提示「已写入聊天输入框」；点「关闭终端去发送」后终端关闭、焦点在输入框、文字保留。
-- 聊天楼层里没有第二个引擎（不会重复扣费）。
+**Thao tác nguyên bản (mỗi hạng mục đều đọc lại từ sổ cái để đối chiếu)**
+- Rút đơn: trừ 1 vạn điểm, trình tạo phần thưởng được gọi 1 lần; giữ lại toàn bộ bằng 1 chạm đi vào túi đồ.
+- Rút 10: trừ 10 vạn điểm, kết quả đi vào phần thưởng chờ xử lý.
+- Nhập hàng 1 chạm: trừ 500 điểm, hàng hóa kết xuất theo đầu ra mô hình.
+- Mua sắm: trừ điểm, vật phẩm vào túi đồ (hoặc vào khu chờ quyết toán).
+- Ước nguyện: hỏi giá 20.000, sau khi thanh toán trừ 20.000.
+- Thu hồi vật phẩm: cộng điểm.
+- AI sắp xếp túi đồ: phân loại lại từng vật phẩm.
+- Túi Vô Hạn: sau khi cất vào thì lấy ra ×3 ghi vào túi đồ.
+- Triệu hồi Đả Thủ Chư Thiên, Lò Nung Vạn Vật, AI đánh giá bậc thực lực: mỗi tính năng gọi mô hình 1 lần, kết quả ghi ngược về.
+- Con Mắt Động Sát: trừ điểm → đi vào giỏ hàng → quyết toán ghi vào ô nhập liệu trò chuyện; thiết bị đầu cuối báo 「Đã ghi vào ô nhập trò chuyện」; sau khi bấm 「Đóng thiết bị đầu cuối để gửi」 thì thiết bị đầu cuối đóng lại, tiêu điểm nằm ở ô nhập liệu, văn bản được giữ nguyên.
+- Trong tầng trò chuyện không có động cơ thứ hai (không bị trừ phí lặp).
 
-**外挂**
-- 关闭「诸天打手」：终端里该外挂和它的跳转按钮隐藏；提示词里有“宿主当前关闭了：诸天打手 … 不得出现或使用”。
-- 自拟外挂「时停怀表」（仙品、每日 2 次、每次 5,000 点）：保存到本机库；提示词里出现“宿主已装载的自拟外挂 … 时停怀表”；发动扣 5,000 并读回，行动写入输入框；第三次发动被每日次数拦下（总共只扣 10,000）。
+**Ngoại quải**
+- Tắt 「Đả Thủ Chư Thiên」: ngoại quải đó và nút chuyển nhanh của nó trong thiết bị đầu cuối ẩn đi; trong lời nhắc có câu “Ký chủ hiện đã tắt: Đả Thủ Chư Thiên … không được xuất hiện hoặc sử dụng”.
+- Ngoại quải tự tạo 「Đồng Hồ Quả Quýt Ngưng Đọng Thời Gian」 (Tiên phẩm, mỗi ngày 2 lần, mỗi lần 5.000 điểm): lưu vào kho trên máy; trong lời nhắc xuất hiện “Ngoại quải tự tạo Ký chủ đã trang bị … Đồng Hồ Quả Quýt Ngưng Đọng Thời Gian”; phát động trừ 5.000 điểm và đọc lại xác nhận, văn bản hành động đi vào ô nhập liệu; phát động lần thứ ba bị giới hạn số lần mỗi ngày chặn lại (tổng cộng chỉ trừ 10.000).
 
-**关闭**
-- ✕ 关闭；再打开回到上次的背包页。
-- Esc 关闭。
-- 点外部：设为“总是”时关闭，设为“从不”时不关闭。
-- 浏览器后退（手机返回手势）关闭终端，页面仍在酒馆里。
-- 以上过程中聊天滚动位置不变。
-- Alt+X 关闭。
+**Đóng cửa sổ**
+- ✕ đóng lại; mở lại quay về trang Túi đồ lần trước.
+- Esc đóng lại.
+- Bấm ra ngoài: khi đặt là “Luôn luôn” sẽ đóng lại, khi đặt là “Không bao giờ” sẽ không đóng.
+- Nút quay lại của trình duyệt (cử chỉ vuốt quay lại trên điện thoại) đóng thiết bị đầu cuối, trang vẫn ở trong SillyTavern.
+- Trong suốt các quá trình trên, vị trí cuộn của cuộc trò chuyện không đổi.
+- Alt+X đóng lại.
 
-**设置页**
-- 包含原抽屉的全部开关（楼层模式、小标签、精简显示、显示深度、语音框、HUD、快捷键、点外部关闭、返回手势、提示词过滤、保留深度、变量宏、世界书自动、触摸、震动、立绘模式）和全部工具（世界书、初始化、迁移/回滚、API 中心、莉莉丝连接页、Live2D、诊断、接管、恢复）。
-- 关掉语音框开关后，设置值为 false，楼层里语音框消失。
-- 从设置页打开兼容诊断弹窗；此时按 Esc 只关弹窗，不关终端。
+**Trang cài đặt**
+- Bao gồm toàn bộ công tắc của ngăn kéo cũ (chế độ tầng, nhãn nhỏ, hiển thị rút gọn, độ sâu hiển thị, khung thoại, HUD, phím tắt, bấm ra ngoài để đóng, cử chỉ quay lại, lọc lời nhắc, độ sâu giữ lại, macro biến số, tự động Sách Thế Giới, chạm tương tác, rung, chế độ tranh đứng) và toàn bộ công cụ (Sách Thế Giới, khởi tạo, di chuyển/quay lui, Trung tâm API, trang kết nối Lilith, Live2D, chẩn đoán, tiếp quản, khôi phục).
+- Sau khi tắt công tắc khung thoại, giá trị cài đặt là false, khung thoại trong tầng biến mất.
+- Mở hộp thoại chẩn đoán tương thích từ trang cài đặt; lúc này nhấn Esc chỉ đóng hộp thoại, không đóng thiết bị đầu cuối.
 
-**手机（390×800）**
-- 导航是一条横向滚动条，顶栏在下方，引擎高度超过 450px，系统页不显示立绘。
-- 工作台页显示莉莉丝立绘。
-- 返回手势关闭终端；没有页面错误。
+**Điện thoại (390×800)**
+- Thanh điều hướng là một thanh cuộn ngang, thanh đỉnh nằm bên dưới, chiều cao động cơ vượt quá 450px, các trang hệ thống không hiển thị tranh đứng.
+- Trang Bàn làm việc hiển thị tranh đứng Lilith.
+- Cử chỉ quay lại đóng thiết bị đầu cuối; không có lỗi trang.
 
-## 截图
+## Ảnh chụp màn hình
 
-`docs/evidence/t050-terminal-shop.png`（桌面商城页）、`t050-mobile-shop.png`、`t050-mobile-work.png`、`t050-custom-plugin.png`。
+`docs/evidence/t050-terminal-shop.png` (trang Thương thành trên máy tính), `t050-mobile-shop.png`, `t050-mobile-work.png`, `t050-custom-plugin.png`.
 
-## 已知边界
+## Ranh giới đã biết
 
-- **真实模型**：仍未验证，所有 AI 链路只用模拟模型跑过。
-- **未逐项点击**：分身派遣、随身洞天、图鉴复刻、状态改写、言灵改字、自定义次数抽卡、闭关（需要先有功法）。
-- **自拟外挂导入文件对话框**：浏览器里没有点过；导入走的 `normalizePlugin` 有纯逻辑测试。
-- **旧版 0.4.0 楼层凭据标签**：旧存档里 0.2–0.4 写入的系统凭据消息按普通系统消息显示，没有再做装饰。
-- **触觉反馈**：无头浏览器里验证不了。
+- **Mô hình thực tế**: Vẫn chưa xác minh, toàn bộ chuỗi AI mới chỉ chạy qua mô hình mô phỏng.
+- **Chưa bấm từng mục**: Phái Cử Phân Thân, Động Thiên Tùy Thân, Sao Chép Đồ Giám, Viết Lại Trạng Thái, Ngôn Linh Đổi Chữ, rút thẻ số lần tùy chỉnh, bế quan (cần có công pháp trước).
+- **Hộp thoại nhập tệp ngoại quải tự tạo**: Chưa bấm trong trình duyệt; hàm `normalizePlugin` dùng khi nhập đã có bài kiểm thử thuần logic.
+- **Nhãn chứng từ tầng bản cũ 0.4.0**: Tin nhắn chứng từ hệ thống do bản 0.2–0.4 ghi trong bản lưu cũ được hiển thị như tin nhắn hệ thống thông thường, không trang trí thêm nữa.
+- **Phản hồi xúc giác**: Không xác minh được trong trình duyệt headless.

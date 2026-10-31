@@ -80,7 +80,7 @@ test('sign-in reward grows with the streak (capped at 7) and group size', () => 
 
 test('ledger helpers follow the original adjustSysPoints / bagAdd semantics', () => {
     const z = { 系统点: 1000, 累计消费: 0, 背包: [{ 名称: '灵草', 品级: '凡品', 数量: 2 }] };
-    assert.throws(() => L.spend(z, 5000), /系统点不足/); assert.equal(z.系统点, 1000);
+    assert.throws(() => L.spend(z, 5000), /Điểm Hệ Thống không đủ/); assert.equal(z.系统点, 1000);
     L.spend(z, 300); assert.equal(z.系统点, 700); assert.equal(z.累计消费, 300);
     L.earn(z, 50); assert.equal(z.系统点, 750);
     // 1.1.1 audit: rows stack only when they are the same thing (a different 来源 is its own row)
@@ -90,7 +90,7 @@ test('ledger helpers follow the original adjustSysPoints / bagAdd semantics', ()
     z.背包.splice(1, 2);
     const took = L.bagTake(z, 0, 5); assert.equal(took.数量, 5); assert.equal(z.背包.length, 0);
     z.背包.push({ 名称: '灵草', 品级: '凡品', 数量: 1 });
-    assert.throws(() => L.bagTake(z, 0, 2), /只有 1 个/);
+    assert.throws(() => L.bagTake(z, 0, 2), /chỉ có 1/);
 });
 
 test('shop level follows the original thresholds', () => {
@@ -106,6 +106,6 @@ test('commit reads back and refuses when the booked value differs', async () => 
     await L.commit(good, (v, z) => { L.earn(z, 5); });
     assert.equal(store.诸天系统.系统点, 105);
     const lying = { updateVariablesWith: async fn => { fn(structuredClone(store)); }, getVariables: () => structuredClone(store) };
-    await assert.rejects(L.commit(lying, (v, z) => { L.earn(z, 5); }), /读回不一致/);
-    await assert.rejects(L.commit({ updateVariablesWith: async fn => fn({}), getVariables: () => ({}) }, () => {}), /没有诸天账本/);
+    await assert.rejects(L.commit(lying, (v, z) => { L.earn(z, 5); }), /Đọc lại sổ cái không khớp/);
+    await assert.rejects(L.commit({ updateVariablesWith: async fn => fn({}), getVariables: () => ({}) }, () => {}), /chưa có sổ cái Chư Thiên/);
 });

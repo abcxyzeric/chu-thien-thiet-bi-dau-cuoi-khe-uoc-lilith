@@ -1,89 +1,87 @@
-# 1.1.2 · 抽卡模式切换、羁绊页重做、管理员控制台
+# 1.1.2 · Chuyển đổi chế độ rút thẻ, Làm lại trang Gắn kết, Bảng điều khiển Quản trị viên
 
-在 1.1.1（未单独推送，改动一并带上，见 [CHANGES-1.1.1](CHANGES-1.1.1.md)）之上增量修改。插件版本 1.1.2。账本结构版本 2 不变，世界书规则版本 1.1.1 不变（本版不需要更新世界书）。扩展 ID、存储键和已有账本字段都没有改名。
+Sửa đổi tăng thêm trên nền bản 1.1.1 (xem [CHANGES-1.1.1](CHANGES-1.1.1.md)). Phiên bản plugin 1.1.2. Phiên bản cấu trúc sổ cái 2 giữ nguyên, phiên bản quy tắc Sách Thế Giới 1.1.1 giữ nguyên (bản này không cần cập nhật Sách Thế Giới). ID tiện ích mở rộng, khóa lưu trữ và các trường sổ cái đã có đều không đổi tên.
 
-## 1. 抽卡模式：经典折叠（默认）/ 十抽一结算
+## 1. Chế độ rút thẻ: Gộp cổ điển (Mặc định) / 10 lượt 1 lần quyết toán
 
-玩家反馈：十抽一结算要逐件生成每一件凡品，抽得多时调用次数多、模型负担重。现在可以二选一：
+Phản hồi từ người chơi: Chế độ 10 lượt 1 lần quyết toán phải tạo từng món Phàm phẩm một, khi rút nhiều sẽ gọi mô hình rất nhiều lần và gây tải nặng cho mô hình. Hiện tại người chơi có thể chọn một trong hai chế độ:
 
-| 模式 | 怎么结算 | 模型调用 |
+| Chế độ | Cách quyết toán | Gọi mô hình |
 |---|---|---|
-| **经典折叠**（默认） | 整次抽取一起结算、一次扣费。**≥50 抽**：所有凡品合成一行「凡品杂物 ×N」；**≥100 抽**：灵品也合成一行「灵品杂物 ×N」。仙品、神品永远逐件生成。失败不扣费、保底不动。 | 只生成没折叠的物品，每次请求最多 20 件（截断时自动减半重试） |
-| **十抽一结算**（1.1.1 的方式） | 每 10 抽单独生成、校验、扣费；中途失败时，已完成的部分照常入账，剩下的不扣费。 | 每一件都逐件生成，每次请求 5 件 |
+| **Gộp cổ điển** (Mặc định) | Quyết toán toàn bộ lượt rút trong một lần, trừ phí một lần. **≥50 lượt**: toàn bộ Phàm phẩm được gộp thành một dòng 「Tạp vật Phàm phẩm ×N」; **≥100 lượt**: Linh phẩm cũng được gộp thành một dòng 「Tạp vật Linh phẩm ×N」. Tiên phẩm và Thần phẩm luôn được tạo từng món. Nếu thất bại sẽ không trừ phí và giữ nguyên bảo hiểm. | Chỉ tạo những vật phẩm không bị gộp, mỗi yêu cầu tối đa 20 món (khi bị cắt cụt sẽ tự động giảm một nửa để thử lại) |
+| **10 lượt 1 lần quyết toán** (Cách của bản 1.1.1) | Cứ mỗi 10 lượt rút sẽ tạo, kiểm tra và trừ phí riêng; nếu thất bại giữa chừng, phần đã hoàn thành vẫn được ghi sổ bình thường, phần còn lại không trừ phí. | Tạo chi tiết từng món một, mỗi yêu cầu 5 món |
 
-- 在哪里切换：盲盒区的抽取按钮旁边，以及「商品定制」页顶部的「抽卡模式」卡片。两处是同一个设置（`gachaMode`，保存在插件设置里，不进聊天）。
-- 折叠行的价值和逐件完全一样：价格按品阶单价，「保留」进背包时数量是 N，「分解 / 按品阶分解 / 全部保留 / 回收」都按 数量 × 单价计算，不会少给，也不会多给。
-- 保底照常计数：折叠的凡品 / 灵品也算进仙品 100 抽、神品 1000 抽保底和累计抽数。
-- 50 / 100 的门槛按玩家描述实现。原版 3.1 只在超过 20 抽时**显示上**折叠凡品，并不会少生成。
+- Chuyển đổi ở đâu: Nằm ngay cạnh nút rút thẻ ở khu vực Hộp mù, và trên thẻ 「Chế độ rút thẻ」 ở đầu trang 「Tùy chỉnh hàng hóa」. Cả hai nơi đều điều khiển cùng một cài đặt (`gachaMode`, lưu trong cài đặt plugin, không ghi vào tệp trò chuyện).
+- Giá trị của dòng đã gộp hoàn toàn giống hệt như khi tạo từng món: giá tính theo đơn giá phẩm giai, khi bấm 「Giữ lại」 đưa vào túi đồ sẽ có số lượng là N, các thao tác 「Phân giải / Phân giải theo phẩm giai / Giữ lại toàn bộ / Thu hồi」 đều tính theo `Số lượng × Đơn giá`, không thiếu cũng không thừa.
+- Bảo hiểm vẫn đếm như bình thường: Phàm phẩm / Linh phẩm đã gộp vẫn được tính vào bảo hiểm Tiên phẩm 100 lượt, bảo hiểm Thần phẩm 1000 lượt và tổng số lượt rút tích lũy.
 
-## 2. 羁绊页重做
+## 2. Làm lại trang Gắn kết
 
-玩家反馈：旧羁绊页太丑，而且聊天群的群员全挤在里面。
+Phản hồi từ người chơi: Trang Gắn kết cũ trông rối mắt, hơn nữa thành viên của nhóm chat lại bị nhét hết vào trong đó.
 
-- **群员默认不进羁绊**。羁绊页只列羁绊库里的人物和打手。
-- **本世界优先**：打开时默认是「本世界」筛选，排序也是当前世界的人在前。其他筛选：全部 / 恋人 / 打手 / 群友，另有搜索框。
-- 列表：每人一张卡，带头像色块、关系标签（恋人粉 / 打手橙 / 群友青）、所在世界，以及好感阶段（陌生 / 熟识 / 友好 / 亲密 / 挚爱）。
-- 详情：
-  - 好感 / 黑化 / 悔意三条进度条；整理后的资料（性格、身份、外貌、状态、特产等）；其余字段收在「其他记录」里。
-  - 按钮：在关系图查看、设为攻略目标、去群聊（群友）、移出羁绊（只对和群员关联的人物）、打开打手页。
-  - 「补录人物」收进折叠区。
-- 「查看」不会自动更换当前攻略目标（沿用 1.1.0 的规则）。
+- **Thành viên nhóm chat mặc định không đi vào Gắn kết**. Trang Gắn kết chỉ liệt kê các nhân vật trong kho gắn kết và đả thủ.
+- **Ưu tiên thế giới hiện tại**: Khi mở trang mặc định chọn bộ lọc 「Thế giới này」, thứ tự sắp xếp cũng ưu tiên người của thế giới hiện tại lên trước. Các bộ lọc khác: Tất cả / Người yêu / Đả thủ / Bạn cùng nhóm, kèm theo ô tìm kiếm.
+- Danh sách: Mỗi người một thẻ, có khối màu ảnh đại diện, nhãn quan hệ (Người yêu màu hồng / Đả thủ màu cam / Bạn cùng nhóm màu xanh lam), thế giới đang ở, cùng giai đoạn hảo cảm (Xa lạ / Quen biết / Thân thiện / Thân mật / Chí ái).
+- Chi tiết:
+  - Ba thanh tiến độ Hảo cảm / Hắc hóa / Hối hận; hồ sơ đã được sắp xếp gọn gàng (Tính cách, Thân phận, Ngoại hình, Trạng thái, Đặc sản, v.v.); các trường còn lại được gom vào mục 「Bản ghi khác」.
+  - Các nút bấm: Xem trên đồ phổ quan hệ, Đặt làm mục tiêu công lược, Tới nhóm chat (với bạn cùng nhóm), Đưa ra khỏi Gắn kết (chỉ áp dụng với nhân vật liên kết từ thành viên nhóm), Mở trang Đả thủ.
+  - Khung 「Ghi bù nhân vật」 được đưa vào vùng thu gọn.
+- Bấm 「Xem」 sẽ không tự động thay đổi mục tiêu công lược hiện tại (giữ nguyên quy tắc của bản 1.1.0).
 
-### 把群员拉进羁绊
+### Đưa thành viên nhóm chat vào Gắn kết
 
-- 两个入口，任选其一：
-  - **聊天群 → 群员**：每位群员都有「拉入羁绊」按钮，已在羁绊里的显示「已在羁绊」，点了直接打开。
-  - **关系图**：点群员节点 → 「拉入羁绊」。
-- 拉入后的群友：关系是「群友」，初始好感取群内好感。羁绊页详情会实时显示他在群里的状态：身份、实力档、群内好感；被踢出群后显示「已不在群里」，羁绊仍然保留。
-- 同名同世界的人如果已经在羁绊里，就只把两边关联起来，不会多出一份重复的。之后「移出羁绊」也只断开关联，不会删掉原来的人物。
-- 当前攻略目标不能移出。移出不影响聊天群。
-- 一次加锁写入并读回核对；聊天或正文在操作期间变了就取消。
-- 关系图里，已拉入的群员只画一次（画成羁绊人物），不再同时出现在群员环上。
+- Có hai lối vào, chọn cách nào cũng được:
+  - **Nhóm chat → Thành viên**: Mỗi thành viên đều có nút 「Đưa vào Gắn kết」, nếu đã ở trong Gắn kết sẽ hiển thị 「Đã ở trong Gắn kết」 (bấm vào sẽ mở thẳng hồ sơ).
+  - **Đồ phổ quan hệ**: Bấm vào nút thành viên nhóm → 「Đưa vào Gắn kết」.
+- Sau khi đưa vào: quan hệ được ghi là 「Bạn cùng nhóm」, độ hảo cảm ban đầu lấy từ độ hảo cảm trong nhóm. Phần chi tiết trên trang Gắn kết sẽ hiển thị thời gian thực trạng thái của người đó trong nhóm: thân phận, bậc thực lực, hảo cảm trong nhóm; nếu bị trục xuất khỏi nhóm sẽ hiển thị 「Không còn trong nhóm」, còn hồ sơ gắn kết vẫn được giữ nguyên.
+- Nếu người cùng tên cùng thế giới đã có sẵn trong Gắn kết, hệ thống sẽ chỉ liên kết hai bên lại với nhau chứ không tạo thêm bản sao trùng lặp. Sau đó nếu bấm 「Đưa ra khỏi Gắn kết」 cũng chỉ ngắt liên kết chứ không xóa mất nhân vật ban đầu.
+- Mục tiêu công lược hiện tại không thể đưa ra khỏi Gắn kết. Việc đưa ra không ảnh hưởng tới nhóm chat.
+- Trên đồ phổ quan hệ, thành viên nhóm đã được đưa vào Gắn kết chỉ vẽ một lần (vẽ thành nhân vật gắn kết), không còn xuất hiện lặp lại trên vòng thành viên nhóm nữa.
 
-## 3. 管理员控制台（设置 → 管理员控制台）
+## 3. Bảng điều khiển Quản trị viên (Cài đặt → Bảng điều khiển Quản trị viên)
 
-原版面板只能改 3.1 时代的字段，而且是独立弹窗。现在改成终端里的一个新页面，风格和其他页面一致：
+Bảng nguyên bản chỉ sửa được các trường thời 3.1 và lại là hộp thoại bật lên riêng lẻ. Hiện đã được thiết kế thành một trang mới bên trong thiết bị đầu cuối, đồng bộ phong cách với các trang khác:
 
-| 分组 | 字段 |
+| Nhóm | Các trường |
 |---|---|
-| 资产 | 系统点、子系统数量、子嗣数量、当前货币、持有金额 |
-| 专属资源 | 天命印记、血脉结晶、因果筹码、名望、岁月沉淀 |
-| 实力 | 宿主实力档、本世界上限档（1–8）、商城等级下限（1–5） |
-| 功法 | 主修功法、熟练度、上限（同步功法库，和原版面板同一套逻辑；需要先打开过终端「概览」页） |
-| **盲盒（新）** | 仙品保底计数（0–99）、神品保底计数（0–999）、累计抽数、仙品次数、神品次数，并显示「距仙品 / 神品保底 N 抽」 |
-| **羁绊（新）** | 选任意一位羁绊人物，改好感 / 黑化 / 悔意（0–100）；改的是当前攻略目标时同步到「恋爱目标」 |
-| **聊天群（新）** | 选任意一位群员，改好感（0–100） |
+| Tài sản | Điểm Hệ Thống, Số lượng hệ thống con, Số lượng con cái, Tiền tệ hiện tại, Số tiền nắm giữ |
+| Tài nguyên độc quyền | Ấn Ký Thiên Mệnh, Kết Tinh Huyết Mạch, Quân Bài Nhân Quả, Danh Vọng, Năm Tháng Lắng Đọng |
+| Thực lực | Bậc thực lực Ký chủ, Bậc giới hạn thế giới này (1–8), Giới hạn dưới cấp Thương thành (1–5) |
+| Công pháp | Công pháp chủ tu, Độ thuần thục, Giới hạn trần (đồng bộ kho công pháp, dùng chung logic với bảng nguyên bản; cần mở trang 「Tổng quan」 của thiết bị đầu cuối trước một lần) |
+| **Hộp mù (Mới)** | Bộ đếm bảo hiểm Tiên phẩm (0–99), Bộ đếm bảo hiểm Thần phẩm (0–999), Tổng lượt rút tích lũy, Số lần nổ Tiên phẩm, Số lần nổ Thần phẩm, và hiển thị 「Còn N lượt tới bảo hiểm Tiên phẩm / Thần phẩm」 |
+| **Gắn kết (Mới)** | Chọn bất kỳ nhân vật gắn kết nào để sửa Độ hảo cảm / Giá trị hắc hóa / Giá trị hối hận (0–100); khi sửa đúng mục tiêu công lược hiện tại sẽ đồng bộ sang mục 「恋爱目标」 |
+| **Nhóm chat (Mới)** | Chọn bất kỳ thành viên nhóm nào để sửa Độ hảo cảm (0–100) |
 
-写入规则：
+Quy tắc ghi dữ liệu:
 
-- 只写入你改过的项。改过的输入框会高亮，底栏显示「N 项改动未保存」。
-- 写入前确认框会列出每一项「旧值 → 新值」。所有改动一次加锁写入，再从服务器读回核对。
-- 页面打开后，如果账本里同一项被 AI 回复或别的操作改过，**整次拒写**，提示「账本已变化…请重新读取」，不会覆盖新数据。
-- 数值越界或不是整数时，会直接报出是哪一项、范围是多少，不会悄悄截断。
-- 专属资源的改动会同步加到各楼层快照上，之后 swipe 或重新生成，不会把管理员改动回滚掉。
-- 每次写入都会记一条操作记录「管理员修改：…」。
-- 页面右上角「打开原版面板」仍能进入原版弹窗。
+- Chỉ ghi những mục bạn đã sửa đổi. Ô nhập liệu đã sửa sẽ sáng nổi bật, thanh đáy hiển thị 「N mục thay đổi chưa lưu」.
+- Trước khi ghi, hộp thoại xác nhận sẽ liệt kê từng mục theo dạng 「Giá trị cũ → Giá trị mới」. Toàn bộ thay đổi được ghi trong một lần có khóa rồi đọc lại từ máy chủ để đối chiếu.
+- Sau khi mở trang, nếu cùng một mục trong sổ cái vừa bị phản hồi AI hoặc thao tác khác làm thay đổi, hệ thống sẽ **từ chối ghi toàn bộ lượt đó** và báo 「Sổ cái đã thay đổi… vui lòng đọc lại」 để không ghi đè mất dữ liệu mới.
+- Khi giá trị vượt ngưỡng hoặc không phải số nguyên, hệ thống sẽ báo rõ tên mục và phạm vi hợp lệ chứ không âm thầm cắt bớt.
+- Các thay đổi về tài nguyên độc quyền sẽ được cộng đồng bộ vào bản chụp nhanh của từng tầng, nên sau đó dù có swipe hay tạo lại phản hồi cũng không làm quay lui mất chỉnh sửa của Quản trị viên.
+- Mỗi lần ghi đều lưu lại một bản ghi thao tác 「Quản trị viên sửa đổi: …」.
+- Nút 「Mở bảng nguyên bản」 ở góc trên bên phải trang vẫn mở được hộp thoại bật lên nguyên bản.
 
-## 4. 文件
+## 4. Các tệp thay đổi
 
-| 文件 | 改动 |
+| Tệp | Thay đổi |
 |---|---|
-| `src/commerce.js` | 抽卡模式、经典折叠结算、模式切换按钮 |
-| `src/settings.js` | 默认 `gachaMode: 'classic'` |
-| `src/bonds-data.js` | 羁绊列表不含群员、本世界排序、拉入 / 移出 |
-| `src/bonds.js` | 羁绊页重写 |
-| `src/hub-atlas.js` | 关系图群员节点「拉入羁绊」，已拉入的不重复画 |
-| `src/hub-group.js` | 群员页「拉入羁绊 / 已在羁绊」 |
-| `src/admin.js`（新） | 管理员控制台页面 |
-| `src/hub.js` | `openAdmin` 打开新页面，原弹窗移到 `openOriginalAdmin` |
-| `src/hub-settings.js` | 管理员控制台说明文字 |
-| `index.js` | 启动管理员控制台模块 |
-| `styles/hub.css` | 羁绊页与管理员控制台样式 |
-| `src/contracts.js` | 版本号与功能矩阵 |
-| `tests/v112.test.js`（新） | 1.1.2 单测 |
-| `tests/v110.test.js` | 羁绊列表不再含群员 |
-| `tests/native_v112.py`（新） | 1.1.2 浏览器专项 |
-| `tests/native_v111.py` | 盲盒检查先切到十抽一结算，结束后恢复默认 |
-| `tests/native_v080.py` | 管理员入口先到新页面，再点「打开原版面板」 |
-| `tests/version.test.js`、`package.json`、`package-lock.json`、`manifest.json` | 版本 1.1.2；`check` 加上 `src/admin.js` |
-| `README.md`、`CHANGELOG.md`、`docs/FEATURE_MATRIX.md`、`docs/CHANGES-1.1.2.md`、`docs/ACCEPTANCE-1.1.2.md` | 文档 |
+| `src/commerce.js` | Chế độ rút thẻ, quyết toán Gộp cổ điển, nút chuyển đổi chế độ |
+| `src/settings.js` | Mặc định `gachaMode: 'classic'` |
+| `src/bonds-data.js` | Danh sách gắn kết không chứa thành viên nhóm, ưu tiên sắp xếp thế giới hiện tại, đưa vào / đưa ra |
+| `src/bonds.js` | Viết lại trang Gắn kết |
+| `src/hub-atlas.js` | Nút 「Đưa vào Gắn kết」 trên nút thành viên nhóm của đồ phổ quan hệ, không vẽ lặp người đã đưa vào |
+| `src/hub-group.js` | Nút 「Đưa vào Gắn kết / Đã ở trong Gắn kết」 ở trang Thành viên nhóm |
+| `src/admin.js` (mới) | Trang Bảng điều khiển Quản trị viên |
+| `src/hub.js` | `openAdmin` mở trang mới, hộp thoại cũ chuyển sang `openOriginalAdmin` |
+| `src/hub-settings.js` | Văn bản thuyết minh Bảng điều khiển Quản trị viên |
+| `index.js` | Khởi động mô-đun Bảng điều khiển Quản trị viên |
+| `styles/hub.css` | Kiểu dáng trang Gắn kết và Bảng điều khiển Quản trị viên |
+| `src/contracts.js` | Số phiên bản và ma trận tính năng |
+| `tests/v112.test.js` (mới) | Kiểm thử đơn vị 1.1.2 |
+| `tests/v110.test.js` | Danh sách gắn kết không còn chứa thành viên nhóm |
+| `tests/native_v112.py` (mới) | Chuyên đề trình duyệt 1.1.2 |
+| `tests/native_v111.py` | Kiểm tra hộp mù chuyển sang 10 lượt 1 lần quyết toán trước, kết thúc khôi phục mặc định |
+| `tests/native_v080.py` | Lối vào quản trị viên đi tới trang mới trước rồi bấm 「Mở bảng nguyên bản」 |
+| `tests/version.test.js`, `package.json`, `package-lock.json`, `manifest.json` | Phiên bản 1.1.2; `check` bổ sung `src/admin.js` |
+| `README.md`, `CHANGELOG.md`, `docs/FEATURE_MATRIX.md`, `docs/CHANGES-1.1.2.md`, `docs/ACCEPTANCE-1.1.2.md` | Tài liệu |

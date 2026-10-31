@@ -1,279 +1,279 @@
-# 诸天终端更新报告：1.1.3 到 1.1.5-r1，具体改了什么
+# Báo cáo cập nhật Thiết Bị Đầu Cuối Chư Thiên: Từ 1.1.3 lên 1.1.5-r1 đã thay đổi những gì
 
-本报告覆盖 **1.1.4、1.1.5 和 1.1.5-r1**，以已经发布的1.1.3为起点。当前扩展显示版本 **1.1.5**，诊断中的修订显示 **1.1.5-r1**。整理日期：2026年10月10日。
+Báo cáo này bao gồm **1.1.4, 1.1.5 và 1.1.5-r1**, lấy phiên bản 1.1.3 đã phát hành làm điểm xuất phát. Hiện tại tiện ích hiển thị phiên bản **1.1.5**, bản sửa đổi trong phần chẩn đoán hiển thị **1.1.5-r1**. Ngày tổng hợp: 10 tháng 10 năm 2026.
 
-这次更新让系统助手可以换人设，让原有功能集中到开关页，让世界书角色进入聊天群并衔接正文；同时补上群消息删除、重roll、生成设置、存档解冻与楼层检查。下面说明每一项实际变化、入口和使用条件。
+Đợt cập nhật này cho phép đổi nhân cách trợ lý hệ thống, gom các tính năng sẵn có về trang công tắc tập trung, đưa nhân vật trong Sách Thế Giới vào nhóm chat và nối tiếp với chính văn; đồng thời bổ sung xóa từng tin nhắn nhóm, tạo lại (reroll) lượt chat nhóm, cài đặt tạo trò chuyện nhóm, mở khóa sổ cái và kiểm tra tầng tin nhắn. Dưới đây trình bày chi tiết từng thay đổi thực tế, lối vào và điều kiện sử dụng.
 
-## 一、变化总表
+## I. Bảng tổng hợp thay đổi
 
-| 功能 | 1.1.3 | 当前版本 |
+| Tính năng | 1.1.3 | Phiên bản hiện tại |
 |---|---|---|
-| 助手身份 | 固定莉莉丝 | 莉莉丝、编号光球、自定义三种选择，界面和后续助手请求跟着换 |
-| 功能管理 | 设置分散，缺少统一的模块和页面管理 | 37项集中开关、页面显示管理、按聊天设置的跳转入口 |
-| 群员招募 | 已有随机、指定世界或角色等招募 | 新增从已有世界书查条目、整理候选人、邀请入群 |
-| 群员背景 | 主要靠登记资料和近期聊天 | 世界书来源群员可附带人物条目及关键词背景 |
-| 群内互动衔接正文 | 已有普通群摘要 | 新增世界书来源群员的定向互动记忆 |
-| 群消息管理 | 没有这套逐条删除与重roll工具 | 新增管理模式、逐条删除、最近一轮重roll |
-| 群聊生成 | 人数、字数、近期消息数量基本固定 | 五项可调设置、自动输出预算、独立接口截断提示 |
-| 存档核对 | 无关变量变化可能导致误冻结 | 聚焦本次改动，增加核对并解冻入口 |
-| 自动记忆 | 不合规的识别名可能使整批失败 | 先清洗名称、去重，再交原有校验 |
-| 思维链保护 | 思考中的数据块草稿可能误吞正文 | 跳过草稿、保护标签、检查最新楼层 |
-| 教程 | 没有插件内这套说明书页 | 内置目录与搜索，另附40章在线详细版和离线网页 |
+| Thân phận trợ lý | Cố định là Lilith | 3 lựa chọn: Lilith, Quang cầu đánh số, Tùy chỉnh; giao diện và các yêu cầu trợ lý tiếp theo đều đổi theo |
+| Quản lý tính năng | Cài đặt nằm rải rác, thiếu nơi quản lý mô-đun và trang thống nhất | 37 công tắc tập trung, quản lý ẩn/hiện trang, lối tắt nhảy tới các cài đặt theo từng cuộc trò chuyện |
+| Chiêu mộ thành viên nhóm | Đã có chiêu mộ ngẫu nhiên, chỉ định thế giới hoặc nhân vật | Thêm mới tìm kiếm mục từ điển từ Sách Thế Giới sẵn có, tổng hợp ứng viên và mời vào nhóm |
+| Bối cảnh thành viên nhóm | Chủ yếu dựa vào hồ sơ đã đăng ký và trò chuyện gần đây | Thành viên có nguồn từ Sách Thế Giới có thể mang theo mục từ điển nhân vật và bối cảnh từ khóa |
+| Tương tác trong nhóm nối tiếp chính văn | Đã có tóm tắt nhóm thông thường | Thêm mới ký ức tương tác định hướng cho thành viên có nguồn từ Sách Thế Giới |
+| Quản lý tin nhắn nhóm | Chưa có công cụ xóa từng tin và tạo lại (reroll) | Thêm chế độ quản lý, xóa từng tin nhắn, tạo lại (reroll) lượt gần nhất |
+| Tạo trò chuyện nhóm | Số người, số chữ, số tin nhắn gần đây cơ bản cố định | 5 mục cài đặt tùy chỉnh, tự động tính ngân sách đầu ra, cảnh báo cắt cụt với cổng độc lập |
+| Đối chiếu bản lưu | Biến không liên quan thay đổi có thể gây đóng băng nhầm | Chỉ đối chiếu những mục thay đổi trong lần ghi này, thêm nút Kiểm tra và mở khóa sổ cái |
+| Tự động chỉnh lý ký ức | Tên nhận diện không hợp lệ có thể làm hỏng cả loạt | Làm sạch tên và khử trùng lặp trước, sau đó mới chuyển cho bộ kiểm tra gốc |
+| Bảo vệ chuỗi suy nghĩ | Bản nháp khối dữ liệu trong lúc suy nghĩ có thể nuốt nhầm chính văn | Bỏ qua bản nháp, bảo vệ thẻ suy nghĩ, kiểm tra tầng tin nhắn mới nhất |
+| Hướng dẫn sử dụng | Chưa có trang Sách hướng dẫn tích hợp trong thiết bị đầu cuối | Tích hợp mục lục và tìm kiếm ngay trong thiết bị đầu cuối, kèm bản chi tiết 40 chương trực tuyến và trang web ngoại tuyến |
 
-## 二、1.1.5：系统助手可以换人设
+## II. 1.1.5: Trợ lý hệ thống có thể đổi nhân cách
 
-**入口：设置 → 上手 → 系统助手人设。**
+**Lối vào: Cài đặt → Làm quen → Nhân cách trợ lý hệ thống.**
 
-### 新增三种选择
+### Thêm mới 3 lựa chọn
 
-- **莉莉丝**：默认沿用原人设、分层立绘、差分和触摸方式。
-- **系统光球（编号）**：编号光球头像，默认冷静、简洁、按条播报。例如编号007、名字留空时使用「系统007」。
-- **自定义**：自己填写名字、对宿主的称呼、英文副标题、性格、说话方式和头像。光球另有编号输入。
+- **Lilith**: mặc định giữ nguyên nhân cách gốc, ảnh đứng phân lớp, biểu cảm biến thể và cách chạm tương tác.
+- **Quang cầu Hệ thống (Đánh số)**: ảnh đại diện quả cầu ánh sáng đánh số, mặc định điềm tĩnh, ngắn gọn, thông báo theo từng mục. Ví dụ đánh số 007 và để trống tên thì sẽ dùng 「Hệ thống 007」.
+- **Tùy chỉnh**: tự điền tên, cách xưng hô với Ký chủ, phụ đề tiếng Anh, tính cách, giọng điệu và ảnh đại diện. Chế độ Quang cầu có thêm ô nhập số hiệu.
 
-高级设置可分别整段替换「剧情里的人设规则」和「私聊人设」。前者用于正文，后者用于助手私聊，可以独立填写；留空时按基础资料生成规则。
+Phần cài đặt nâng cao cho phép thay thế nguyên đoạn 「Quy tắc nhân cách trong cốt truyện」 và 「Nhân cách trò chuyện riêng」. Mục đầu dùng cho chính văn, mục sau dùng cho trò chuyện riêng với trợ lý, có thể điền độc lập; khi để trống sẽ tự tạo quy tắc dựa trên thông tin cơ bản.
 
-### 保存后哪些地方真的变化
+### Những nơi thực sự thay đổi sau khi lưu
 
-| 位置 | 实际变化 |
+| Vị trí | Thay đổi thực tế |
 |---|---|
-| 正文剧情 | 每次生成临时使用新人设规则，诸天规则里的莉莉丝称呼跟着替换 |
-| 助手私聊 | 后续请求使用新人设，默认仍保留“私聊不等于执行游戏交易”的约束 |
-| 记忆与工作台等助手请求 | 请求中的系统称呼随人设处理，原有分功能接口继续按路由使用 |
-| 助手界面 | 导航分组、标题、提示文字、头像等随之更换 |
-| 楼层语音卡 | 按新名字识别台词，例如「【系统007】：“……”」 |
-| 立绘与悬浮入口 | 非莉莉丝人设使用头像与圆形唤醒入口；莉莉丝的立绘、差分和触摸仍专属于莉莉丝 |
+| Cốt truyện chính văn | Mỗi lần tạo văn bản sẽ tạm thời dùng quy tắc nhân cách mới, danh xưng Lilith trong các quy tắc Chư Thiên cũng được thay thế theo |
+| Trò chuyện riêng với trợ lý | Các yêu cầu tiếp theo dùng nhân cách mới, mặc định vẫn giữ ràng buộc “trò chuyện riêng không đồng nghĩa với việc thực thi giao dịch trò chơi” |
+| Các yêu cầu trợ lý như Ký ức và Bàn làm việc | Danh xưng hệ thống trong yêu cầu được xử lý theo nhân cách mới, cổng API theo từng tính năng vẫn đi theo định tuyến cũ |
+| Giao diện trợ lý | Nhóm điều hướng, tiêu đề, văn bản gợi ý, ảnh đại diện… đều đổi theo |
+| Thẻ thoại ở tầng tin nhắn | Nhận diện lời thoại theo tên mới, ví dụ 「【Hệ thống 007】：“……”」 |
+| Ảnh đứng và lối vào nổi | Nhân cách khác Lilith sử dụng ảnh đại diện và nút đánh thức hình tròn; ảnh đứng phân lớp, biểu cảm biến thể và chạm tương tác của Lilith vẫn dành riêng cho Lilith |
 
-新增「上传头像」「用默认」「预览」「保存并生效」「放弃修改」「换回莉莉丝」「返回设置」。预览查看剧情、私聊规则，不调用模型；保存后通常无需刷新，下一次请求使用新人设。返回设置会放弃未保存的修改。
+Thêm mới các nút 「Tải ảnh đại diện lên」, 「Dùng mặc định」, 「Xem trước」, 「Lưu và áp dụng」, 「Hủy thay đổi」, 「Đổi về Lilith」, 「Quay lại cài đặt」. Xem trước giúp kiểm tra quy tắc cốt truyện và trò chuyện riêng mà không gọi mô hình; sau khi lưu thông thường không cần làm mới trang, yêu cầu tiếp theo sẽ dùng ngay nhân cách mới. Quay lại cài đặt sẽ hủy bỏ các thay đổi chưa lưu.
 
-上传头像会裁成方形、压缩成256像素图片。原图最多8 MB，压缩后的保存内容有400 KB限制。未上传时使用自动头像。
+Ảnh đại diện tải lên sẽ được cắt vuông và nén thành ảnh 256 pixel. Ảnh gốc tối đa 8 MB, nội dung lưu sau khi nén giới hạn ở mức 400 KB. Khi chưa tải ảnh lên sẽ dùng ảnh đại diện tự động.
 
-**换人设不会重写旧正文、私聊、群消息、工作台结果和记忆，也不会覆盖世界书原文件。** 改名字、性格不等于清空全部原背景；其他诸天条目里的称呼是机械替换，原有成人向内容可能保留。想彻底改变规则，需要检查高级替换和相关条目。
+**Việc đổi nhân cách sẽ không viết lại chính văn cũ, trò chuyện riêng cũ, tin nhắn nhóm, kết quả bàn làm việc hay ký ức cũ, cũng không ghi đè tệp Sách Thế Giới gốc.** Đổi tên và tính cách không đồng nghĩa với việc xóa sạch toàn bộ bối cảnh gốc; danh xưng trong các mục Chư Thiên khác được thay thế cơ học nên nội dung hướng người lớn nguyên bản vẫn có thể còn giữ lại. Nếu muốn thay đổi triệt để quy tắc, bạn cần kiểm tra phần thay thế nguyên đoạn nâng cao và các mục từ điển liên quan.
 
-## 三、1.1.5：统一功能开关和页面显示管理
+## III. 1.1.5: Công tắc tính năng thống nhất và quản lý hiển thị trang
 
-**入口：设置 → 上手 → 功能开关。**
+**Lối vào: Cài đặt → Làm quen → Công tắc tính năng.**
 
-这次把已有设置集中到一张表，并补上整个模块与导航页面的管理。旧功能不是全部重新实现，但现在可以集中搜索、开关和恢复。
+Bản cập nhật này gom các cài đặt sẵn có vào một bảng duy nhất, đồng thời bổ sung quản lý toàn bộ mô-đun và các trang trên thanh điều hướng. Các tính năng cũ không phải đều được viết lại từ đầu, nhưng giờ đây có thể tìm kiếm, bật/tắt và khôi phục tập trung tại một nơi.
 
-### 37项具体是什么
+### Cụ thể 37 mục gồm những gì
 
-| 分组 | 数量 | 可管理项目 |
+| Nhóm | Số lượng | Các mục có thể quản lý |
 |---|---:|---|
-| 系统助手 | 9 | 助手窗口、悬浮窗、楼层语音框、触摸、震动、界面角色反应、页面台词、镜头、气泡播报 |
-| 聊天楼层与数据块 | 10 | 记账、小标签、旧数据块过滤、自动修复、缺失补记、每轮提醒、功法未入账提示、变量宏、世界书自动安装绑定、停用时自动解绑 |
-| 剧情提示及相关自动处理 | 7 | 记录穿越、品阶提示、品阶更正、熟练度效果、实战积累、角色卡功法同步、自拟外挂 |
-| 聊天群 | 4 | 整个聊天群、自动闲聊总开关、读取世界书、群员记忆注入 |
-| 界面与操作 | 7 | 账本速览、快捷键、`/zt`命令、引导自动弹出、世界主题、演出、终端关闭时提示卡片 |
+| Trợ lý hệ thống | 9 | Cửa sổ trợ lý, cửa sổ nổi, khung thoại ở tầng tin nhắn, chạm tương tác, rung, phản ứng nhân vật giao diện, lời thoại khi vào trang, góc máy quay, bong bóng thông báo |
+| Tầng trò chuyện & Khối dữ liệu | 10 | Ghi sổ khối dữ liệu, nhãn nhỏ tầng tin nhắn, lọc khối dữ liệu tầng cũ, tự động sửa lỗi, ghi bổ sung khi thiếu, nhắc định dạng mỗi lượt, nhắc công pháp chưa vào sổ, macro biến, tự động cài đặt & liên kết Sách Thế Giới, tự động gỡ liên kết khi tắt tiện ích |
+| Lời nhắc cốt truyện & xử lý tự động liên quan | 7 | Ghi nhận xuyên không, nhắc phẩm giai khi thu thập, hiệu chỉnh phẩm giai, hiệu quả độ thuần thục, tích lũy thực chiến, đồng bộ công pháp thẻ nhân vật, phụ trợ tự tạo |
+| Nhóm chat | 4 | Toàn bộ Nhóm chat, công tắc tổng tự động tán gẫu, đọc Sách Thế Giới, tiêm ký ức thành viên nhóm |
+| Giao diện & Thao tác | 7 | Xem nhanh sổ cái (HUD), phím tắt, lệnh `/zt`, tự động bật hướng dẫn tân thủ, chủ đề thế giới, hoạt cảnh diễn xuất, thẻ gợi ý cốt truyện khi đóng thiết bị đầu cuối |
 
-### 不同开关作用不同
+### Tác dụng khác nhau của từng công tắc
 
-- **关整个聊天群**：群页面隐藏，正文群摘要停止，自动闲聊停止，降临倒计时暂停。r1还停止内置世界书群联动规则，重开后恢复。
-- **只关自动闲聊总开关**：不再剧情后自动群聊，手动聊天仍可用。
-- **关读取世界书**：召唤入口隐藏，群聊与群员私聊停止附带书中资料，已有成员保留。
-- **关群员记忆注入**：停止交给正文的这段人物互动摘要，聊天历史保留。
-- **关自拟外挂**：自拟页面隐藏，已启用的自拟规则不再发给正文，配置保留。
-- **关数据块记账**：停止从正文自动登记；只关小标签则只是隐藏查看入口，两者不同。
-- **关`/zt`**：命令提示已关闭，不执行动作。
-- **关引导自动弹出**：仍能从设置手动打开引导。
-- **关系统助手窗口**：相关页面和自动记忆等停用，需刷新后生效。
+- **Tắt toàn bộ Nhóm chat**: ẩn trang nhóm chat, dừng tóm tắt nhóm cho chính văn, dừng tự động tán gẫu, tạm dừng đếm ngược giáng lâm. Bản r1 còn dừng cả quy tắc liên kết nhóm chat trong Sách Thế Giới tích hợp sẵn, bật lại sẽ khôi phục.
+- **Chỉ tắt công tắc tổng Tự động tán gẫu**: không còn tự động trò chuyện nhóm sau mỗi lượt cốt truyện, nhưng trò chuyện thủ công vẫn dùng bình thường.
+- **Tắt Đọc Sách Thế Giới**: ẩn lối vào triệu hồi, trò chuyện nhóm và trò chuyện riêng với thành viên nhóm ngừng đính kèm tư liệu trong sách, các thành viên đã có vẫn được giữ nguyên.
+- **Tắt Tiêm ký ức thành viên nhóm**: ngừng gửi đoạn tóm tắt tương tác nhân vật này cho chính văn, lịch sử trò chuyện vẫn giữ nguyên.
+- **Tắt Phụ trợ tự tạo**: ẩn trang Tự tạo, các quy tắc tự tạo đã bật không còn gửi cho chính văn nữa, cấu hình vẫn được giữ nguyên.
+- **Tắt Ghi sổ khối dữ liệu**: ngừng tự động đăng ký từ chính văn; còn chỉ tắt nhãn nhỏ thì chỉ ẩn lối vào xem nhanh, hai mục này khác nhau.
+- **Tắt lệnh `/zt`**: lệnh chỉ báo đã tắt và không thực thi hành động.
+- **Tắt Tự động bật hướng dẫn tân thủ**: vẫn có thể mở hướng dẫn thủ công từ phần Cài đặt.
+- **Tắt Cửa sổ trợ lý hệ thống**: dừng các trang liên quan và tự động chỉnh lý ký ức, cần làm mới trang để có hiệu lực.
 
-品阶更正、实战积累、角色卡功法同步还影响自动登记，不能把这一组全部理解成“少给AI一句提示”。
+Hiệu chỉnh phẩm giai, tích lũy thực chiến và đồng bộ công pháp thẻ nhân vật còn ảnh hưởng tới việc đăng ký tự động, không nên hiểu toàn bộ nhóm này chỉ là “bớt gửi một câu nhắc cho AI”.
 
-### 新增页面隐藏和一键恢复
+### Thêm mới ẩn trang và khôi phục một chạm
 
-「终端页面」可以把不常用的页面从导航拿掉。**隐藏商城页面不等于停止商城所有行为；隐藏页面与关闭模块不同。** 总览、设置、连接及恢复管理用的人设、开关页保留。
+Mục 「Trang thiết bị đầu cuối」 có thể gỡ các trang ít dùng khỏi thanh điều hướng. **Ẩn trang Thương thành không đồng nghĩa với việc dừng mọi hoạt động của Thương thành; ẩn trang khác với tắt mô-đun.** Các trang Tổng quan, Cài đặt, Kết nối cùng hai trang Nhân cách và Công tắc dùng để khôi phục quản lý luôn được giữ lại.
 
-「全部开启」恢复这张表中的功能和隐藏页面，也可能重新开启你有意停掉的项。
+Nút 「Bật tất cả」 khôi phục toàn bộ tính năng và các trang bị ẩn trong bảng này, đồng thời cũng có thể bật lại những mục mà bạn từng chủ động tắt.
 
-记忆整理、每个聊天的摘要与闲聊间隔、具体外挂启用仍跟随当前聊天，统一页提供「去设置」入口。打开总开关，不等于把每份存档里的细项也全部打开。
+Việc chỉnh lý ký ức, tóm tắt nhóm & khoảng cách tán gẫu của từng cuộc trò chuyện, hay bật/tắt từng phụ trợ cụ thể vẫn đi theo cuộc trò chuyện hiện tại; trang thống nhất có cung cấp nút 「Đi tới cài đặt」. Bật công tắc tổng không có nghĩa là tự động bật mọi mục chi tiết trong từng bản lưu.
 
-## 四、1.1.5：从世界书召唤群员
+## IV. 1.1.5: Triệu hồi thành viên nhóm từ Sách Thế Giới
 
-**入口：聊天群 → 群员 → 从世界书召唤。**
+**Lối vào: Nhóm chat → Thành viên → Triệu hồi từ Sách Thế Giới.**
 
-以前已有世界、角色招募，但没有这套“选择已有条目，并保存来源”的流程。现在可以使用自己的世界书人物资料招募群员。
+Trước đây đã có chiêu mộ theo thế giới hoặc nhân vật, nhưng chưa có quy trình “chọn mục từ điển có sẵn và lưu lại nguồn gốc”. Giờ đây bạn có thể dùng chính tư liệu nhân vật trong Sách Thế Giới của mình để chiêu mộ thành viên nhóm.
 
-1. 选择已有世界书；★表示当前聊天正在用的书，列表排除诸天系统书。
-2. 输入角色名或关键词，点「查找」。搜索标题、关键词和正文，跳过停用、空白条目，最多显示30项。
-3. 看条目摘要，点「召唤」。模型整理名称、出处、实力档、性格、特产，生成候选人。
-4. 查看入群报价，再「邀请入群」，也可放弃。
+1. Chọn một Sách Thế Giới hiện có; dấu ★ biểu thị sách đang dùng trong cuộc trò chuyện hiện tại, danh sách tự loại trừ sách Hệ Thống Chư Thiên.
+2. Nhập tên nhân vật hoặc từ khóa, bấm 「Tìm kiếm」. Hệ thống tìm trong tiêu đề, từ khóa và nội dung, bỏ qua các mục đang tắt hoặc trống, hiển thị tối đa 30 mục.
+3. Xem tóm tắt mục từ điển, bấm 「Triệu hồi」. Mô hình sẽ tổng hợp tên, xuất xứ, bậc thực lực, tính cách, đặc sản để tạo ra ứng viên.
+4. Xem báo giá vào nhóm rồi bấm 「Mời vào nhóm」, hoặc có thể từ bỏ.
 
-**查找不扣点、不调用模型。** 有效候选保存时扣100系统点；提交保存前失败不扣召唤点，API仍可能计费。邀请入群再按实力档收费，100点不是包含入群的一口价。提示保存不明时，应先核对账本。
+**Tìm kiếm không trừ điểm và không gọi mô hình.** Khi lưu ứng viên hợp lệ sẽ trừ 100 Điểm Hệ Thống; nếu thất bại trước khi lưu sẽ không trừ điểm triệu hồi, nhưng nhà cung cấp API vẫn có thể tính phí gọi mô hình. Khi mời vào nhóm sẽ tính phí theo bậc thực lực, 100 điểm không phải là giá trọn gói bao gồm cả phí vào nhóm. Nếu báo trạng thái lưu không rõ ràng, hãy kiểm tra sổ cái trước.
 
-群满、条目已删除、同来源角色已在群里，或候选尚未处理时，会按条件限制操作。成功入群后保存书名和条目来源，成员卡显示世界书标记。
+Khi nhóm đã đầy, mục từ điển đã bị xóa, nhân vật cùng nguồn đã ở trong nhóm, hoặc còn ứng viên chưa xử lý, hệ thống sẽ giới hạn thao tác theo điều kiện. Sau khi vào nhóm thành công sẽ lưu lại tên sách và nguồn mục từ điển, thẻ thành viên hiển thị nhãn Sách Thế Giới.
 
-### 群聊与私聊增加人物和背景资料
+### Trò chuyện nhóm và trò chuyện riêng bổ sung tư liệu nhân vật và bối cảnh
 
-世界书来源群员可携带自己的原条目摘要，通常每人约360字；对话关键词命中时，可额外携带同一本书背景，每本最多取3条。原有群员资料与近期聊天继续使用。
+Thành viên có nguồn từ Sách Thế Giới có thể mang theo bản tóm tắt mục từ điển gốc của chính mình, thông thường khoảng 360 chữ mỗi người; khi cuộc trò chuyện khớp từ khóa còn có thể mang theo bối cảnh trong cùng cuốn sách đó, mỗi cuốn lấy tối đa 3 mục. Hồ sơ thành viên nhóm sẵn có và tin nhắn gần đây vẫn tiếp tục được sử dụng như cũ.
 
-资料有总字数预算，默认1600字，避免无限附带整本书。预算是实现中的配置，本次没有普通用户可见的“世界书预算滑块”。没有来源成员时，不会凭空增加这段资料。
+Tư liệu có tổng ngân sách số chữ, mặc định là 1600 chữ để tránh đính kèm vô hạn cả cuốn sách. Ngân sách là cấu hình trong mã nguồn, phiên bản này không có “thanh trượt ngân sách Sách Thế Giới” hiển thị cho người dùng thông thường. Khi không có thành viên nào mang nguồn Sách Thế Giới, hệ thống sẽ không tự dưng thêm đoạn tư liệu này.
 
-模型由此得到更多人物依据，但角色是否准确、资料是否被使用仍取决于实际输出。
+Nhờ đó mô hình có thêm căn cứ về nhân vật, nhưng việc nhập vai có chuẩn xác hay tư liệu có được tận dụng hay không vẫn phụ thuộc vào đầu ra thực tế của mô hình.
 
-## 五、1.1.5：世界书群员的互动记忆带回正文
+## V. 1.1.5: Đưa ký ức tương tác của thành viên Sách Thế Giới trở lại chính văn
 
-普通聊天群摘要以前已经存在；新增的是世界书来源群员的定向互动摘要。
+Bản tóm tắt nhóm chat thông thường đã có từ trước; điểm mới lần này là bản tóm tắt tương tác định hướng dành cho các thành viên có nguồn từ Sách Thế Giới.
 
-最近4层正文出现群员名字，或命中来源条目的适用关键词时，可以向正文附带近期群聊、私聊、赠礼、好感，一次最多3人。
+Khi 4 tầng chính văn gần nhất xuất hiện tên thành viên nhóm, hoặc khớp với từ khóa hợp lệ của mục từ điển nguồn, hệ thống có thể đính kèm vào chính văn các cuộc trò chuyện nhóm gần đây, trò chuyện riêng, quà tặng và độ hảo cảm, mỗi lần tối đa 3 người.
 
-例如：你先在群里和某个角色谈了一件事，随后正文写“我去找他”。开启联动后，正文模型可收到相关群内互动摘要，减少两边完全割裂的情况。
+Ví dụ: bạn vừa bàn bạc một việc với nhân vật nào đó trong nhóm chat, sau đó ở chính văn viết “Ta đi tìm người đó”. Khi bật liên kết, mô hình chính văn sẽ nhận được tóm tắt tương tác liên quan trong nhóm, giảm tình trạng hai bên tách biệt hoàn toàn.
 
-生效需要：**成员有世界书来源、人物或关键词命中、本聊天剧情摘要注入开启、扩展群员记忆注入开启。** 它提供上下文，不保证模型一定照办，也不会把聊天历史写进原世界书。
+Để có hiệu lực cần thỏa mãn: **thành viên có nguồn từ Sách Thế Giới, tên nhân vật hoặc từ khóa khớp trong chính văn, cuộc trò chuyện hiện tại bật tiêm tóm tắt cốt truyện, và tiện ích bật tiêm ký ức thành viên nhóm.** Tính năng này cung cấp ngữ cảnh chứ không đảm bảo mô hình luôn làm theo 100%, và cũng không ghi lịch sử trò chuyện vào Sách Thế Giới gốc.
 
-## 六、1.1.4：群消息逐条删除
+## VI. 1.1.4: Xóa từng tin nhắn trong nhóm chat
 
-**入口：聊天群 → 聊天 →「🗑 管理」。** 每条消息显示删除按钮，「✓ 完成」退出管理。
+**Lối vào: Nhóm chat → Trò chuyện → 「🗑 Quản lý」.** Mỗi tin nhắn sẽ hiện nút xóa, bấm 「✓ Xong」 để thoát chế độ quản lý.
 
-| 类型 | 能否删除 | 后果 |
+| Loại tin nhắn | Có xóa được không | Hệ quả |
 |---|---|---|
-| 普通群员发言、自己的普通发言、系统提示 | 可以 | 从群消息列表移除 |
-| 未抢红包 | 确认后可以 | 消息与红包一起作废，符合条件的当日收红包计数减回 |
-| 未领取赠礼 | 确认后可以 | 消息与待领赠礼一起作废 |
-| 已抢红包 | 不可以 | 保留已入账的领取记录 |
-| 自己发出的红包 | 不可以 | 已扣的系统点或物品不因删消息退回 |
-| 已领赠礼 | 不可以 | 保留已入背包的领取记录 |
+| Tin nhắn thông thường của thành viên, tin nhắn thông thường của bạn, thông báo hệ thống | Được | Xóa khỏi danh sách tin nhắn nhóm |
+| Lì xì chưa giật | Được sau khi xác nhận | Tin nhắn và lì xì cùng bị hủy bỏ, bộ đếm số lì xì nhận trong ngày (nếu đủ điều kiện) được hoàn lại |
+| Quà tặng chưa nhận | Được sau khi xác nhận | Tin nhắn và quà tặng chờ nhận cùng bị hủy bỏ |
+| Lì xì đã giật | Không được | Giữ nguyên bản ghi nhận thưởng đã vào sổ |
+| Lì xì do chính bạn phát | Không được | Điểm Hệ Thống hoặc vật phẩm đã trừ không được hoàn lại khi xóa tin nhắn |
+| Quà tặng đã nhận | Không được | Giữ nguyên bản ghi nhận quà đã vào túi đồ |
 
-它管理终端内的诸天聊天群，不是酒馆主聊天楼层。删普通消息不会自动回滚已完成交易。
+Công cụ này quản lý Nhóm Chat Chư Thiên bên trong thiết bị đầu cuối, không phải các tầng tin nhắn của cuộc trò chuyện chính trong quán rượu. Xóa tin nhắn thông thường không tự động hoàn tác các giao dịch đã hoàn tất.
 
-## 七、1.1.4：最近一轮群聊重roll
+## VII. 1.1.4: Tạo lại (reroll) lượt trò chuyện nhóm gần nhất
 
-**入口：聊天群 → 聊天 →「↻ 重roll」。** 重roll就是保留输入，重新生成群员回复。
+**Lối vào: Nhóm chat → Trò chuyện → 「↻ Tạo lại」.** Tạo lại (reroll) nghĩa là giữ nguyên đầu vào và tạo lại phản hồi của các thành viên nhóm.
 
-- 适用于最近一轮发言回复，或最近一次自动闲聊。
-- 自己那句话保留；重试使用原来输入或剧情片段。
-- 新回复到达并提交替换前，旧轮仍保留；请求失败、超时不会先删空旧消息。
-- 替换时，该轮群员消息、截断提示、未抢红包、未领赠礼一起处理；红包计数与节奏同步调整，符合条件的禁言轮数恢复。
-- 已抢过该轮红包或领取赠礼，就不能重roll，避免保留旧收益后再领一遍。
-- **只支持最近一轮。** 保存最近5轮记录不等于可以任选五轮重来。
-- 1.1.3及以前的消息没有新轮次记录，不能追溯重roll，但允许删除的消息可逐条管理。
+- Áp dụng cho lượt phản hồi tin nhắn gần nhất, hoặc lần tự động tán gẫu gần nhất.
+- Câu nói của chính bạn được giữ nguyên; khi thử lại sẽ dùng đúng câu nhập hoặc đoạn cốt truyện ban đầu.
+- Trước khi phản hồi mới về tới nơi và được lưu thay thế, lượt cũ vẫn được giữ nguyên; nếu yêu cầu thất bại hoặc quá thời gian sẽ không xóa trắng tin nhắn cũ trước.
+- Khi thay thế, các tin nhắn thành viên, cảnh báo cắt cụt, lì xì chưa giật và quà tặng chưa nhận của lượt đó sẽ được xử lý cùng lúc; bộ đếm lì xì và nhịp độ được điều chỉnh đồng bộ, số lượt cấm ngôn đã tiêu hao trong lượt đó (nếu đủ điều kiện) được khôi phục.
+- Nếu trong lượt đó bạn đã giật lì xì hoặc đã nhận quà tặng thì không thể tạo lại nữa, tránh việc giữ nguyên lợi ích cũ rồi lại nhận thêm lần nữa.
+- **Chỉ hỗ trợ lượt gần nhất.** Việc lưu tối đa 5 lượt gần đây không có nghĩa là có thể tùy ý chọn 1 trong 5 lượt để làm lại.
+- Tin nhắn từ bản 1.1.3 trở về trước không có bản ghi lượt kiểu mới nên không thể tạo lại hồi tố, nhưng những tin nhắn được phép xóa vẫn có thể xóa từng tin.
 
-重roll会再次调用模型，服务商可能计费；它不是交易退款按钮。
+Tạo lại sẽ gọi lại mô hình nên nhà cung cấp dịch vụ có thể tính phí; đây không phải là nút hoàn tiền giao dịch.
 
-## 八、1.1.4：五项群聊生成设置与截断提示
+## VIII. 1.1.4: 5 mục cài đặt tạo trò chuyện nhóm và cảnh báo cắt cụt
 
-**入口：聊天群 → 群务 → 群聊生成。**
+**Lối vào: Nhóm chat → Việc nhóm → Tạo trò chuyện nhóm.**
 
-| 设置 | 1.1.3 | 当前可选范围 | 默认 |
+| Cài đặt | 1.1.3 | Phạm vi tùy chọn hiện tại | Mặc định |
 |---|---|---|---|
-| 最少发言人数 | 默认范围基本固定 | 1–6、8、10人 | 1人 |
-| 最多发言人数 | 默认范围基本固定 | 1–6、8、10人 | 6人 |
-| 每条字数上限 | 300字 | 120、200、300、400、600、800字 | 300字 |
-| 近期消息条数 | 16条 | 8、16、30、50条 | 16条 |
-| 输出上限 | 通常1200，或被默认接口设置覆盖 | 自动、1200、2000、3000、4000、6000、8000 | 自动 |
+| Số người phát biểu tối thiểu | Phạm vi mặc định cơ bản cố định | 1–6, 8, 10 người | 1 người |
+| Số người phát biểu tối đa | Phạm vi mặc định cơ bản cố định | 1–6, 8, 10 người | 6 người |
+| Giới hạn số chữ mỗi tin | 300 chữ | 120, 200, 300, 400, 600, 800 chữ | 300 chữ |
+| Số tin nhắn gần đây mang theo | 16 tin | 8, 16, 30, 50 tin | 16 tin |
+| Giới hạn đầu ra (max tokens) | Thường là 1200, hoặc bị cài đặt cổng mặc định ghi đè | Tự động, 1200, 2000, 3000, 4000, 6000, 8000 | Tự động |
 
-人数上下限设反时，另一项随之调整。实际人数还受可用群员、禁言和模型输出影响。自动闲聊通常最多3人，下限高于3时当前实现可以超过3人。
+Khi đặt mức tối thiểu lớn hơn mức tối đa, mục còn lại sẽ tự điều chỉnh theo. Số người thực tế còn phụ thuộc vào số thành viên hiện có, trạng thái cấm ngôn và đầu ra của mô hình. Tự động tán gẫu thông thường tối đa 3 người, nhưng nếu đặt mức tối thiểu cao hơn 3 thì bản hiện tại có thể vượt quá 3 người.
 
-### 默认输出预算也变了
+### Ngân sách đầu ra mặc định cũng đã thay đổi
 
-默认人数、字数、近期消息条数沿用旧值，但输出预算改为：
+Số người, số chữ và số tin nhắn gần đây mặc định vẫn giữ nguyên giá trị cũ, nhưng ngân sách đầu ra được đổi thành:
 
-`600 + 最多人数 ×（每条字数 + 20）`，自动限制1200–6000。
+`600 + Số_người_tối_đa × (Số_chữ_mỗi_tin + 20)`, tự động giới hạn trong khoảng 1200–6000.
 
-默认6人、300字计算得到 **2520 tokens**，比原先通常1200更宽。tokens是接口限制长度的单位，不直接等于中文字数；最终值还受接口配置影响。
+Với mặc định 6 người và 300 chữ, công thức tính ra **2520 tokens**, rộng rãi hơn mức 1200 trước đây. `tokens` là đơn vị giới hạn độ dài của cổng API, không bằng trực tiếp số chữ tiếng Việt/tiếng Trung; giá trị cuối cùng còn phụ thuộc vào cấu hình cổng kết nối.
 
-优先级现在为：**聊天群分功能接口上限 → 群务明确选定的上限 → 默认接口上限 → 自动估算**。群务选了具体值后可优先于默认接口，仍不能盖过聊天群专用接口上限。
+Thứ tự ưu tiên hiện tại là: **giới hạn của cổng API riêng cho Nhóm chat → giới hạn chọn cụ thể trong Việc nhóm → giới hạn cổng API mặc định → ước tính tự động**. Khi chọn một con số cụ thể trong Việc nhóm thì giá trị đó được ưu tiên hơn cổng mặc định, nhưng vẫn đứng sau giới hạn của cổng API chuyên biệt cho Nhóm chat.
 
-### 输出达到上限后增加明确提示
+### Thêm cảnh báo rõ ràng khi đầu ra chạm trần giới hạn
 
-独立API报告截断时，会丢掉最后一行，避免把可能只生成半条的内容当完整消息，并提示重roll、提高输出上限或减少人数与字数。因此截断时可能比以前少显示最后一行，这是主动舍弃不完整内容。
+Khi API độc lập báo bị cắt cụt (truncation), tiện ích sẽ bỏ dòng cuối cùng để tránh nhận một câu đang viết dở làm tin nhắn hoàn chỉnh, đồng thời hiện thông báo gợi ý Tạo lại, tăng giới hạn đầu ra hoặc giảm số người và số chữ. Vì vậy khi bị cắt cụt có thể hiển thị ít hơn trước một dòng cuối——đây là bước chủ động loại bỏ nội dung chưa hoàn chỉnh.
 
-**酒馆主API只返回文字，没有这套结束原因，不能可靠显示同样的截断警告。** 主API用户仍可调设置；没有警告不代表一定完整。
+**API chính của quán rượu chỉ trả về văn bản mà không trả về nguyên nhân kết thúc này, nên không thể hiển thị cảnh báo cắt cụt tương tự một cách đáng tin cậy.** Người dùng API chính vẫn có thể chỉnh các cài đặt trên; không thấy cảnh báo không có nghĩa là câu trả lời chắc chắn đầy đủ.
 
-## 九、1.1.4：减少账本误冻结，增加核对解冻
+## IX. 1.1.4: Giảm đóng băng nhầm sổ cái, thêm nút Kiểm tra và mở khóa
 
-以前保存后比对整份聊天变量，其他卡或脚本刚好改变无关数据，也可能触发“写入状态不明”；特殊值的保存形式和迟到的旧保存也会干扰。
+Trước đây sau khi lưu sẽ so sánh toàn bộ biến trò chuyện, nên nếu thẻ nhân vật hoặc kịch bản khác vừa khéo thay đổi dữ liệu không liên quan thì cũng có thể kích hoạt thông báo “trạng thái ghi không rõ ràng”; hình thức lưu của các giá trị đặc biệt và những lần lưu cũ đến trễ cũng gây nhiễu.
 
-现在核对本次写入改过的变量，并按可保存的数据形式比较。桥接流程读回不一致时，等约0.7秒尝试再保存、再读取；原生账本结算再读一次确认，不自动重写。真正无法确认时仍冻结，避免结果不明时重复扣费。
+Giờ đây hệ thống chỉ đối chiếu những biến thực sự thay đổi trong lần ghi này và so sánh theo dạng dữ liệu có thể lưu trữ. Trong luồng cầu nối (bridge), nếu đọc lại không khớp sẽ đợi khoảng 0.7 giây rồi thử lưu lại và đọc lại lần nữa; luồng kết toán sổ cái nguyên bản sẽ đọc lại thêm một lần để xác nhận chứ không tự động ghi đè lại. Khi thực sự không thể xác nhận thì vẫn đóng băng để tránh trừ phí lặp lại khi chưa rõ kết quả.
 
-新增 **设置 → 诊断与维护 → 核对并解冻账本**：
+Thêm mới **Cài đặt → Chẩn đoán & Bảo trì → Kiểm tra và mở khóa sổ cái**:
 
-- 服务器与页面一致：解冻，无需刷新。
-- 不一致：列差异，询问是否重载；同意后按服务器存档重新加载。
-- 没冻结：提示可以正常操作。
+- Bản lưu máy chủ và trên trang khớp nhau: mở khóa ngay, không cần làm mới trang.
+- Không khớp: liệt kê các mục khác biệt và hỏi có muốn tải lại trang hay không; sau khi đồng ý sẽ tải lại theo bản lưu trên máy chủ.
+- Không bị đóng băng: báo có thể thao tác bình thường.
 
-核对按钮不修改账本，不自动补发或退款。解冻后先看刚才操作是否已生效，再决定是否重做。
+Nút kiểm tra không sửa đổi sổ cái, không tự động phát bù hay hoàn tiền. Sau khi mở khóa, hãy kiểm tra xem thao tác vừa rồi đã có hiệu lực hay chưa rồi mới quyết định có làm lại hay không.
 
-## 十、1.1.4：记忆名称清洗，减少整批整理失败
+## X. 1.1.4: Làm sạch tên khóa ký ức, giảm lỗi thất bại cả loạt khi chỉnh lý
 
-记忆键是每条记忆的识别名。以前模型写出「林雪·关系」「任务：取钥匙」「Lin Xue」、全角字母或重复名称，可能使整批无法提交。
+Khóa ký ức là tên nhận diện của từng mục ký ức. Trước đây nếu mô hình viết ra các khóa như 「林雪·关系」, 「任务：取钥匙」, 「Lin Xue」, chữ toàn giác hoặc tên trùng lặp thì có thể khiến cả loạt không thể lưu.
 
-现在先规范全角字符、不允许字符改下划线、处理危险名称、去掉首尾多余分隔符、截到64字符。清洗后为空则生成识别名；同批重复名称保留后面一条，再交原有校验。
+Giờ đây hệ thống sẽ chuẩn hóa ký tự toàn giác trước, đổi các ký tự không được phép thành dấu gạch dưới, xử lý các tên nguy hiểm, cắt bỏ dấu phân cách thừa ở hai đầu và giới hạn ở 64 ký tự. Nếu sau khi làm sạch bị rỗng sẽ tự tạo tên nhận diện; nếu trong cùng một loạt có tên trùng nhau sẽ giữ lại mục đứng sau, rồi mới chuyển cho bộ kiểm tra nguyên bản.
 
-这减少名称格式造成的失败，**没有放宽证据、数量和内容等原有校验，也不会自动纠正模型写错的事实。**
+Việc này giúp giảm lỗi thất bại do định dạng tên, **nhưng không nới lỏng các bước kiểm tra nguyên bản về bằng chứng, số lượng và nội dung, cũng không tự động sửa những sự thật mà mô hình viết sai.**
 
-## 十一、1.1.4：思维链草稿保护与最新楼层检查
+## XI. 1.1.4: Bảo vệ bản nháp trong chuỗi suy nghĩ và kiểm tra tầng mới nhất
 
-思维链是模型思考段，例如`<think>…</think>`；数据块是正文末尾用于记账的`<ZhuTianPanel>`。
+Chuỗi suy nghĩ là đoạn suy luận của mô hình, ví dụ `<think>…</think>`; khối dữ liệu là `<ZhuTianPanel>` ở cuối chính văn dùng để ghi sổ.
 
-已复现的问题：思考里有未闭合草稿，正文末尾又有正式数据块，旧解析可能连成一段，把思考结束标签和正文一起吞掉，导致正文消失、草稿数值被显示、正式数据未入账。
+Lỗi đã tái hiện được: trong phần suy nghĩ có bản nháp chưa đóng thẻ, còn ở cuối chính văn lại có khối dữ liệu chính thức, bộ phân tích cũ có thể nối liền hai chỗ thành một đoạn và nuốt mất cả thẻ đóng suy nghĩ lẫn chính văn, dẫn tới mất chính văn, hiển thị nhầm chỉ số nháp và dữ liệu chính thức không được ghi sổ.
 
-本次具体处理：
+Cách xử lý cụ thể trong bản này:
 
-1. 思考里的草稿标签改为全角，内容可读但不再当正式记账块。
-2. 楼层渲染、账本绑定、旧数据块过滤跳过数据块外思考段，旧楼层同类内容也按新解析处理。
-3. 修复时保护思考标签，包括预填充只留下结束标签的情况。
-4. 只有思考里有数据块时，按规则移到正文后，并保留思考标签。
-5. 思考未闭合时，避免继续做其他修复或补记。
-6. 检查保护内容是否正确放回，未满足时保持整条原文。
-7. 思考里的系统台词不再误画为语音卡。
-8. 每轮格式提醒默认从深度0改为1，可在设置调整，提醒文字也修改。
+1. Đổi thẻ bản nháp trong phần suy nghĩ sang ký tự toàn giác để nội dung vẫn đọc được bình thường nhưng không bị coi là khối ghi sổ chính thức nữa.
+2. Khi kết xuất tầng tin nhắn, ràng buộc sổ cái và lọc khối dữ liệu cũ đều bỏ qua đoạn suy nghĩ nằm ngoài khối dữ liệu; nội dung tương tự ở các tầng cũ cũng được xử lý theo bộ phân tích mới.
+3. Bảo vệ các thẻ suy nghĩ trong quá trình sửa lỗi, bao gồm cả trường hợp điền sẵn (prefill) chỉ để lại thẻ đóng.
+4. Khi chỉ có khối dữ liệu nằm bên trong phần suy nghĩ, hệ thống sẽ chuyển nó ra sau chính văn theo quy tắc và giữ nguyên các thẻ suy nghĩ.
+5. Khi phần suy nghĩ chưa đóng thẻ, hệ thống tránh tiếp tục thực hiện các bước sửa lỗi hay ghi bổ sung khác.
+6. Kiểm tra xem nội dung được bảo vệ có được đặt trả lại đúng hay không, nếu không thỏa mãn sẽ giữ nguyên toàn bộ nguyên văn.
+7. Lời thoại hệ thống nằm trong phần suy nghĩ không còn bị vẽ nhầm thành thẻ thoại nữa.
+8. Nhắc định dạng mỗi lượt mặc định đổi từ độ sâu 0 sang độ sâu 1 (có thể chỉnh trong Cài đặt) và cập nhật lại nội dung câu nhắc.
 
-**原世界书的所有深度0条目没有自动改掉。** 依赖预填充开启思考的预设可能仍需调整世界书深度；非诸天聊天反馈的标签异常未复现，不能说所有思维链问题都已解决。
+**Tất cả các mục ở độ sâu 0 trong Sách Thế Giới gốc không bị tự động sửa đổi.** Các thiết lập sẵn (preset) phụ thuộc vào điền sẵn (prefill) để mở đầu chuỗi suy nghĩ có thể vẫn cần chỉnh độ sâu trong Sách Thế Giới; hiện tượng lỗi thẻ được phản hồi ở các cuộc trò chuyện không phải Chư Thiên chưa tái hiện được, nên không thể khẳng định mọi vấn đề về chuỗi suy nghĩ đều đã được giải quyết hoàn toàn.
 
-新增 **设置 → 诊断与维护 →「检查最新楼层：插件动过吗？」**：查看是否诸天存档、本层是否改写、有无原文备份、思考与推理框情况、是否由插件渲染，以及各扩展注入提示的位置、深度和角色。报告会尝试复制，便于反馈。
+Thêm mới **Cài đặt → Chẩn đoán & Bảo trì → 「Kiểm tra tầng mới nhất: Tiện ích có can thiệp không?」**: xem cuộc trò chuyện có phải bản lưu Chư Thiên không, tầng này có bị viết lại không, có bản sao lưu nguyên văn không, tình trạng thẻ suy nghĩ và khung suy luận, có phải do tiện ích kết xuất không, cũng như vị trí, độ sâu và vai trò của các lời nhắc do mọi tiện ích mở rộng đang tiêm vào. Báo cáo sẽ tự động sao chép vào bộ nhớ tạm để tiện gửi phản hồi.
 
-## 十二、1.1.5-r1：五项后续修补
+## XII. 1.1.5-r1: 5 bản vá tiếp theo
 
-| 条件 | r1之前可能发生什么 | 当前处理 |
+| Điều kiện | Trước bản r1 có thể xảy ra chuyện gì | Cách xử lý hiện tại |
 |---|---|---|
-| 群聊或群员私聊正在读世界书，连点或撞上自动闲聊 | 尚未标记忙碌时挤进另一轮，重复请求和回复 | 读书前进入忙碌状态，收紧这一段重复触发窗口 |
-| 关闭整个聊天群 | 内置世界书群规则仍可能发给正文，模型继续以为有群 | 从本轮副本去掉群联动条目，重开恢复，原书不改 |
-| 刚发正文首次提到来源群员 | 群员记忆晚一轮才跟上 | 用户消息入聊天后再刷新摘要 |
-| 换人设后旧记录仍叫莉莉丝 | 模型又用旧名、旧口吻 | 新规则附加称呼对照，高级整段替换也附带 |
-| 名字一个字或含特殊替换字符 | 「我说」误认成系统台词，或识别受字符影响 | 至少两个非空白字符，修正特殊字符处理 |
+| Khi trò chuyện nhóm hoặc trò chuyện riêng với thành viên đang đọc Sách Thế Giới mà bấm gửi liên tiếp hoặc đụng đúng lúc tự động tán gẫu | Khi chưa kịp đánh dấu bận có thể chen thêm một lượt nữa, gây gửi yêu cầu và trả lời trùng lặp | Đánh dấu trạng thái bận ngay trước khi đọc Sách Thế Giới, khép kín khoảng trống kích hoạt trùng lặp này |
+| Tắt toàn bộ Nhóm chat | Quy tắc nhóm chat trong Sách Thế Giới tích hợp sẵn vẫn có thể gửi cho chính văn, khiến mô hình tưởng rằng vẫn còn nhóm chat | Loại bỏ mục liên kết nhóm khỏi bản sao của lượt tạo này, bật lại sẽ khôi phục, không sửa sách gốc |
+| Chính văn vừa gửi lần đầu nhắc tới thành viên có nguồn từ Sách Thế Giới | Ký ức thành viên nhóm bị trễ một lượt mới theo kịp | Làm mới bản tóm tắt ngay sau khi tin nhắn người dùng đi vào cuộc trò chuyện |
+| Sau khi đổi nhân cách, lịch sử cũ vẫn gọi là Lilith | Mô hình lại quay về dùng tên cũ và giọng điệu cũ | Quy tắc mới đính kèm thêm phần Đối chiếu danh xưng, phần thay thế nguyên đoạn nâng cao cũng tự động đính kèm |
+| Tên nhân cách chỉ có 1 ký tự hoặc chứa ký tự thay thế đặc biệt | Câu tự thuật kiểu 「Ta nói」 bị nhận nhầm thành lời thoại hệ thống, hoặc việc nhận diện bị ký tự đặc biệt làm lệch | Yêu cầu tối thiểu 2 ký tự khác khoảng trắng và sửa cách xử lý ký tự đặc biệt |
 
-这五项是1.1.5新功能的后续修补；r1未另升显示版本，需要从诊断看修订。
+5 mục trên là các bản vá bổ sung cho tính năng mới của 1.1.5; bản r1 không tăng số phiên bản hiển thị riêng nên cần xem số bản sửa đổi trong phần chẩn đoán.
 
-## 十三、说明书和界面小项
+## XIII. Sách hướng dẫn và các mục giao diện nhỏ
 
-- **1.1.4内置说明书**：终端导航新增说明书，目录、章节跳转、按章搜索，多关键词用空格分开。
-- **1.1.5扩充快速版**：补人设、功能开关、世界书召唤与群员记忆，目前19章。
-- **后续详细教程交付**：40章在线版和离线HTML，包含逐按钮、费用、保存与恢复，网页带搜索、目录、打印、返回顶部和手机阅读。插件内快速版没有被替换成40章。
-- **模块退出处理**：补齐说明书退出处理，修正停用时可能出现的缺失处理警告。
-- **设置分组名称**：原「莉莉丝」分组改为「系统助手」，显示当前人设相关说明。
+- **Sách hướng dẫn tích hợp từ 1.1.4**: thanh điều hướng thiết bị đầu cuối thêm trang Hướng dẫn với mục lục, nhảy chương và tìm kiếm theo chương, hỗ trợ nhiều từ khóa cách nhau bằng dấu cách.
+- **Mở rộng bản tra cứu nhanh trong 1.1.5**: bổ sung nhân cách, công tắc tính năng, triệu hồi Sách Thế Giới và ký ức thành viên nhóm, hiện có 19 chương.
+- **Bàn giao tài liệu hướng dẫn chi tiết**: bản trực tuyến 40 chương và tệp HTML ngoại tuyến, giải thích từng nút bấm, chi phí, phạm vi lưu và cách khôi phục, trang web có tìm kiếm, mục lục, in ấn, quay về đầu trang và giao diện đọc trên điện thoại. Bản tra cứu nhanh bên trong tiện ích không bị thay thành 40 chương.
+- **Xử lý khi thoát mô-đun**: bổ sung hàm dọn dẹp khi đóng trang Hướng dẫn, sửa cảnh báo thiếu hàm xử lý có thể xuất hiện khi tắt tiện ích.
+- **Tên nhóm cài đặt**: nhóm 「Lilith」 trước đây được đổi tên thành 「Trợ lý hệ thống」 và hiển thị mô tả theo nhân cách hiện tại.
 
-[在线详细教程](USER-GUIDE-1.1.5.md) · [可搜索网页版文件](USER-GUIDE-1.1.5.html)。在线教程直接阅读；HTML下载后打开。
+[Hướng dẫn chi tiết trực tuyến](USER-GUIDE-1.1.5.md) · [Tệp phiên bản web có tìm kiếm](USER-GUIDE-1.1.5.html). Bản trực tuyến có thể đọc ngay; tệp HTML tải về rồi mở bằng trình duyệt.
 
-## 十四、为什么更新后有些地方看起来没变化
+## XIV. Tại sao sau khi cập nhật một số nơi trông như không thay đổi
 
-| 情况 | 原因与查看方法 |
+| Tình huống | Nguyên nhân và cách kiểm tra |
 |---|---|
-| 仍然是莉莉丝 | 默认沿用；去人设页选择并保存 |
-| 旧回复还是旧名字 | 历史不重写，观察下一次生成或私聊 |
-| 导航仍和以前一样多 | 不自动替你隐藏，去功能开关选择页面 |
-| 老群员没有书中资料 | 旧招募成员不会自动匹配条目，来源由新召唤流程登记 |
-| 正文没表现出群内互动 | 检查来源、人物命中、两处注入开关；真实模型利用仍需观察 |
-| 旧消息不能重roll | 无新轮次记录，需要更新后生成一轮 |
-| 群回复仍短 | 默认每条仍300字，分功能上限可能覆盖，模型也可以少写 |
-| 没明显感到保存或思考变化 | 保护针对特定错误条件，不主动改正常回复 |
-| 助手开关改了没生效 | 助手窗口需刷新，自动记忆和闲聊还要看当前聊天设置 |
+| Vẫn là Lilith | Mặc định giữ nguyên thiết lập cũ; hãy vào trang Nhân cách để chọn và lưu |
+| Phản hồi cũ vẫn mang tên cũ | Lịch sử cũ không bị viết lại, hãy quan sát ở lần tạo văn bản hoặc trò chuyện riêng tiếp theo |
+| Thanh điều hướng vẫn nhiều trang như trước | Hệ thống không tự ý ẩn trang thay bạn, hãy vào Công tắc tính năng để chọn ẩn/hiện trang |
+| Thành viên nhóm cũ không có tư liệu sách | Thành viên chiêu mộ kiểu cũ không tự động ghép mục từ điển, nguồn sách chỉ được đăng ký qua quy trình triệu hồi mới |
+| Chính văn không thể hiện tương tác trong nhóm | Kiểm tra nguồn thành viên, từ khóa/tên nhân vật có xuất hiện trong chính văn không, và cả hai công tắc tiêm tóm tắt đã bật chưa; mức độ tận dụng của mô hình thật vẫn cần quan sát thêm |
+| Tin nhắn cũ không tạo lại (reroll) được | Không có bản ghi lượt kiểu mới, cần tạo một lượt mới sau khi cập nhật |
+| Phản hồi nhóm vẫn ngắn | Mặc định mỗi tin vẫn là 300 chữ, giới hạn cổng theo tính năng có thể đang ghi đè, hoặc bản thân mô hình viết ngắn |
+| Không thấy khác biệt rõ rệt khi lưu hay trong chuỗi suy nghĩ | Cơ chế bảo vệ chỉ kích hoạt khi gặp điều kiện lỗi cụ thể, không chủ động sửa đổi các phản hồi bình thường |
+| Đổi công tắc trợ lý mà chưa thấy tác dụng | Cửa sổ trợ lý cần làm mới trang, còn tự động chỉnh lý ký ức và tán gẫu vẫn phải xem cài đặt của cuộc trò chuyện hiện tại |
 
-**1.1.3已具备、本次不能重复算新增的内容：** 悬浮窗关闭与切换分开、最小20%尺寸、终端×只关终端、经典折叠集中请求，以及此前的羁绊筛选、管理员面板、红包补登、神品保底。
+**Những nội dung đã có từ 1.1.3, không tính lặp lại là tính năng mới của đợt này:** tách riêng đóng và chuyển đổi cửa sổ nổi, kích thước tối thiểu 20%, nút × chỉ đóng thiết bị đầu cuối, rút thẻ Gộp cổ điển gom thành một yêu cầu, cùng bộ lọc trang Quan hệ, Bảng điều khiển Quản trị viên, đăng ký bù lì xì và bảo hiểm Thần phẩm trước đó.
 
-商城与抽卡的概率、神品和禁忌基础规则、群红包上限、招募与降临基础收费不是本次重新设计。说明书更正固定降临费、固定扩建费、解绑范围等描述，是纠正文档，不代表本次又改了收费或解绑功能。
+Xác suất của Thương thành và rút thẻ, quy tắc cơ bản của Thần phẩm và Cấm kỵ, trần lì xì nhóm, biểu phí cơ bản của chiêu mộ và giáng lâm không phải được thiết kế lại trong đợt này. Việc sách hướng dẫn đính chính lại mô tả về phí giáng lâm cố định, phí mở rộng nhóm cố định hay phạm vi gỡ liên kết là để chuẩn hóa tài liệu, không có nghĩa là đợt này lại sửa đổi tính năng tính phí hay gỡ liên kết.
 
-## 十五、更新与旧存档兼容
+## XV. Cập nhật và tương thích với bản lưu cũ
 
-1. 设置 → 账本与存档 → 导出 / 导入存档，先备份。
-2. 酒馆扩展管理中更新本插件，完成后刷新；仅刷新不会下载代码。
-3. 复制诊断确认版本1.1.5、修订1.1.5-r1，再按需要启用新设置。
+1. Vào Cài đặt → Sổ cái & Bản lưu → Xuất / Nhập bản lưu để sao lưu trước.
+2. Cập nhật tiện ích này trong phần Quản lý tiện ích mở rộng của quán rượu, sau khi xong hãy làm mới trang; chỉ làm mới trang sẽ không tải mã nguồn mới về.
+3. Sao chép thông tin chẩn đoán để xác nhận phiên bản 1.1.5, bản sửa đổi 1.1.5-r1, sau đó bật các cài đặt mới theo nhu cầu.
 
-账本结构仍为2，存储标识沿用，世界书规则仍为1.1.1。旧聊天继续使用；新增群聊轮次与生成设置、人设和模块设置、群员世界书来源等数据，无需清空旧存档或重新覆盖整本诸天世界书。
+Phiên bản cấu trúc sổ cái vẫn là 2, giữ nguyên khóa lưu trữ, quy tắc Sách Thế Giới vẫn là 1.1.1. Các cuộc trò chuyện cũ tiếp tục sử dụng bình thường; dữ liệu mới như lượt trò chuyện nhóm & cài đặt tạo, cài đặt nhân cách & mô-đun, nguồn Sách Thế Giới của thành viên nhóm… được bổ sung tự nhiên mà không cần xóa bản lưu cũ hay ghi đè lại toàn bộ Sách Thế Giới Chư Thiên.
 
-已有设置补齐缺失字段，不会强制把旧细项全部开启。例如角色卡功法同步默认仍关闭，各聊天自动闲聊仍按自身设置。
+Các cài đặt sẵn có chỉ điền bù những trường còn thiếu chứ không ép bật toàn bộ các mục chi tiết cũ. Ví dụ đồng bộ công pháp thẻ nhân vật mặc định vẫn tắt, và tự động tán gẫu của từng cuộc trò chuyện vẫn tuân theo cài đặt riêng của cuộc trò chuyện đó.
 
-## 十六、验证范围与依据
+## XVI. Phạm vi kiểm증 và căn cứ
 
-r1发布记录为449项自动测试通过。本次报告重写核对源码与版本差异，没有把历史测试当作今天重新完成的实测。隔离酒馆中的人设、召唤和记忆使用模拟模型验证，真实模型扮演、实体手机及部分原版付费操作仍未完整验收。历史浏览器回归中「动态效果精简」仍有一项失败，旧1.1.3也可复现，本次未宣称修好。
+Hồ sơ phát hành r1 ghi nhận 449 bài kiểm tra tự động đều vượt qua. Báo cáo này được biên soạn lại bằng cách đối chiếu mã nguồn và khác biệt giữa các phiên bản, không coi các bài kiểm tra lịch sử là kết quả thử nghiệm thực tế vừa chạy lại hôm nay. Các tính năng nhân cách, triệu hồi và ký ức trong quán rượu cô lập được kiểm chứng bằng mô hình giả lập; hiệu quả nhập vai trên mô hình thật, điện thoại vật lý cũng như một số thao tác thanh toán nguyên bản vẫn chưa được nghiệm thu toàn diện. Trong bộ kiểm tra hồi quy trình duyệt lịch sử, mục 「Rút gọn hiệu ứng động」 vẫn còn 1 lỗi chưa đạt vốn cũng tái hiện được trên bản 1.1.3 cũ, đợt này không tuyên bố đã sửa xong mục đó.
 
-依据：1.1.3代码`96d477b`与1.1.5-r1代码`8bbb23d`差异，以及[1.1.4变更](CHANGES-1.1.4.md)、[1.1.5与r1变更](CHANGES-1.1.5.md)、[1.1.5验收](ACCEPTANCE-1.1.5.md)。后续文档提交不代表新的插件功能版本。
+Căn cứ: khác biệt giữa mã nguồn 1.1.3 `96d477b` và mã nguồn 1.1.5-r1 `8bbb23d`, cùng [Thay đổi 1.1.4](CHANGES-1.1.4.md), [Thay đổi 1.1.5 và r1](CHANGES-1.1.5.md), [Nghiệm thu 1.1.5](ACCEPTANCE-1.1.5.md). Các lần commit tài liệu tiếp theo không đại diện cho phiên bản tính năng mới của tiện ích.

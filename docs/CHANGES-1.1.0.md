@@ -1,66 +1,60 @@
-# 1.1.0 · 玩家反馈修复
+# 1.1.0 · Sửa lỗi từ phản hồi người chơi
 
-> **最新修订 1.1.0-patch3**：330/330单测、10套浏览器301/301。三项P1修复及安全上下文/协议/Web Locks/保存失败诊断见 [PATCH-1.1.0-3](PATCH-1.1.0-3.md)。下文此前复查的305/238等结果为历史批次，不是最新总数。真实模型和实体手机仍未验证。
+> **Bản sửa đổi mới nhất 1.1.0-patch3**: 330/330 bài kiểm thử đơn vị, 10 bộ trình duyệt đạt 301/301. Ba bản sửa lỗi P1 cùng chẩn đoán ngữ cảnh bảo mật / giao thức / Web Locks / lỗi lưu trữ xem tại [PATCH-1.1.0-3](PATCH-1.1.0-3.md). Các kết quả 305/238 của đợt phúc tra trước bên dưới là lô lịch sử, không phải tổng số mới nhất. Mô hình thực tế và điện thoại vật lý vẫn chưa được xác minh.
 
+Sửa đổi tăng thêm dựa trên `ce29f61a9c254517fdf1fae2385b83b55cfa3688` (1.0.0) của nhánh main kho lưu trữ chỉ định. Phiên bản plugin 1.1.0, phiên bản cấu trúc sổ cái 2, phiên bản quy tắc Sách Thế Giới 1.1.0. `vendor/original/*` giữ nguyên cấu trúc và kiểm tra nguồn gốc.
 
-基于指定仓库 main 的 `ce29f61a9c254517fdf1fae2385b83b55cfa3688`（1.0.0）增量修改；不是另起一套旧版重做。插件版本 1.1.0，账本结构版本 2，世界书规则版本 1.1.0。`vendor/original/*` 未修改，原始来源校验保留。
+## Cửa sổ & Lối vào
 
-## 窗口与入口
+- Thanh tiêu đề bổ sung nút chuyển đổi rõ ràng 「Toàn màn hình / Cửa sổ nổi」. Cửa sổ nổi trên màn hình cảm ứng hỗ trợ kéo thanh tiêu đề, thu phóng ở góc dưới bên phải và giới hạn trong khung nhìn; kích thước cửa sổ nổi trên điện thoại được lưu độc lập, không ghi đè kích thước cửa sổ máy tính ban đầu.
+- Nút 「Đặt lại cửa sổ」 nguyên bản khi ở bố cục cảm ứng sẽ đặt lại kích thước trên điện thoại. Xử lý đầy đủ `pointercancel`, mất bắt con trỏ, mất tiêu điểm, ẩn trang và dọn dẹp khi gỡ tải.
+- **Lối vào hình tròn** có thể kéo ra mép trái/phải để thu gọn, chạm nhẹ vào phần mép lộ ra để khôi phục; lưu vị trí và trạng thái thu gọn, phân biệt rõ thao tác bấm và kéo, cũng như phân biệt trạng thái đang neo trên thanh tiêu đề.
 
-- 标题栏增加明确的「全屏 / 浮窗」切换。触屏浮窗支持标题栏拖动、右下角缩放、视窗约束；手机浮窗尺寸独立保存，不覆盖原来的桌面窗口尺寸。
-- 原「窗口复位」按钮在触屏布局下重置手机尺寸。处理 pointercancel、丢失指针捕获、失焦、页面隐藏和卸载清理。
-- **圆形入口**可拖到左右边缘收起，轻点露出的边缘恢复；保存位置与收起状态，区别点击/拖动，也区别标题栏停靠状态。本项不是立绘悬浮窗改造。
+## API & Chẩn đoán lỗi
 
-## API 与错误诊断
+- Kiểm tra kết nối và chiêu mộ mặc định dùng 4096 tokens; Thu nạp cốt truyện và tạo hàng hóa sử dụng ngân sách tính năng 8192. Đầu ra tối đa mặc định/cấu hình sẵn được lưu vào cấu hình kết nối chung; giới hạn trần theo từng tính năng được ưu tiên cao nhất, tiếp theo là giới hạn trần tường minh chung, rồi tới ngân sách tính năng.
+- Chẩn đoán tách biệt giữa chính văn rỗng và bị cắt cụt; chỉ khi cổng kết nối thực sự trả về dấu hiệu suy luận mới báo là có nội dung suy luận. Không hiển thị nguyên văn suy luận, không quy kết mọi trường hợp chính văn rỗng là do cạn token suy luận.
+- Khi không đặt giới hạn trần tường minh mà gặp chính văn rỗng do cắt cụt, hệ thống sẽ thử lại tối đa một lần với ngân sách mở rộng lên 8192; nếu có giới hạn trần tường minh sẽ không vượt qua. Lỗi HTTP/cổng kết nối không bị ngụy trang thành chính văn bình thường.
+- Chiêu mộ tạo và xác minh trước, chỉ khi thành công và trạng thái không đổi mới trừ nguyên tử 100 Điểm Hệ Thống và lưu ứng viên; khi thất bại không trừ trước rồi hoàn sau, giữ nguyên ứng viên cũ.
 
-- 连接测试、招募默认 4096 tokens；剧情收纳及商品生成使用 8192 功能预算。默认/预设最大输出保存到公共连接配置；分功能上限优先，其次公共显式上限，再其次功能预算。
-- 空正文与截断分别诊断；只有接口实际返回思考标记时才说明存在思考内容。不展示思考原文，不把所有空正文都说成思考耗尽。
-- 无显式上限且空正文截断时，最多一次扩大预算重试，上限 8192；显式上限不越过。HTTP/网关错误不伪装为正常正文。不额外塞未经确认的模型专用参数。
-- 招募先生成并验证，成功且状态未变才原子扣100系统点并保存候选；失败不先扣后退，保留旧候选。模型 API 请求本身仍可能收费。
+## Bản ghi thao tác
 
-## 操作记录
+- Phân biệt rõ giữa bản ghi hiển thị, chứng từ sổ cái và bản tóm tắt gửi vào cốt truyện. Làm mới kho hàng không còn đưa vào danh sách chờ gửi hiển thị; phân giải/thu hồi mặc định không tích chọn, hỗ trợ chọn tất cả, bỏ chọn tất cả, chọn theo phân loại, xóa trống danh sách hiển thị và xem trước nội dung gửi.
+- Xem trước chỉ ghi vào ô nhập liệu chính để người dùng chủ động gửi đi; phân giải/thu hồi được gộp tóm tắt. Lối vào mới loại bỏ lớp bọc từ khóa mô-đun cũ; bản sao lịch sử gửi chỉ rút gọn các lớp bọc thao tác hệ thống cũ nhận diện được, không xóa lịch sử trò chuyện cũ, bản chụp nhanh bảng hay chứng từ giao dịch.
+- Các giao dịch gốc mới có thêm nhật ký thao tác cục bộ lưu 100 mục gần nhất, không tự động gửi cho mô hình và không phải là lối vào hoàn tác.
 
-- 将展示记录、账本凭据和送入剧情的摘要区分。刷新不再加入待发送展示；分解/回收默认不选，支持全选、全不选、按分类选择、清空展示和发送预览。
-- 预览只写入主输入框，由用户发送；分解/回收合并摘要。新入口移除已知的模块关键词包装；历史发送副本只精简可识别的旧系统操作包装，不删除旧聊天、面板快照或交易凭据。
-- 新原生交易另有最近100条本地操作日志，不自动发给模型，不是撤销入口。
+## Thu nạp cốt truyện (Độc lập với Ước nguyện)
 
-## 剧情收纳（独立于许愿）
+- Thiết bị đầu cuối thêm mới trang 「Thu nạp cốt truyện」, cũng có thể đi vào từ thanh công cụ của các trang liên quan. Mỗi lần chọn từ 1–10 tầng với tổng độ dài chính văn trợ lý không quá 24.000 chữ; có thể tùy chọn đính kèm mô tả thẻ nhân vật / một Sách Thế Giới để phục vụ phán đoán phẩm giai.
+- Đầu ra của mô hình bắt buộc phải có bằng chứng nguyên văn từng chữ thực tế, tuyên bố quyền sở hữu rõ ràng, phân loại và số lượng nguyên dương; người dùng xem trước, tích chọn xác nhận quyền sở hữu và chỉnh lại số lượng / phẩm giai hệ thống rồi mới gửi lưu, không tự động nhận.
+- Lưu lại phẩm giai thế giới gốc, thế giới, nguồn nguyên văn và chứng từ; hỗ trợ ánh xạ phẩm giai thế giới do người dùng xác nhận rõ ràng. Các mục chưa rõ phẩm giai được lưu tạm riêng thành 「Chờ giám định」 (`待鉴定`), không âm thầm đưa vào túi đồ dưới dạng Phàm phẩm; sau khi xác nhận thủ công mới chính thức nhập kho.
+- Cùng một chứng từ nguồn không thể nhận lặp lại; vật phẩm cùng tên đã có sẵn mặc định từ chối nối thêm, chỉ khi xác nhận rõ là nhận thêm phần mới mới được tích chọn nối thêm; công pháp cùng tên không thêm lặp lại. Vật phẩm ghi vào túi đồ thống nhất, công pháp ghi vào kho công pháp thống nhất và đồng bộ bản chụp nhanh.
+- Ghi bù không thu phí; vật phẩm chưa định giá có giá danh nghĩa là 1, việc đính chính phẩm giai không làm tăng giá thu hồi.
 
-- 终端新增「剧情收纳」，也可由相关页工具入口进入。每次选1–10楼层、助手正文总长不超过24000字；可自选附带角色卡描述/一份世界书供品阶判断。
-- 模型输出必须有真实逐字证据、明确归属声明、类型和正整数数量；用户预览，勾选确认归属并修正数量/系统品阶后才提交，不自动领取。
-- 保存原世界品阶、世界、原文来源和凭据；支持用户明确确认的世界品阶映射。未知项单独暂存为「待鉴定」，不偷偷按凡品进背包；手动确认后正式入库。
-- 同一来源凭据不能重复领；已有同名物品默认拒绝追加，明确新增一份才能勾选追加；同名功法不重复添加。物品写统一背包，功法写统一功法库并同步快照。
-- 补录不收费；未估价物品名义价格1，品阶更正不抬高回收价。人工确认仍不可少：逐字证据不能替代世界观语义和归属判断。
+## Gắn kết đa nhân vật
 
-## 多人羁绊
+- Hồ sơ đa nhân vật mới tạo ID ổn định dựa theo Thế giới + Họ tên, tương thích phản chiếu với mục 「恋爱目标」 (Mục tiêu tình yêu) cũ; khi động cơ cũ đổi họ tên gắn kết tại chỗ sẽ không kế thừa nhầm ID, độ hảo cảm và các trường không đổi của người trước đó.
+- Danh sách gắn kết, tìm kiếm, xem chi tiết, chuyển đổi tường minh mục tiêu hiện tại và nhảy tới đồ phổ quan hệ. Chỉ xem chi tiết sẽ không làm đổi mục tiêu hiện tại và không phát thưởng; phân biệt người trùng tên xuyên thế giới, không tự động biến đả thủ / thành viên nhóm chat thành đối tượng tình yêu.
 
-- 新多人档案以世界+姓名生成稳定ID，兼容旧「恋爱目标」镜像；旧引擎原地换绑定姓名时，不继承前一人的ID、好感度和未变化字段。
-- 羁绊列表、搜索、详情、显式切换当前目标及关系图跳转。只查看不切换，不发奖；同名跨世界区分，不把打手/群员自动变成恋爱对象。
-- 不对所有历史正文做自动多人事实抽取。旧数据只有单个恋爱目标时，只能迁移已有目标；无法无依据重建已经丢失的人物数据。
+## Thương thành & Hộp mù
 
-## 商城与盲盒
+- Hai bộ tùy chỉnh độc lập: Hỗn hợp Chư Thiên / Thế giới hiện tại / Tác phẩm chỉ định, Đề tài, Phân loại, Công dụng, Mục loại trừ, Cho phép sáng tác gốc, Tránh trùng lặp gần đây / Cho phép lặp lại vật phẩm tiêu hao.
+- Phân bổ phẩm giai và ô nội dung ngay tại máy cục bộ; tạo theo từng lô tối đa 8 món, mỗi lô bù khuyết tối đa 3 vòng; khử trùng lặp tên và hiệu quả tương tự trong cùng lô và gần đây, lưu lịch sử 160 mục, trong lời nhắc mang theo tối đa 50 mục.
+- Thương thành 500 điểm / 8 món, cơ bản gồm 4 Phàm 3 Linh 1 Tiên, có 10% cơ hội thay 1 món bằng Thần phẩm. Hàng thông thường không bị giới hạn bởi cấp độ thương thành, cảnh giới hay thế giới; không cưỡng ép áp đặt hồi chiêu hay phản phệ để cân bằng.
+- Hộp mù 10.000 điểm / lượt, mỗi lần rút từ 1–200 lượt: Phàm 60%, Linh 38%, Tiên 1.9%, Thần 0.1%; lượt thứ 100 bảo hiểm Tiên phẩm, nổ Thần phẩm không đặt lại bảo hiểm Tiên phẩm; Cấm kỵ không nằm trong bể hộp mù.
+- Hàng Cấm kỵ chỉ kiểm tra tư cách khi nhận: ít nhất 10 tỷ Điểm Hệ Thống, ít nhất 1 Quân Bài Nhân Quả, 2% cơ hội xuất hiện khi nhập hàng; khi mua thanh toán giá kho hàng + 1 Quân Bài Nhân Quả và không áp dụng giảm giá. Sau khi nhận được không áp đặt thêm giới hạn sử dụng.
+- Toàn bộ lô vượt qua kiểm tra hợp lệ mới gửi lưu chi phí, kho hàng / vật phẩm chờ xử lý và bảo hiểm trong một lần duy nhất; JSON hỏng, sản phẩm không đạt chuẩn hoặc cuộc trò chuyện/chính văn thay đổi trước khi gửi lưu sẽ hủy bỏ ngay, không trừ phí trước rồi hoàn tiền sau.
 
-- 两套独立定制：诸天混合/当前世界/指定作品、题材、类别、用途、排除项、允许原创、近期避重/允许消耗品重复。
-- 本地分配品阶和内容槽位；按最多8件一批生成，每批最多3轮补缺；批内、近期名称和相似效果去重，历史保留160项，提示最多携带50项。近似去重是文本启发式，不保证语义完全不同或原作声明真实。
-- 商城500点/8件，基础4凡3灵1仙，10%机会换入一件神品。普通品不受商城等级、境界或世界限制；不为平衡强加冷却、反噬等使用限制。
-- 盲盒10000点/抽，一次1–200抽：凡60%、灵38%、仙1.9%、神0.1%；第100抽仙品保底，神品不重置仙品保底；禁忌不在盲盒池。文案与本地抽样规则一致。
-- 禁忌仅获得时检查资格：至少100亿系统点、至少1因果筹码，2%进货机会；购买支付库存价+1因果筹码且不打折。获得后没有追加使用限制。旧禁忌库存缺少可核验获得代价时需重新进货。
-- 全批通过校验后才一次提交费用、库存/待处理物品与保底；坏JSON、不合格产品、聊天/正文变化在提交前取消，不先扣费再退款。服务器保存后核对失败则冻结，不盲目退款或重提。
+## Sách Thế Giới, Ký ức & An toàn bản lưu
 
-## 世界书、记忆与存档安全
+- Sách Thế Giới cập nhật mục 09 Thương thành, bổ sung mục 05 Thu nạp / 11 Hộp mù / 29 Đa nhân vật; lời nhắc tạo hàng hóa độc lập sử dụng cùng bộ quy tắc này. Sách Thế Giới chỉ sửa sách hiện có khi người dùng xác nhận nâng cấp.
+- Trước khi nâng cấp hiển thị rõ ảnh hưởng và tạo bản sao lưu toàn bộ quyển sách với tên duy nhất; đối chiếu trực tiếp tệp trên máy chủ để tránh bị bộ nhớ đệm của SillyTavern đánh lừa. Giữ nguyên mục từ tùy chỉnh, công tắc, từ khóa, cài đặt chèn và siêu dữ liệu cấp cao nhất; với mục từ tích hợp sẵn có chính văn đã tự sửa sẽ hỏi xác nhận từng mục một.
+- Nâng cấp cấu trúc sổ cái 0/1→2 sao lưu trước, di chuyển dữ liệu mới bên trong khóa và đối chiếu định danh cuộc trò chuyện; các trường gốc mới không bị ghi đè bởi chỉ lệnh biến số thông thường của mô hình hay iframe cũ.
 
-- 世界书更新09商城、补充05收纳/11盲盒/29多人；独立商品生成提示使用相同规则。世界书只在用户确认升级时改已有书。
-- 升级前显示影响并创建唯一命名的整本备份；直接核对服务器文件，避免被酒馆缓存误导。保留自定义条目、开关、关键词、插入设置和顶层元数据；同名自改正文逐条询问，取消保留该条，需自行合并新规则。
-- 记忆整理仅规范化无歧义kind/status别名，继续使用原证据和schema校验。非法内容拒写旧记忆，错误明确归属记忆而非交易。不为修复格式无界增加模型请求。
-- 账本结构升级0/1→2先备份、锁内迁移新鲜数据，核对聊天身份；新原生字段不被模型普通变量指令/旧iframe覆写。
-- 原生结算核验服务器账本；保存结果不明时冻结该聊天写入，包括已排队操作，提示重载核对。收纳凭据可随无Key导出完整保留。
+## Nâng cấp & Nghiệm thu
 
-## 升级与验收
+Xem danh sách thay thế từng tệp và các bước thao tác trong SillyTavern tại [REPLACE-1.1.0](REPLACE-1.1.0.md); xem phạm vi kiểm thử, bằng chứng và các mục chưa bao phủ tại [ACCEPTANCE-1.1.0](ACCEPTANCE-1.1.0.md).
 
-见 [REPLACE-1.1.0](REPLACE-1.1.0.md) 的逐文件替换清单和酒馆操作步骤；见 [ACCEPTANCE-1.1.0](ACCEPTANCE-1.1.0.md) 的测试范围、证据与未覆盖项。
+## Sửa đổi qua đợt phúc tra trước khi bàn giao
 
-本次不部署生产、不推送GitHub、不修改用户真实聊天、不嵌入用户API Key。真实模型内容质量、原作真实性和实体手机兼容性仍须在备份聊天实测。
-
-## 传输前复查修订
-
-第二轮发现并修复跨聊天鉴定/导入/回滚、整体替换混入旧羁绊、同名跨世界合并、非法禁忌资源校验、备用结算schema降级、记忆语义key导出、世界书同名副本丢失、旧连接测试显式cap、待鉴定追加确认、来源世界映射和iframe清理等问题。详见 [REVIEW-1.1.0](REVIEW-1.1.0.md)。上一轮压缩包不再作为最终安装包使用；修订版尚未远端传输。
+Đợt phúc tra thứ hai đã phát hiện và sửa các lỗi: giám định/nhập/quay lui xuyên cuộc trò chuyện, thay thế toàn bộ làm trộn lẫn gắn kết cũ, hợp nhất trùng tên xuyên thế giới, kiểm tra tài nguyên Cấm kỵ bất hợp pháp, hạ cấp schema quyết toán dự phòng, xuất khóa ngữ nghĩa ký ức, mất bản sao cùng tên của Sách Thế Giới, giới hạn trần tường minh của kiểm tra kết nối cũ, xác nhận nối thêm mục chờ giám định, ánh xạ thế giới nguồn và dọn dẹp iframe. Chi tiết xem tại [REVIEW-1.1.0](REVIEW-1.1.0.md).

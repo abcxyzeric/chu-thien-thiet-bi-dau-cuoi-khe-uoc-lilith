@@ -9,24 +9,80 @@
 // only the bubble text is replaced by the gesture line. Nothing here calls a model or touches the ledger.
 
 export const STROKE_LINES = Object.freeze({
-    cheek: ['唔……主人的手好暖。就、就再摸一会儿吧。', '脸都被主人揉热了啦……不许笑。', '再摸下去，莉莉丝可要赖着不走了哦？'],
-    horn: ['别、别顺着角摸……那里很敏感的！', '呜……主人是故意的吧？角都在发烫了。', '够了够了！再摸就要签补充条款了！'],
-    wing: ['羽膜要顺着摸才舒服……对，就是这样。', '嗯～翅膀被照顾得很好，下次带您飞快一点。', '主人再这样，莉莉丝要把您裹进翅膀里了。'],
-    tail: ['呀！尾巴不能那样捋……会、会发软的。', '尾巴自己缠上来了？那、那不是我让它做的！', '哼，尾巴已经认主了，主人要负责到底。'],
-    arm: ['牵手就牵手，别挠手心啦。', '手被主人握着，今天的任务好像也没那么难了。', '不放开？好吧，那就这样一起走。'],
-    thigh: ['喂，往哪儿摸呢？契约里可没写这条！', '……主人今天胆子不小嘛。', '再不停下，莉莉丝就要收利息了哦。'],
-    lower: ['衣角被您揉皱了……待会儿帮我抚平。', '别扯啦，裙摆会乱的！', '好好好，莉莉丝站着不动，让您整理个够。'],
-    chest: ['契约印记在发光呢……主人感觉到了吗？', '心跳？那是契约的回响，才、才不是紧张。', '再按着，莉莉丝的心跳要被您全听去了。'],
+    cheek: [
+        'Ưm… tay của chủ nhân ấm quá. Cho, cho phép xoa thêm một lát nữa thôi đấy nhé.',
+        'Má bị chủ nhân xoa nóng bừng lên rồi đây này… không được cười đâu đấy.',
+        'Cứ xoa tiếp thế này là Lilith sẽ ăn vạ không chịu đi đâu đó nha?',
+    ],
+    horn: [
+        'Đừng, đừng vuốt dọc theo sừng mà… chỗ đó nhạy cảm lắm!',
+        'Ư… chủ nhân cố tình đúng không? Sừng nóng ran cả lên rồi này.',
+        'Đủ rồi đủ rồi! Còn sờ nữa là phải ký thêm điều khoản bổ sung đấy!',
+    ],
+    wing: [
+        'Màng cánh phải vuốt xuôi theo chiều mới dễ chịu… Đúng rồi, cứ như vậy đó.',
+        'Ưm~ Cánh được chăm sóc kỹ thế này, lần sau sẽ đưa ngài bay nhanh hơn một chút.',
+        'Chủ nhân còn làm thế nữa là Lilith sẽ bọc ngài vào trong cánh luôn đấy.',
+    ],
+    tail: [
+        'Á! Đuôi không thể vuốt kiểu đó được đâu… sẽ, sẽ bị nhũn người ra mất.',
+        'Đuôi tự quấn lấy ngài ư? Đó, đó đâu phải do ta bảo nó làm!',
+        'Hừ, đuôi đã nhận chủ rồi, chủ nhân phải chịu trách nhiệm tới cùng đấy nhé.',
+    ],
+    arm: [
+        'Nắm tay thì cứ nắm tay đi, đừng có cù vào lòng bàn tay ta mà.',
+        'Tay được chủ nhân nắm thế này, nhiệm vụ hôm nay hình như cũng chẳng còn khó khăn mấy nữa.',
+        'Không buông ra sao? Được thôi, vậy cứ nắm thế này cùng đi nhé.',
+    ],
+    thigh: [
+        'Này, sờ đi đâu đấy hả? Trong khế ước làm gì có ghi điều khoản này!',
+        '… Hôm nay lá gan của chủ nhân cũng lớn gớm nhỉ.',
+        'Còn không dừng lại là Lilith sẽ thu tiền lãi đó nha.',
+    ],
+    lower: [
+        'Vạt áo bị ngài vò nhăn hết cả rồi… lát nữa phải giúp ta vuốt phẳng lại đấy.',
+        'Đừng kéo nữa mà, gấu váy sẽ rối tung lên mất!',
+        'Được rồi được rồi, Lilith đứng yên không nhúc nhích, cho ngài chỉnh sửa thỏa thích luôn.',
+    ],
+    chest: [
+        'Ấn ký khế ước đang phát sáng kìa… chủ nhân có cảm nhận được không?',
+        'Tiếng tim đập ư? Đó là tiếng vọng của khế ước thôi, không, không phải tại ta hồi hộp đâu.',
+        'Cứ ấn vào đó mãi là tiếng tim đập của Lilith sẽ bị ngài nghe hết sạch mất.',
+    ],
 });
 export const HOLD_LINES = Object.freeze({
-    cheek: ['被主人捧着脸……好吧，只许看一会儿。', '一直这样看着我，莉莉丝会害羞的。'],
-    horn: ['握住角可是很亲密的动作哦，主人知道吗？', '……不松手？那莉莉丝就当您是认真的了。'],
-    wing: ['抓着翅膀不放？那莉莉丝就带您飞一圈。', '别担心，翅膀收好了，不会把您扇跑的。'],
-    tail: ['尾巴被抓住了……好、好吧，让您抓着。', '尾巴尖在发抖？才没有！'],
-    arm: ['要莉莉丝陪您多久都可以，别松手就好。', '握紧一点，前面的路一起走。'],
-    thigh: ['……按着不放是什么意思呀，主人？', '再按下去，契约要追加条款了。'],
-    lower: ['想让我留下来？直接说嘛。', '拽着衣角的样子，像怕我跑掉一样。'],
-    chest: ['听到了吗？这是我们的契约在跳动。', '手放在这里……莉莉丝的心意都被您知道了。'],
+    cheek: [
+        'Được chủ nhân nâng má thế này… được rồi, chỉ cho phép ngắm một lát thôi nhé.',
+        'Cứ nhìn ta chằm chằm như vậy, Lilith sẽ ngại đấy.',
+    ],
+    horn: [
+        'Nắm lấy sừng là hành động thân mật lắm đó, chủ nhân có biết không hả?',
+        '… Không buông tay sao? Vậy Lilith sẽ coi như ngài đang nghiêm túc đấy nhé.',
+    ],
+    wing: [
+        'Nắm chặt cánh không buông ư? Vậy Lilith đưa ngài bay một vòng nhé.',
+        'Đừng lo, cánh đã khép gọn rồi, sẽ không quạt bay ngài đi mất đâu.',
+    ],
+    tail: [
+        'Đuôi bị tóm chặt mất rồi… đ-được thôi, cứ để ngài nắm vậy.',
+        'Chóp đuôi đang run rẩy á? Làm gì có chuyện đó!',
+    ],
+    arm: [
+        'Muốn Lilith ở bên ngài bao lâu cũng được, chỉ cần đừng buông tay là được.',
+        'Nắm chặt thêm chút nữa đi, chặng đường phía trước chúng ta cùng bước.',
+    ],
+    thigh: [
+        '… Cứ ấn giữ mãi không buông là có ý gì đây hả, chủ nhân?',
+        'Còn ấn tiếp nữa là khế ước sẽ phải thêm điều khoản phụ đấy.',
+    ],
+    lower: [
+        'Muốn giữ ta ở lại sao? Cứ nói thẳng ra đi mà.',
+        'Bộ dạng níu chặt vạt áo thế này, cứ như sợ ta chạy mất không bằng.',
+    ],
+    chest: [
+        'Ngài có nghe thấy không? Đây là khế ước của chúng ta đang đập từng nhịp đấy.',
+        'Đặt tay ở nơi này… tâm ý của Lilith đều bị ngài biết hết cả rồi.',
+    ],
 });
 export const GESTURE = Object.freeze({ strokeMin: 60, strokeLong: 140, strokeStep: 180, reversals: 2, holdMs: 650, holdSlop: 8, lookRelease: 900 });
 

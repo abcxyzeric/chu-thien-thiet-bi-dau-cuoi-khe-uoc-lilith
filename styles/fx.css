@@ -1,5 +1,5 @@
-/* 诸天终端 0.7.0 · 演出. Used inside the terminal (Lilith window shadow root) and by the standalone story-hint host.
-   Every performance is ≤ 2.1 s, skippable (click / Esc / 跳过), and ends in a result card. Reduced motion: card only. */
+/* Thiết Bị Đầu Cuối Chư Thiên 0.7.0 · Trình diễn. Used inside the terminal (Lilith window shadow root) and by the standalone story-hint host.
+   Every performance is ≤ 2.1 s, skippable (click / Esc / Bỏ qua), and ends in a result card. Reduced motion: card only. */
 :host{--fx-a:var(--zt-accent,#c59bee);--fx-g:var(--zt-gold,#d8bf92);--fx-ink:var(--zt-ink,#f3edf7);--fx-muted:var(--zt-muted,#ac9bbd);--fx-bg:#150f1dee}
 :host([data-zt-world=xianxia]){--fx-a:#d4b46c;--fx-g:#9fcfbf;--fx-bg:#111315ee}
 :host([data-zt-world=cyber]){--fx-a:#4fe3ff;--fx-g:#ffd166;--fx-bg:#060e16ee}
@@ -12,7 +12,7 @@
 .zt-fx-title{font:700 28px/1.2 var(--zt-title-font,Georgia,"Songti SC",serif);color:var(--fx-ink);letter-spacing:.3em;text-indent:.3em;animation:fx-rise .5s .25s both;text-shadow:0 0 18px color-mix(in srgb,var(--fx-a) 70%,transparent)}
 .zt-fx-detail{font-size:14px;color:var(--fx-g);animation:fx-rise .5s .45s both;max-width:36em}
 .zt-fx-skip{position:absolute;right:16px;bottom:14px;background:#00000066;border:1px solid #ffffff33;color:#fff;border-radius:999px;padding:5px 14px;font:inherit;font-size:12px;cursor:pointer}
-.zt-fx[data-grade=神品] .zt-fx-svg,.zt-fx[data-grade=禁忌] .zt-fx-svg{stroke:var(--fx-g)}
+.zt-fx[data-grade=神品] .zt-fx-svg,.zt-fx[data-grade=禁忌] .zt-fx-svg,.zt-fx[data-grade="Thần phẩm"] .zt-fx-svg,.zt-fx[data-grade="Cấm kỵ"] .zt-fx-svg{stroke:var(--fx-g)}
 .zt-fx[data-kind=fail] .zt-fx-svg{stroke:#e07a7a;filter:none}
 .zt-fx[data-kind=fail] .zt-fx-title{text-shadow:none;color:#f0c0c0}
 
@@ -65,7 +65,7 @@
 .zt-fx-bust{flex:none;width:56px;height:64px;border-radius:10px;background-repeat:no-repeat;border:1px solid color-mix(in srgb,var(--fx-a) 40%,transparent);background-color:#1b1325}
 @keyframes fx-card{from{opacity:0;transform:translateX(16px)}}
 
-/* 剧情提示 (terminal closed): a small card in the corner of the chat, with a short sweep */
+/* Gợi ý cốt truyện (terminal closed): a small card in the corner of the chat, with a short sweep */
 /* 1.0: anchored with top + translate, not bottom: SillyTavern's phone layout gives <html> a transform and height 0,
    so a fixed element's bottom would sit above the top of the screen */
 .zt-fx-out{position:fixed;right:16px;top:calc(100vh - 120px);top:calc(100dvh - 120px - env(safe-area-inset-bottom,0px));translate:0 -100%;z-index:2147482990;width:min(340px,calc(100vw - 24px));font:13px/1.55 system-ui,"PingFang SC","Microsoft YaHei",sans-serif;color-scheme:dark}

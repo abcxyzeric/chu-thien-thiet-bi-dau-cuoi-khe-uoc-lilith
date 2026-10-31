@@ -1,114 +1,106 @@
-# 1.0.0 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 1.0.0
 
-## 环境
+## Môi trường
 
-- **宿主**：SillyTavern 1.16.0（`e3b866b`）、1.17.0（`e3f4166`）、1.18.0（`51ad27f`）、1.19.0（`7e8663c`），均为官方 tag 全新安装，隔离数据目录。
-- **酒馆助手**：1.19.0 跑两轮——装了 JS-Slash-Runner 4.11.2（官方 tag，未改动）跑全部套件；把它移出 third-party 后再跑一轮主要套件。1.16–1.18 没装酒馆助手。
-- **浏览器**：Playwright Chromium（无头）。手机 390×844 / 横屏 844×390，触摸模拟（Android 14 / Chrome UA），DPR 2。
-- **模拟模型**：`tests/qa/mock_model.py`，5001 端口（正常）与 5002 端口（不发 CORS 头）。**没有使用真实模型**（按你的决定）。
-- 全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。
+- **Máy chủ**: SillyTavern 1.16.0 (`e3b866b`), 1.17.0 (`e3f4166`), 1.18.0 (`51ad27f`), 1.19.0 (`7e8663c`), tất cả đều cài đặt mới hoàn toàn theo tag chính thức, thư mục dữ liệu cô lập.
+- **Tavern Helper**: Bản 1.19.0 chạy hai lượt — một lượt cài JS-Slash-Runner 4.11.2 (tag chính thức, không chỉnh sửa) chạy toàn bộ các bộ kiểm thử; sau đó đưa nó ra khỏi `third-party` rồi chạy lại một lượt các bộ kiểm thử chính. Bản 1.16–1.18 không cài Tavern Helper.
+- **Trình duyệt**: Playwright Chromium (headless). Điện thoại 390×844 / ngang 844×390, mô phỏng cảm ứng (UA Android 14 / Chrome), DPR 2.
+- **Mô hình mô phỏng**: `tests/qa/mock_model.py`, cổng 5001 (thông thường) và cổng 5002 (không gửi tiêu đề CORS). **Không sử dụng mô hình thực tế** (theo quyết định của bạn).
+- Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1.
 
-## 新功能（`tests/native_v100.py`，28 项）
+## Tính năng mới (`tests/native_v100.py`, 28 hạng mục)
 
-| 场景 | 结果 |
+| Kịch bản | Kết quả |
 | --- | --- |
-| 悬浮莉莉丝：12 张抠图素材全部加载，没有卡片背景 / 边框 | ✅ |
-| 真实触摸双击（戳）她的头：换表情补丁（`face-pout.webp`）并说话 | ✅ |
-| 躲在边缘时说话：先探出来，气泡完全在屏幕内 | ✅ |
-| 设置：常用展开，进阶设置 / 诊断与维护折叠 | ✅（常用 19 项、进阶 23 项、诊断 5 项） |
-| 搜索「超时」：只剩匹配项，折叠的进阶组自动展开；搜不到有提示；清空后自动收起 | ✅ |
-| 设置 → 导出 / 导入存档 → 导出：真实下载 `诸天存档-*.json`，含账本（系统点 1200）和设置 | ✅ |
-| 导出文件里没有 API Key（测试前存入了 `sk-qa1000…`） | ✅ |
-| 粘贴导入：预览“系统点 5 → 1,200、背包 0 → 1” | ✅ |
-| 确认导入：写入并读回，弹窗显示“账本已写入并读回一致” | ✅ |
-| 导入前自动备份（原因“导入前”，系统点 5） | ✅ |
-| 导入后本机的 API Key 仍在 | ✅ |
-| 「旧存档迁移 / 账本回滚」弹窗里点击回滚到“导入前”：系统点回到 5 | ✅ |
-| 回滚前状态被备份并保留（原因“回滚前”，系统点 1200） | ✅ |
-| 结构版本 1 记在聊天元数据里，账本里没有这个字段 | ✅ |
-| 把结构版本改成 99：写入被拒绝（“只读，请更新插件”），账本不变 | ✅ |
-| 删掉结构版本并把背包改坏：先备份（“结构升级 0→1 前”），修成 `[]`，标记为 1 | ✅ |
-| 聊天群「指定角色」不填名字：提示“…请填写角色名。 账本：没有改动。 下一步：…” | ✅ |
-| `/zt init` 不再弹出世界书窗口 | ✅ |
-| 动态效果「精简」：悬浮莉莉丝动画停止、终端标记精简、演出只显示结果卡 | ✅ |
-| 动态效果「自动」：触屏 24 fps → 精简；60 fps → 完整 | ✅（帧率由脚本注入，不是真实低端机） |
-| 横屏导航：只显示 总览 / 任务 / 商城 / 背包 / 聊天群 / 设置 + 更多 | ✅ |
-| 点「更多」：显示全部 21 个入口；选「修行」后收起，修行仍显示 | ✅ |
-| 竖屏 / 横屏无页面错误 | ✅ |
+| Lilith nổi: Cả 12 tấm ảnh tách nền đều tải xong, không có nền thẻ / viền khung | ✅ |
+| Chạm đúp cảm ứng thực tế (chọc) vào đầu cô ấy: đổi mảnh vá biểu cảm (`face-pout.webp`) và nói chuyện | ✅ |
+| Nói chuyện khi đang nấp ở mép: ló ra trước, bong bóng thoại nằm gọn hoàn toàn trong màn hình | ✅ |
+| Cài đặt: Mục Thường dùng mở sẵn, Cài đặt nâng cao / Chẩn đoán & Bảo trì thu gọn | ✅ (Thường dùng 19 mục, Nâng cao 23 mục, Chẩn đoán 5 mục) |
+| Tìm kiếm 「thời gian chờ」: chỉ còn lại các mục khớp, nhóm Nâng cao đang thu gọn tự động mở ra; không tìm thấy có thông báo; sau khi xóa trống tự động thu gọn lại | ✅ |
+| Cài đặt → Xuất / Nhập bản lưu → Xuất: tải xuống thực tế `诸天存档-*.json`, bao gồm sổ cái (Điểm Hệ Thống 1200) và cài đặt | ✅ |
+| Trong tệp xuất ra không có API Key (trước khi kiểm thử đã lưu `sk-qa1000…`) | ✅ |
+| Dán để nhập: xem trước hiển thị “Điểm Hệ Thống 5 → 1,200, Túi đồ 0 → 1” | ✅ |
+| Xác nhận nhập: ghi và đọc lại, hộp thoại hiển thị “Đã ghi sổ cái và đọc lại khớp nhau” | ✅ |
+| Tự động sao lưu trước khi nhập (lý do “Trước khi nhập”, Điểm Hệ Thống 5) | ✅ |
+| Sau khi nhập, API Key trên máy vẫn còn nguyên | ✅ |
+| Trong hộp thoại 「Di chuyển bản lưu cũ / Quay lui sổ cái」, bấm quay lui về bản “Trước khi nhập”: Điểm Hệ Thống quay về 5 | ✅ |
+| Trạng thái trước khi quay lui được sao lưu và giữ lại (lý do “Trước khi quay lui”, Điểm Hệ Thống 1200) | ✅ |
+| Phiên bản cấu trúc 1 được ghi trong siêu dữ liệu trò chuyện, trong sổ cái không có trường này | ✅ |
+| Đổi phiên bản cấu trúc thành 99: thao tác ghi bị từ chối (“Chỉ đọc, vui lòng cập nhật plugin”), sổ cái không đổi | ✅ |
+| Xóa phiên bản cấu trúc và làm hỏng túi đồ: sao lưu trước (“Trước khi nâng cấp cấu trúc 0→1”), sửa lại thành `[]`, đánh dấu là 1 | ✅ |
+| Nhóm chat chọn 「Chỉ định nhân vật」 nhưng không điền tên: thông báo “…vui lòng điền tên nhân vật. Sổ cái: Không có thay đổi. Bước tiếp theo: …” | ✅ |
+| `/zt init` không còn làm bật cửa sổ Sách Thế Giới lên nữa | ✅ |
+| Hiệu ứng động 「Rút gọn」: hoạt ảnh Lilith nổi dừng lại, thiết bị đầu cuối gắn nhãn rút gọn, trình diễn chỉ hiển thị thẻ kết quả | ✅ |
+| Hiệu ứng động 「Tự động」: màn hình cảm ứng 24 fps → Rút gọn; 60 fps → Đầy đủ | ✅ (tốc độ khung hình do kịch bản tiêm vào, không phải máy cấu hình thấp thực tế) |
+| Điều hướng màn hình ngang: chỉ hiển thị Tổng quan / Nhiệm vụ / Thương thành / Túi đồ / Nhóm chat / Cài đặt + Thêm | ✅ |
+| Bấm 「Thêm」: hiển thị toàn bộ 21 lối vào; sau khi chọn 「Tu hành」 sẽ thu gọn lại, mục Tu hành vẫn hiển thị | ✅ |
+| Màn hình dọc / ngang không có lỗi trang | ✅ |
 
-截图：`v100-float.png`、`v100-float-tap.png`、`v100-settings.png`、`v100-settings-search.png`、`v100-import-preview.png`、`v100-rollback.png`、`v100-land.png`、`v100-land-more.png`（在交付包外的截图目录里，不进仓库）。
+Ảnh chụp màn hình: `v100-float.png`, `v100-float-tap.png`, `v100-settings.png`, `v100-settings-search.png`, `v100-import-preview.png`, `v100-rollback.png`, `v100-land.png`, `v100-land-more.png` (nằm trong thư mục ảnh chụp bên ngoài gói bàn giao, không đưa vào kho lưu trữ).
 
-## 玩家反馈补充（版本号不变，`tests/native_v100_feedback.py`，44 项，SillyTavern 1.19.0）
+## Bổ sung theo phản hồi người chơi (Số phiên bản giữ nguyên, `tests/native_v100_feedback.py`, 44 hạng mục, SillyTavern 1.19.0)
 
-| 场景 | 结果 |
+| Kịch bản | Kết quả |
 | --- | --- |
-| 连接页「保存为预设」：没输入名称时是灰的；只输入空格仍是灰的；强行点击不保存 | ✅ |
-| 输入名称后可点，保存的预设含名称、地址、模型；同名时按钮变「覆盖预设」；清空名称又变灰 | ✅ |
-| 预设密钥不在聊天文件里（存在全局变量 `诸天系统_API路由`） | ✅ |
-| 分功能 API：列出 11 处；每项可选 跟随默认 / 酒馆主 API / 预设；选了之后保存，并显示“现在用的是哪里”（不显示密钥） | ✅ |
-| 商城进货设为单独配置：请求带它自己的密钥和模型（模拟模型日志核对） | ✅ |
-| 没设置的抽卡仍走默认接口 | ✅ |
-| 莉莉丝私聊设为预设：经莉莉丝的 fetch 改到预设的密钥和模型；自动记忆仍走默认；连接页「测试连接」仍测默认接口 | ✅ |
-| 品阶鉴定页：列出剧情 / 数据块来的功法和物品，商城买的不列 | ✅ |
-| 点「AI 鉴定」：太虚剑意 凡品 → 仙品，上限 2000，圆满清除，记下方式和理由；请求走「品阶鉴定」设置的预设；写入功法记录；页面显示结果和理由 | ✅ |
-| 手动修正：古剑 凡品 → 灵品，回收价保持 100；之后下拉只剩更高的品阶 | ✅ |
-| 修行页工具条、背包页都有「品阶鉴定」入口 | ✅ |
-| 新楼层数据块「功法修炼: 收录:残月刀法[灵品]」：残月刀法 凡品 → 灵品（上限 500，方式“收录更正”） | ✅ |
-| 品阶提示每轮注入（重新加载聊天后仍在） | ✅ |
-| 拖动悬浮莉莉丝：底部出现「拖到这里关闭悬浮窗」；拖上去松手弹出确认框，写明从酒馆「扩展」面板 →「打开诸天终端」重新进入控制台 | ✅ |
-| 选「留着她」不关闭；右键菜单有 打开诸天终端 / 藏到屏幕边 / 关闭悬浮窗；确认后关闭（设置为 off、隐藏），提示同样写明入口 | ✅ |
-| 扩展面板「显示悬浮莉莉丝」让她回来 | ✅ |
-| 设置 → 常用 →「插件开关」→「一键关闭插件」：先确认（写明怎么重新开启）；取消不关闭 | ✅ |
-| 确认后酒馆把它记为已停用，页面刷新，插件没有加载；再用酒馆自己的启用接口打开，插件正常启动 | ✅ |
-| 全程无页面错误 | ✅ |
-| 手机（390×844，触摸，Android UA）：手指按住不到 0.4 秒不会拿起；长按后拿起并在底部显示「拖到这里关闭悬浮窗」（真实触摸事件，CDP `Input.dispatchTouchEvent`） | ✅ |
-| 手机：关闭目标在屏幕底部（y≈802）并在手指下高亮；松手弹出确认框，写明「扩展」→「打开诸天终端」；确认后关闭，提示同样写明 | ✅ |
-| 手机：聊天页的演出卡片和备用入口按钮在屏幕内、靠近底部（修复前分别在 y=−164 和 y=−148，屏幕外） | ✅ |
-| 手机部分无页面错误 | ✅ |
+| Trang Kết nối 「Lưu làm cấu hình sẵn」: khi chưa nhập tên thì mờ xám; chỉ nhập khoảng trắng vẫn mờ xám; cố bấm cũng không lưu | ✅ |
+| Sau khi nhập tên thì bấm được, cấu hình sẵn đã lưu có tên, địa chỉ, mô hình; khi trùng tên nút đổi thành 「Ghi đè cấu hình sẵn」; xóa trống tên lại mờ xám | ✅ |
+| Khóa bảo mật của cấu hình sẵn không nằm trong tệp trò chuyện (lưu trong biến toàn cục `诸天系统_API路由`) | ✅ |
+| API phân nhánh tính năng: liệt kê 11 nơi; mỗi mục chọn được Theo mặc định / API chính của SillyTavern / Cấu hình sẵn; sau khi chọn sẽ lưu lại và hiển thị “Đang dùng ở đâu” (không hiển thị khóa bảo mật) | ✅ |
+| Nhập hàng thương thành đặt thành cấu hình riêng: yêu cầu mang theo khóa bảo mật và mô hình riêng của nó (đối chiếu qua nhật ký mô hình mô phỏng) | ✅ |
+| Rút thẻ chưa cài đặt riêng vẫn đi qua cổng mặc định | ✅ |
+| Trò chuyện riêng Lilith đặt thành cấu hình sẵn: đi qua fetch của Lilith đổi sang khóa bảo mật và mô hình của cấu hình sẵn; tự động chỉnh lý ký ức vẫn đi qua mặc định; nút 「Kiểm tra kết nối」 ở trang Kết nối vẫn kiểm tra cổng mặc định | ✅ |
+| Trang Giám định phẩm giai: liệt kê công pháp và vật phẩm đến từ cốt truyện / khối dữ liệu, hàng mua từ thương thành không liệt kê | ✅ |
+| Bấm 「AI Giám định」: Thái Hư Kiếm Ý Phàm phẩm → Tiên phẩm, giới hạn trần 2000, xóa trạng thái viên mãn, ghi lại phương thức và lý do; yêu cầu đi qua cấu hình sẵn đặt cho 「Giám định phẩm giai」; ghi vào bản ghi công pháp; trên trang hiển thị kết quả và lý do | ✅ |
+| Sửa thủ công: Cổ Kiếm Phàm phẩm → Linh phẩm, giá thu hồi giữ nguyên 100; sau đó hộp chọn thả xuống chỉ còn các phẩm giai cao hơn | ✅ |
+| Thanh công cụ trang Tu hành và trang Túi đồ đều có lối vào 「Giám định phẩm giai」 | ✅ |
+| Khối dữ liệu tầng mới `功法修炼: 收录:Tàn Nguyệt Đao Pháp[灵品]`: Tàn Nguyệt Đao Pháp Phàm phẩm → Linh phẩm (trần 500, phương thức “Đính chính thu lục”) | ✅ |
+| Lời nhắc phẩm giai được tiêm mỗi lượt (sau khi tải lại cuộc trò chuyện vẫn còn) | ✅ |
+| Kéo Lilith nổi: dưới đáy xuất hiện 「Kéo vào đây để đóng cửa sổ nổi」; kéo vào rồi thả tay sẽ bật hộp thoại xác nhận, ghi rõ cách vào lại bảng điều khiển từ bảng 「Tiện ích mở rộng」 của SillyTavern → 「Mở Thiết Bị Đầu Cuối Chư Thiên」 | ✅ |
+| Chọn 「Giữ cô ấy lại」 sẽ không đóng; menu chuột phải có Mở Thiết Bị Đầu Cuối Chư Thiên / Giấu vào mép màn hình / Đóng cửa sổ nổi; sau khi xác nhận sẽ đóng lại (đặt thành off, ẩn đi), thông báo cũng ghi rõ lối vào | ✅ |
+| Nút 「Hiển thị Lilith nổi」 trên bảng tiện ích mở rộng đưa cô ấy quay trở lại | ✅ |
+| Cài đặt → Thường dùng → 「Công tắc plugin」 → 「Tắt plugin 1 chạm」: hỏi xác nhận trước (ghi rõ cách bật lại); hủy thì không tắt | ✅ |
+| Sau khi xác nhận, SillyTavern ghi nhận là đã tắt, trang làm mới, plugin không tải nữa; sau đó dùng giao diện bật của chính SillyTavern để mở lại, plugin khởi động bình thường | ✅ |
+| Suốt quá trình không có lỗi trang | ✅ |
+| Điện thoại (390×844, cảm ứng, UA Android): ngón tay nhấn giữ chưa tới 0.4 giây sẽ không nhấc lên; sau khi nhấn giữ đủ lâu sẽ nhấc lên và hiển thị 「Kéo vào đây để đóng cửa sổ nổi」 ở dưới đáy (sự kiện cảm ứng thực, CDP `Input.dispatchTouchEvent`) | ✅ |
+| Điện thoại: mục tiêu đóng nằm ở đáy màn hình (y≈802) và sáng lên dưới ngón tay; thả tay bật hộp thoại xác nhận, ghi rõ 「Tiện ích mở rộng」 → 「Mở Thiết Bị Đầu Cuối Chư Thiên」; xác nhận xong sẽ đóng lại, thông báo cũng ghi rõ tương tự | ✅ |
+| Điện thoại: thẻ trình diễn trên trang trò chuyện và nút lối vào dự phòng nằm gọn trong màn hình, sát phía dưới đáy (trước khi sửa lần lượt nằm ở y=−164 và y=−148, ngoài màn hình) | ✅ |
+| Phần điện thoại không có lỗi trang | ✅ |
 
-另：`tests/v100-feedback.test.js` 19 项纯逻辑（预设与分功能的保存 / 解析 / 回落、状态栏原版提示词全部能归类、品阶鉴定的候选 / 提示词 / 解析 / 只升不降 / 回收价 / 合并、收录更正、关闭插件、关闭悬浮窗文案、手机布局下固定浮层不用 bottom 定位）。
+Ngoài ra: `tests/v100-feedback.test.js` gồm 19 hạng mục thuần logic (lưu / phân tích / dự phòng của cấu hình sẵn và phân nhánh tính năng, phân loại toàn bộ lời nhắc nguyên bản của thanh trạng thái, ứng viên / lời nhắc / phân tích / chỉ tăng không giảm / giá thu hồi / hợp nhất của giám định phẩm giai, đính chính thu lục, tắt plugin, văn bản đóng cửa sổ nổi, lớp nổi cố định dưới bố cục điện thoại không dùng định vị `bottom`).
 
-回归（同一台 1.19.0，无酒馆助手）：native_v100 28/28、v080 33/33、v081 20/20、v083 13/13、v084 29/29、v085 20/20、v090 24/24、
-v091 35/35、v093 29/29、v094 9/9、group060 44/44、terminal050 58/58、world070 40/40、v082 24/24（酒馆助手项跳过）、guards 通过。
-回归中发现并修掉的：连接页「分功能 API」在 320 宽手机上横向溢出（长选项把下拉框撑宽）；手机布局下 `<html>` 被酒馆加了变换且高度为 0，
-用 `bottom:` 定位的「关闭悬浮窗」目标、聊天页演出卡片、备用入口按钮都跑到屏幕上方外面（修复后再跑 v100、v080、v090、v091、v093、
-terminal050、world070、v084 全部通过）；测试的改动：terminal050 的扩展面板按钮
-多了「显示悬浮莉莉丝」，v085 找「高级设置」折叠框时排除新的「分功能 API」折叠框。1.16–1.18 本轮没有重跑。
+Hồi quy (cùng máy 1.19.0, không cài Tavern Helper): native_v100 28/28, v080 33/33, v081 20/20, v083 13/13, v084 29/29, v085 20/20, v090 24/24, v091 35/35, v093 29/29, v094 9/9, group060 44/44, terminal050 58/58, world070 40/40, v082 24/24 (bỏ qua mục Tavern Helper), guards đạt.
 
-## 宿主矩阵
+## Ma trận máy chủ
 
-| 套件 | 1.16.0 | 1.17.0 | 1.18.0 | 1.19.0 + 酒馆助手 | 1.19.0 无酒馆助手 |
+| Bộ kiểm thử | 1.16.0 | 1.17.0 | 1.18.0 | 1.19.0 + Tavern Helper | 1.19.0 Không Tavern Helper |
 | --- | --- | --- | --- | --- | --- |
 | native_v100 | 28/28 | 28/28 | 28/28 | 28/28 | 28/28 |
 | native_world070 | 40/40 | 40/40 | 40/40 | 40/40 | — |
 | native_terminal050 | 58/58 ¹ | 58/58 | 58/58 | 58/58 | 58/58 |
 | native_group060 | 44/44 ⁴ | 44/44 | 44/44 ⁴ | 44/44 ² ⁴ | 44/44 ⁴ |
-| native_guards | 通过 | 通过 | 通过 | 通过 | — |
-| native_v090（手机布局） | 24/24 | 24/24 | 24/24 | 24/24 | — |
-| native_v082（悬浮莉莉丝、解绑、角色卡状态栏） | — | — | — | 25/25 ² ⁴ | 24/24（角色卡状态栏一项需要酒馆助手，跳过） |
+| native_guards | Đạt | Đạt | Đạt | Đạt | — |
+| native_v090 (Bố cục điện thoại) | 24/24 | 24/24 | 24/24 | 24/24 | — |
+| native_v082 (Lilith nổi, gỡ gắn kết, thanh trạng thái thẻ nhân vật) | — | — | — | 25/25 ² ⁴ | 24/24 (bỏ qua 1 mục cần Tavern Helper) |
 | native_v094 | — | — | — | 9/9 | 9/9 |
-| 其余（v080、v081、v083、v084、v085、v091、v092、v093） | — | — | — | 全部通过 ³ | — |
+| Còn lại (v080, v081, v083, v084, v085, v091, v092, v093) | — | — | — | Đạt toàn bộ ³ | — |
 
-¹ 第一轮因沙箱内存不足（2 GB，当时同时开着两个酒馆）出现一次截图超时和一次“一键进货”固定等待超时（扣了 500 但 4.5 秒内还没出货）；关掉多余的酒馆后单独重跑 58/58。
-² 第一轮失败是测试之间互相影响：`native_v100` 把悬浮莉莉丝设成“总是显示”后没有改回，盖住了桌面上的按钮。已在 `native_v100` 末尾恢复默认并立即存盘，重跑通过。
-³ v080 33/33、v081 20/20、v083 13/13、v084 29/29、v085 20/20、v091 35/35、v092 17/17、v093 29/29。
-  `native_v080` 原来直接点「管理员控制台」，1.0 起它在折叠的「进阶设置」里，测试改为先点开分组（和用户操作一致）。
-⁴ `native_group060` 在 1.16、1.18、1.19 无酒馆助手各出现过一次“重新加载后 `Page.goto` 超时”（其余 43 项全过）。原因在测试：旧写法 `page.reload()` 后紧接着又 `goto` 一次，连续导航两次；第二次开始时上一页还在加载、自动打开的聊天正在保存。1.0 把它改成 `Z.reboot()`：等 1.5 秒再只导航一次，加载超时放宽到 90 秒（2 GB 沙箱里长时间测试后酒馆重新加载会变慢）。`native_v082` 里两处同样的写法一起改了。改后 1.19 + 酒馆助手连跑 group060 两次、v082 一次、v100 一次，全部通过；1.19 无酒馆助手重跑 group060 44/44。插件代码没有改动。
+¹ Lượt đầu do thiếu bộ nhớ sandbox (2 GB, lúc đó mở cùng lúc hai SillyTavern) nên xuất hiện một lần quá hạn chụp ảnh và một lần quá hạn chờ cố định “Nhập hàng 1 chạm”; sau khi tắt bớt SillyTavern thừa rồi chạy lại riêng thì đạt 58/58.
+² Lượt đầu thất bại do các bài kiểm thử ảnh hưởng lẫn nhau: `native_v100` đặt Lilith nổi thành “Luôn hiển thị” mà chưa đổi về lại, che mất nút trên máy tính. Đã khôi phục mặc định ở cuối `native_v100` và lưu xuống đĩa ngay, chạy lại đạt.
+³ v080 33/33, v081 20/20, v083 13/13, v084 29/29, v085 20/20, v091 35/35, v092 17/17, v093 29/29.
+⁴ Đã đổi `page.reload()` + `goto` liên tiếp trong `native_group060` và `native_v082` thành `Z.reboot()` (đợi 1.5 giây rồi chỉ điều hướng một lần, nới thời gian chờ tải lên 90 giây). Mã nguồn plugin không thay đổi.
 
-单元测试 `tests/v070.test.js` 原来要求版本号以 `0.` 开头，1.0.0 会被它拦下；已改成接受 1.x（和 v080 / v083 的写法一致）。
+## Kiểm tra tĩnh
 
-## 静态检查
+- `npm run check`: Kiểm tra cú pháp toàn bộ tệp nguồn + kiểm tra trích xuất nguyên bản đều đạt (đã thêm `src/data-io.js`, `src/errors.js`, `src/perf.js`, `src/lilith-float-art.js` vào danh sách kiểm tra).
+- `npm test`: Toàn bộ kiểm thử đơn vị đều đạt (thêm mới `tests/v100.test.js` 23 hạng mục).
+- `npm run filelist:check`: `FILELIST.sha256` đồng nhất với kho lưu trữ.
+- Số phiên bản: `src/contracts.js`, `manifest.json`, `package.json`, `package-lock.json` (hai nơi) đều là 1.0.0.
 
-- `npm run check`：全部源文件语法检查 + 原版提取校验通过（新增 `src/data-io.js`、`src/errors.js`、`src/perf.js`、`src/lilith-float-art.js` 已加入检查列表）。
-- `npm test`：单元测试全部通过（新增 `tests/v100.test.js` 23 项：抠图素材与 sha256、设置分组与搜索、去密钥、备份文件解析、迁移、预览、保留密钥合并、回滚前备份、只读守卫、错误提示格式、横屏导航、动态效果判定、发布文档）。
-- `npm run filelist:check`：`FILELIST.sha256` 与仓库一致。
-- 版本号：`src/contracts.js`、`manifest.json`、`package.json`、`package-lock.json`（两处）均为 1.0.0；`npm install --package-lock-only` 不再产生改动。
+## Chưa nghiệm thu
 
-## 没有验收的
-
-- **真实模型**：所有 AI 功能只用模拟模型；在能力表里标为 `experimental`（实验性），设置页顶部和 README 都写明。
-- **真机**：iPhone、Android、360 宽小屏、TauriTavern 都没测。悬浮莉莉丝的手感、横屏导航、帧率自动降级只在无头 Chromium 里验证。
-- **「选择存档文件…」按钮**：没有在浏览器里操作系统文件框；它和「粘贴存档文本」走同一个解析函数。
-- **v1.1 一键接管（`native_replace040`）**：需要不能上传的 v1.1 离线包，本轮没跑。
-- **神通支付类、分身派遣、随身洞天、自定义次数抽卡**：仍未逐项点击。
-- **玩家反馈补充**：只在 1.19.0 上验收；品阶鉴定的 AI 判断与分功能 API 只用模拟模型；状态栏各功能的路由是用和原版相同的系统提示词直接调用验证的，没有逐个点原版状态栏按钮；手机长按拖到底部关闭只在 Chromium 手机模拟里用真实触摸事件验收，真机未测；1.16 的「一键关闭插件」只核对了 1.16.0 源码里 `disableExtension` 已导出，没有在 1.16 宿主上点击。
+- **Mô hình thực tế**: Toàn bộ tính năng AI chỉ dùng mô hình mô phỏng; trong bảng năng lực được đánh dấu là `experimental` (Thử nghiệm), đầu trang Cài đặt và README đều ghi rõ.
+- **Máy thật**: iPhone, Android, màn hình nhỏ rộng 360, TauriTavern đều chưa kiểm thử. Cảm giác vuốt chạm Lilith nổi, điều hướng màn hình ngang, tự động hạ cấp tốc độ khung hình mới chỉ xác minh trong Chromium headless.
+- **Nút 「Chọn tệp bản lưu…」**: Chưa thao tác hộp thoại tệp hệ thống trong trình duyệt; nó và 「Dán văn bản bản lưu」 đi qua cùng một hàm phân tích.
+- **Tiếp quản 1 chạm v1.1 (`native_replace040`)**: Cần gói ngoại tuyến v1.1 không tải lên nên đợt này không chạy.
+- **Nhóm thanh toán Thần thông, Phái Cử Phân Thân, Động Thiên Tùy Thân, rút thẻ số lần tùy chỉnh**: Vẫn chưa bấm từng mục.
+- **Bổ sung phản hồi người chơi**: Mới nghiệm thu trên bản 1.19.0; phán đoán AI của giám định phẩm giai và API phân nhánh tính năng chỉ dùng mô hình mô phỏng.

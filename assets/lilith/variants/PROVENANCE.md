@@ -1,33 +1,33 @@
-# 莉莉丝 AI 差分立绘 · 来源说明
+# Ảnh đứng biến thể AI của Lilith · Thuyết minh nguồn gốc
 
-本目录的图像用于 `portrait.mode = "variants"`（设置 → 莉莉丝立绘 → AI 差分立绘）。
-除 `neutral.webp` 外，均为 **AI 图像模型生成 / 编辑** 后再经脚本处理的衍生图，基于原版立绘 `assets/original/lilith.webp`（424×632）。
+Các hình ảnh trong thư mục này được dùng cho `portrait.mode = "variants"` (Cài đặt → Ảnh đứng Lilith → Ảnh đứng biến thể AI).
+Ngoại trừ `neutral.webp`, tất cả đều là ảnh phái sinh được **tạo / chỉnh sửa bằng mô hình hình ảnh AI** rồi xử lý qua kịch bản dựa trên ảnh đứng nguyên bản `assets/original/lilith.webp` (424×632).
 
-## 表情差分（全画幅，含原背景）
+## Biến thể biểu cảm (Toàn khung hình, gồm cả nền gốc)
 
-| 文件 | 表情 | 生成方式 |
+| Tệp | Biểu cảm | Phương thức tạo |
 | --- | --- | --- |
-| `neutral.webp` | 平静 | 原版立绘原样重编码，**非 AI** |
-| `smile.webp` | 微笑 | AI 编辑脸部裁切 → 合成回原图 |
-| `shy.webp` | 害羞 | 同上 |
-| `pout.webp` | 嘟嘴 | 同上 |
-| `surprised.webp` | 惊讶 | 同上 |
-| `wink.webp` | 眨眼 | 同上 |
-| `smug.webp` | 坏笑 | 同上 |
-| `sad.webp` | 委屈 | 同上 |
+| `neutral.webp` | Bình thản | Mã hóa lại nguyên trạng từ ảnh đứng gốc, **không dùng AI** |
+| `smile.webp` | Mỉm cười | AI chỉnh sửa vùng cắt khuôn mặt → ghép trở lại ảnh gốc |
+| `shy.webp` | Xấu hổ | Như trên |
+| `pout.webp` | Bĩu môi | Như trên |
+| `surprised.webp` | Ngạc nhiên | Như trên |
+| `wink.webp` | Nháy mắt | Như trên |
+| `smug.webp` | Cười ranh mãnh | Như trên |
+| `sad.webp` | Tủi thân | Như trên |
 
-流程（`tools/lilith_variants_compose.py`）：
+Quy trình (`tools/lilith_variants_compose.py`):
 
-1. 从原图裁出脸部区域 `(118,30)-(278,190)`，放大到 640² 交给图像模型，只改表情。
-2. 在脸部椭圆**以外**（头发、角、耳朵）用 ORB 特征 + RANSAC 相似变换把生成图对齐回原图坐标；
-   本批 7 张的内点数都在 252–284 之间，变换接近恒等（缩放 0.999–1.000，平移 ≤0.3px）。
-3. 在脸周环带内按 LAB 均值/方差做色彩匹配，缩回原分辨率，用高斯羽化椭圆蒙版只替换脸部。
-4. 身体、翅膀、尾巴、背景像素与原图完全一致，所以不同表情交叉淡入时不会出现身体或背景跳动。
+1. Cắt vùng khuôn mặt `(118,30)-(278,190)` từ ảnh gốc, phóng lên 640² rồi giao cho mô hình hình ảnh để chỉ sửa biểu cảm.
+2. Ở vùng **bên ngoài** hình elip khuôn mặt (tóc, sừng, tai), dùng đặc trưng ORB + phép biến đổi đồng dạng RANSAC để căn chỉnh ảnh tạo ra khớp về lại tọa độ ảnh gốc;
+   số điểm khớp trong (inliers) của cả 7 tấm ảnh này đều nằm trong khoảng 252–284, phép biến đổi gần như đồng nhất (tỷ lệ thu phóng 0.999–1.000, độ dịch chuyển ≤0.3px).
+3. Khớp màu theo trung bình/phương sai không gian màu LAB trong dải vành đai quanh mặt, thu về độ phân giải gốc và dùng mặt nạ elip làm mờ Gauss (Gaussian feather) để chỉ thay thế vùng khuôn mặt.
+4. Các điểm ảnh cơ thể, cánh, đuôi và nền hoàn toàn giống hệt ảnh gốc, nhờ đó khi chuyển cảnh mờ dần (cross-fade) giữa các biểu cảm khác nhau sẽ không xảy ra hiện tượng giật lệch cơ thể hay nền.
 
-## 姿势差分：0.5.0 已移除
+## Biến thể tư thế: Đã gỡ bỏ từ bản 0.5.0
 
-按要求用原版全身立绘作参考重新生成过一次（2026-09-30），图像模型拒绝生成，因此放弃，不用其他服装代替。
-需要身体动作时使用原版分层参数动画（呼吸、翅膀、尾巴、头发、手臂摆动），素材全部来自原版分层。
+Đã thử tạo lại một lần theo yêu cầu bằng cách lấy ảnh đứng toàn thân nguyên bản làm tham chiếu (2026-09-30), nhưng mô hình hình ảnh từ chối tạo nên đã hủy bỏ, không dùng trang phục khác để thay thế.
+Khi cần chuyển động cơ thể sẽ sử dụng hoạt ảnh tham số phân lớp nguyên bản (nhịp thở, cánh, đuôi, tóc, đung đưa cánh tay), toàn bộ tư liệu đều lấy từ các lớp nguyên bản.
 
 ## SHA-256
 

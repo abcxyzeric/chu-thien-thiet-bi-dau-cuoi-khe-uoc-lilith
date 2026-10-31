@@ -1,6 +1,6 @@
 // 0.8.4 — streamed chat completions, returned as one ordinary (non-stream) OpenAI response.
 //
-// Why: long non-stream requests (莉莉丝私聊 with 附带当前剧情, memory, status-bar AI) send nothing back until the whole
+// Why: long non-stream requests (Trò chuyện riêng Lilith with Đính kèm cốt truyện hiện tại, memory, status-bar AI) send nothing back until the whole
 // answer is ready. Reverse proxies / tunnels in front of SillyTavern or the provider (cloudflare, nginx, phone hotspots)
 // cut an idle connection after ~60–100 s, and SillyTavern's own relay answers 502 when its upstream request dies.
 // Asking for `stream: true` keeps bytes flowing the whole time; the caller still receives a normal JSON response, so the
@@ -47,7 +47,7 @@ async function readText(response, cap = 4_000_000) {
     try {
         while (true) {
             const x = await reader.read(); if (x.done) break;
-            size += x.value.byteLength; if (size > cap) { await reader.cancel().catch(() => {}); throw Error('响应过大'); }
+            size += x.value.byteLength; if (size > cap) { await reader.cancel().catch(() => {}); throw Error('Phản hồi quá lớn'); }
             s += dec.decode(x.value, { stream: true });
         }
     } finally { try { reader.releaseLock(); } catch { /* already released */ } }
@@ -60,7 +60,7 @@ export function errorText(text, status) {
     try { const j = JSON.parse(text); const e = j?.error; msg = typeof e === 'string' ? e : (e?.message || j?.message || j?.detail || ''); } catch { msg = String(text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(); }
     if (typeof msg !== 'string') msg = JSON.stringify(msg);
     msg = msg.slice(0, 220);
-    const hint = { 401: 'Key 无效或缺失', 403: '没有权限（Key/分组/地区）', 404: '地址或模型不存在（检查是否少了 /v1）', 413: '请求太大', 429: '请求过于频繁或余额不足', 500: '服务商内部错误', 502: '网关错误：上游断开或超时', 503: '服务暂不可用', 504: '网关超时', 524: '代理等待超时' }[status] || '';
+    const hint = { 401: 'Key không hợp lệ hoặc bị thiếu', 403: 'Không có quyền truy cập (Key/nhóm/khu vực)', 404: 'Địa chỉ hoặc mô hình không tồn tại (kiểm tra xem có thiếu /v1 không)', 413: 'Yêu cầu quá lớn', 429: 'Yêu cầu quá dày hoặc hết số dư', 500: 'Lỗi nội bộ từ nhà cung cấp', 502: 'Lỗi cổng kết nối: máy chủ nguồn ngắt kết nối hoặc quá thời gian', 503: 'Dịch vụ tạm thời không khả dụng', 504: 'Cổng kết nối quá thời gian chờ', 524: 'Máy chủ đại diện (Proxy) quá thời gian chờ' }[status] || '';
     return [hint, msg].filter(Boolean).join(' · ') || ('HTTP ' + status);
 }
 
@@ -88,18 +88,18 @@ export async function streamedCompletion(send, body) {
     const text = await readText(r);
     if (!/event-stream/i.test(type) && !/^\s*data:/m.test(text)) {
         // not a stream: pass JSON through (SillyTavern relay non-stream errors arrive as HTTP 200 + {error})
-        let j = null; try { j = JSON.parse(text); } catch { return json({ error: { message: '接口返回的不是 JSON：' + text.slice(0, 120) } }, 502); }
+        let j = null; try { j = JSON.parse(text); } catch { return json({ error: { message: 'Cổng kết nối trả về dữ liệu không phải JSON: ' + text.slice(0, 120) } }, 502); }
         if (j?.error && !j?.choices) return json({ error: { message: errorText(text, 502) } }, 502);
         return json(j);
     }
     const p = parseSse(text);
     if (p.error && !p.content) return json({ error: { message: errorText(JSON.stringify({ error: p.error }), 502) } }, 502);
-    if (!p.chunks) return json({ error: { message: '流式响应为空（上游提前断开）' } }, 502);
+    if (!p.chunks) return json({ error: { message: 'Phản hồi luồng (stream) trống (máy chủ nguồn ngắt kết nối sớm)' } }, 502);
     return json(toCompletion(p, body.model));
 }
 
 /** Toast + console for API failures the original UI can only show as a bare status code. */
 export function reportApiError(where, message) {
-    console.warn('[诸天 · API]', where, message);
-    try { globalThis.toastr?.error?.(String(message), '诸天 · ' + where, { timeOut: 9000 }); } catch { /* no toastr */ }
+    console.warn('[Chư Thiên · API]', where, message);
+    try { globalThis.toastr?.error?.(String(message), 'Chư Thiên · ' + where, { timeOut: 9000 }); } catch { /* no toastr */ }
 }

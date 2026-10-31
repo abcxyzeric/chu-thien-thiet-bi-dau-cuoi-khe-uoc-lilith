@@ -59,7 +59,7 @@ export function keyboardState({ kb = 0, innerH = 0, fullH = 0, typing = false } 
 const TEXT_INPUT = 'input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=button]):not([type=submit]):not([type=file]):not([type=color]),textarea,select,[contenteditable=true]';
 /** 1.0: landscape rail — these six stay in the rail, the rest sit behind 「更多」 (the current page always shows). */
 export const LAND_PINNED = Object.freeze(['ov', 'task', 'shop', 'bag', 'group', 'set']);
-export const MOBILE_LAYOUTS = Object.freeze([['auto', '自动：手机上全屏（推荐）'], ['full', '总是全屏'], ['window', '浮动窗口（0.8.5 及以前的样子）']]);
+export const MOBILE_LAYOUTS = Object.freeze([['auto', 'Tự động: toàn màn hình trên điện thoại (khuyên dùng)'], ['full', 'Luôn toàn màn hình'], ['window', 'Cửa sổ nổi (giao diện từ 0.8.5 trở về trước)']]);
 
 export class MobileLayout {
     constructor(app) { this.app = app; this.disposers = []; this.mode = ''; this.raf = 0; }
@@ -124,12 +124,12 @@ export class MobileLayout {
         let more = nav.querySelector('.zt-nav-more');
         if (!more) {
             more = document.createElement('button'); more.type = 'button'; more.className = 'nav-button zt-nav-more'; more.setAttribute('aria-expanded', 'false');
-            more.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg><span>更多</span>';
-            more.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const open = nav.classList.toggle('zt-more-open'); more.setAttribute('aria-expanded', String(open)); more.querySelector('span').textContent = open ? '收起' : '更多'; if (open) this.showNav(); });
+            more.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="5" cy="12" r="2" fill="currentColor"/><circle cx="12" cy="12" r="2" fill="currentColor"/><circle cx="19" cy="12" r="2" fill="currentColor"/></svg><span>Thêm</span>';
+            more.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); const open = nav.classList.toggle('zt-more-open'); more.setAttribute('aria-expanded', String(open)); more.querySelector('span').textContent = open ? 'Thu gọn' : 'Thêm'; if (open) this.showNav(); });
             nav.append(more);
         } else if (more !== nav.lastElementChild) nav.append(more);
-        if (!nav.classList.contains('zt-more-open')) { more.setAttribute('aria-expanded', 'false'); more.querySelector('span').textContent = '更多'; }
-        more.title = `其余 ${btns.filter(b => !b.hasAttribute('data-pin')).length} 个页面`;
+        if (!nav.classList.contains('zt-more-open')) { more.setAttribute('aria-expanded', 'false'); more.querySelector('span').textContent = 'Thêm'; }
+        more.title = `${btns.filter(b => !b.hasAttribute('data-pin')).length} trang còn lại`;
     }
     /** The navigation strip / rail scrolls: keep the current page's button in sight (links jump to pages far down it). */
     showNav() {

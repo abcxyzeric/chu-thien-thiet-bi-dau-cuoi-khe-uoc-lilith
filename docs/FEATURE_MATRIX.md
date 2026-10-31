@@ -1,349 +1,349 @@
-# 原版能力迁移矩阵 · 1.1.5
+# Ma trận di chuyển năng lực nguyên bản · 1.1.5
 
-> **1.1.5 正式版**：
-> - 系统助手人设（莉莉丝默认 / 系统光球 / 自定义）：已实现，单测 + 浏览器验收；扮演效果只用模拟模型（实验性）；
-> - 功能开关（37 项 + 终端页面 + 按聊天开关的跳转）：已实现，浏览器验收；
-> - 聊天群「从世界书召唤」与群员记忆注入：实验性，只用模拟模型验收，不写入世界书。
+> **Bản chính thức 1.1.5**:
+> - Nhân cách trợ lý hệ thống (mặc định Lilith / Quang cầu Hệ thống / Tùy chỉnh): đã hiện thực hóa, nghiệm thu kiểm tra đơn vị + trình duyệt; hiệu quả nhập vai chỉ mới dùng mô hình giả lập (thử nghiệm);
+> - Công tắc tính năng (37 mục + Trang thiết bị đầu cuối + lối tắt nhảy tới các công tắc theo cuộc trò chuyện): đã hiện thực hóa, nghiệm thu trình duyệt;
+> - Nhóm chat 「Triệu hồi từ Sách Thế Giới」 và tiêm ký ức thành viên nhóm: thử nghiệm, chỉ mới nghiệm thu bằng mô hình giả lập, không ghi vào Sách Thế Giới.
 >
-> | 1.1.5 能力 | 本轮验证 | 边界 |
+> | Năng lực 1.1.5 | Kiểm chứng vòng này | Ranh giới |
 > |---|---|---|
-> | 人设替换世界书规则（不写文件） | 真实生成请求里有人设规则，世界书文件不变 | 其他条目机械改名；没有 WI 事件的宿主改用覆盖提示 |
-> | 人设私聊 / 记忆 / 工作台 | 私聊真实界面 → 请求的系统提示词是人设 | 真实模型扮演效果未验证 |
-> | 人设界面（名字 / 头像 / 语音框 / 换回） | 浏览器验收，不用刷新 | 立绘 / 触摸 / 悬浮只属于莉莉丝 |
-> | 功能开关 / 页面隐藏 | 聊天群、斜杠命令、商城页浏览器验收 | 「系统助手窗口」刷新后生效 |
-> | 从世界书召唤 / 群员记忆 | 召唤 → 入群 → 群聊带条目 → 正文注入记忆，关闭后不注入 | 实验性；实体手机未测 |
+> | Nhân cách thay thế quy tắc Sách Thế Giới (không ghi tệp) | Trong yêu cầu tạo văn bản thực tế có quy tắc nhân cách, tệp Sách Thế Giới không đổi | Các mục từ điển khác đổi tên cơ học; máy chủ không có sự kiện WI sẽ chuyển sang dùng lời nhắc ghi đè |
+> | Trò chuyện riêng / Ký ức / Bàn làm việc theo nhân cách | Giao diện trò chuyện riêng thực tế → lời nhắc hệ thống của yêu cầu là nhân cách mới | Hiệu quả nhập vai trên mô hình thật chưa kiểm chứng |
+> | Giao diện nhân cách (tên / ảnh đại diện / khung thoại / đổi về) | Nghiệm thu trình duyệt, không cần làm mới trang | Ảnh đứng / chạm tương tác / lơ lửng chỉ thuộc về Lilith |
+> | Công tắc tính năng / Ẩn trang | Nghiệm thu trình duyệt cho Nhóm chat, lệnh gạch chéo, trang Thương thành | 「Cửa sổ trợ lý hệ thống」 có hiệu lực sau khi làm mới trang |
+> | Triệu hồi từ Sách Thế Giới / Ký ức thành viên nhóm | Triệu hồi → vào nhóm → trò chuyện nhóm mang mục từ điển → chính văn tiêm ký ức, sau khi tắt không còn tiêm | Thử nghiệm; chưa thử nghiệm trên điện thoại vật lý |
 >
-> **1.1.4**：
-> - 聊天群：删除单条 / 重roll 最近一轮（已领红包·赠礼禁止）/ 截断提示 / 群聊生成设置，均为实验性，只用模拟模型验收；
-> - 写入核对误冻结修复与「核对并解冻账本」；
-> - 记忆键清洗；
-> - 思维链保护（草稿数据块停用，渲染 / 绑定 / 过滤跳过思维链）与「检查最新楼层」；
-> - 终端内说明书。
+> **1.1.4**:
+> - Nhóm chat: xóa từng tin / tạo lại (reroll) lượt gần nhất (cấm khi đã nhận lì xì · quà tặng) / cảnh báo cắt cụt / cài đặt tạo trò chuyện nhóm, đều là thử nghiệm, chỉ mới nghiệm thu bằng mô hình giả lập;
+> - Sửa lỗi đóng băng nhầm khi kiểm tra đọc lại sau khi ghi và nút 「Kiểm tra và mở khóa sổ cái」;
+> - Làm sạch khóa ký ức;
+> - Bảo vệ chuỗi suy nghĩ (tắt bản nháp khối dữ liệu, kết xuất / ràng buộc / lọc bỏ qua chuỗi suy nghĩ) và 「Kiểm tra tầng tin nhắn mới nhất」;
+> - Sách hướng dẫn ngay trong thiết bị đầu cuối.
 >
-> **1.1.3**：悬浮窗「切换」与「关闭」分开（头像也能关闭）、大小最低 20%、终端 × 只关终端；经典折叠抽卡一次 API 调用。
+> **1.1.3**: Tách riêng 「Chuyển đổi」 và 「Đóng」 cửa sổ nổi (ảnh đại diện cũng có thể đóng), kích thước tối thiểu 20%, nút × của thiết bị đầu cuối chỉ đóng thiết bị đầu cuối; rút thẻ Gộp cổ điển chỉ gọi API một lần.
 >
-> **1.1.2**：抽卡模式切换（经典折叠默认 / 十抽一结算）、羁绊页重做与群员「拉入羁绊」、管理员控制台改为终端内页面（盲盒保底、任意羁绊与群员好感、冲突拒写）。
+> **1.1.2**: Chuyển đổi chế độ rút thẻ (mặc định Gộp cổ điển / Kết toán mỗi 10 lượt), làm lại trang Quan hệ và 「Kéo vào Quan hệ」 cho thành viên nhóm, chuyển Bảng điều khiển Quản trị viên thành trang bên trong thiết bị đầu cuối (bảo hiểm hộp mù, độ hảo cảm của bất kỳ nhân vật quan hệ hay thành viên nhóm nào, từ chối ghi khi xung đột).
 
-> **1.1.1**：神品 1000 抽保底、群红包宽松识别与补登、数据块格式守卫（自动整理 / 格式提醒 / 剧情功法提示 / 缺失补记·实验性）、页面上移修复、手机头像避开状态栏、盲盒截断自适应批次与每 10 抽结算；发布前审查修复（物品操作一次写入、补记防覆盖 / 防串聊天、完整还原、严格叠加、重roll 不叠加资产）。见 [CHANGES-1.1.1](CHANGES-1.1.1.md)。
+> **1.1.1**: Bảo hiểm Thần phẩm 1000 lượt rút, nhận diện linh hoạt và đăng ký bù lì xì nhóm, Bảo vệ định dạng khối dữ liệu (tự động chỉnh lý / nhắc định dạng / nhắc công pháp cốt truyện / ghi bổ sung khi thiếu · thử nghiệm), sửa lỗi trang bị đẩy lên trên, ảnh đại diện trên điện thoại tránh thanh trạng thái, tự động giảm lô khi hộp mù bị cắt cụt và kết toán mỗi 10 lượt; sửa lỗi rà soát trước phát hành (thao tác vật phẩm ghi một lần, ghi bổ sung chống ghi đè / chống nhảy nhầm cuộc trò chuyện, khôi phục nguyên văn đầy đủ, xếp chồng nghiêm ngặt, tạo lại không cộng dồn tài sản). Xem [CHANGES-1.1.1](CHANGES-1.1.1.md).
 
-> **最新修订 1.1.0-patch3**：330/330单测、10套浏览器301/301。三项P1修复及安全上下文/协议/Web Locks/保存失败诊断见 [PATCH-1.1.0-3](PATCH-1.1.0-3.md)。下文此前复查的305/238等结果为历史批次，不是最新总数。真实模型和实体手机仍未验证。
+> **Bản sửa đổi mới nhất 1.1.0-patch3**: 330/330 bài kiểm tra đơn vị, 10 bộ trình duyệt 301/301. Ba bản sửa lỗi P1 cùng chẩn đoán ngữ cảnh bảo mật / giao thức / Web Locks / lưu thất bại xem tại [PATCH-1.1.0-3](PATCH-1.1.0-3.md). Các kết quả 305/238 của lần rà soát trước bên dưới là thuộc lô lịch sử, không phải tổng số mới nhất. Mô hình thật và điện thoại vật lý vẫn chưa kiểm chứng.
 
 
-第二轮复查：305项单测、8组浏览器238项通过，详见 [复查台账](REVIEW-1.1.0.md)；不等同真实模型或实体手机验收。
+Rà soát vòng hai: vượt qua 305 bài kiểm tra đơn vị, 8 nhóm trình duyệt 238 mục, chi tiết xem [Sổ theo dõi rà soát](REVIEW-1.1.0.md); không đồng nghĩa với nghiệm thu trên mô hình thật hoặc điện thoại vật lý.
 
-1.1.0：手机触屏浮窗和圆形入口贴边、剧情收纳、多目标羁绊、商店/盲盒定制与去重、API预算/空正文诊断、日志预览、世界书备份冲突保留、记忆别名、schema2安全迁移。见 [CHANGES-1.1.0](CHANGES-1.1.0.md)、[ACCEPTANCE-1.1.0](ACCEPTANCE-1.1.0.md)。
+1.1.0: Cửa sổ nổi cảm ứng trên điện thoại và nút mở tròn bám sát mép, Thu thập cốt truyện, Quan hệ đa mục tiêu, Tùy chỉnh & tránh trùng lặp cho cửa hàng/hộp mù, chẩn đoán ngân sách API / chính văn rỗng, xem trước nhật ký, giữ lại mục xung đột khi sao lưu Sách Thế Giới, bí danh ký ức, di chuyển an toàn schema 2. Xem [CHANGES-1.1.0](CHANGES-1.1.0.md), [ACCEPTANCE-1.1.0](ACCEPTANCE-1.1.0.md).
 
-| 1.1新增/修复能力 | 本轮验证 | 边界 |
+| Năng lực thêm mới / sửa lỗi trong 1.1 | Kiểm chứng vòng này | Ranh giới |
 |---|---|---|
-| 浮窗切换/触摸拖缩/复位、圆形入口左右贴边 | 隔离Chromium触摸事件通过 | 未实体手机 |
-| 剧情收纳/待鉴定/统一入库 | 单测+模拟模型+真实服务器通过 | 世界观、归属须人工核对 |
-| 多人羁绊与关系图 | 单测+浏览器通过 | 不自动补造缺失的历史人物 |
-| 商品定制/概率/有界去重/原子费用 | 单测+模拟模型+真实服务器通过 | 原作真实性、语义去重未真实模型验收 |
-| API上限/截断、记忆别名 | 请求预算浏览器通过；记忆单测通过 | 特定网关/真实模型仍实验性 |
-| 记录勾选/预览与窄范围清理 | 单测+浏览器通过 | 不清旧聊天，不撤销交易 |
-| 世界书备份/冲突保留；保存不明冻结 | 隔离服务器故障注入通过 | 冲突保留后须手动合并新规则 |
-| 1.1.2 抽卡模式（经典折叠默认 / 十抽一结算） | 单测+模拟模型+真实服务器通过 | 折叠行是汇总记录，不逐件生成名称与效果；真实模型的批量（1.1.2 时 20 件一批）未验收 |
-| 1.1.4 聊天群 删除 / 重roll / 截断提示 / 群聊生成设置 | 单测+模拟模型浏览器通过（重roll 替换、领取后禁止、失败保留旧轮、删除限制、截断丢半条、输出上限进请求） | 实验性；截断只在独立 API 能识别；1.1.3 以前的消息不能重roll |
-| 1.1.4 写入核对误冻结修复、核对并解冻账本 | 单测（他卡变量变化 / 迟到保存重存 / 真失败仍冻结）+ 浏览器（一致时不刷新解冻、写入恢复） | 冻结状态只在页面内存；不一致时须重载 |
-| 1.1.4 记忆键清洗 | 单测通过（中点 / 冒号 / 空格 / 假名 / 全角 / 重复 / 危险词） | 原版校验不变，其他规则（条数、证据）照常拒收 |
-| 1.1.4 思维链保护、草稿数据块停用、楼层检查 | 单测+模拟模型真实生成（思维链与正文保留、正式块入账、语音框 1 张、报告列出全部扩展提示） | 非诸天聊天的截图问题未复现；世界书深度 0 条目不改 |
-| 1.1.4 终端内说明书 | 单测（转义 / 目录）+ 浏览器（加载、搜索） | 只读 |
-| 1.1.3 经典折叠一次 API 调用（折叠只计数） | 单测+模拟模型浏览器通过（49 / 60 / 120 抽各 1 次请求） | 真实模型一次输出 40+ 件未验收；截断时自动减半重试，此时会多于一次 |
-| 1.1.3 悬浮窗切换 / 关闭、头像关闭、大小 20% | 单测+浏览器通过（模拟 Pixel 7 触屏 + 桌面） | 未实体手机 |
-| 1.1.2 羁绊页重做、群员拉入 / 移出 | 单测+浏览器通过（桌面与 390px 窄屏截图） | 未实体手机；同名不同世界不合并 |
-| 1.1.2 管理员控制台新页面 | 单测+浏览器通过（冲突拒写、越界报错、快照同步） | 直接改账本，AI 下一次回复才按新数值叙述 |
+| Chuyển đổi cửa sổ nổi / kéo thu phóng cảm ứng / đặt lại, nút mở tròn bám mép trái/phải | Vượt qua sự kiện cảm ứng Chromium cô lập | Chưa thử trên điện thoại vật lý |
+| Thu thập cốt truyện / Chờ giám định / Nhập kho thống nhất | Vượt qua kiểm tra đơn vị + mô hình giả lập + máy chủ thật | Thế giới quan và quyền sở hữu phải đối chiếu thủ công |
+| Quan hệ nhiều người và Sơ đồ quan hệ | Vượt qua kiểm tra đơn vị + trình duyệt | Không tự động bịa bù các nhân vật lịch sử bị thiếu |
+| Tùy chỉnh hàng hóa / xác suất / khử trùng lặp có giới hạn / chi phí nguyên tử | Vượt qua kiểm tra đơn vị + mô hình giả lập + máy chủ thật | Độ chân thực nguyên tác và khử trùng lặp ngữ nghĩa chưa nghiệm thu trên mô hình thật |
+| Giới hạn đầu ra API / cắt cụt, bí danh ký ức | Ngân sách yêu cầu vượt qua trên trình duyệt; ký ức vượt qua kiểm tra đơn vị | Cổng kết nối cụ thể / mô hình thật vẫn là thử nghiệm |
+| Tích chọn / xem trước bản ghi và dọn dẹp phạm vi hẹp | Vượt qua kiểm tra đơn vị + trình duyệt | Không xóa cuộc trò chuyện cũ, không hoàn tác giao dịch |
+| Sao lưu Sách Thế Giới / giữ lại xung đột; đóng băng khi trạng thái lưu không rõ | Vượt qua tiêm lỗi máy chủ cô lập | Sau khi giữ lại mục xung đột phải gộp quy tắc mới thủ công |
+| 1.1.2 Chế độ rút thẻ (mặc định Gộp cổ điển / Kết toán mỗi 10 lượt) | Vượt qua kiểm tra đơn vị + mô hình giả lập + máy chủ thật | Dòng gộp là bản ghi tổng hợp, không tạo tên và hiệu quả từng món; lô lớn trên mô hình thật (ở 1.1.2 là 20 món một lô) chưa nghiệm thu |
+| 1.1.4 Nhóm chat: Xóa / Tạo lại (reroll) / Cảnh báo cắt cụt / Cài đặt tạo trò chuyện nhóm | Vượt qua kiểm tra đơn vị + trình duyệt mô hình giả lập (thay thế khi reroll, cấm sau khi đã nhận, giữ lượt cũ khi thất bại, giới hạn xóa, bỏ nửa dòng khi cắt cụt, giới hạn đầu ra đi vào yêu cầu) | Thử nghiệm; chỉ nhận diện cắt cụt trên API độc lập; tin nhắn trước 1.1.3 không thể reroll |
+| 1.1.4 Sửa lỗi đóng băng nhầm khi đọc lại, Kiểm tra và mở khóa sổ cái | Kiểm tra đơn vị (biến thẻ khác thay đổi / lưu trễ lưu lại / lỗi thật vẫn đóng băng) + trình duyệt (khi khớp mở khóa không cần làm mới, khôi phục quyền ghi) | Trạng thái đóng băng chỉ nằm trong bộ nhớ trang; khi không khớp phải tải lại trang |
+| 1.1.4 Làm sạch khóa ký ức | Vượt qua kiểm tra đơn vị (dấu chấm giữa / dấu hai chấm / khoảng trắng / chữ Kana / toàn giác / trùng lặp / từ nguy hiểm) | Giữ nguyên kiểm tra nguyên bản, các quy tắc khác (số lượng, bằng chứng) vẫn từ chối như cũ |
+| 1.1.4 Bảo vệ chuỗi suy nghĩ, tắt bản nháp khối dữ liệu, kiểm tra tầng tin nhắn | Kiểm tra đơn vị + tạo văn bản thực tế với mô hình giả lập (giữ nguyên chuỗi suy nghĩ và chính văn, khối chính thức vào sổ, 1 thẻ thoại, báo cáo liệt kê toàn bộ lời nhắc tiện ích mở rộng) | Lỗi ảnh chụp màn hình ở cuộc trò chuyện không phải Chư Thiên chưa tái hiện được; không sửa các mục độ sâu 0 trong Sách Thế Giới |
+| 1.1.4 Sách hướng dẫn ngay trong thiết bị đầu cuối | Kiểm tra đơn vị (thoát ký tự HTML / mục lục) + trình duyệt (tải trang, tìm kiếm) | Chỉ đọc |
+| 1.1.3 Gộp cổ điển gọi API một lần (phần gộp chỉ đếm số lượng) | Vượt qua kiểm tra đơn vị + trình duyệt mô hình giả lập (49 / 60 / 120 lượt rút mỗi lần đều chỉ 1 yêu cầu) | Chưa nghiệm thu mô hình thật xuất 40+ món trong một lần; khi bị cắt cụt sẽ tự giảm một nửa và thử lại, lúc đó sẽ nhiều hơn 1 yêu cầu |
+| 1.1.3 Chuyển đổi / đóng cửa sổ nổi, đóng ảnh đại diện, kích thước 20% | Vượt qua kiểm tra đơn vị + trình duyệt (mô phỏng cảm ứng Pixel 7 + máy tính) | Chưa thử trên điện thoại vật lý |
+| 1.1.2 Làm lại trang Quan hệ, kéo / đưa thành viên nhóm ra khỏi Quan hệ | Vượt qua kiểm tra đơn vị + trình duyệt (ảnh chụp màn hình máy tính và màn hình hẹp 390px) | Chưa thử trên điện thoại vật lý; nhân vật cùng tên khác thế giới không gộp chung |
+| 1.1.2 Trang mới cho Bảng điều khiển Quản trị viên | Vượt qua kiểm tra đơn vị + trình duyệt (từ chối ghi khi xung đột, báo lỗi vượt ngưỡng, đồng bộ ảnh chụp nhanh) | Sửa trực tiếp sổ cái, ở phản hồi tiếp theo AI mới thuật lại theo chỉ số mới |
 
 
-1.0.0：（玩家反馈补充，版本号不变：品阶鉴定、分功能 API 与接口预设、一键关闭插件、关闭悬浮莉莉丝）悬浮莉莉丝抠图立绘、设置分层与搜索、导出 / 导入存档、账本结构版本、回滚前强制备份、统一错误提示、手机横屏导航精简、动态效果自动降级、LICENSE；和真实模型有关的能力标为「实验性」。见 [CHANGES-1.0.0](CHANGES-1.0.0.md)、[ACCEPTANCE-1.0.0](ACCEPTANCE-1.0.0.md)；能力表见下方「二·十八」。
+1.0.0: (Bổ sung từ phản hồi người chơi, giữ nguyên số phiên bản: Giám định phẩm giai, API theo từng tính năng & thiết lập sẵn cổng, Tắt tiện ích một chạm, Đóng Lilith nổi) Ảnh đứng tách nền Lilith nổi, phân tầng & tìm kiếm cài đặt, Xuất / Nhập bản lưu, phiên bản cấu trúc sổ cái, bắt buộc sao lưu trước khi hoàn tác, thông báo lỗi thống nhất, tinh giản thanh điều hướng ngang trên điện thoại, tự động giảm nhẹ hiệu ứng động, `LICENSE`; các năng lực liên quan đến mô hình thật được đánh dấu là 「Thử nghiệm」. Xem [CHANGES-1.0.0](CHANGES-1.0.0.md), [ACCEPTANCE-1.0.0](ACCEPTANCE-1.0.0.md); bảng năng lực xem mục 「II.18」 bên dưới.
 
-0.9.4：聊天群招募令的输入框跟随模式（选「随机世界」时打字自动改为「指定世界」；指定却没填名字时不扣费），见 [CHANGES-0.9.4](CHANGES-0.9.4.md)、[ACCEPTANCE-0.9.4](ACCEPTANCE-0.9.4.md)；能力表见下方「二·六」。
+0.9.4: Ô nhập liệu của lệnh chiêu mộ nhóm chat tự đi theo chế độ (khi đang chọn 「Thế giới ngẫu nhiên」 mà gõ chữ sẽ tự động đổi sang 「Chỉ định thế giới」; khi chọn chỉ định mà chưa điền tên sẽ không trừ phí), xem [CHANGES-0.9.4](CHANGES-0.9.4.md), [ACCEPTANCE-0.9.4](ACCEPTANCE-0.9.4.md); bảng năng lực xem mục 「II.6」 bên dưới.
 
-0.9.3：规则 → 额外世界背景读取世界书、星图更正自动识别错的世界、新手引导，见 [CHANGES-0.9.3](CHANGES-0.9.3.md)、[ACCEPTANCE-0.9.3](ACCEPTANCE-0.9.3.md)；能力表见下方「二·十七」。
+0.9.3: Quy tắc → Bối cảnh thế giới bổ sung đọc Sách Thế Giới, Bản đồ sao đính chính thế giới bị tự động nhận diện sai, Hướng dẫn tân thủ, xem [CHANGES-0.9.3](CHANGES-0.9.3.md), [ACCEPTANCE-0.9.3](ACCEPTANCE-0.9.3.md); bảng năng lực xem mục 「II.17」 bên dưới.
 
-0.9.2：真机反馈修复（莉莉丝台词不再出现两遍、状态栏原文不再外露、代码块里的台词保持原样），见 [CHANGES-0.9.2](CHANGES-0.9.2.md)、[ACCEPTANCE-0.9.2](ACCEPTANCE-0.9.2.md)；能力表见下方「二·十六」。
+0.9.2: Sửa lỗi phản hồi trên máy thật (lời thoại Lilith không còn xuất hiện hai lần, nguyên văn thanh trạng thái không còn lộ ra ngoài, lời thoại trong khối mã giữ nguyên), xem [CHANGES-0.9.2](CHANGES-0.9.2.md), [ACCEPTANCE-0.9.2](ACCEPTANCE-0.9.2.md); bảng năng lực xem mục 「II.16」 bên dưới.
 
-0.9.1：手机真机自检、复制诊断信息、整页变矮的键盘识别、LF 换行 + `.gitattributes`、CI，见 [CHANGES-0.9.1](CHANGES-0.9.1.md)、[ACCEPTANCE-0.9.1](ACCEPTANCE-0.9.1.md)；能力表见下方「二·十五」。
+0.9.1: Tự kiểm tra trên điện thoại thật, Sao chép thông tin chẩn đoán, nhận diện bàn phím làm thu thấp toàn trang, xuống dòng LF + `.gitattributes`, CI, xem [CHANGES-0.9.1](CHANGES-0.9.1.md), [ACCEPTANCE-0.9.1](ACCEPTANCE-0.9.1.md); bảng năng lực xem mục 「II.15」 bên dưới.
 
-0.9.0：手机端适配（终端与私聊全屏、跟随键盘、横屏左侧导航、点按目标与 16 px 输入框、悬浮莉莉丝让位、电脑窗口尺寸不被覆盖），见 [CHANGES-0.9.0](CHANGES-0.9.0.md)、[ACCEPTANCE-0.9.0](ACCEPTANCE-0.9.0.md)、[ROADMAP-1.0](ROADMAP-1.0.md)；能力表见下方「二·十四」。
+0.9.0: Tương thích giao diện điện thoại (thiết bị đầu cuối và trò chuyện riêng toàn màn hình, đi theo bàn phím, điều hướng cột trái khi xoay ngang, mục tiêu chạm & ô nhập 16 px, Lilith nổi nhường chỗ, kích thước cửa sổ máy tính không bị ghi đè), xem [CHANGES-0.9.0](CHANGES-0.9.0.md), [ACCEPTANCE-0.9.0](ACCEPTANCE-0.9.0.md), [ROADMAP-1.0](ROADMAP-1.0.md); bảng năng lực xem mục 「II.14」 bên dưới.
 
-0.8.5：手机最新楼层不渲染修复、AI 接口设置新手版排版、账本核验说明与引导，见 [CHANGES-0.8.5](CHANGES-0.8.5.md)、[ACCEPTANCE-0.8.5](ACCEPTANCE-0.8.5.md)；能力表见下方「二·十三」。
+0.8.5: Sửa lỗi tầng mới nhất trên điện thoại không kết xuất, dàn trang bản tân thủ cho cài đặt cổng AI, giải thích và hướng dẫn kiểm nghiệm sổ cái, xem [CHANGES-0.8.5](CHANGES-0.8.5.md), [ACCEPTANCE-0.8.5](ACCEPTANCE-0.8.5.md); bảng năng lực xem mục 「II.13」 bên dưới.
 
-0.8.4：API 流式传输与可调超时、终端内私聊、一处 API 设置、配色方案、强力模块开关、楼层美化兼容，见 [CHANGES-0.8.4](CHANGES-0.8.4.md)、[ACCEPTANCE-0.8.4](ACCEPTANCE-0.8.4.md)；能力表见下方「二·十二」。
+0.8.4: Truyền phát trực tuyến (streaming) API và thời gian chờ tùy chỉnh, trò chuyện riêng ngay trong thiết bị đầu cuối, một nơi cài đặt API duy nhất, bảng màu, công tắc mô-đun mạnh, tương thích làm đẹp tầng tin nhắn, xem [CHANGES-0.8.4](CHANGES-0.8.4.md), [ACCEPTANCE-0.8.4](ACCEPTANCE-0.8.4.md); bảng năng lực xem mục 「II.12」 bên dưới.
 
-0.8.3 修正悬浮莉莉丝：大小可调（默认 75%）、终端打开时点她不再关闭终端、出来后不再自动缩回，见 [CHANGES-0.8.3](CHANGES-0.8.3.md)、[ACCEPTANCE-0.8.3](ACCEPTANCE-0.8.3.md)；能力表见下方「二·十一」。
+0.8.3 Chỉnh sửa Lilith nổi: tùy chỉnh kích thước (mặc định 75%), khi thiết bị đầu cuối đang mở bấm vào cô ấy không còn làm đóng thiết bị đầu cuối, sau khi bước ra không còn tự động rụt lại vào mép, xem [CHANGES-0.8.3](CHANGES-0.8.3.md), [ACCEPTANCE-0.8.3](ACCEPTANCE-0.8.3.md); bảng năng lực xem mục 「II.11」 bên dưới.
 
-0.8.2 新增解绑世界书（一键 / 停用时自动）、手机悬浮莉莉丝、角色卡自带状态栏修复、聊天群经济与限流，见 [CHANGES-0.8.2](CHANGES-0.8.2.md)、[ACCEPTANCE-0.8.2](ACCEPTANCE-0.8.2.md)；能力表见下方「二·十」。
+0.8.2 Thêm mới gỡ liên kết Sách Thế Giới (một chạm / tự động khi tắt tiện ích), Lilith nổi trên điện thoại, sửa lỗi thanh trạng thái riêng của thẻ nhân vật, cân bằng kinh tế & giới hạn tần suất nhóm chat, xem [CHANGES-0.8.2](CHANGES-0.8.2.md), [ACCEPTANCE-0.8.2](ACCEPTANCE-0.8.2.md); bảng năng lực xem mục 「II.10」 bên dưới.
 
-0.8.1 修复莉莉丝连接页拉取模型、聊天群招募 / 定价 / 红包节奏 / 剧情来源，并提供世界书插件版更新与导出，见 [CHANGES-0.8.1](CHANGES-0.8.1.md)、[ACCEPTANCE-0.8.1](ACCEPTANCE-0.8.1.md)；能力表见下方「二·九」。
+0.8.1 Sửa lỗi lấy danh sách mô hình ở trang kết nối Lilith, chiêu mộ / định giá / nhịp độ lì xì / nguồn gốc cốt truyện của nhóm chat, đồng thời cung cấp cập nhật và xuất JSON bản Sách Thế Giới của tiện ích, xem [CHANGES-0.8.1](CHANGES-0.8.1.md), [ACCEPTANCE-0.8.1](ACCEPTANCE-0.8.1.md); bảng năng lực xem mục 「II.9」 bên dưới.
 
-0.8.0 统一莉莉丝与终端界面、立绘气泡、系统点一致修复、管理员控制台入口、自拟外挂入口、熟练度实效与角色卡功法导入，见 [CHANGES-0.8.0](CHANGES-0.8.0.md)、[ACCEPTANCE-0.8.0](ACCEPTANCE-0.8.0.md)；能力表见下方「二·八」。
+0.8.0 Thống nhất giao diện Lilith và thiết bị đầu cuối, bong bóng thoại trên ảnh đứng, sửa lỗi đồng nhất Điểm Hệ Thống, lối vào Bảng điều khiển Quản trị viên, lối vào Phụ trợ tự tạo, hiệu quả thực tế của độ thuần thục và nhập công pháp từ thẻ nhân vật, xem [CHANGES-0.8.0](CHANGES-0.8.0.md), [ACCEPTANCE-0.8.0](ACCEPTANCE-0.8.0.md); bảng năng lực xem mục 「II.8」 bên dưới.
 
-0.7.0 新增世界主题、莉莉丝界面角色与镜头、图谱、演出，并不再提供楼层内状态栏（旧兼容模式），见 [CHANGES-0.7.0](CHANGES-0.7.0.md)、[ACCEPTANCE-0.7.0](ACCEPTANCE-0.7.0.md)；能力表见下方「二·七」。
+0.7.0 Thêm mới chủ đề thế giới, nhân vật giao diện & góc máy quay Lilith, Đồ phổ, Hoạt cảnh diễn xuất, và ngừng cung cấp thanh trạng thái trong tầng tin nhắn (chế độ tương thích cũ), xem [CHANGES-0.7.0](CHANGES-0.7.0.md), [ACCEPTANCE-0.7.0](ACCEPTANCE-0.7.0.md); bảng năng lực xem mục 「II.7」 bên dưới.
 
-0.6.0 在终端里新增「诸天万界聊天群」，见 [CHANGES-0.6.0](CHANGES-0.6.0.md)、[ACCEPTANCE-0.6.0](ACCEPTANCE-0.6.0.md)；能力表见下方「二·六」。
+0.6.0 Thêm mới 「Nhóm Chat Chư Thiên Vạn Giới」 bên trong thiết bị đầu cuối, xem [CHANGES-0.6.0](CHANGES-0.6.0.md), [ACCEPTANCE-0.6.0](ACCEPTANCE-0.6.0.md); bảng năng lực xem mục 「II.6」 bên dưới.
 
-0.5.0 把整个系统收进一个窗口「诸天终端」：原版状态栏引擎、外挂、设置都在终端里，聊天楼层不再显示状态栏。见 [CHANGES-0.5.0](CHANGES-0.5.0.md)、[ACCEPTANCE-0.5.0](ACCEPTANCE-0.5.0.md)。
+0.5.0 Thu gọn toàn bộ hệ thống vào một cửa sổ duy nhất 「Thiết Bị Đầu Cuối Chư Thiên」: engine thanh trạng thái nguyên bản, phụ trợ, cài đặt đều nằm trong thiết bị đầu cuối, tầng tin nhắn trò chuyện không còn hiển thị thanh trạng thái lớn. Xem [CHANGES-0.5.0](CHANGES-0.5.0.md), [ACCEPTANCE-0.5.0](ACCEPTANCE-0.5.0.md).
 
-0.4.0 的目标是：**只装本插件，就能取代「诸天万界最强系统」v1.1 的全部安装内容**。
-v1.1 的安装内容包括：
-- 外挂世界书；
-- 4 个正则脚本；
-- 酒馆助手脚本「莉莉丝契约空间 v1.1」。
+Mục tiêu của bản 0.4.0 là: **chỉ cần cài tiện ích này là có thể thay thế toàn bộ nội dung cài đặt của 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 v1.1**.
+Nội dung cài đặt của v1.1 bao gồm:
+- Sách Thế Giới phụ trợ;
+- 4 kịch bản biểu thức chính quy (regex);
+- Kịch bản Tavern Helper 「Không Gian Khế Ước Lilith v1.1」.
 
-逐项对照见 [CHANGES-0.4.0](CHANGES-0.4.0.md)，验收明细见 [ACCEPTANCE-0.4.0](ACCEPTANCE-0.4.0.md)。
+Đối chiếu từng mục xem tại [CHANGES-0.4.0](CHANGES-0.4.0.md), chi tiết nghiệm thu xem tại [ACCEPTANCE-0.4.0](ACCEPTANCE-0.4.0.md).
 
-## 状态说明
+## Giải thích trạng thái
 
-- **已验收**：在隔离的真实 SillyTavern 宿主上做过浏览器端到端验收。括号内是验收过的版本。
-- **已验收（模拟模型）**：完整链路已在真实 ST 上跑通，包括点按钮、发出请求（经过 ST 的真实请求管线，或独立 API）、解析、写回、界面更新。
-  但回答来自本地模拟模型 `tests/qa/mock_model.py`，它按原版提示词返回格式正确的答案。
-  **还没有接真实模型做过**，所以不代表任何具体模型的输出质量或格式遵从度。
-- **实验性**（1.0 起）：和真实模型有关的能力。链路已按「已验收（模拟模型）」跑通，但没有接真实模型验收，界面和 README 都这样标注；`src/contracts.js` 里的状态是 `experimental`。
-- **0.2 / 0.3 已验收**：本版本没有改动这部分，沿用当时的验收结果。
-- **未逐项点击**：界面和逻辑已迁移，但验收时没有逐个点过。
-- **未完成 / 未支持**：字面意思。
+- **Đã nghiệm thu**: đã thực hiện nghiệm thu trình duyệt đầu-cuối (end-to-end) trên máy chủ SillyTavern cô lập thực tế. Trong ngoặc là các phiên bản đã nghiệm thu.
+- **Đã nghiệm thu (Mô hình giả lập)**: toàn bộ luồng đã chạy thông suốt trên SillyTavern thật, bao gồm bấm nút, gửi yêu cầu (đi qua đường ống yêu cầu thật của ST hoặc API độc lập), phân tích cú pháp, ghi trả lại và cập nhật giao diện.
+  Tuy nhiên câu trả lời đến từ mô hình giả lập cục bộ `tests/qa/mock_model.py` vốn trả về đáp án đúng định dạng theo lời nhắc nguyên bản.
+  **Chưa kết nối với mô hình thật để chạy thử**, nên không đại diện cho chất lượng đầu ra hay mức độ tuân thủ định dạng của bất kỳ mô hình cụ thể nào.
+- **Thử nghiệm** (từ bản 1.0 trở đi): các năng lực liên quan tới mô hình thật. Luồng xử lý đã chạy thông suốt theo mức 「Đã nghiệm thu (Mô hình giả lập)」, nhưng chưa nối với mô hình thật để nghiệm thu, cả giao diện lẫn README đều ghi chú rõ như vậy; trạng thái trong `src/contracts.js` là `experimental`.
+- **Đã nghiệm thu ở 0.2 / 0.3**: phiên bản hiện tại không sửa đổi phần này, kế thừa kết quả nghiệm thu tại thời điểm đó.
+- **Chưa bấm thử từng mục**: giao diện và logic đã di chuyển sang, nhưng khi nghiệm thu chưa bấm thử từng nút một.
+- **Chưa hoàn thành / Chưa hỗ trợ**: đúng như nghĩa đen.
 
-## 一、v1.1 安装内容的替代
+## I. Thay thế nội dung cài đặt của bản v1.1
 
-| v1.1 安装内容 | 插件内替代 | 状态 |
+| Nội dung cài đặt v1.1 | Thay thế bên trong tiện ích | Trạng thái |
 |---|---|---|
-| 外挂世界书（35 条） | 打开诸天聊天时自动安装并绑定为聊天世界书；已存在的不覆盖；绑定了别的聊天世界书时不抢占；不依赖角色卡 MVU | **已验收**（1.16–1.19）。提示词里确实包含常驻规则原文，其中的宏也已替换为账本值 |
-| 世界书预算 | 诊断面板显示“世界书预算”，不足时一键调整 ST 的预算设置；如果 100% 也不够，会提示用户调大上下文 | **已验收**（1.16–1.19）：16k 上下文加 25% 预算时报警，一键调整后恢复正常 |
-| 正则 · 状态栏 3.1 | 0.5.0 起默认由**终端里的原版引擎**记账，楼层只留「系统已记录」小标签；兼容模式下仍在消息内渲染（0.7.0 起设置里不再提供兼容模式，旧存档自动迁到终端模式一次；代码保留） | **已验收**（1.16–1.19）：终端模式楼层内 0 个状态栏、3 个小标签，引擎写入同一个 `面板账本`；兼容模式 0.4.0 的 70 项回归全部通过 |
-| 正则 · 莉莉丝专属语音框 | 原生语音卡片，**可开关**；不显示情绪词；支持行内 Markdown；按语气切换头像 | **已验收**（1.16–1.19），包括开关往返 |
-| 正则 · 旧楼层不发给 AI | 拦截器只剥离发给模型的提示词中的旧面板，聊天存档不改 | **已验收**（1.16–1.19）：提示词中只有深度 1 的楼层保留面板；存档中面板仍在 |
-| 正则 · 旧楼层精简显示 | 兼容模式下保留（0.7.0 起不在设置中提供）：精简卡（系统点、好感、任务），点开展开完整状态栏；可关闭，改为“历史”按钮。终端模式下旧楼层只有小标签 | **已验收**（1.16–1.19） |
-| 酒馆助手脚本 · 莉莉丝契约空间 | 原版助手原生运行，不需要酒馆助手 | **已验收**（1.16–1.19） |
-| 酒馆助手变量宏 `{{get_chat_variable::…}}` 等 | 提示词和显示用的 HTML 都会替换 | **已验收**（1.16–1.19）：提示词里不再残留原始宏 |
-| 一键接管和恢复旧版 | 停用（不删除）旧正则和旧脚本，**写盘后**再刷新；恢复时只重新启用被本插件停用的项 | **已验收**（1.16–1.19）：从服务器读回设置，确认已落盘 |
+| Sách Thế Giới phụ trợ (35 mục) | Khi mở cuộc trò chuyện Chư Thiên sẽ tự động cài đặt và liên kết làm Sách Thế Giới trò chuyện; nếu đã tồn tại sẽ không ghi đè; khi đang liên kết Sách Thế Giới trò chuyện khác sẽ không chiếm quyền; không phụ thuộc MVU của thẻ nhân vật | **Đã nghiệm thu** (1.16–1.19). Trong lời nhắc thực sự có chứa nguyên văn quy tắc thường trực, các macro bên trong cũng đã được thay thế bằng giá trị sổ cái |
+| Ngân sách Sách Thế Giới | Bảng chẩn đoán hiển thị “Ngân sách Sách Thế Giới”, khi không đủ có thể điều chỉnh một chạm cài đặt ngân sách của ST; nếu nâng lên 100% vẫn không đủ sẽ nhắc người dùng tăng ngữ cảnh | **Đã nghiệm thu** (1.16–1.19): ngữ cảnh 16k kèm ngân sách 25% sẽ báo động, sau khi điều chỉnh một chạm sẽ trở lại bình thường |
+| Regex · Thanh trạng thái 3.1 | Từ 0.5.0 mặc định do **engine nguyên bản trong thiết bị đầu cuối** ghi sổ, ở tầng tin nhắn chỉ để lại nhãn nhỏ 「Hệ thống đã ghi nhận」; ở chế độ tương thích vẫn kết xuất trong tin nhắn (từ 0.7.0 trong Cài đặt không còn cung cấp chế độ tương thích, bản lưu cũ tự động chuyển sang chế độ thiết bị đầu cuối một lần; mã nguồn vẫn giữ lại) | **Đã nghiệm thu** (1.16–1.19): ở chế độ thiết bị đầu cuối trong tầng có 0 thanh trạng thái, 3 nhãn nhỏ, engine ghi vào cùng một `面板账本`; 70 mục hồi quy chế độ tương thích của 0.4.0 đều vượt qua |
+| Regex · Khung thoại độc quyền của Lilith | Thẻ thoại nguyên bản, **có thể bật/tắt**; không hiển thị từ chỉ cảm xúc; hỗ trợ Markdown nội dòng; tự đổi ảnh đại diện theo ngữ khí | **Đã nghiệm thu** (1.16–1.19), bao gồm cả bật/tắt qua lại |
+| Regex · Không gửi tầng cũ cho AI | Bộ chặn chỉ bóc tách các bảng dữ liệu cũ khỏi lời nhắc gửi cho mô hình, bản lưu trò chuyện không thay đổi | **Đã nghiệm thu** (1.16–1.19): trong lời nhắc chỉ có tầng ở độ sâu 1 giữ lại bảng dữ liệu; trong bản lưu bảng dữ liệu vẫn còn nguyên |
+| Regex · Hiển thị rút gọn tầng cũ | Giữ lại trong chế độ tương thích (từ 0.7.0 không còn cung cấp trong Cài đặt): thẻ rút gọn (Điểm Hệ Thống, Hảo cảm, Nhiệm vụ), bấm vào sẽ mở rộng thanh trạng thái đầy đủ; có thể tắt để đổi thành nút “Lịch sử”. Ở chế độ thiết bị đầu cuối các tầng cũ chỉ có nhãn nhỏ | **Đã nghiệm thu** (1.16–1.19) |
+| Kịch bản Tavern Helper · Không Gian Khế Ước Lilith | Trợ lý nguyên bản chạy nguyên gốc, không cần Tavern Helper | **Đã nghiệm thu** (1.16–1.19) |
+| Macro biến Tavern Helper `{{get_chat_variable::…}}` v.v. | Thay thế trong cả lời nhắc lẫn HTML dùng để hiển thị | **Đã nghiệm thu** (1.16–1.19): trong lời nhắc không còn sót lại macro thô |
+| Tiếp quản và khôi phục bản cũ một chạm | Tạm dừng (không xóa) regex cũ và kịch bản cũ, **sau khi ghi xuống đĩa** mới làm mới trang; khi khôi phục chỉ bật lại những mục đã bị tiện ích này tạm dừng | **Đã nghiệm thu** (1.16–1.19): đọc lại cài đặt từ máy chủ để xác nhận đã lưu xuống đĩa |
 
-## 二、原版 8 个分页（0.5.0 起在终端里）
+## II. 8 trang phân loại nguyên bản (Từ 0.5.0 nằm trong thiết bị đầu cuối)
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 8 个分页由终端导航切换，账本读写 | **已验收**（1.16–1.19） | 原版引擎本身在终端里运行，绑定最新带数据块的楼层；数据写入 `chat_metadata.variables`，并确认已写盘 |
-| 写入输入框的操作（购物车结算、闭关、使用物品等） | **已验收**（1.16–1.19，购物车结算） | 终端提示「已写入聊天输入框」，并提供「关闭终端去发送」 |
-| **API 中心**（独立 API 或酒馆主 API） | **已验收（模拟模型）**（1.16–1.19） | 模型列表和测试连接可用；配置写回原版三处存储；主 API 模式下不会请求伪造网址 |
-| 商城 · AI 进货 | **已验收（模拟模型）**（1.16–1.19） | 走独立 API；max_tokens 和 temperature 按原版设置；按商店等级过滤商品；扣 500 点 |
-| 商城 · 许愿报价 | **已验收（模拟模型）**（1.16–1.19） | 走酒馆主 API |
-| 商城 · 抽卡 | **已验收（模拟模型）**（1.16–1.19） | 单抽扣 1 万点 → 奖励生成器 → 待领取 → 收下后进入背包；十连扣 10 万点，结果进入待处理奖励。自定义次数走同一代码路径，**未逐项点击** |
-| 商城 · 购买、许愿支付、物品回收 | **已验收**（1.16–1.19） | 购买扣点并入包（或进入待结算）；许愿支付扣 2 万点；回收加点 |
-| 背包 · AI 整理 | **已验收（模拟模型）**（1.16–1.19） | 每件物品都被重新分类 |
-| 外挂 · 诸天打手召唤 | **已验收（模拟模型）**（1.16–1.19） | 生成打手卡 |
-| 外挂 · 万物熔炉 | **已验收（模拟模型）**（1.16–1.19） | 生成模型命名的熔炼物。原版有 10% 概率失败，失败时不调用模型；验收时固定了随机数 |
-| 神通 · AI 评估实力档 | **已验收（模拟模型）**（1.16–1.19） | 档位写回下拉框 |
-| ⚙ 测试连接 | **已验收（模拟模型）**（1.16–1.19） | |
-| 外挂 · 无限口袋、洞察之眼 | **已验收**（1.16–1.19） | 口袋存入后取出 ×3 写入背包；洞察之眼扣点 → 购物车 → 结算写入输入框 |
-| 外挂和神通里其余不调用模型的本地动作 | **未逐项点击** | 分身派遣、随身洞天、图鉴复刻、状态改写、言灵改字。它们都是原版代码经原生桥接运行，账本写入走的是已验收的同一个接口 |
+| 8 trang chuyển đổi qua thanh điều hướng thiết bị đầu cuối, đọc/ghi sổ cái | **Đã nghiệm thu** (1.16–1.19) | Bản thân engine nguyên bản chạy bên trong thiết bị đầu cuối, gắn với tầng mới nhất có khối dữ liệu; dữ liệu ghi vào `chat_metadata.variables` và xác nhận đã lưu xuống đĩa |
+| Các thao tác ghi vào ô nhập liệu (kết toán giỏ hàng, bế quan, sử dụng vật phẩm…) | **Đã nghiệm thu** (1.16–1.19, kết toán giỏ hàng) | Thiết bị đầu cuối hiện thông báo 「Đã ghi vào ô nhập liệu trò chuyện」 kèm nút 「Đóng thiết bị đầu cuối để gửi」 |
+| **Trung tâm API** (API độc lập hoặc API chính của quán rượu) | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Danh sách mô hình và kiểm tra kết nối đều hoạt động; cấu hình ghi trả về cả ba nơi lưu trữ nguyên bản; ở chế độ API chính không gửi yêu cầu tới địa chỉ giả |
+| Thương thành · AI nhập hàng | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Đi qua API độc lập; `max_tokens` và `temperature` theo cài đặt nguyên bản; lọc hàng hóa theo cấp cửa hàng; trừ 500 điểm |
+| Thương thành · Báo giá ước nguyện | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Đi qua API chính của quán rượu |
+| Thương thành · Rút thẻ | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Rút đơn trừ 1 vạn điểm → trình tạo phần thưởng → chờ nhận → sau khi nhận đi vào túi đồ; mười lần trừ 10 vạn điểm, kết quả vào phần thưởng chờ xử lý. Số lượt tùy chỉnh đi chung một đường dẫn mã nguồn, **chưa bấm thử từng mục** |
+| Thương thành · Mua hàng, thanh toán ước nguyện, thu hồi vật phẩm | **Đã nghiệm thu** (1.16–1.19) | Mua hàng trừ điểm và vào túi (hoặc vào chờ kết toán); thanh toán ước nguyện trừ 2 vạn điểm; thu hồi cộng điểm |
+| Túi đồ · AI sắp xếp | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Mỗi vật phẩm đều được phân loại lại |
+| Phụ trợ · Triệu hồi Tay Đấm Chư Thiên | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Tạo thẻ tay đấm |
+| Phụ trợ · Vạn Vật Dung Lô | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Tạo vật phẩm dung luyện do mô hình đặt tên. Bản gốc có 10% xác suất thất bại, khi thất bại không gọi mô hình; khi nghiệm thu đã cố định hạt giống ngẫu nhiên |
+| Thần thông · AI đánh giá bậc thực lực | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Ghi bậc thực lực trả về hộp thả xuống |
+| ⚙ Kiểm tra kết nối | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | |
+| Phụ trợ · Túi Đồ Vô Hạn, Mắt Động Sát | **Đã nghiệm thu** (1.16–1.19) | Cất vào túi rồi lấy ra ×3 ghi vào túi đồ; Mắt Động Sát trừ điểm → giỏ hàng → kết toán ghi vào ô nhập liệu |
+| Các hành động cục bộ còn lại không gọi mô hình trong Phụ trợ và Thần thông | **Chưa bấm thử từng mục** | Phái Đi Phân Thân, Động Thiên Tùy Thân, Sao Chép Đồ Giám, Cải Biên Trạng Thái, Ngôn Linh Cải Tự. Tất cả đều là mã nguyên bản chạy qua cầu nối nguyên gốc, việc ghi sổ cái đi qua cùng một giao diện đã được nghiệm thu |
 
-## 二·五、终端（0.5.0 新增）
+## II.5. Thiết bị đầu cuối (Thêm mới từ 0.5.0)
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 单窗口：莉莉丝窗口即终端，无第二个窗口 | **已验收**（1.16–1.19） | 导航固定分组：系统 / 交易 / 能力 / 莉莉丝 / 终端 |
-| 关闭：✕、Esc、点外部（可设）、手机返回手势；再开回到上次页面；聊天不滚动 | **已验收**（1.16–1.19） | 酒馆自己的弹窗开着时 Esc 先关弹窗 |
-| 设置页（原扩展设置抽屉的全部开关和工具） | **已验收**（1.16–1.19） | 抽屉只留「打开诸天终端」「紧急恢复旧版」 |
-| 外挂开关（原版 6 个，按聊天） | **已验收**（1.16–1.19） | 关闭后在终端隐藏，并注入“不得使用” |
-| 自拟外挂：本机库、按聊天启用、提示词注入、发动扣费读回、每日次数 | **已验收**（1.16–1.19） | 导出 / 导入 .json 有纯逻辑测试（字段校验、截断、宏与标签无效化），**浏览器里未点导入文件对话框** |
-| 手机 / 窄窗口布局 | **已验收**（1.16–1.19，390×800） | 系统页隐藏立绘、导航横向滚动；莉莉丝页面显示立绘 |
+| Cửa sổ đơn: cửa sổ Lilith chính là thiết bị đầu cuối, không có cửa sổ thứ hai | **Đã nghiệm thu** (1.16–1.19) | Thanh điều hướng chia nhóm cố định: Hệ thống / Giao dịch / Năng lực / Lilith / Thiết bị đầu cuối |
+| Đóng: ✕, Esc, bấm bên ngoài (tùy chỉnh), cử chỉ quay lại trên điện thoại; mở lại về đúng trang trước đó; cuộc trò chuyện không bị cuộn lệch | **Đã nghiệm thu** (1.16–1.19) | Khi hộp thoại riêng của quán rượu đang mở thì nhấn Esc sẽ đóng hộp thoại trước |
+| Trang Cài đặt (toàn bộ công tắc và công cụ từ ngăn kéo cài đặt tiện ích cũ) | **Đã nghiệm thu** (1.16–1.19) | Ngăn kéo chỉ giữ lại 「Mở Thiết Bị Đầu Cuối Chư Thiên」 và 「Khôi phục khẩn cấp bản cũ」 |
+| Công tắc phụ trợ (6 phụ trợ nguyên bản, theo từng cuộc trò chuyện) | **Đã nghiệm thu** (1.16–1.19) | Sau khi tắt sẽ ẩn trong thiết bị đầu cuối và tiêm lời nhắc “không được sử dụng” |
+| Phụ trợ tự tạo: kho trên máy, bật theo từng cuộc trò chuyện, tiêm lời nhắc, phát động trừ phí đọc lại, số lần mỗi ngày | **Đã nghiệm thu** (1.16–1.19) | Xuất / Nhập `.json` có kiểm tra logic thuần túy (kiểm tra trường, cắt độ dài, làm trơ macro & thẻ), **trên trình duyệt chưa bấm hộp thoại chọn tệp nhập** |
+| Bố cục điện thoại / cửa sổ hẹp | **Đã nghiệm thu** (1.16–1.19, 390×800) | Ở các trang hệ thống ẩn ảnh đứng, thanh điều hướng cuộn ngang; ở các trang Lilith hiển thị ảnh đứng |
 
-## 二·六、诸天万界聊天群（0.6.0 新增，原版没有）
+## II.6. Nhóm Chat Chư Thiên Vạn Giới (Thêm mới từ 0.6.0, bản gốc không có)
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 招募（随机 / 指定世界）、邀请入群、扩建 | **已验收（模拟模型）**（1.16–1.19） | 招募费 200（0.8.1 起 100），解析失败退回；入群费按实力档（0.8.1 起独立曲线，见「二·九」） |
-| 招募令输入框跟随模式：随机时打字 → 指定世界；切回随机清空；指定但没填名字 → 提示且不扣费（0.9.4） | **已验收（模拟模型）**（1.19，手机 390×844） | 只在 1.19 上跑过；1.16–1.18 未单独复跑 |
-| 群聊：一条发言一次模型调用，1–6 位群员回话 | **已验收（模拟模型）**（1.16–1.19） | 非群员、被禁言者的行被丢弃 |
-| 群员红包（系统点 / 物品）、赠礼 → 抢 / 领取入账 | **已验收（模拟模型）**（1.16–1.19） | 先写账本读回再提示「已入库」；来源「名称@世界」 |
-| 规则底线：品阶 ≤ 商城等级、≤ 群员实力，禁忌禁止，自动降级；红包金额和每日个数上限 | **已验收**（1.16–1.19 + 纯逻辑） | 不可关闭 |
-| 宿主发红包（系统点 / 背包物品）、好感、回礼 | **已验收（模拟模型）**（1.16–1.19） | 回礼是随机的，验收只检查好感上升 |
-| 签到 | **已验收**（1.16–1.19） | |
-| 求助 → 原版任务库「待接取」 | **已验收（模拟模型）**（1.16–1.19） | |
-| 群直播、私聊 | **已验收（模拟模型）**（1.16–1.19） | |
-| 降临：扣费、注入剧情 3 轮后结束 | **已验收**（1.16–1.19） | 只验证了提示词注入，**没有用真实模型看正文效果** |
-| 集市：群员挂单买下、宿主挂单（估值 ×1.3 以内成交）、撤单 | **已验收**（1.16–1.19） | |
-| 群务：公告、群规、禁言、踢人、管理员、摘要注入开关、自动闲聊 | **已验收**（1.16–1.19） | 群规文字只作为提示词，底线规则在代码里 |
-| 刷新后保留、手机布局 | **已验收**（1.16–1.19） | |
+| Chiêu mộ (ngẫu nhiên / chỉ định thế giới), mời vào nhóm, mở rộng dung lượng | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Phí chiêu mộ 200 (từ 0.8.1 là 100), phân tích thất bại được hoàn lại; phí vào nhóm theo bậc thực lực (từ 0.8.1 có đường cong giá riêng, xem mục 「II.9」) |
+| Ô nhập liệu lệnh chiêu mộ đi theo chế độ: khi đang ở Ngẫu nhiên mà gõ chữ → Chỉ định thế giới; chuyển về Ngẫu nhiên tự xóa trống; chọn chỉ định nhưng chưa điền tên → nhắc nhở và không trừ phí (0.9.4) | **Đã nghiệm thu (Mô hình giả lập)** (1.19, điện thoại 390×844) | Chỉ mới chạy trên 1.19; chưa chạy lại riêng trên 1.16–1.18 |
+| Trò chuyện nhóm: mỗi lần phát biểu gọi mô hình một lần, 1–6 thành viên trả lời | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Các dòng của người không thuộc nhóm hoặc người đang bị cấm ngôn sẽ bị loại bỏ |
+| Lì xì của thành viên (Điểm Hệ Thống / vật phẩm), quà tặng → giật / nhận vào sổ | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Ghi sổ cái và đọc lại trước rồi mới báo 「Đã nhập kho」; nguồn gốc ghi 「Tên@Thế_giới」 |
+| Giới hạn quy tắc nền tảng: phẩm giai ≤ cấp Thương thành, ≤ thực lực thành viên, cấm hàng Cấm kỵ, tự động hạ cấp; trần số tiền lì xì và số lượng mỗi ngày | **Đã nghiệm thu** (1.16–1.19 + logic thuần túy) | Không thể tắt |
+| Ký chủ phát lì xì (Điểm Hệ Thống / vật phẩm túi đồ), độ hảo cảm, quà đáp lễ | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Quà đáp lễ là ngẫu nhiên, khi nghiệm thu chỉ kiểm tra độ hảo cảm tăng lên |
+| Điểm danh | **Đã nghiệm thu** (1.16–1.19) | |
+| Cầu viện → kho nhiệm vụ nguyên bản trạng thái 「Chờ nhận」 | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | |
+| Phát trực tiếp nhóm, trò chuyện riêng | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | |
+| Giáng lâm: trừ phí, tiêm vào cốt truyện sau 3 lượt thì kết thúc | **Đã nghiệm thu** (1.16–1.19) | Chỉ mới xác minh việc tiêm lời nhắc, **chưa dùng mô hình thật để xem hiệu quả trong chính văn** |
+| Chợ phiên: mua đơn treo của thành viên, Ký chủ treo đơn (chốt đơn trong phạm vi định giá ×1.3), hủy đơn | **Đã nghiệm thu** (1.16–1.19) | |
+| Việc nhóm: thông báo, nội quy nhóm, cấm ngôn, trục xuất, quản trị viên, công tắc tiêm tóm tắt, tự động tán gẫu | **Đã nghiệm thu** (1.16–1.19) | Văn bản nội quy nhóm chỉ dùng làm lời nhắc, quy tắc nền tảng nằm trong mã nguồn |
+| Giữ nguyên sau khi làm mới trang, bố cục điện thoại | **Đã nghiệm thu** (1.16–1.19) | |
 
-## 二·七、世界主题 · 莉莉丝界面角色 · 图谱 · 演出（0.7.0 新增，原版没有）
+## II.7. Chủ đề thế giới · Nhân vật giao diện Lilith · Đồ phổ · Diễn xuất (Thêm mới từ 0.7.0, bản gốc không có)
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 世界主题：仙侠 / 赛博 / 诡异 / 默认，自动判断或设置固定 | **已验收**（1.16–1.19） | 只换颜色和装饰，控件坐标在各主题下逐个比对一致；原版引擎只改 CSS 变量 |
-| 万界足迹 `诸天系统.万界足迹`、`世界类型` | **已验收**（1.16–1.19） | 当前世界变化时加锁写入并读回；新世界不沿用旧 `世界类型` |
-| AI 在「变量更新」里写 当前世界 / 世界类型 | **已验收（模拟模型）**（1.16–1.19） | 提示词注入已验证；**真实模型是否遵守未验证**；星图可手动「记录穿越」 |
-| 减少动态效果、手机布局 | **已验收**（1.16–1.19，390×800；手机版面为人工看图） | 减少动态效果时装饰静止、演出只出卡片；手机图谱可横向拖动 |
-| 莉莉丝反应：选中任务 / 物品 / 功法、结算成败 | **已验收**（1.16–1.19） | 只用原版表情差分和分层动作；台词取自账本字段 |
-| 莉莉丝镜头：系统页半身 · 工作台全身 · 私聊面部特写 · 剧情提示胸像 | **已验收**（1.16–1.19；取景为人工看图） | 像素坐标裁切原图；没有伪 Live2D |
-| 图谱：事件线、羁绊图、星图、能力树 | **已验收**（1.16–1.19） | 节点来自账本；详情显示原始字段与路径；任务可定位到原版任务页原行；键盘可操作 |
-| 图谱 → 定位聊天楼层 | **已实现，未做浏览器验收** | 楼层不在已加载的聊天里时提示先加载更早消息 |
-| 演出：穿越、突破、契约、任务完成 / 失败、抽取、奖励入库 | **已验收**（1.16–1.19：任务完成、穿越、抽取回滚；突破 / 契约为纯逻辑测试） | 账本读回后播放、播放前再核对；回滚的记为「未入账」；可跳过；可只显示卡片或关闭 |
-| 终端关闭时的剧情提示卡片 | **已验收**（1.16–1.19） | 打开终端时收起 |
-| 旧兼容模式（楼层内状态栏）不再在设置中提供；旧值一次性迁到终端模式 | **已验收**（1.16–1.19 + 纯逻辑） | 旧模式代码保留；`native_replace040.py` 本轮未运行（缺 v1.1 原版文件） |
+| Chủ đề thế giới: Tiên hiệp / Cyber / Quỷ dị / Mặc định, tự động phán đoán hoặc cố định trong Cài đặt | **Đã nghiệm thu** (1.16–1.19) | Chỉ đổi màu sắc và họa tiết trang trí, tọa độ các điều khiển dưới từng chủ đề được đối chiếu khớp nhau từng cái; engine nguyên bản chỉ đổi biến CSS |
+| Dấu chân Vạn Giới `诸天系统.万界足迹`, `世界类型` | **Đã nghiệm thu** (1.16–1.19) | Khi thế giới hiện tại thay đổi sẽ khóa ghi và đọc lại; thế giới mới không kế thừa `世界类型` cũ |
+| AI ghi `当前世界` / `世界类型` trong mục 「Cập nhật biến」 | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Đã xác minh việc tiêm lời nhắc; **việc mô hình thật có tuân thủ hay không chưa kiểm chứng**; trên Bản đồ sao có thể 「Ghi nhận xuyên không」 thủ công |
+| Giảm chuyển động, bố cục điện thoại | **Đã nghiệm thu** (1.16–1.19, 390×800; bố cục điện thoại kiểm tra trực quan bằng ảnh chụp) | Khi bật giảm chuyển động thì họa tiết đứng yên và diễn xuất chỉ hiện thẻ kết quả; Đồ phổ trên điện thoại có thể kéo ngang |
+| Phản ứng của Lilith: chọn nhiệm vụ / vật phẩm / công pháp, kết toán thành bại | **Đã nghiệm thu** (1.16–1.19) | Chỉ dùng biểu cảm biến thể và chuyển động phân lớp nguyên bản; lời thoại lấy từ các trường sổ cái |
+| Góc máy quay Lilith: trang hệ thống nửa người · bàn làm việc toàn thân · trò chuyện riêng cận cảnh khuôn mặt · gợi ý cốt truyện ảnh chân dung | **Đã nghiệm thu** (1.16–1.19; góc cắt kiểm tra trực quan bằng ảnh chụp) | Cắt khung từ ảnh gốc theo tọa độ điểm ảnh; không có giả Live2D |
+| Đồ phổ: Dòng sự kiện, Sơ đồ quan hệ, Bản đồ sao, Cây năng lực | **Đã nghiệm thu** (1.16–1.19) | Các nút lấy từ sổ cái; chi tiết hiển thị trường và đường dẫn gốc; nhiệm vụ có thể định vị về dòng nhiệm vụ gốc; hỗ trợ thao tác bằng bàn phím |
+| Đồ phổ → Định vị tầng tin nhắn trò chuyện | **Đã hiện thực hóa, chưa nghiệm thu trình duyệt** | Khi tầng tin nhắn không nằm trong phần trò chuyện đã tải sẽ nhắc tải các tin nhắn cũ hơn trước |
+| Diễn xuất: xuyên không, đột phá, ký khế ước, hoàn thành / thất bại nhiệm vụ, rút thưởng, nhập kho phần thưởng | **Đã nghiệm thu** (1.16–1.19: hoàn thành nhiệm vụ, xuyên không, hoàn tác rút thưởng; đột phá / khế ước kiểm tra bằng logic thuần túy) | Phát sau khi đọc lại sổ cái, trước khi phát đối chiếu lại lần nữa; mục bị hoàn tác ghi là 「Chưa vào sổ」; có thể bỏ qua; có thể đổi thành chỉ hiện thẻ hoặc tắt |
+| Thẻ gợi ý cốt truyện khi đóng thiết bị đầu cuối | **Đã nghiệm thu** (1.16–1.19) | Tự thu gọn khi mở thiết bị đầu cuối |
+| Chế độ tương thích cũ (thanh trạng thái trong tầng tin nhắn) không còn cung cấp trong Cài đặt; giá trị cũ tự động chuyển sang chế độ thiết bị đầu cuối một lần | **Đã nghiệm thu** (1.16–1.19 + logic thuần túy) | Giữ lại mã nguồn chế độ cũ; `native_replace040.py` không chạy trong vòng này (thiếu tệp v1.1 nguyên bản) |
 
-## 二·十八、1.0.0
+## II.18. 1.0.0
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 悬浮莉莉丝改为抠图人物（无卡片）：身体、双翅分层，9 个表情补丁，眨眼、说话口型、戳一下换表情；躲在边缘说话时先探出来 | **已验收**（1.19，手机模拟 390×844 触摸） | 真实 iOS / Android 的长按、震动、帧率未测；素材 sha256 由单元测试核对 |
-| 设置分「常用 / 进阶设置 / 诊断与维护」，搜索按标题与说明过滤并自动展开 / 收起 | **已验收**（1.19，浏览器 + 纯逻辑） | |
-| 导出存档：含设置与当前聊天账本（可选记忆、私聊），不含 API Key | **已验收**（1.19，真实下载） | 按字段名和值的格式去掉密钥；格式特殊的短密钥可能识别不到 |
-| 导入存档：预览 → 先备份 → 写入 → 逐项读回；本机 API Key 不被清空 | **已验收**（1.19，粘贴文本往返） | 「选择文件」走同一解析路径，浏览器里没有点系统文件框 |
-| 账本结构版本：旧账本先备份再升级；更新版本插件写过的账本只读 | **已验收**（1.19 + 纯逻辑） | 目前只有 0 → 1 一步迁移 |
-| 账本回滚（弹窗里点击）：回滚前状态总会备份并保留 | **已验收**（1.19） | 原「旧存档迁移、账本备份与回滚」改为 implemented |
-| 统一错误提示「发生了什么 · 账本 · 下一步」 | **已验收**（1.19 聊天群拒绝提示 + 纯逻辑） | 按报错文字归类，认不出的不写账本状态 |
-| 手机横屏导航：6 个常用页 + 「更多」，当前页总显示 | **已验收**（1.19，手机模拟 844×390） | 真机未测 |
-| 动态效果：自动（系统减少动态效果 / 触屏帧率 < 40）/ 完整 / 精简 | **已验收**（1.19，帧率注入 + 纯逻辑） | 真实低端机未测；帧率取样只在启动 6 秒后做一次 |
-| `/zt init` 不再顺带打开世界书弹窗；新增 `/zt export` | **已验收**（1.19） | |
-| 商城 AI、工作台、自动记忆、私聊、AI 写入当前世界 | **实验性**（模拟模型） | 真实模型未验收 |
-| 玩家反馈补充 · 品阶鉴定页：只列非系统来源的功法 / 物品；手动修正只升不降，物品回收价保持原值，写入读回并同步楼层快照 | **已验收**（1.19，浏览器点击 + 纯逻辑） | 系统来源按 `来源` 字段判断；没有来源字段的旧物品算作非系统 |
-| 玩家反馈补充 · 品阶鉴定的 AI 判断 | **实验性**（模拟模型） | 真实模型给出的品阶是否合理未验证 |
-| 玩家反馈补充 · 「收录:功法名[更高品阶]」更正剧情功法；提示 AI 收录时写明品阶 | **已验收**（1.19，数据块楼层 + 纯逻辑） | 跟随楼层：换页时随旧回复撤回 |
-| 玩家反馈补充 · 接口预设：必须输入名称才能保存，同名覆盖，可删除；不进聊天文件、不进导出 | **已验收**（1.19，浏览器点击 + 纯逻辑） | 最多 30 个 |
-| 玩家反馈补充 · 分功能 API：12 处（1.1.1 加数据块补记）各自跟随默认 / 酒馆主 API / 预设 / 单独配置，请求按功能改到对应地址、密钥、模型 | **已验收**（1.19，模拟模型请求日志） | 状态栏功能按原版系统提示词区分，用相同提示词直接调用验证，没逐个点原版按钮；真实公益站未测 |
-| 玩家反馈补充 · 一键关闭插件（酒馆 `disableExtension`，先确认）；关闭悬浮莉莉丝（拖到底部 / 右键，提示从「扩展」面板进入），扩展面板「显示悬浮莉莉丝」 | **已验收**（1.19，浏览器点击；手机模拟里用真实触摸事件长按拖到底部关闭） | 1.16 只核对源码（`disableExtension` 已导出，没有关闭钩子，关闭时不自动解绑世界书）；真机未测 |
-| 玩家反馈补充 · 修复：手机布局下聊天页演出卡片、备用入口按钮、「关闭悬浮窗」目标跑到屏幕上方外面 | **已验收**（1.19，手机模拟 390×844 量位置） | 真机未测 |
+| Đổi Lilith nổi sang nhân vật tách nền (không khung thẻ): tách lớp cơ thể và đôi cánh, 9 mảnh vá biểu cảm, chớp mắt, nhép môi khi nói, chạm đổi biểu cảm; khi đang trốn ở mép mà nói chuyện sẽ ló người ra trước | **Đã nghiệm thu** (1.19, mô phỏng cảm ứng điện thoại 390×844) | Nhấn giữ, rung và tốc độ khung hình trên iOS / Android thật chưa thử; mã `sha256` của tư liệu được đối chiếu bằng kiểm tra đơn vị |
+| Chia Cài đặt thành 「Thường dùng / Cài đặt nâng cao / Chẩn đoán & Bảo trì」, ô tìm kiếm lọc theo tiêu đề & mô tả và tự động mở rộng / thu gọn | **Đã nghiệm thu** (1.19, trình duyệt + logic thuần túy) | |
+| Xuất bản lưu: gồm cài đặt và sổ cái trò chuyện hiện tại (tùy chọn ký ức, trò chuyện riêng), không chứa API Key | **Đã nghiệm thu** (1.19, tải tệp thực tế) | Loại bỏ khóa API theo tên trường và định dạng giá trị; các khóa ngắn có định dạng đặc biệt có thể không nhận diện được |
+| Nhập bản lưu: Xem trước → Sao lưu trước → Ghi → Đọc lại từng mục; API Key trên máy không bị xóa trắng | **Đã nghiệm thu** (1.19, dán văn bản khứ hồi) | 「Chọn tệp」 đi chung một đường dẫn phân tích, trên trình duyệt không bấm hộp thoại chọn tệp hệ thống |
+| Phiên bản cấu trúc sổ cái: sổ cái cũ sao lưu trước rồi mới nâng cấp; sổ cái được ghi bởi tiện ích bản mới hơn sẽ ở chế độ chỉ đọc | **Đã nghiệm thu** (1.19 + logic thuần túy) | Hiện tại có bước di chuyển 0 → 1 → 2 |
+| Hoàn tác sổ cái (bấm trong hộp thoại): trạng thái trước khi hoàn tác luôn được sao lưu và giữ lại | **Đã nghiệm thu** (1.19) | Mục 「Di chuyển bản lưu cũ, sao lưu & hoàn tác sổ cái」 được đổi thành `implemented` |
+| Thông báo lỗi thống nhất 「Chuyện gì đã xảy ra · Sổ cái · Bước tiếp theo」 | **Đã nghiệm thu** (1.19 thông báo từ chối nhóm chat + logic thuần túy) | Phân loại theo văn bản lỗi, những lỗi không nhận diện được sẽ không tự đoán trạng thái sổ cái |
+| Thanh điều hướng ngang trên điện thoại: 6 trang thường dùng + nút 「Thêm」, trang hiện tại luôn hiển thị | **Đã nghiệm thu** (1.19, mô phỏng điện thoại 844×390) | Chưa thử trên máy thật |
+| Hiệu ứng động: Tự động (hệ thống bật giảm chuyển động / tốc độ khung hình cảm ứng < 40) / Đầy đủ / Rút gọn | **Đã nghiệm thu** (1.19, tiêm tốc độ khung hình + logic thuần túy) | Chưa thử trên máy cấu hình thấp thật; lấy mẫu tốc độ khung hình chỉ thực hiện một lần sau khi khởi chạy 6 giây |
+| `/zt init` không còn tiện tay mở hộp thoại Sách Thế Giới; thêm mới `/zt export` | **Đã nghiệm thu** (1.19) | |
+| Thương thành AI, Bàn làm việc, Tự động chỉnh lý ký ức, Trò chuyện riêng, AI ghi thế giới hiện tại | **Thử nghiệm** (Mô hình giả lập) | Chưa nghiệm thu trên mô hình thật |
+| Bổ sung từ phản hồi người chơi · Trang Giám định phẩm giai: chỉ liệt kê công pháp / vật phẩm không có nguồn từ hệ thống; chỉnh sửa thủ công chỉ tăng không giảm, giá thu hồi vật phẩm giữ nguyên giá gốc, ghi đọc lại và đồng bộ ảnh chụp nhanh các tầng | **Đã nghiệm thu** (1.19, bấm trình duyệt + logic thuần túy) | Nguồn hệ thống phán đoán theo trường `来源`; vật phẩm cũ không có trường nguồn gốc được tính là phi hệ thống |
+| Bổ sung từ phản hồi người chơi · Phán đoán AI của Giám định phẩm giai | **Thử nghiệm** (Mô hình giả lập) | Phẩm giai do mô hình thật đưa ra có hợp lý hay không chưa được kiểm chứng |
+| Bổ sung từ phản hồi người chơi · 「收录:Tên_công_pháp[Phẩm_giai_cao_hơn]」 hiệu chỉnh công pháp cốt truyện; nhắc AI ghi rõ phẩm giai khi thu thập | **Đã nghiệm thu** (1.19, tầng khối dữ liệu + logic thuần túy) | Đi theo tầng tin nhắn: khi chuyển swipe sẽ thu hồi theo phản hồi cũ |
+| Bổ sung từ phản hồi người chơi · Thiết lập sẵn cổng kết nối: bắt buộc nhập tên mới lưu được, trùng tên sẽ ghi đè, có thể xóa; không đi vào tệp trò chuyện, không đi vào tệp xuất | **Đã nghiệm thu** (1.19, bấm trình duyệt + logic thuần túy) | Tối đa 30 thiết lập sẵn |
+| Bổ sung từ phản hồi người chơi · API theo từng tính năng: 12 nơi (bản 1.1.1 thêm Ghi bổ sung khối dữ liệu) mỗi nơi có thể chọn Theo mặc định / API chính của quán rượu / Thiết lập sẵn / Cấu hình riêng, yêu cầu tự động chuyển sang địa chỉ, khóa và mô hình tương ứng | **Đã nghiệm thu** (1.19, nhật ký yêu cầu mô hình giả lập) | Các tính năng thanh trạng thái phân biệt theo lời nhắc hệ thống nguyên bản và xác minh bằng cách gọi trực tiếp với lời nhắc giống hệt, chưa bấm từng nút nguyên bản; chưa thử với trạm API công ích thật |
+| Bổ sung từ phản hồi người chơi · Tắt tiện ích một chạm (`disableExtension` của quán rượu, hỏi xác nhận trước); đóng Lilith nổi (kéo xuống đáy / chuột phải, nhắc mở lại từ bảng 「Tiện ích mở rộng」), nút 「Hiện Lilith nổi」 trong bảng Tiện ích mở rộng | **Đã nghiệm thu** (1.19, bấm trình duyệt; trong mô phỏng điện thoại dùng sự kiện cảm ứng thật nhấn giữ kéo xuống đáy để đóng) | Bản 1.16 chỉ đối chiếu mã nguồn (`disableExtension` đã được xuất, không có hook tắt nên khi tắt không tự động gỡ liên kết Sách Thế Giới); chưa thử trên máy thật |
+| Bổ sung từ phản hồi người chơi · Sửa lỗi: dưới bố cục điện thoại, thẻ diễn xuất ở trang trò chuyện, nút lối vào dự phòng và ô mục tiêu 「Đóng cửa sổ nổi」 bị trôi ra ngoài phía trên màn hình | **Đã nghiệm thu** (1.19, đo vị trí trong mô phỏng điện thoại 390×844) | Chưa thử trên máy thật |
 
-## 二·十七、0.9.3
+## II.17. 0.9.3
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 规则 → 额外世界背景：「读取书目」列出酒馆的世界书，「读取这本书」保存只读快照（跳过禁用条目），原世界书不被修改 | **已验收**（1.19，浏览器点击） | TauriTavern 未实测：走的是同一套酒馆前端接口，待用户复测 |
-| 没有 `getWorldInfoNames` / `loadWorldInfo` 的宿主：改用 world-info 模块与 `/api/worldinfo/get`；读不到的书给出明确提示 | **已验收**（1.19 上模拟缺接口） | 1.16–1.18 未单独跑 |
-| 星图 → 更正：改当前世界的类型 / 名称（不算穿越、无演出、足迹不加次数）；非当前世界可删除；记录穿越填当前世界名 = 更正类型 | **已验收**（1.19，Chromium Android 模拟） | AI 之后若又写错，需要再更正一次 |
-| 星图节点：按名称猜的类型标「?」；当前世界类型以账本 `世界类型` 为准，与顶栏主题一致 | **已验收**（纯逻辑 + 浏览器） | |
-| 新手引导：首次普通打开终端自动出现一次（指定页面打开时不打断），三步按真实状态打勾，完成 / 跳过会记住，设置里可重开 | **已验收**（1.19，Chromium Android 模拟，含三步真实执行） | 第 3 步需要已打开单角色聊天；群聊不支持 |
+| Quy tắc → Bối cảnh thế giới bổ sung: 「Đọc danh mục sách」 liệt kê Sách Thế Giới của quán rượu, 「Đọc cuốn sách này」 lưu ảnh chụp nhanh chỉ đọc (bỏ qua các mục đang tắt), Sách Thế Giới gốc không bị sửa đổi | **Đã nghiệm thu** (1.19, bấm trình duyệt) | Chưa thử thực tế trên TauriTavern: đi chung một bộ giao diện frontend của quán rượu, chờ người dùng kiểm tra lại |
+| Máy chủ không có `getWorldInfoNames` / `loadWorldInfo`: chuyển sang dùng mô-đun `world-info` và `/api/worldinfo/get`; sách không đọc được sẽ hiện thông báo rõ ràng | **Đã nghiệm thu** (giả lập thiếu giao diện trên 1.19) | Chưa chạy riêng trên 1.16–1.18 |
+| Bản đồ sao → Đính chính: sửa loại / tên thế giới hiện tại (không tính là xuyên không, không phát diễn xuất, dấu chân không cộng thêm số lần); thế giới không phải hiện tại có thể xóa; điền tên thế giới hiện tại vào Ghi nhận xuyên không = đính chính loại thế giới | **Đã nghiệm thu** (1.19, mô phỏng Chromium Android) | Nếu sau đó AI lại viết sai thì cần đính chính lại lần nữa |
+| Nút trên Bản đồ sao: loại thế giới đoán theo tên được đánh dấu 「?」; loại thế giới hiện tại lấy `世界类型` trong sổ cái làm chuẩn, đồng bộ với chủ đề thanh đỉnh | **Đã nghiệm thu** (logic thuần túy + trình duyệt) | |
+| Hướng dẫn tân thủ: lần đầu mở thiết bị đầu cuối bình thường sẽ tự động hiện một lần (khi mở thẳng vào trang chỉ định sẽ không cắt ngang), 3 bước tự đánh dấu tích theo trạng thái thực tế, ghi nhớ trạng thái Hoàn tất / Bỏ qua, có thể mở lại từ Cài đặt | **Đã nghiệm thu** (1.19, mô phỏng Chromium Android, gồm thực thi thật cả 3 bước) | Bước 3 yêu cầu đã mở cuộc trò chuyện nhân vật đơn; không hỗ trợ trò chuyện nhóm của quán rượu |
 
-## 二·十六、0.9.2
+## II.16. 0.9.2
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 别的扩展在插件处理前原地改过台词段落（关键词高亮）：【莉莉丝】只显示语音框，不再“原文 + 语音框” | **已验收**（1.19，Chromium Android 模拟；0.9.1 复现失败、0.9.2 通过） | 那一段上的美化会被插件版本替换；真机待复测 |
-| 消息在酒馆画完后又被改（变量扩展追加更新块、不重画）：不再露出 `系统点 / 好感度` 原文，台词也不重复 | **已验收**（同上） | 用模拟的追加方式复现，未装真实 MVU |
-| 前端卡（代码块 → iframe）排在它替换的代码块的位置：台词在前时语音框不再跑到角色卡状态栏下面 | **已验收**（1.19，模拟渲染器 + **真实酒馆助手 4.11.2**；0.9.1 复现失败） | |
-| 代码块 / `<script>` / `<style>` / `<textarea>` / `<pre>` 里的 `莉莉丝：…` 不变成语音框；前端卡保留 | **已验收**（1.19 + 纯逻辑） | |
-| 0.8.4 美化兼容（后执行的原地美化、iframe 卡不重载、正则美化）、0.8.2 角色卡状态栏保留 | **回归通过**（`native_v084`、`native_v082`，装与不装酒馆助手各一轮） | |
+| Tiện ích mở rộng khác sửa đổi tại chỗ đoạn lời thoại trước khi tiện ích này xử lý (tô sáng từ khóa): `【Lilith】` chỉ hiển thị khung thoại, không còn bị “nguyên văn + khung thoại” | **Đã nghiệm thu** (1.19, mô phỏng Chromium Android; tái hiện thất bại trên 0.9.1, vượt qua trên 0.9.2) | Phần làm đẹp trên đoạn đó sẽ được thay bằng thẻ của tiện ích; chờ kiểm tra lại trên máy thật |
+| Tin nhắn sau khi quán rượu vẽ xong lại bị sửa tiếp (tiện ích biến nối thêm khối cập nhật mà không vẽ lại): không còn lộ nguyên văn `系统点 / 好感度`, lời thoại cũng không bị lặp | **Đã nghiệm thu** (như trên) | Tái hiện bằng cách nối thêm giả lập, chưa cài MVU thật |
+| Thẻ giao diện (khối mã → iframe) nằm đúng vị trí khối mã mà nó thay thế: khi lời thoại đứng trước thì khung thoại không còn bị nhảy xuống dưới thanh trạng thái của thẻ nhân vật | **Đã nghiệm thu** (1.19, trình kết xuất giả lập + **Tavern Helper 4.11.2 thật**; tái hiện thất bại trên 0.9.1) | |
+| `莉莉丝：…` nằm trong khối mã / `<script>` / `<style>` / `<textarea>` / `<pre>` không biến thành khung thoại; giữ nguyên thẻ giao diện | **Đã nghiệm thu** (1.19 + logic thuần túy) | |
+| Tương thích làm đẹp của 0.8.4 (làm đẹp tại chỗ chạy sau, thẻ iframe không bị tải lại, làm đẹp bằng regex), giữ nguyên thanh trạng thái thẻ nhân vật của 0.8.2 | **Vượt qua hồi quy** (`native_v084`, `native_v082`, mỗi bộ chạy 1 vòng có cài và không cài Tavern Helper) | |
 
-## 二·十五、0.9.1
+## II.15. 0.9.1
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 手机真机自检（8 步：环境、全屏、逐页测量、聊天群 + 键盘、私聊全屏 + 键盘、悬浮莉莉丝、横屏、返回键），结果保存并可一键复制；可跳过、可结束；步骤卡片不触发“点击外部关闭” | **已验收**（1.19，Chromium Android 触摸模拟，按用户操作方式点按 / 模拟键盘 / 旋转 / 返回） | **真实 Android 手机的结果待用户回传**；iPhone 未测 |
-| 复制诊断信息：版本、设备、接口、运行状态、接口主机名 + 模型、设置白名单、上次自检、最近 30 条插件报错 | **已验收**（1.19，剪贴板读回） | 报错只收 `[诸天…]` 开头的日志和插件文件的页面错误 |
-| 诊断信息不含 API Key（含报错文本里夹带的）、URL 账号密码与查询参数 | **已验收**（1.19 用假 Key 写入接口配置并打进报错；纯逻辑 `redact`） | 按格式识别，未知格式的短密钥可能漏掉 |
-| 非 HTTPS（局域网地址）下复制：`execCommand` 回退，再失败弹文本框 | **已验收**（1.19，模拟 `isSecureContext=false`） | 真实手机浏览器未测 |
-| 整页变矮的键盘（`innerHeight` 变小、`visualViewport` 不变）按键盘弹出处理 | **已验收**（1.19，输入框聚焦后视口 844→470） | 具体哪些 WebView 是这种行为未逐个确认 |
-| LF 换行 + `.gitattributes`；CI（check / test / FILELIST / CRLF / 密钥）；`npm run filelist` | **已完成**（本地运行同样的命令通过） | GitHub Actions 要推送后才会第一次运行 |
+| Tự kiểm tra trên điện thoại thật (8 bước: môi trường, toàn màn hình, đo từng trang, nhóm chat + bàn phím, trò chuyện riêng toàn màn hình + bàn phím, Lilith nổi, xoay ngang, phím quay lại), lưu kết quả và sao chép một chạm; có thể bỏ qua hoặc kết thúc sớm; thẻ bước kiểm tra không kích hoạt “bấm bên ngoài để đóng” | **Đã nghiệm thu** (1.19, mô phỏng cảm ứng Chromium Android, chạm / giả lập bàn phím / xoay màn hình / quay lại theo đúng thao tác người dùng) | **Chờ người dùng gửi lại kết quả trên điện thoại Android thật**; chưa thử trên iPhone |
+| Sao chép thông tin chẩn đoán: phiên bản, thiết bị, giao diện, trạng thái chạy, tên máy chủ cổng + mô hình, danh sách trắng cài đặt, lần tự kiểm tra trước, 30 lỗi tiện ích gần nhất | **Đã nghiệm thu** (1.19, đọc lại từ bộ nhớ tạm) | Nhật ký lỗi chỉ thu thập các dòng mở đầu bằng `[诸天…]` và lỗi trang từ tệp của tiện ích |
+| Thông tin chẩn đoán không chứa API Key (kể cả khóa lẫn trong văn bản lỗi), tài khoản/mật khẩu trong URL và tham số truy vấn | **Đã nghiệm thu** (1.19 ghi Key giả vào cấu hình cổng và bắn vào thông báo lỗi; kiểm tra hàm thuần túy `redact`) | Nhận diện theo định dạng, các khóa ngắn có định dạng lạ có thể bị sót |
+| Sao chép dưới môi trường không có HTTPS (địa chỉ mạng LAN): lùi về dùng `execCommand`, nếu vẫn thất bại sẽ bật ô văn bản để sao chép tay | **Đã nghiệm thu** (1.19, giả lập `isSecureContext=false`) | Chưa thử trên trình duyệt điện thoại thật |
+| Bàn phím làm thu thấp toàn trang (`innerHeight` giảm xuống trong khi `visualViewport` không đổi) được xử lý như đang bật bàn phím | **Đã nghiệm thu** (1.19, sau khi lấy tiêu điểm vào ô nhập liệu thì khung nhìn giảm từ 844 xuống 470) | Chưa xác nhận từng cái xem những WebView cụ thể nào có hành vi này |
+| Xuống dòng LF + `.gitattributes`; CI (check / test / FILELIST / CRLF / khóa bí mật); `npm run filelist` | **Đã hoàn thành** (chạy các lệnh tương tự trên máy cục bộ đều đạt) | GitHub Actions cần đẩy lên kho lưu trữ mới chạy lần đầu |
 
-## 二·十四、0.9.0
+## II.14. 0.9.0
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 手机上终端全屏（竖屏 390×844 → 内容区 646 px；360×640 → 442 px），安全区留白；记住的小窗口尺寸不再生效 | **已验收**（1.19，Chromium 触摸模拟；尺寸读回 + 人工看图） | 真实 iOS / Android 未测；1.16 本轮未运行 |
-| 键盘弹出时终端跟随可见区域变矮，账本条 / 状态行让开，聊天群输入框可见；收起后恢复 | **已验收**（1.19，模拟 `visualViewport` 缩小到 470 / 200 px） | 真实输入法（候选栏、第三方键盘）的高度变化未测 |
-| 横屏左侧导航栏（844×390 → 内容区 250 px，0.8.5 为 122 px） | **已验收**（1.19，同上） | 20 个入口需滚动 |
-| 私聊全屏并跟随键盘；横屏 / 键盘弹出时面部特写让开 | **已验收**（1.19，从终端顶栏真实点按进入） | |
-| 所有终端页面：无横向溢出、无横向滚动、点按目标 ≥ 36 px、输入框 16 px（竖屏 20 页、横屏 6 页、小屏 7 页） | **已验收**（1.19，自动测量） | 引擎页内的抽卡结果 / 物品详情弹层只做了溢出检查 |
-| 悬浮莉莉丝：终端全屏时停在下角（横屏在右侧），点台词收起，滚动收起，关闭后回原位 | **已验收**（1.19） | |
-| 手机全屏会话不覆盖电脑上记住的窗口尺寸（`Bridge.addScriptFilter` + `keepWindowBox`） | **已验收**（1.19 + 纯逻辑） | 切到「浮动窗口」时照常保存 |
-| 设置「手机上的终端与私聊窗口」：自动 / 总是全屏 / 浮动窗口；电脑（鼠标 1400×900）不变 | **已验收**（1.19） | |
-| 1.16 / 1.17 / 1.18 | **本轮未运行** | 0.9.0 只改布局与 CSS，宿主接口未变 |
+| Thiết bị đầu cuối toàn màn hình trên điện thoại (màn hình dọc 390×844 → vùng nội dung 646 px; 360×640 → 442 px), chừa khoảng trống vùng an toàn; kích thước cửa sổ nhỏ ghi nhớ trước đó không còn áp dụng | **Đã nghiệm thu** (1.19, mô phỏng cảm ứng Chromium; đọc lại kích thước + kiểm tra ảnh chụp) | Chưa thử trên iOS / Android thật; bản 1.16 không chạy trong vòng này |
+| Khi bật bàn phím, thiết bị đầu cuối tự thu thấp theo vùng hiển thị, thanh sổ cái / dòng trạng thái nhường chỗ, ô nhập liệu nhóm chat luôn nhìn thấy; khi thu bàn phím sẽ khôi phục | **Đã nghiệm thu** (1.19, giả lập `visualViewport` thu nhỏ còn 470 / 200 px) | Chưa thử sự thay đổi chiều cao của bộ gõ thật (thanh ứng viên chữ, bàn phím bên thứ ba) |
+| Thanh điều hướng cột trái khi xoay ngang (844×390 → vùng nội dung 250 px, ở bản 0.8.5 là 122 px) | **Đã nghiệm thu** (1.19, như trên) | 20 lối vào cần cuộn dọc |
+| Trò chuyện riêng toàn màn hình và đi theo bàn phím; khi xoay ngang / bật bàn phím thì ảnh cận cảnh khuôn mặt tự nhường chỗ | **Đã nghiệm thu** (1.19, chạm thực tế từ thanh đỉnh thiết bị đầu cuối để đi vào) | |
+| Tất cả các trang thiết bị đầu cuối: không tràn ngang, không cuộn ngang, mục tiêu chạm ≥ 36 px, ô nhập liệu 16 px (màn hình dọc 20 trang, màn hình ngang 6 trang, màn hình nhỏ 7 trang) | **Đã nghiệm thu** (1.19, đo tự động) | Các hộp thoại bật lên như kết quả rút thẻ / chi tiết vật phẩm bên trong trang engine chỉ mới kiểm tra tràn khung |
+| Lilith nổi: khi thiết bị đầu cuối toàn màn hình sẽ đậu ở góc dưới (màn hình ngang đậu ở bên phải), chạm vào lời thoại sẽ thu gọn, cuộn trang tự thu gọn, sau khi đóng thiết bị đầu cuối sẽ quay về vị trí cũ | **Đã nghiệm thu** (1.19) | |
+| Phiên toàn màn hình trên điện thoại không ghi đè kích thước cửa sổ ghi nhớ trên máy tính (`Bridge.addScriptFilter` + `keepWindowBox`) | **Đã nghiệm thu** (1.19 + logic thuần túy) | Khi chuyển sang 「Cửa sổ nổi」 vẫn lưu kích thước bình thường |
+| Cài đặt 「Cửa sổ thiết bị đầu cuối & trò chuyện riêng trên điện thoại」: Tự động / Luôn toàn màn hình / Cửa sổ nổi; trên máy tính (chuột 1400×900) không thay đổi | **Đã nghiệm thu** (1.19) | |
+| 1.16 / 1.17 / 1.18 | **Vòng này không chạy** | Bản 0.9.0 chỉ sửa bố cục và CSS, giao diện máy chủ không đổi |
 
-## 二·十三、0.8.5
+## II.13. 0.8.5
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 漏掉「生成结束」事件时最新一层仍渲染（本次生成中出现过的 `#mes_stop` 再隐藏即视为结束并重扫；从未出现则发送锁不变） | **已验收**（1.16、1.19，Chromium 手机模拟：只发生成开始、不发结束；撤掉修复后复现原始文字） | 真实手机浏览器未测；真实漏事件的具体机型 / 模型未逐个复现 |
-| 手机上「编辑 → ✔」后楼层重新渲染 | **已验收**（同上，真实点按酒馆编辑按钮） | 编辑框里是原文属于酒馆正常行为 |
-| 兼容诊断「最新楼层」状态与「重新渲染楼层」 | **已验收**（1.16、1.19） | 只看最近 10 层 |
-| AI 接口设置：一句话状态、三步、高级设置收起、单选框正常大小；直接用酒馆模型时隐藏第 2 步 | **已验收**（1.16、1.19，桌面 + 手机 390×844，尺寸读回 + 人工看图） | 存储与 0.8.4 相同 |
-| 账本核验说明；未开启时高亮两个开关和保存按钮并白话提示；已勾未保存时提示保存；保存后原版核验照常 | **已验收**（1.16、1.19） | 原版检查逻辑未改，只替换提示文字 |
-| 1.17 / 1.18 | **本轮未运行** | 0.7.0 时四个版本均通过 |
+| Khi bị sót sự kiện 「Kết thúc tạo」 thì tầng mới nhất vẫn kết xuất (`#mes_stop` từng xuất hiện trong lần tạo này rồi ẩn đi sẽ được coi là đã kết thúc và quét lại; nếu chưa từng xuất hiện thì khóa gửi giữ nguyên) | **Đã nghiệm thu** (1.16, 1.19, mô phỏng điện thoại Chromium: chỉ phát sự kiện bắt đầu tạo mà không phát kết thúc; khi gỡ bản vá ra sẽ tái hiện lỗi hiện văn bản thô) | Chưa thử trên trình duyệt điện thoại thật; chưa tái hiện từng dòng máy / mô hình cụ thể bị sót sự kiện ngoài thực tế |
+| Trên điện thoại sau khi bấm 「Chỉnh sửa → ✔」 thì tầng tin nhắn tự kết xuất lại | **Đã nghiệm thu** (như trên, chạm thực tế vào nút chỉnh sửa của quán rượu) | Việc trong ô chỉnh sửa hiển thị nguyên văn là hành vi bình thường của quán rượu |
+| Trạng thái 「Tầng mới nhất」 và nút 「Kết xuất lại tầng tin nhắn」 trong Chẩn đoán tương thích | **Đã nghiệm thu** (1.16, 1.19) | Chỉ kiểm tra 10 tầng gần nhất |
+| Cài đặt cổng AI: một câu trạng thái, 3 bước, thu gọn cài đặt nâng cao, nút radio kích thước bình thường; khi dùng trực tiếp mô hình quán rượu sẽ ẩn Bước 2 | **Đã nghiệm thu** (1.16, 1.19, máy tính + điện thoại 390×844, đọc lại kích thước + kiểm tra ảnh chụp) | Lưu trữ giống hệt bản 0.8.4 |
+| Giải thích kiểm nghiệm sổ cái; khi chưa bật sẽ làm nổi bật hai công tắc cùng nút lưu và nhắc dễ hiểu; khi đã tích mà chưa lưu sẽ nhắc bấm lưu; sau khi lưu thì kiểm nghiệm nguyên bản chạy bình thường | **Đã nghiệm thu** (1.16, 1.19) | Logic kiểm tra nguyên bản không đổi, chỉ thay thế văn bản thông báo |
+| 1.17 / 1.18 | **Vòng này không chạy** | Ở bản 0.7.0 cả 4 phiên bản đều đã vượt qua |
 
-## 二·十二、0.8.4
+## II.12. 0.8.4
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 对话请求一律流式（状态栏 AI、莉莉丝私聊 / 记忆 / 工作台；直连与酒馆转发），拼回普通 JSON | **已验收**（1.16、1.19：模拟模型收到 `stream:true`，回复逐字一致；纯逻辑：SSE 解析、错误、非流式回退） | 真实服务商 / 真实代理链路未测 |
-| 拉取模型：被 CORS 拦截时经酒馆转发；失败时返回可读原因而不是浏览器网络错误 | **已验收**（1.16、1.19，不发 CORS 头的模拟服务商 + 不存在的地址） | |
-| 独立 API 超时 60–600 秒（默认 180），替换原版写死的 60 秒 | **已验收**（1.16、1.19：75 秒的慢回复在私聊里完整到达；纯逻辑：计时器替换、提示秒数） | 只替换原版写死的 60 秒计时器 |
-| 手机终端内点私聊：私聊盖在终端上方，终端不关闭 | **已验收**（1.16、1.19，Chromium 手机模拟 + 真实触摸点按，连续 5 次；撤掉修复后失败） | 真实手机浏览器未测 |
-| 一处 API 设置：「连接」页 = API 中心，原版表单隐藏；齿轮 → API 进入同一表单 | **已验收**（1.16、1.19） | 原版表单 DOM 保留，未删除 |
-| 配色方案 7 套 + 跟随世界；仙侠改墨玉金 | **已验收**（1.16、1.19：终端、引擎页、演出层的颜色变量读回；配色效果为人工看图） | |
-| 强力模块开关（世界书条目 `disable`）；新装默认关闭神豪挥霍 / 诸天打手；旧书一键平衡；关闭后隐藏入口并告知 AI | **已验收**（1.16、1.19：世界书从服务器读回确认） | 已有世界书不会被自动修改 |
-| 楼层美化兼容：外来 iframe 卡片原地保留、不重载、不重复；JS 美化的原地修改保留；正则美化生效；顺序不变 | **已验收**（1.16、1.19 模拟渲染器 / 美化脚本；1.19 + 酒馆助手 4.11.2 真实状态栏；撤掉修复后失败） | 具体第三方美化脚本（小白X 等）未逐个实测 |
-| 1.17 / 1.18 | **本轮未运行** | 0.7.0 时四个版本均通过 |
+| Mọi yêu cầu đối thoại đều truyền phát trực tuyến (streaming) (AI thanh trạng thái, Trò chuyện riêng / Ký ức / Bàn làm việc của Lilith; kết nối trực tiếp và chuyển tiếp qua quán rượu), sau đó ghép lại thành JSON thông thường | **Đã nghiệm thu** (1.16, 1.19: mô hình giả lập nhận được `stream:true`, câu trả lời khớp từng chữ; logic thuần túy: phân tích SSE, lỗi, lùi về phi-streaming) | Chưa thử với nhà cung cấp dịch vụ thật / chuỗi proxy thật |
+| Lấy danh sách mô hình: khi bị CORS chặn sẽ chuyển tiếp qua máy chủ quán rượu; khi thất bại trả về nguyên nhân dễ đọc thay vì lỗi mạng chung chung của trình duyệt | **Đã nghiệm thu** (1.16, 1.19, nhà cung cấp giả lập không gửi header CORS + địa chỉ không tồn tại) | |
+| Thời gian chờ API độc lập 60–600 giây (mặc định 180 giây), thay thế mức 60 giây cứng của bản gốc | **Đã nghiệm thu** (1.16, 1.19: phản hồi chậm 75 giây trong trò chuyện riêng về tới nơi đầy đủ; logic thuần túy: thay bộ hẹn giờ, đổi số giây trong thông báo) | Chỉ thay thế bộ hẹn giờ 60 giây cố định của bản gốc |
+| Bấm trò chuyện riêng từ trong thiết bị đầu cuối trên điện thoại: khung trò chuyện riêng mở đè lên trên thiết bị đầu cuối, thiết bị đầu cuối không bị đóng | **Đã nghiệm thu** (1.16, 1.19, mô phỏng điện thoại Chromium + chạm thực tế 5 lần liên tiếp; khi gỡ bản vá ra sẽ thất bại) | Chưa thử trên trình duyệt điện thoại thật |
+| Một nơi cài đặt API duy nhất: trang 「Kết nối」 = Trung tâm API, ẩn biểu mẫu nguyên bản; bấm biểu tượng bánh răng → API cũng đi vào cùng biểu mẫu đó | **Đã nghiệm thu** (1.16, 1.19) | Giữ nguyên DOM biểu mẫu nguyên bản, không xóa |
+| 7 bảng màu + đi theo thế giới; chủ đề Tiên hiệp đổi sang Vàng Mặc Ngọc | **Đã nghiệm thu** (1.16, 1.19: đọc lại biến màu của thiết bị đầu cuối, trang engine và lớp diễn xuất; hiệu ứng phối màu kiểm tra trực quan bằng ảnh chụp) | |
+| Công tắc Mô-đun mạnh (`disable` của mục Sách Thế Giới); cài mới mặc định tắt Thần Hào Tiêu Xài / Tay Đấm Chư Thiên; sách cũ có nút Cân bằng một chạm; sau khi tắt sẽ ẩn lối vào và báo cho AI | **Đã nghiệm thu** (1.16, 1.19: đọc lại Sách Thế Giới từ máy chủ để xác nhận) | Sách Thế Giới đã có sẵn sẽ không bị tự động sửa đổi |
+| Tương thích làm đẹp tầng tin nhắn: thẻ iframe bên ngoài được giữ nguyên tại chỗ, không tải lại, không lặp; giữ nguyên các sửa đổi tại chỗ của kịch bản JS làm đẹp; regex làm đẹp có hiệu lực; thứ tự không đổi | **Đã nghiệm thu** (1.16, 1.19 trình kết xuất / kịch bản làm đẹp giả lập; 1.19 + thanh trạng thái thật của Tavern Helper 4.11.2; khi gỡ bản vá ra sẽ thất bại) | Chưa thử thực tế từng kịch bản làm đẹp bên thứ ba cụ thể (như Tiểu Bạch X…) |
+| 1.17 / 1.18 | **Vòng này không chạy** | Ở bản 0.7.0 cả 4 phiên bản đều đã vượt qua |
 
-## 二·十一、0.8.3
+## II.11. 0.8.3
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 悬浮莉莉丝大小 5 档（默认 75%），即时生效，位置保持 | **已验收**（1.16、1.19 + 纯逻辑） | 露出的一角不小于 24px |
-| 终端打开时点她只说话（不再触发「点击终端外部时关闭」）；双击照常；点聊天区照常关闭终端 | **已验收**（1.16、1.19，Chromium 手机模拟 + 真实触摸点按 `touchscreen.tap`） | 真实手机浏览器未测 |
-| 出来后的位置不再被自动收回边缘（关终端 / 旋转 / 刷新） | **已验收**（1.16、1.19 + 纯逻辑） | 只有拖动松手在边缘时才躲藏 |
+| Kích thước Lilith nổi 5 mức (mặc định 75%), có hiệu lực tức thì, giữ nguyên vị trí | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy) | Phần nhô ra ở mép không nhỏ hơn 24px |
+| Khi thiết bị đầu cuối đang mở mà bấm vào cô ấy sẽ chỉ nói chuyện (không còn kích hoạt 「Đóng khi bấm bên ngoài thiết bị đầu cuối」); chạm đúp hoạt động bình thường; bấm vào vùng trò chuyện vẫn đóng thiết bị đầu cuối như cũ | **Đã nghiệm thu** (1.16, 1.19, mô phỏng điện thoại Chromium + chạm thực tế `touchscreen.tap`) | Chưa thử trên trình duyệt điện thoại thật |
+| Vị trí sau khi bước ra không còn bị tự động thu về mép màn hình (khi đóng thiết bị đầu cuối / xoay màn hình / làm mới trang) | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy) | Chỉ khi kéo rồi thả tay ở sát mép màn hình mới trốn vào cạnh |
 
-## 二·十、0.8.2
+## II.10. 0.8.2
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 一键解绑世界书（角色卡主 / 附加世界书、全局、当前聊天）与恢复绑定 | **已验收**（1.16、1.19 + 纯逻辑；角色卡文件从服务器读回确认） | 世界书本身不删除；别的聊天里的绑定不改 |
-| 停用插件时自动解绑，重新启用后提示一次 | **已验收**（1.19，真实 `disableExtension` 调用） | 需要 1.17+ 的扩展钩子；1.17 / 1.18 本轮未测；1.16 没有该钩子 |
-| 悬浮莉莉丝：点开终端、双击戳、长按拖动、贴边躲藏、位置记忆 | **已验收**（1.16、1.19，Chromium 手机模拟 390×844 + 触摸指针事件） | 真实手机浏览器手感未测；电脑上默认不显示 |
-| 立绘看不到时台词 / 系统播报在悬浮莉莉丝旁弹出 | **已验收**（1.16、1.19） | 设为「关闭」时退回 0.8.1 行为 |
-| 角色卡自带状态栏（酒馆助手 `div.TH-render`）在插件重建楼层时原地保留 | **已验收**（1.19 + 酒馆助手 4.11.2：12/12；1.16 用模拟包装节点） | 只保护 `div.TH-render` 包装；其他渲染器未覆盖 |
-| 聊天群物品来历写在背包上、剧情提示从背包读取 | **已验收**（1.16、1.19 + 纯逻辑） | 同名物品合并时保留原来历 |
-| 自动闲聊每 N 次正文回复一次（默认 3） | **已验收**（1.16、1.19） | |
-| 群员点数红包 ≤ 入群费；扩建费 容量 × 1,000 | **已验收**（1.16、1.19 + 纯逻辑） | |
-| 1.17 / 1.18 | **本轮未运行** | 0.7.0 时四个版本均通过 |
+| Gỡ liên kết Sách Thế Giới một chạm (sách chính / sách phụ của thẻ nhân vật, toàn cục, cuộc trò chuyện hiện tại) và khôi phục liên kết | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy; đọc lại tệp thẻ nhân vật từ máy chủ để xác nhận) | Bản thân Sách Thế Giới không bị xóa; liên kết trong các cuộc trò chuyện khác không đổi |
+| Tự động gỡ liên kết khi tắt tiện ích, khi bật lại sẽ hiện thông báo một lần | **Đã nghiệm thu** (1.19, gọi `disableExtension` thật) | Cần hook tiện ích mở rộng của 1.17+; 1.17 / 1.18 chưa thử trong vòng này; bản 1.16 không có hook này |
+| Lilith nổi: chạm để mở thiết bị đầu cuối, chạm đúp để chọc, nhấn giữ để kéo, trốn vào mép màn hình, ghi nhớ vị trí | **Đã nghiệm thu** (1.16, 1.19, mô phỏng điện thoại Chromium 390×844 + sự kiện con trỏ cảm ứng) | Cảm giác vuốt trên trình duyệt điện thoại thật chưa thử; trên máy tính mặc định không hiển thị |
+| Khi không nhìn thấy ảnh đứng thì lời thoại / thông báo hệ thống bật lên bên cạnh Lilith nổi | **Đã nghiệm thu** (1.16, 1.19) | Khi đặt thành 「Tắt」 sẽ lùi về hành vi của bản 0.8.1 |
+| Thanh trạng thái riêng của thẻ nhân vật (`div.TH-render` của Tavern Helper) được giữ nguyên tại chỗ khi tiện ích dựng lại tầng tin nhắn | **Đã nghiệm thu** (1.19 + Tavern Helper 4.11.2: 12/12; 1.16 dùng nút bao bọc giả lập) | Chỉ bảo vệ thẻ bao bọc `div.TH-render`; chưa bao phủ các trình kết xuất khác |
+| Lai lịch vật phẩm nhóm chat được ghi trên túi đồ, lời nhắc cốt truyện đọc từ túi đồ | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy) | Khi gộp các vật phẩm cùng tên vẫn giữ nguyên lai lịch gốc |
+| Tự động tán gẫu mỗi N lượt phản hồi chính văn một lần (mặc định 3) | **Đã nghiệm thu** (1.16, 1.19) | |
+| Lì xì điểm của thành viên nhóm ≤ phí vào nhóm; chi phí mở rộng nhóm = Dung lượng × 1,000 | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy) | |
+| 1.17 / 1.18 | **Vòng này không chạy** | Ở bản 0.7.0 cả 4 phiên bản đều đã vượt qua |
 
-## 二·九、0.8.1 修复
+## II.9. Sửa lỗi 0.8.1
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 莉莉丝连接页拉取模型（供应商不允许跨域时经酒馆服务器转发） | **已验收**（1.19，无 CORS 头的模拟供应商） | 转发由用户自己的酒馆服务器发出；真实中转站未逐个测试 |
-| 招募：排除刚出现的候选人、本地抽世界类型与目标实力档 | **已验收**（1.16、1.19 + 纯逻辑） | 模型仍重复时纠正一次，再重复退费 |
-| 入群费独立曲线、按预算定实力档、买不起不扣成负数 | **已验收**（1.16、1.19 + 纯逻辑） | 「指定角色」不受预算限制，如实评估 |
-| 红包 / 赠礼三四轮一次（账本强制），宿主主动要求时允许 | **已验收**（1.16、1.19，故意违规的模拟模型） | 每日收红包上限 6 不变 |
-| 聊天群入库记录注入剧情提示（来源不得改写） | **已验收（模拟模型）**（1.16、1.19） | 注入已验证；**真实模型是否遵守未验证** |
-| 世界书插件版：更新到最新版（先备份）、导出 JSON、旧版提醒 | **已验收**（1.16、1.19） | 旧书不会被自动覆盖；用户自建条目与开 / 关状态保留 |
+| Lấy danh sách mô hình ở trang kết nối Lilith (khi nhà cung cấp không cho phép CORS sẽ chuyển tiếp qua máy chủ quán rượu) | **Đã nghiệm thu** (1.19, nhà cung cấp giả lập không có header CORS) | Yêu cầu chuyển tiếp do máy chủ quán rượu của chính người dùng phát đi; chưa thử từng trạm trung chuyển thực tế |
+| Chiêu mộ: loại trừ ứng viên vừa xuất hiện, bốc cục bộ loại thế giới và bậc thực lực mục tiêu | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy) | Nếu mô hình vẫn trả về trùng tên sẽ nhắc sửa một lần, nếu vẫn trùng tiếp sẽ hoàn phí |
+| Đường cong phí vào nhóm độc lập, chọn bậc thực lực theo ngân sách, không đủ tiền mua sẽ không bị trừ thành số âm | **Đã nghiệm thu** (1.16, 1.19 + logic thuần túy) | Chế độ 「Chỉ định nhân vật」 không bị giới hạn bởi ngân sách, đánh giá đúng thực tế |
+| Lì xì / quà tặng cách 3–4 lượt một lần (sổ cái cưỡng chế), khi Ký chủ chủ động xin thì cho phép | **Đã nghiệm thu** (1.16, 1.19, mô hình giả lập cố tình vi phạm) | Trần nhận lì xì mỗi ngày là 6 lần không đổi |
+| Tiêm bản ghi nhập kho nhóm chat vào lời nhắc cốt truyện (không được sửa đổi nguồn gốc) | **Đã nghiệm thu (Mô hình giả lập)** (1.16, 1.19) | Đã xác minh việc tiêm lời nhắc; **việc mô hình thật có tuân thủ hay không chưa kiểm chứng** |
+| Bản Sách Thế Giới của tiện ích: cập nhật lên bản mới nhất (sao lưu trước), xuất JSON, nhắc nhở khi dùng bản cũ | **Đã nghiệm thu** (1.16, 1.19) | Sách cũ không bị tự động ghi đè; giữ nguyên các mục do người dùng tự tạo và trạng thái bật/tắt |
 
-## 二·八、界面统一 · 熟练度 · 角色卡功法（0.8.0）
+## II.8. Thống nhất giao diện · Độ thuần thục · Công pháp thẻ nhân vật (0.8.0)
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 莉莉丝原版页面跟随世界主题；底部状态行用主题栏色 | **已验收**（1.16、1.19；四套主题观感为人工看图） | 只改 CSS；默认主题保持原版紫色 |
-| 原状态栏莉莉丝那一行隐藏，系统播报改为立绘气泡；点空白处剧情台词 | **已验收**（1.16、1.19；气泡位置为人工看图） | 手机上立绘收起时改用提示条 |
-| 顶栏与基础概览系统点一致（签到、管理员写入后） | **已验收**（1.16、1.19） | 引擎数值从账本读取，不再只看楼层面板文本 |
-| 管理员控制台移到设置 → 高级 · 管理员 | **已验收**（1.16、1.19） | 面板打开期间引擎不重载 |
-| 自拟外挂入口：导航「自拟」、外挂页「＋ 自拟外挂」；扣费盖 `界面记账时间` | **已验收**（1.16、1.19） | 编辑器本身沿用 0.5.0 |
-| 功法实效提示（阶段效果告诉 AI） | **已验收（模拟模型）**（1.16、1.19） | **真实模型是否遵守未验证** |
-| 实战积累：剧情用到、功法修炼漏写 → +2；阶段提升排队播报 | **已验收**（1.16、1.19） | 受品阶上限约束；同一楼层只算一次；凭据记在 `功法记录` |
-| 从角色卡 / 聊天变量导入功法（只增不减，不改角色卡） | **已验收**（1.16、1.19，测试构造的变量结构） | 只识别常见结构；不同作者的写法未逐一验证 |
-| 1.17 / 1.18 | **本轮未运行** | 0.7.0 时四个版本均通过 |
+| Các trang nguyên bản của Lilith đi theo chủ đề thế giới; dòng trạng thái dưới đáy dùng màu thanh chủ đề | **Đã nghiệm thu** (1.16, 1.19; cảm quan 4 bộ chủ đề kiểm tra trực quan bằng ảnh chụp) | Chỉ sửa CSS; chủ đề mặc định giữ nguyên màu tím nguyên bản |
+| Ẩn dòng trạng thái Lilith ở thanh trạng thái gốc, chuyển thông báo hệ thống thành bong bóng trên ảnh đứng; bấm khoảng trống hiện lời thoại cốt truyện | **Đã nghiệm thu** (1.16, 1.19; vị trí bong bóng kiểm tra trực quan bằng ảnh chụp) | Trên điện thoại khi thu gọn ảnh đứng sẽ chuyển sang dùng thanh gợi ý |
+| Điểm Hệ Thống ở thanh đỉnh và phần Tổng quan cơ bản luôn khớp nhau (sau khi điểm danh hoặc quản trị viên ghi sổ) | **Đã nghiệm thu** (1.16, 1.19) | Con số trong engine đọc từ sổ cái, không còn chỉ nhìn vào văn bản bảng ở tầng tin nhắn |
+| Chuyển Bảng điều khiển Quản trị viên vào Cài đặt → Nâng cao · Quản trị viên | **Đã nghiệm thu** (1.16, 1.19) | Trong lúc bảng điều khiển đang mở thì engine không bị tải lại |
+| Lối vào Phụ trợ tự tạo: mục điều hướng 「Tự tạo」, nút 「＋ Phụ trợ tự tạo」 ở trang Phụ trợ; trừ phí đóng dấu `界面记账时间` | **Đã nghiệm thu** (1.16, 1.19) | Bản thân trình chỉnh sửa kế thừa từ bản 0.5.0 |
+| Lời nhắc hiệu quả thực tế của công pháp (báo hiệu quả giai đoạn cho AI) | **Đã nghiệm thu (Mô hình giả lập)** (1.16, 1.19) | **Việc mô hình thật có tuân thủ hay không chưa kiểm chứng** |
+| Tích lũy thực chiến: có dùng trong cốt truyện nhưng mục Tu luyện công pháp quên ghi → +2; thăng cấp giai đoạn xếp hàng thông báo | **Đã nghiệm thu** (1.16, 1.19) | Chịu sự ràng buộc của trần phẩm giai; cùng một tầng chỉ tính một lần; chứng từ ghi trong `功法记录` |
+| Nhập công pháp từ thẻ nhân vật / biến trò chuyện (chỉ tăng không giảm, không sửa thẻ nhân vật) | **Đã nghiệm thu** (1.16, 1.19, cấu trúc biến dựng để kiểm thử) | Chỉ nhận diện các cấu trúc phổ biến; chưa xác minh từng cách viết riêng của mọi tác giả thẻ |
+| 1.17 / 1.18 | **Vòng này không chạy** | Ở bản 0.7.0 cả 4 phiên bản đều đã vượt qua |
 
-## 三、莉莉丝
+## III. Lilith
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 原版助手窗口（工作台、记忆档案、规则藏书、连接设置、运行状态） | **已验收**（1.16–1.19） | |
-| 助手测试连接（酒馆主 API） | **已验收（模拟模型）**（1.16–1.19） | 伪造网址从未被真正请求 |
-| 自动记忆整理（原版记录员提示词）→ 写入聊天变量 | **已验收（模拟模型）**（1.16–1.19） | 主 API 模式下，记录员请求用的是 ST 预设里的温度，不是固定值 |
-| 私聊（左上角头像）→ 独立 API → 显示回复 | **已验收（模拟模型）**（1.16–1.19） | |
-| 真实触摸：抚摸（逐级升温）、长按、点按 | **已验收**（1.16–1.19，移动端视口） | 松手后不会额外触发点按台词；无头浏览器里验证不了触觉反馈 |
-| 原版分层立绘和点触气泡 | **0.3 已验收** | |
-| AI 差分立绘：8 种表情 | **0.3 已验收** | |
-| AI 差分立绘：姿势 | **0.5.0 已删除** | 0.4.0 的姿势换了服装，不符合“必须用原图”；用原图重新生成被图像模型拒绝。见 `assets/lilith/variants/PROVENANCE.md` |
-| 真 Live2D（Cubism 3/4/5 模型） | **0.3 已验收**（1.16、1.17、1.19，官方示例模型 Haru） | 0.4.0 没有改动 |
-| 莉莉丝本人的 Live2D 模型 | **未完成（需人工绑定）** | 程序无法凭空生成 `.moc3`。已提供分层 PSD 导出，需要在 Cubism Editor 里绑定 |
-| Cubism Core | 不打包 | 专有许可证，用户同意后才加载 |
+| Cửa sổ trợ lý nguyên bản (Bàn làm việc, Hồ sơ ký ức, Tàng thư quy tắc, Cài đặt kết nối, Trạng thái hoạt động) | **Đã nghiệm thu** (1.16–1.19) | |
+| Kiểm tra kết nối trợ lý (API chính của quán rượu) | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Địa chỉ giả không bao giờ bị gọi mạng thực sự |
+| Tự động chỉnh lý ký ức (lời nhắc nhân viên ghi chép nguyên bản) → ghi vào biến trò chuyện | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Ở chế độ API chính, yêu cầu của nhân viên ghi chép dùng nhiệt độ trong thiết lập sẵn của ST chứ không phải giá trị cố định |
+| Trò chuyện riêng (ảnh đại diện góc trên bên trái) → API độc lập → hiển thị phản hồi | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | |
+| Chạm tương tác chân thực: vuốt ve (tăng dần cấp độ phản ứng), nhấn giữ, chạm nhẹ | **Đã nghiệm thu** (1.16–1.19, khung nhìn di động) | Sau khi thả tay không kích hoạt thừa lời thoại chạm nhẹ; trong trình duyệt không đầu (headless) không xác minh được phản hồi xúc giác (rung) |
+| Ảnh đứng phân lớp nguyên bản và bong bóng chạm | **Đã nghiệm thu ở 0.3** | |
+| Ảnh đứng biến thể AI: 8 biểu cảm | **Đã nghiệm thu ở 0.3** | |
+| Ảnh đứng biến thể AI: tư thế | **Đã xóa ở 0.5.0** | Các tư thế ở 0.4.0 bị đổi trang phục, không đúng yêu cầu “bắt buộc dùng ảnh gốc”; khi dùng ảnh gốc tạo lại thì bị mô hình hình ảnh từ chối. Xem `assets/lilith/variants/PROVENANCE.md` |
+| Live2D thật (mô hình Cubism 3/4/5) | **Đã nghiệm thu ở 0.3** (1.16, 1.17, 1.19, mô hình mẫu chính thức Haru) | Bản 0.4.0 không sửa đổi phần này |
+| Mô hình Live2D của chính Lilith | **Chưa hoàn thành (Cần gắn xương thủ công)** | Chương trình không thể tự tạo tệp `.moc3` từ hư không. Đã cung cấp tính năng xuất PSD phân lớp, cần gắn xương trong Cubism Editor |
+| Cubism Core | Không đóng gói kèm | Giấy phép độc quyền, chỉ tải sau khi người dùng đồng ý |
 
-## 四、其他
+## IV. Khác
 
-| 能力 | 状态 | 边界 |
+| Năng lực | Trạng thái | Ranh giới |
 |---|---|---|
-| 生成与流式回复 | **已验收（模拟模型）**（1.16–1.19） | 真实 ST 生成管线：流式输出后显示状态栏和 2 张语音卡；存档保留面板 |
-| 0.1–0.4 的独立终端窗口及其入口按钮 | **0.5.0 已删除** | 并入诸天终端。对应的 4 套旧浏览器验收脚本随之退役；发送保护仍由 `native_guards.py` 验收 |
-| 移动端 | **已验收**（1.16–1.19） | 终端手机布局（390×800）、返回手势关闭、触摸层 |
-| HUD、快捷键、`/zt` 命令、`{{zt_*}}` 宏、诊断面板 | **0.3 已验收** | 诊断面板新增：v1.1 替代表、旧版残留、世界书预算 |
-| 酒馆群聊 | 未支持 | 拒绝写入（与诸天聊天群无关） |
-| **真实模型** | **未验证** | 以上所有 AI 链路都只用本地模拟模型跑过。第一次接真实模型时，请先在备份的聊天上试用 |
+| Tạo văn bản và phản hồi truyền phát trực tuyến (streaming) | **Đã nghiệm thu (Mô hình giả lập)** (1.16–1.19) | Đường ống tạo văn bản thật của ST: sau khi xuất luồng trực tuyến sẽ hiển thị thanh trạng thái và 2 thẻ thoại; bản lưu vẫn giữ nguyên bảng dữ liệu |
+| Cửa sổ thiết bị đầu cuối độc lập và nút lối vào của bản 0.1–0.4 | **Đã xóa ở 0.5.0** | Đã gộp vào Thiết Bị Đầu Cuối Chư Thiên. 4 bộ kịch bản nghiệm thu trình duyệt cũ tương ứng cũng ngừng hoạt động theo; bảo vệ gửi tin vẫn do `native_guards.py` nghiệm thu |
+| Thiết bị di động | **Đã nghiệm thu** (1.16–1.19) | Bố cục điện thoại của thiết bị đầu cuối (390×800), cử chỉ quay lại để đóng, lớp cảm ứng |
+| HUD, phím tắt, lệnh `/zt`, macro `{{zt_*}}`, bảng chẩn đoán | **Đã nghiệm thu ở 0.3** | Bảng chẩn đoán thêm mới: bảng thay thế v1.1, tàn dư bản cũ, ngân sách Sách Thế Giới |
+| Trò chuyện nhóm của quán rượu | Chưa hỗ trợ | Từ chối ghi dữ liệu (không liên quan gì tới Nhóm Chat Chư Thiên) |
+| **Mô hình thật** | **Chưa kiểm chứng** | Toàn bộ các luồng AI ở trên đều chỉ mới chạy qua mô hình giả lập cục bộ. Khi kết nối với mô hình thật lần đầu, vui lòng thử nghiệm trên cuộc trò chuyện đã sao lưu trước |

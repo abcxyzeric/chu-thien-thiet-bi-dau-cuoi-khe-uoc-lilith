@@ -25,18 +25,18 @@ export function guideSteps(st = {}) {
     const apiDone = !!api?.model;
     const chatDone = !!(chat.open && chat.ledger && (chat.memory || chat.assistant === false));
     return [
-        { id: 'wb', title: '导入或更新世界书', done: wbDone,
-            text: !wb ? '读取不到世界书状态（宿主没有世界书接口）。可以在 设置 → 世界书安装 / 绑定 里手动处理。'
-                : wbDone ? `“诸天万界最强系统”已是最新版（${wb.count} 条）${wb.chatBound ? '，已绑定到当前聊天' : ''}。`
-                    : wb.exists ? `已有“诸天万界最强系统”（${wb.count} 条），但不是插件最新版。更新会先另存一份备份，你自己加的条目和开关会保留。`
-                        : '还没有安装诸天世界书。安装后 AI 才知道系统规则；已有同名世界书时不会覆盖。' },
-        { id: 'api', title: '设置 AI 接口', done: apiDone,
-            text: apiDone ? `已设置：${api.main ? '使用酒馆当前的主模型' : api.model}。`
-                : '莉莉丝私聊、记忆整理和状态栏里的 AI 按钮要用一个模型。最省事是直接用酒馆正在用的主模型；也可以填独立的 API。不设置也能玩，只是这些功能用不了。' },
-        { id: 'chat', title: '在当前聊天启用', done: chatDone,
-            text: !chat.open ? '先打开一个单角色聊天（群聊不支持），再回来点这一步。'
-                : chatDone ? `当前聊天已有诸天账本${chat.assistant === false ? '' : '，莉莉丝记忆已启用'}。`
-                    : `${chat.ledger ? '账本已存在' : '这个聊天还没有诸天账本（会按原版规则创建）'}；${chat.assistant === false ? '莉莉丝窗口没有启动，只处理账本' : chat.memory ? '莉莉丝记忆已启用' : '莉莉丝记忆还没启用'}。` },
+        { id: 'wb', title: 'Nhập hoặc cập nhật Sách Thế Giới', done: wbDone,
+            text: !wb ? 'Không đọc được trạng thái Sách Thế Giới (host không có giao diện Sách Thế Giới). Có thể xử lý thủ công tại Cài đặt → Cài đặt / Liên kết Sách Thế Giới.'
+                : wbDone ? `“Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới” đã là bản mới nhất (${wb.count} mục)${wb.chatBound ? ', đã liên kết vào cuộc trò chuyện hiện tại' : ''}.`
+                    : wb.exists ? `Đã có “Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới” (${wb.count} mục), nhưng chưa phải bản mới nhất của plugin. Khi cập nhật sẽ lưu một bản sao lưu trước, các mục và công tắc bạn tự thêm sẽ được giữ lại.`
+                        : 'Chưa cài đặt Sách Thế Giới Chư Thiên. Sau khi cài đặt AI mới biết quy tắc hệ thống; nếu đã có Sách Thế Giới cùng tên sẽ không bị ghi đè.' },
+        { id: 'api', title: 'Cài đặt cổng AI', done: apiDone,
+            text: apiDone ? `Đã đặt: ${api.main ? 'Sử dụng mô hình chính hiện tại của quán rượu' : api.model}.`
+                : 'Trò chuyện riêng với Lilith, tổng hợp ký ức và các nút AI trong thanh trạng thái cần dùng một mô hình. Tiện nhất là dùng trực tiếp mô hình chính mà quán rượu đang dùng; cũng có thể điền API độc lập. Không cài đặt vẫn chơi được, chỉ là các tính năng này sẽ không dùng được.' },
+        { id: 'chat', title: 'Bật trong cuộc trò chuyện hiện tại', done: chatDone,
+            text: !chat.open ? 'Hãy mở một cuộc trò chuyện đơn nhân vật trước (không hỗ trợ trò chuyện nhóm), sau đó quay lại bấm bước này.'
+                : chatDone ? `Cuộc trò chuyện hiện tại đã có sổ cái Chư Thiên${chat.assistant === false ? '' : ', ký ức Lilith đã được bật'}.`
+                    : `${chat.ledger ? 'Sổ cái đã tồn tại' : 'Cuộc trò chuyện này chưa có sổ cái Chư Thiên (sẽ tạo theo quy tắc gốc)'}; ${chat.assistant === false ? 'cửa sổ Lilith chưa khởi động, chỉ xử lý sổ cái' : chat.memory ? 'ký ức Lilith đã được bật' : 'ký ức Lilith chưa được bật'}.` },
     ];
 }
 /** Pure: should the wizard open by itself? Only once (no answer stored yet) and only when something is missing. */
@@ -48,9 +48,9 @@ export class Onboarding {
     get settings() { return this.app.settings; }
     start() {
         const hub = this.hub; if (!hub) return this;
-        hub.register('guide', { title: '新手引导', render: el => { this.el = el; this.paint(); } });
-        const box = hub.groupBox?.('终端');
-        if (box && !box.querySelector('[data-page="guide"]')) { const b = hub.navButton('guide', '引导', 'flag'); b.title = '新手引导：世界书 → AI 接口 → 在当前聊天启用'; b.hidden = !!this.settings.get('guide'); box.prepend(b); this.nav = b; }
+        hub.register('guide', { title: 'Hướng dẫn tân thủ', render: el => { this.el = el; this.paint(); } });
+        const box = hub.groupBox?.('Thiết bị đầu cuối');
+        if (box && !box.querySelector('[data-page="guide"]')) { const b = hub.navButton('guide', 'Hướng dẫn', 'flag'); b.title = 'Hướng dẫn tân thủ: Sách Thế Giới → Cổng AI → Bật trong cuộc trò chuyện hiện tại'; b.hidden = !!this.settings.get('guide'); box.prepend(b); this.nav = b; }
         hub.hook('onOpen', () => { this.maybeAuto(); });
         hub.hook('onClose', () => { hub.openedWith = null; });   // the original entry button opens without hub.open()
         hub.hook('onPage', p => this.backStrip(p));
@@ -83,24 +83,24 @@ export class Onboarding {
     finish(state, silent = false) {
         this.settings.set('guide', { state, at: Date.now(), version: VERSION });
         if (this.nav) this.nav.hidden = true;
-        if (!silent) { this.hub?.toast(state === 'done' ? '新手引导完成，祝穿越愉快' : '已跳过新手引导；设置 → 新手引导 可以随时再打开', 3500); this.hub?.go('ov'); }
+        if (!silent) { this.hub?.toast(state === 'done' ? 'Hoàn tất hướng dẫn tân thủ, chúc bạn xuyên không vui vẻ' : 'Đã bỏ qua hướng dẫn tân thủ; có thể mở lại bất cứ lúc nào tại Cài đặt → Hướng dẫn tân thủ', 3500); this.hub?.go('ov'); }
     }
     async paint() {
         const el = this.el; if (!el) return;
         const st = await this.status(), steps = guideSteps(st), n = steps.filter(s => s.done).length;
         if (el !== this.el) return;
-        const btn = (act, label, primary = false, dis = false) => `<button type="button" class="zt-btn small${primary ? ' primary' : ''}" data-guide="${act}"${dis || this.busy ? ' disabled' : ''}>${esc(this.busy === act ? '处理中…' : label)}</button>`;
+        const btn = (act, label, primary = false, dis = false) => `<button type="button" class="zt-btn small${primary ? ' primary' : ''}" data-guide="${act}"${dis || this.busy ? ' disabled' : ''}>${esc(this.busy === act ? 'Đang xử lý…' : label)}</button>`;
         const acts = {
-            wb: s => s.done ? '' : !st.wb ? btn('wb-open', '打开世界书设置') : st.wb.exists ? btn('wb-update', '更新到最新版（先备份）', true) : btn('wb-install', st.chat.open ? '安装并绑定到当前聊天' : '安装世界书', true),
-            api: s => s.done ? btn('api-open', '修改') : btn('api-main', '用酒馆当前的主模型', true) + btn('api-open', '填写独立 API ›'),
-            chat: s => s.done ? '' : btn('chat-enable', '在当前聊天启用', true, !st.chat.open),
+            wb: s => s.done ? '' : !st.wb ? btn('wb-open', 'Mở cài đặt Sách Thế Giới') : st.wb.exists ? btn('wb-update', 'Cập nhật lên bản mới nhất (sao lưu trước)', true) : btn('wb-install', st.chat.open ? 'Cài đặt và liên kết vào cuộc trò chuyện hiện tại' : 'Cài đặt Sách Thế Giới', true),
+            api: s => s.done ? btn('api-open', 'Sửa') : btn('api-main', 'Dùng mô hình chính hiện tại của quán rượu', true) + btn('api-open', 'Điền API độc lập ›'),
+            chat: s => s.done ? '' : btn('chat-enable', 'Bật trong cuộc trò chuyện hiện tại', true, !st.chat.open),
         };
         el.classList.add('zt-guide-page');
-        el.innerHTML = `<div class="zt-eyebrow">FIRST RUN</div><h2 class="zt-h">新手引导</h2>
-<p class="zt-sub">三步就能开始：世界书 → AI 接口 → 在当前聊天启用。每一步都可以跳过，以后在「设置 → 新手引导」还能再打开。已完成 ${n} / 3。</p>
-<ol class="zt-guide-steps">${steps.map((s, i) => `<li class="zt-card zt-guide-step" data-step="${s.id}" data-done="${s.done ? 1 : 0}"><h3><span class="zt-guide-mark" aria-hidden="true">${s.done ? '✓' : i + 1}</span>${esc(s.title)}<small>${s.done ? '已完成' : '待完成'}</small></h3><p class="zt-sub">${esc(s.text)}</p><div class="zt-actions">${acts[s.id](s)}</div></li>`).join('')}</ol>
+        el.innerHTML = `<div class="zt-eyebrow">FIRST RUN</div><h2 class="zt-h">Hướng dẫn tân thủ</h2>
+<p class="zt-sub">Chỉ cần 3 bước để bắt đầu: Sách Thế Giới → Cổng AI → Bật trong cuộc trò chuyện hiện tại. Mỗi bước đều có thể bỏ qua, sau này vẫn có thể mở lại tại 「Cài đặt → Hướng dẫn tân thủ」. Đã hoàn thành ${n} / 3.</p>
+<ol class="zt-guide-steps">${steps.map((s, i) => `<li class="zt-card zt-guide-step" data-step="${s.id}" data-done="${s.done ? 1 : 0}"><h3><span class="zt-guide-mark" aria-hidden="true">${s.done ? '✓' : i + 1}</span>${esc(s.title)}<small>${s.done ? 'Đã hoàn thành' : 'Chưa hoàn thành'}</small></h3><p class="zt-sub">${esc(s.text)}</p><div class="zt-actions">${acts[s.id](s)}</div></li>`).join('')}</ol>
 ${this.note ? `<p class="zt-guide-note" role="status">${esc(this.note)}</p>` : ''}
-<div class="zt-actions zt-guide-foot">${n === 3 ? btn('done', '完成', true) : btn('skip', '跳过引导') + btn('later', '先这样，以后再说')}</div>`;
+<div class="zt-actions zt-guide-foot">${n === 3 ? btn('done', 'Hoàn tất', true) : btn('skip', 'Bỏ qua hướng dẫn') + btn('later', 'Để sau tính tiếp')}</div>`;
         if (!el.__ztGuide) { el.__ztGuide = true; el.addEventListener('click', e => { const b = e.target.closest('[data-guide]'); if (b && !b.disabled) this.run(b.dataset.guide); }); }
     }
     async run(act) {
@@ -111,33 +111,33 @@ ${this.note ? `<p class="zt-guide-note" role="status">${esc(this.note)}</p>` : '
         if (act === 'wb-open') return f?.openWorldbook();
         this.busy = act; this.note = ''; await this.paint();
         try {
-            if (act === 'wb-install') { const r = await f.installWorldbook(app.adapter.currentIdentity() ? 'chat' : 'none'); this.note = `世界书已安装（${r.count} 条）${r.chatBound ? '，已绑定到当前聊天' : ''}。`; }
-            else if (act === 'wb-update') { const r = await f.updateWorldbook(); this.note = r.created ? `已安装最新版（${r.count} 条）。` : `已更新：替换 ${r.replaced} 条、新增 ${r.added} 条、保留你自己的 ${r.kept} 条；旧版备份为“${r.backup}”。`; }
-            else if (act === 'api-main') { await saveConfigs(app.bridge, this.ns(), { url: MAIN_API_URL }); app.adapter.notify?.(); this.note = '已设置为使用酒馆当前的主模型（不会把请求发到别处）。'; }
+            if (act === 'wb-install') { const r = await f.installWorldbook(app.adapter.currentIdentity() ? 'chat' : 'none'); this.note = `Đã cài đặt Sách Thế Giới (${r.count} mục)${r.chatBound ? ', đã liên kết vào cuộc trò chuyện hiện tại' : ''}.`; }
+            else if (act === 'wb-update') { const r = await f.updateWorldbook(); this.note = r.created ? `Đã cài đặt bản mới nhất (${r.count} mục).` : `Đã cập nhật: thay thế ${r.replaced} mục, thêm mới ${r.added} mục, giữ lại ${r.kept} mục của bạn; bản cũ sao lưu thành “${r.backup}”.`; }
+            else if (act === 'api-main') { await saveConfigs(app.bridge, this.ns(), { url: MAIN_API_URL }); app.adapter.notify?.(); this.note = 'Đã đặt sử dụng mô hình chính hiện tại của quán rượu (không gửi yêu cầu đi nơi khác).'; }
             else if (act === 'chat-enable') this.note = await this.enableChat();
-        } catch (e) { this.note = '未完成：' + errorLine(e); }
+        } catch (e) { this.note = 'Chưa hoàn tất: ' + errorLine(e); }
         finally { this.busy = ''; }
         await this.paint();
     }
     /** Step 3: ledger (original init rules) + 莉莉丝 memory through the original 「保存当前聊天设置」 button. */
     async enableChat() {
         const app = this.app, a = app.adapter;
-        if (!a.currentIdentity()) throw Error('请先打开单角色聊天。');
+        if (!a.currentIdentity()) throw Error('Vui lòng mở cuộc trò chuyện đơn nhân vật trước.');
         const out = [];
-        if (!a.ledger()) { const r = await app.features.initChat(); out.push(r.created ? `账本已创建（系统点 ${r.points}）` : '账本已补齐'); try { app.hub?.reloadEngine?.(); } catch { /* ignore */ } }
+        if (!a.ledger()) { const r = await app.features.initChat(); out.push(r.created ? `Đã tạo sổ cái (Điểm Hệ Thống ${r.points})` : 'Đã bổ sung sổ cái'); try { app.hub?.reloadEngine?.(); } catch { /* ignore */ } }
         const sh = app.assistant?.shadow;
         if (sh && !this.memoryOn()) {
             const box = sh.getElementById('enabled'), save = sh.getElementById('save-chat'), auto = sh.getElementById('auto');
-            if (!box || !save) throw Error('找不到莉莉丝「记忆」页的启用开关；请在 莉莉丝 → 记忆 里手动勾选并保存。');
+            if (!box || !save) throw Error('Không tìm thấy công tắc bật ở trang 「Ký ức」 của Lilith; vui lòng vào Lilith → Ký ức tích chọn và lưu thủ công.');
             box.checked = true;
             // 自动整理 needs a model; without one the original save refuses — keep it off rather than fail.
             if (auto?.checked) { let model = ''; try { model = readConfigs(app.bridge, this.ns()).assistant?.model || ''; } catch { /* none */ } if (!model) auto.checked = false; }
             save.click();
             for (let i = 0; i < 30 && !this.memoryOn(); i++) await wait(100);
-            if (!this.memoryOn()) throw Error(((sh.getElementById('status')?.textContent || '').trim() || '莉莉丝没有确认启用') + '（可在 莉莉丝 → 记忆 里手动勾选并保存）');
-            out.push('莉莉丝记忆已启用');
+            if (!this.memoryOn()) throw Error(((sh.getElementById('status')?.textContent || '').trim() || 'Lilith chưa xác nhận bật') + ' (có thể vào Lilith → Ký ức tích chọn và lưu thủ công)');
+            out.push('Đã bật ký ức Lilith');
         }
-        return (out.join('，') || '当前聊天已经启用') + '。';
+        return (out.join(', ') || 'Cuộc trò chuyện hiện tại đã được bật') + '.';
     }
     /** On the 连接 page during the wizard: a strip to come back after saving. */
     backStrip(page) {
@@ -145,7 +145,7 @@ ${this.note ? `<p class="zt-guide-note" role="status">${esc(this.note)}</p>` : '
         sec?.querySelector(':scope > .zt-guide-back')?.remove();
         if (page !== 'api' || !this.returning) { if (page !== 'api') this.returning = false; return; }
         const d = document.createElement('div'); d.className = 'zt-guide-back';
-        d.innerHTML = '<span>新手引导 · 第 2 步：保存好 AI 接口后</span><button type="button" class="zt-btn small primary">‹ 回到新手引导</button>';
+        d.innerHTML = '<span>Hướng dẫn tân thủ · Bước 2: Sau khi lưu xong cổng AI</span><button type="button" class="zt-btn small primary">‹ Quay lại hướng dẫn tân thủ</button>';
         d.querySelector('button').addEventListener('click', () => { this.returning = false; this.hub.go('guide'); });
         sec?.prepend(d);
     }

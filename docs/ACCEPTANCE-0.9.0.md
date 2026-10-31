@@ -1,84 +1,84 @@
-# 0.9.0 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.9.0
 
-## 环境
+## Môi trường
 
-- SillyTavern 1.19.0（官方 tag 全新安装，commit `7e8663cd9c184a550b37238218bdd32c6efc68e9`），隔离数据目录，**没有安装酒馆助手**；
-- Playwright Chromium（无头）：
-  - 手机：390×844、844×390、360×640，`has_touch` + `is_mobile` 触摸模拟；
-  - 电脑：1400×900，鼠标；
-- 模拟模型：5001 普通，5002 不发 CORS 头。
+- SillyTavern 1.19.0 (cài đặt mới hoàn toàn theo tag chính thức, commit `7e8663cd9c184a550b37238218bdd32c6efc68e9`), thư mục dữ liệu cô lập, **không cài đặt Tavern Helper**;
+- Playwright Chromium (headless):
+  - Điện thoại: 390×844, 844×390, 360×640, mô phỏng cảm ứng `has_touch` + `is_mobile`;
+  - Máy tính: 1400×900, chuột;
+- Mô hình mô phỏng: cổng 5001 thông thường, cổng 5002 không gửi tiêu đề CORS.
 
-全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。
+Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1.
 
-**本轮只测了 1.19。** 1.16 / 1.17 / 1.18 没有运行；0.9.0 只改布局、CSS 和一个脚本变量写入过滤钩子，没有改宿主接口。
+**Đợt này chỉ kiểm thử bản 1.19.** Bản 1.16 / 1.17 / 1.18 không chạy; bản 0.9.0 chỉ sửa bố cục, CSS và một hook lọc ghi biến kịch bản, không sửa giao diện máy chủ.
 
-## 结果总览（1.19）
+## Tổng quan kết quả (1.19)
 
-| 套件 | 结果 |
+| Bộ kiểm thử | Kết quả |
 | --- | --- |
-| `native_v090.py`（0.9.0 新增，24 项） | 24/24 |
+| `native_v090.py` (Mới thêm bản 0.9.0, 24 hạng mục) | 24/24 |
 | `native_v085.py` | 20/20 |
-| `native_v084.py`（含手机：终端内点私聊 5 次） | 29/29 |
-| `native_v083.py`（悬浮莉莉丝） | 13/13 |
-| `native_v082.py` | 24/24（跳过酒馆助手角色卡一段：本实例未装酒馆助手） |
+| `native_v084.py` (Gồm điện thoại: bấm trò chuyện riêng 5 lần trong thiết bị đầu cuối) | 29/29 |
+| `native_v083.py` (Lilith nổi) | 13/13 |
+| `native_v082.py` | 24/24 (bỏ qua đoạn thẻ nhân vật Tavern Helper: thực thể này không cài Tavern Helper) |
 | `native_v081.py` | 20/20 |
 | `native_v080.py` | 33/33 |
 | `native_group060.py` | 44/44 |
 | `native_world070.py` | 40/40 |
 | `native_terminal050.py` | 58/58 |
-| `native_guards.py` | ✅ 无页面错误、无模型请求、生成期间拒绝发送（`docs/evidence/guards.json`） |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） |
-| `npm run check` | ✅（检查范围新增 `mobile.js`、`lilith-float.js`、`wb-unbind.js`、`worldbook.js`） |
-| `node --test tests/*.test.js` | 164/164（0.8.5 为 152，新增 `v090.test.js` 12 项） |
-| 扩展清单校验（字段、文件存在、`homePage`） | ✅ |
+| `native_guards.py` | ✅ Không có lỗi trang, không có yêu cầu mô hình, từ chối gửi trong khi đang tạo phản hồi (`docs/evidence/guards.json`) |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) |
+| `npm run check` | ✅ (phạm vi kiểm tra thêm mới `mobile.js`, `lilith-float.js`, `wb-unbind.js`, `worldbook.js`) |
+| `node --test tests/*.test.js` | 164/164 (bản 0.8.5 là 152, thêm mới `v090.test.js` 12 hạng mục) |
+| Kiểm tra manifest tiện ích mở rộng (các trường, sự tồn tại của tệp, `homePage`) | ✅ |
 
-## native_v090.py 检查了什么
+## `native_v090.py` đã kiểm tra những gì
 
-键盘的模拟方式：无头 Chromium 没有屏幕键盘，所以在页面加载前把 `window.visualViewport` 换成可控对象。它的高度变小（布局视口不变）并发出 `resize`，和手机浏览器弹出键盘时的表现一致。
+Cách mô phỏng bàn phím: Chromium headless không có bàn phím ảo trên màn hình, nên trước khi tải trang đã thay `window.visualViewport` bằng một đối tượng có thể điều khiển. Khi chiều cao của nó giảm xuống (khung nhìn bố cục không đổi) và phát sự kiện `resize`, biểu hiện hoàn toàn giống với khi trình duyệt điện thoại bật bàn phím ảo.
 
-| 项目 | 0.8.5 | 0.9.0 |
+| Hạng mục | 0.8.5 | 0.9.0 |
 | --- | --- | --- |
-| 竖屏 390×844，终端位置 | 浮动窗口，四周 8 px | `[0,0,390,844]` 全屏 |
-| 竖屏，之前记住的是 380×354 小窗口 | 内容区 148 px | 仍然全屏，内容区 646 px |
-| 竖屏内容区 | 548 px | 646 px |
-| 小屏 360×640 内容区 | — | 442 px |
-| 横屏 844×390 内容区 | 122 px | 250 px（左侧导航栏 77 px） |
-| 键盘弹出（可见高度 470），聊天群 | 输入框被盖住 | 终端高 470，输入框在 416–460 px，账本条和状态行隐藏，聊天记录区 128 px |
-| 横屏键盘弹出（可见高度 200） | — | 终端高 200，输入框在 146–190 px，顶栏隐藏 |
-| 键盘收起 | — | 恢复 844 px，账本条回来 |
-| 私聊（从终端顶栏点按进入） | 374×426 浮动面板 | `[0,0,390,844]` 全屏，盖在终端上方 |
-| 私聊 + 键盘（470） | — | 面板高 470，输入框在可见区内，面部特写隐藏 |
-| 悬浮莉莉丝（终端打开时） | 停在内容中间 | 下角（top 697），横屏在右侧（left 814） |
-| 点台词 / 在终端里滚动 | 台词留着 | 收起 |
-| 终端关闭后莉莉丝 | — | 回到原位（误差 < 40 px） |
-| 整轮手机操作后，电脑上记住的窗口尺寸 | 被改成手机尺寸 | 保持 1000×720 |
-| 设置「浮动窗口」 | — | 恢复 374×380 浮动窗口；改回「自动」后又全屏 |
-| 电脑 1400×900（鼠标） | — | 不全屏，圆角浮动窗口，和 0.8.5 相同 |
+| Màn hình dọc 390×844, vị trí thiết bị đầu cuối | Cửa sổ nổi, bốn phía cách 8 px | Toàn màn hình `[0,0,390,844]` |
+| Màn hình dọc, trước đó ghi nhớ cửa sổ nhỏ 380×354 | Vùng nội dung 148 px | Vẫn toàn màn hình, vùng nội dung 646 px |
+| Vùng nội dung màn hình dọc | 548 px | 646 px |
+| Vùng nội dung màn hình nhỏ 360×640 | — | 442 px |
+| Vùng nội dung màn hình ngang 844×390 | 122 px | 250 px (thanh điều hướng bên trái 77 px) |
+| Khi bàn phím bật lên (chiều cao khả kiến 470), nhóm chat | Ô nhập liệu bị che khuất | Thiết bị đầu cuối cao 470, ô nhập liệu ở 416–460 px, thanh sổ cái và dòng trạng thái ẩn đi, vùng lịch sử trò chuyện 128 px |
+| Màn hình ngang khi bàn phím bật lên (chiều cao khả kiến 200) | — | Thiết bị đầu cuối cao 200, ô nhập liệu ở 146–190 px, thanh đỉnh ẩn đi |
+| Khi thu bàn phím xuống | — | Khôi phục 844 px, thanh sổ cái xuất hiện trở lại |
+| Trò chuyện riêng (bấm vào từ thanh đỉnh thiết bị đầu cuối) | Bảng nổi 374×426 | Toàn màn hình `[0,0,390,844]`, phủ lên trên thiết bị đầu cuối |
+| Trò chuyện riêng + bàn phím (470) | — | Bảng cao 470, ô nhập liệu nằm trong vùng nhìn thấy, ảnh cận cảnh khuôn mặt ẩn đi |
+| Lilith nổi (khi thiết bị đầu cuối đang mở) | Đứng ở giữa vùng nội dung | Ở góc dưới (top 697), màn hình ngang ở bên phải (left 814) |
+| Bấm vào lời thoại / cuộn trong thiết bị đầu cuối | Lời thoại vẫn nằm đó | Thu gọn lại |
+| Lilith sau khi đóng thiết bị đầu cuối | — | Quay về vị trí cũ (sai số < 40 px) |
+| Kích thước cửa sổ ghi nhớ trên máy tính sau cả lượt thao tác trên điện thoại | Bị đổi thành kích thước điện thoại | Giữ nguyên 1000×720 |
+| Cài đặt 「Cửa sổ nổi」 | — | Khôi phục cửa sổ nổi 374×380; đổi về 「Tự động」 lại toàn màn hình |
+| Máy tính 1400×900 (chuột) | — | Không toàn màn hình, cửa sổ nổi bo góc giống bản 0.8.5 |
 
-页面级测量（每页自动检查：元素不超出屏幕、页面不横向滚动、顶栏 / 导航 / 聊天群按钮 ≥ 36 px、输入框 ≥ 16 px，引擎页 iframe 内也查）：
+Đo đạc cấp trang (tự động kiểm tra từng trang: phần tử không tràn khỏi màn hình, trang không cuộn ngang, nút trên thanh đỉnh / điều hướng / nhóm chat ≥ 36 px, ô nhập liệu ≥ 16 px, kiểm tra cả bên trong iframe của trang động cơ):
 
-- 竖屏 390×844：导航上全部 20 页，无问题；
-- 横屏 844×390：商城、聊天群、设置、工作台、连接、事件线 6 页，无问题；
-- 小屏 360×640：总览、商城、外挂、聊天群、设置、连接、外挂管理 7 页，无问题。
+- Màn hình dọc 390×844: toàn bộ 20 trang trên thanh điều hướng, không có vấn đề;
+- Màn hình ngang 844×390: 6 trang Thương thành, Nhóm chat, Cài đặt, Bàn làm việc, Kết nối, Dòng sự kiện, không có vấn đề;
+- Màn hình nhỏ 360×640: 7 trang Tổng quan, Thương thành, Ngoại quải, Nhóm chat, Cài đặt, Kết nối, Quản lý ngoại quải, không có vấn đề.
 
-三种尺寸都没有页面错误。
+Cả ba kích thước đều không có lỗi trang.
 
-截图（不提交，测试运行时生成在 `--shots` 目录）：竖屏总览、竖屏键盘、竖屏私聊、私聊键盘、横屏总览、横屏聊天群、小屏商城。
+Ảnh chụp màn hình (không đưa vào commit, được tạo trong thư mục `--shots` khi chạy kiểm thử): Tổng quan dọc, bàn phím dọc, trò chuyện riêng dọc, bàn phím trò chuyện riêng, Tổng quan ngang, Nhóm chat ngang, Thương thành màn hình nhỏ.
 
-## 测试中发现并修正的问题
+## Các vấn đề phát hiện và sửa chữa trong quá trình kiểm thử
 
-1. **手机会话改掉电脑上的窗口尺寸（0.8.5 就有）。** 第一轮测试里，电脑套件在手机套件之后打开终端，窗口只有 380×380：原版窗口管理器把手机上的窗口尺寸存进了同一份偏好。修法是在桥接层加写入过滤：全屏会话写入时保留原来的 `window` 尺寸。`native_v090.py` 增加了对应一项（先写入 1000×720，整轮手机操作后读回）。
-2. **私聊仍是小面板。** 第一轮里私聊盖在全屏终端上，但只有 374×426，聊天记录区只剩一条缝。私聊和终端在同一个 shadow root 里，所以把可见区域变量同时写到宿主元素上，私聊也改成全屏。
-3. **横屏时悬浮莉莉丝挡住左侧导航栏的图标。** 横屏改为固定停在右侧。
-4. **全屏时顶部仍显示「拖动窗口」提示和版本号小标签。** 已隐藏（横屏保留版本号）。
-5. **版本测试只接受 0.8.x。** `v083` / `v084` 的断言是 `0.8.[3-9]`，升级到 0.9.0 会误报失败。改为「≥ 该版本且各处一致」。
+1. **Phiên làm việc trên điện thoại làm thay đổi kích thước cửa sổ trên máy tính (tồn tại từ bản 0.8.5).** Ở lượt kiểm thử đầu tiên, khi bộ kiểm thử máy tính mở thiết bị đầu cuối sau bộ kiểm thử điện thoại, cửa sổ chỉ còn 380×380: trình quản lý cửa sổ nguyên bản đã lưu kích thước cửa sổ trên điện thoại vào chung một bản tùy chọn. Cách sửa là thêm bộ lọc ghi ở tầng cầu nối: khi phiên toàn màn hình ghi dữ liệu sẽ giữ nguyên kích thước `window` ban đầu. `native_v090.py` đã bổ sung một hạng mục tương ứng (ghi 1000×720 trước, sau cả lượt thao tác điện thoại thì đọc lại).
+2. **Trò chuyện riêng vẫn là bảng nhỏ.** Ở lượt đầu tiên, trò chuyện riêng phủ lên trên thiết bị đầu cuối toàn màn hình nhưng chỉ có kích thước 374×426, vùng lịch sử trò chuyện chỉ còn lại một khe hẹp. Trò chuyện riêng và thiết bị đầu cuối nằm trong cùng một shadow root, nên đã ghi biến vùng nhìn thấy lên phần tử máy chủ cùng lúc và chuyển cả trò chuyện riêng sang toàn màn hình.
+3. **Khi xoay ngang, Lilith nổi che mất biểu tượng của thanh điều hướng bên trái.** Khi xoay ngang đã đổi sang neo cố định ở bên phải.
+4. **Khi ở chế độ toàn màn hình, phía trên cùng vẫn hiển thị gợi ý 「Kéo cửa sổ」 và nhãn nhỏ số phiên bản.** Đã ẩn đi (màn hình ngang vẫn giữ số phiên bản).
+5. **Bài kiểm thử phiên bản chỉ chấp nhận 0.8.x.** Khẳng định của `v083` / `v084` là `0.8.[3-9]`, nên khi nâng cấp lên 0.9.0 sẽ báo lỗi giả. Đã đổi thành 「≥ phiên bản đó và đồng nhất ở mọi nơi」.
 
-## 未验证
+## Chưa xác minh
 
-- **真实手机**：
-  - iOS Safari：输入法和候选栏的真实高度、`env(safe-area-inset-*)`、回弹滚动、长按菜单；
-  - Android Chrome / WebView：返回键、分屏、折叠屏。
-- **1.16 / 1.17 / 1.18**：本轮没有运行。
-- **引擎页内弹层**（抽卡结果、物品详情）：只查了溢出和字号，没在键盘弹出时操作。
-- **平板**：按设计沿用浮动窗口，没有单独测。
-- 所有 AI 链路仍然只用模拟模型（同 0.8.x）。
+- **Điện thoại thực tế**:
+  - iOS Safari: chiều cao thực tế của bộ gõ và thanh gợi ý từ, `env(safe-area-inset-*)`, cuộn nảy (bounce scroll), menu nhấn giữ;
+  - Android Chrome / WebView: phím quay lại, chia đôi màn hình, màn hình gập.
+- **1.16 / 1.17 / 1.18**: Đợt này không chạy.
+- **Lớp bật lên bên trong trang động cơ** (kết quả rút thẻ, chi tiết vật phẩm): mới chỉ kiểm tra tràn khung và cỡ chữ, chưa thao tác khi bàn phím đang bật lên.
+- **Máy tính bảng**: Theo thiết kế vẫn dùng cửa sổ nổi, chưa kiểm thử riêng.
+- Toàn bộ chuỗi AI vẫn chỉ dùng mô hình mô phỏng (giống 0.8.x).

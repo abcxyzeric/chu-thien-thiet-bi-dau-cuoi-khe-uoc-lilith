@@ -1,142 +1,142 @@
-# 距离 1.0 正式版：还差什么
+# Đường tới bản chính thức 1.0: Còn thiếu những gì
 
-> **1.0.0 已发布（2026-10-02）**：这份路线图写于 0.9.0；实际做了什么、跳过了什么见 [PLAN-1.0](PLAN-1.0.md) 第六节和 [CHANGES-1.0.0](CHANGES-1.0.0.md)。真实模型、真机、试玩期没有做，在 README 中如实标注。
+> **Bản 1.0.0 đã phát hành (2026-10-02)**: lộ trình này được viết ở bản 0.9.0; thực tế đã làm những gì và bỏ qua những gì xem tại Mục VI của [PLAN-1.0](PLAN-1.0.md) và [CHANGES-1.0.0](CHANGES-1.0.0.md). Mô hình thật, máy thật và giai đoạn chơi thử chưa thực hiện, đã được ghi chú trung thực trong README.
 
-写于 0.9.0。依据：仓库现状（能力表 `src/contracts.js`、[FEATURE_MATRIX](FEATURE_MATRIX.md)、README「尚未完成」）、0.8.x 各版验收报告、0.9.0 手机端检查。
+Viết ở bản 0.9.0. Căn cứ: hiện trạng kho lưu trữ (bảng năng lực `src/contracts.js`, [FEATURE_MATRIX](FEATURE_MATRIX.md), mục 「Chưa hoàn thành」 trong README), báo cáo nghiệm thu các bản 0.8.x, kiểm tra giao diện điện thoại 0.9.0.
 
-**1.0 的标准**：普通用户按 README 安装，**用自己的真实模型**玩一整局（穿越 → 任务 → 商城 / 抽取 → 突破 → 聊天群 → 私聊 → 换聊天 → 关掉插件），全程不丢账本、不卡死、不需要看文档排错；电脑和手机都能用。
+**Tiêu chuẩn của bản 1.0**: người dùng thông thường cài đặt theo README, **sử dụng mô hình thật của chính mình** chơi trọn vẹn một ván (Xuyên không → Nhiệm vụ → Thương thành / Rút thưởng → Đột phá → Nhóm chat → Trò chuyện riêng → Chuyển cuộc trò chuyện → Tắt tiện ích), suốt quá trình không mất sổ cái, không treo cứng, không cần đọc tài liệu để gỡ lỗi; dùng tốt trên cả máy tính và điện thoại.
 
-现在的差距主要在**真实环境验收**，不在功能数量。所有 AI 链路只用本地模拟模型跑过；手机只在模拟器里测过；1.17 / 1.18 从 0.8.2 起没有再测。
+Khoảng cách hiện tại chủ yếu nằm ở **nghiệm thu môi trường thực tế**, chứ không phải ở số lượng tính năng. Toàn bộ các luồng AI mới chỉ chạy qua mô hình giả lập cục bộ; điện thoại mới chỉ thử trên trình giả lập; bản 1.17 / 1.18 từ sau 0.8.2 chưa kiểm tra lại.
 
 ---
 
-## P0：不完成就不能叫 1.0
+## P0: Chưa hoàn thành thì chưa thể gọi là bản 1.0
 
-### 1. 真实模型验收（最大缺口）
+### 1. Nghiệm thu mô hình thật (Khoảng trống lớn nhất)
 
-能力表里还有 6 项是 `pending`，都卡在“没有真实模型”：
+Trong bảng năng lực vẫn còn 6 mục ở trạng thái `pending`, tất cả đều vướng ở chỗ “chưa có mô hình thật”:
 
-| 能力 | 现状 |
+| Năng lực | Hiện trạng |
 | --- | --- |
-| 原版自动记忆整理、补读及独立 API | 逻辑在跑，没有真实请求验收 |
-| 工作台完整工具与建议接续 | 同上 |
-| AI 商城进货、许愿、抽取、外挂与神通支付 | 按钮已运行，模型结果回写未验收 |
-| 私聊真实生成 | 只验证了发送与保存 |
-| AI 自动写入 当前世界 / 世界类型 | 提示已注入，模型是否照做未知 |
-| 旧存档迁移、账本备份与回滚 | 界面有，浏览器点击验收没做 |
+| Tự động chỉnh lý ký ức nguyên bản, đọc bù và API độc lập | Logic đang chạy, chưa nghiệm thu bằng yêu cầu thật |
+| Công cụ đầy đủ của Bàn làm việc và nối tiếp gợi ý | Như trên |
+| AI nhập hàng Thương thành, ước nguyện, rút thưởng, thanh toán phụ trợ & thần thông | Nút bấm đã chạy, chưa nghiệm thu việc ghi trả kết quả từ mô hình thật |
+| Tạo phản hồi trò chuyện riêng thực tế | Chỉ mới xác minh gửi và lưu |
+| AI tự động ghi `当前世界` / `世界类型` | Đã tiêm lời nhắc, chưa rõ mô hình thật có làm theo hay không |
+| Di chuyển bản lưu cũ, sao lưu & hoàn tác sổ cái | Đã có giao diện, chưa nghiệm thu bấm trên trình duyệt |
 
-此外，聊天群群员口吻、红包节奏、熟练度提示、角色卡功法识别也只用模拟模型验证过。
+Ngoài ra, giọng điệu thành viên nhóm chat, nhịp độ lì xì, lời nhắc độ thuần thục và nhận diện công pháp thẻ nhân vật cũng chỉ mới xác minh bằng mô hình giả lập.
 
-**做法：**
+**Cách làm:**
 
-- 写一份《真实模型验收脚本》：固定测试角色卡 + 固定 20 轮操作 + 每一步的通过标准（账本字段变化、世界书注入、无原始 `<ZhuTianPanel>` 残留）。
-- 至少跑 3 类模型：
-  - 一个国产大模型（DeepSeek 或 GLM）；
-  - 一个思考模型（会先输出思考过程）；
-  - 一个经中转站 / 反代访问的模型，覆盖 0.8.4 / 0.8.5 修过的 502、漏结束事件等问题。
-- 记录每类模型的格式遵守率（变量更新块是否完整、是否乱写字段）。低于阈值的，在插件里给出可读提示，不要静默失败。
-- 由持有 Key 的用户本地执行，只提交脱敏日志；仓库里不出现 Key 和聊天存档。
+- Viết một 《Kịch bản nghiệm thu mô hình thật》: cố định thẻ nhân vật thử nghiệm + cố định 20 lượt thao tác + tiêu chuẩn vượt qua của từng bước (thay đổi trường sổ cái, tiêm Sách Thế Giới, không còn sót `<ZhuTianPanel>` thô).
+- Chạy ít nhất 3 nhóm mô hình:
+  - Một mô hình lớn nội địa (DeepSeek hoặc GLM);
+  - Một mô hình suy luận (xuất quá trình suy nghĩ trước);
+  - Một mô hình truy cập qua trạm trung chuyển / reverse proxy, bao phủ các vấn đề lỗi 502 hay sót sự kiện kết thúc đã sửa ở bản 0.8.4 / 0.8.5.
+- Ghi lại tỷ lệ tuân thủ định dạng của từng nhóm mô hình (khối cập nhật biến có đầy đủ không, có viết bừa trường dữ liệu không). Nếu thấp hơn ngưỡng cho phép thì hiển thị thông báo dễ đọc ngay trong tiện ích chứ không âm thầm thất bại.
+- Do người dùng nắm giữ Key thực thi trên máy cục bộ và chỉ gửi nhật ký đã che thông tin nhạy cảm; trong kho lưu trữ tuyệt đối không xuất hiện Key hay bản lưu trò chuyện.
 
-### 2. 真机测试（0.9.0 的直接后续）
+### 2. Kiểm thử trên máy thật (Bước tiếp nối trực tiếp của 0.9.0)
 
-0.9.0 只在 Chromium 触摸模拟里验收过。模拟器测不到以下几点：
+Bản 0.9.0 chỉ mới nghiệm thu trong mô phỏng cảm ứng của Chromium. Trình giả lập không kiểm tra được những điểm sau:
 
-- **iOS Safari**：
-  - 键盘弹出时 `visualViewport` 的真实行为（第三方输入法、带候选栏的中文输入法）；
-  - `100dvh`、刘海和底部手势条的安全区；
-  - 长按会不会弹出系统菜单；
-  - 回弹滚动会不会把整页拖动。
-- **Android Chrome / 系统 WebView**：返回键（已有 `hubBackClose` 设置）、分屏、折叠屏。
-- **把酒馆装进 App 壳的用法**（如 Termux 本地访问、各种套壳浏览器）。
+- **iOS Safari**:
+  - Hành vi thực tế của `visualViewport` khi bàn phím bật lên (bộ gõ bên thứ ba, bộ gõ có thanh chọn chữ ứng viên);
+  - `100dvh`, vùng an toàn của tai thỏ và thanh cử chỉ dưới đáy;
+  - Nhấn giữ có làm bật trình đơn hệ thống hay không;
+  - Cuộn đàn hồi (rubber-band scrolling) có kéo lệch cả trang hay không.
+- **Android Chrome / WebView hệ thống**: phím quay lại (đã có cài đặt `hubBackClose`), chia đôi màn hình, màn hình gập.
+- **Cách đóng gói quán rượu vào vỏ ứng dụng (App wrapper)** (như truy cập cục bộ qua Termux, các trình duyệt đóng gói).
 
-**做法：**列一张真机清单（至少 iPhone + Safari、一台中端 Android + Chrome、一台小屏 360 宽），每台走一遍 `tests/native_v090.py` 里的项目，人工记录结果，写进 ACCEPTANCE。
+**Cách làm:** Lập danh sách máy thật (ít nhất gồm iPhone + Safari, một máy Android tầm trung + Chrome, một máy màn hình nhỏ rộng 360px), mỗi thiết bị đi qua một lượt các mục trong `tests/native_v090.py`, ghi chép kết quả thủ công và đưa vào `ACCEPTANCE`.
 
-> **0.9.1 进展**：上面的项目已做成酒馆里的「手机真机自检」（设置 → 兼容与维护），一键复制结果。**待办**：拿到 Android 真机结果并写进 ACCEPTANCE；iPhone、小屏 360 宽、套壳浏览器仍未测。
+> **Tiến độ ở 0.9.1**: các mục trên đã được đưa vào công cụ 「Tự kiểm tra trên điện thoại thật」 ngay trong quán rượu (Cài đặt → Tương thích & Bảo trì) để sao chép kết quả một chạm. **Việc cần làm**: lấy kết quả trên máy Android thật và ghi vào `ACCEPTANCE`; iPhone, màn hình nhỏ rộng 360px và trình duyệt đóng gói vẫn chưa thử.
 
-### 3. 宿主版本矩阵补齐
+### 3. Bổ sung đầy đủ ma trận phiên bản máy chủ
 
-- 1.17 / 1.18 从 0.8.2 起没有再测，停用钩子只在 1.19 上实测。1.0 前全量跑一遍 `tests/qa/run_matrix.sh`（1.16–1.19）。
-- 酒馆当时最新的正式版也要跑。版本门（`minimum_client_version` 和测试过的范围）要和实测一致。
-- `native_replace040.py`（v1.1 一键接管）从 0.4.0 以后就没跑过，因为需要不能上传的原版文件。需要二选一：
-  - 做一份可以公开的合成替身（同结构、无原版内容）；
-  - 由维护者本地跑，报告里写明日期。
+- Bản 1.17 / 1.18 từ sau 0.8.2 chưa kiểm tra lại, hook tắt tiện ích chỉ mới thử thực tế trên 1.19. Trước bản 1.0 cần chạy toàn bộ `tests/qa/run_matrix.sh` (1.16–1.19).
+- Phiên bản chính thức mới nhất của quán rượu tại thời điểm đó cũng phải chạy. Ngưỡng phiên bản (`minimum_client_version` và phạm vi đã kiểm thử) phải khớp với thực tế kiểm thử.
+- `native_replace040.py` (tiếp quản một chạm v1.1) từ sau 0.4.0 chưa chạy lại vì cần tệp nguyên bản không được tải lên. Cần chọn một trong hai cách:
+  - Tạo một bản thay thế tổng hợp có thể công khai (cùng cấu trúc, không chứa nội dung bản gốc);
+  - Do người bảo trì chạy trên máy cục bộ và ghi rõ ngày chạy trong báo cáo.
 
-### 4. 数据安全闭环
+### 4. Khép kín an toàn dữ liệu
 
-- **迁移 / 备份 / 回滚**：做完浏览器点击验收（导出 → 改坏 → 回滚 → 读回一致）。
-- **整体导出 / 导入**：插件全部数据（设置、账本、聊天群、图谱缓存）一键导出，默认**不含 API Key**；导入前先自动备份。
-- **账本结构版本号**：今后字段变化时有迁移函数和测试，不靠“兼容读”。
-- **卸载说明**：停用 / 删除插件后哪些数据留在聊天元数据里、怎么清理、怎么回到 v1.1。
+- **Di chuyển / Sao lưu / Hoàn tác**: hoàn tất nghiệm thu bấm trên trình duyệt (Xuất → sửa hỏng → hoàn tác → đọc lại khớp nhau).
+- **Xuất / Nhập tổng thể**: xuất một chạm toàn bộ dữ liệu của tiện ích (cài đặt, sổ cái, nhóm chat, bộ nhớ đệm đồ phổ), mặc định **không chứa API Key**; trước khi nhập tự động sao lưu trước.
+- **Số phiên bản cấu trúc sổ cái**: sau này khi trường dữ liệu thay đổi sẽ có hàm di chuyển và bài kiểm tra, không chỉ dựa vào “đọc tương thích”.
+- **Hướng dẫn gỡ cài đặt**: sau khi tạm dừng / xóa tiện ích thì những dữ liệu nào còn lưu lại trong siêu dữ liệu trò chuyện, cách dọn dẹp và cách quay về v1.1.
 
-### 5. 没逐项点过的按钮
+### 5. Các nút chưa bấm thử từng mục
 
-神通的支付类按钮（复制、状态）、分身派遣、随身洞天、自定义次数抽卡。每个至少走一次“点击 → 账本写入 → 读回”。
-
----
-
-## P1：1.0 应该有（体验与可维护性）
-
-### 6. 新手第一次打开
-
-现在的上手路径要跨好几个页面：装世界书、填 AI 接口、在当前聊天启用记忆、保存。1.0 建议：
-
-- 加一个**首次运行向导**（3 步，可跳过）：导入或更新世界书 → AI 接口设置（复用 0.8.5 的三步表单）→ 在当前聊天启用。每步完成后打勾。
-- 设置页项目已经很多：分成「常用 / 进阶 / 诊断」三组，进阶默认折叠，加搜索框。
-- README 现在 300 多行，大半是逐版本更新记录。改成安装 → 上手 → 常见问题；版本历史移到 `CHANGELOG.md`。
-
-> **0.9.3 进展**：首次运行向导已完成（终端 → 引导 / 设置 → 上手 → 新手引导，3 步按真实状态打勾，可跳过，首次打开终端时自动出现一次）。设置分组和 README 重写仍待做。
-
-### 7. 出错时用户能自己报告
-
-- 兼容诊断里加**「复制诊断信息」**：插件版本、酒馆版本、浏览器 / 系统、关键设置（不含 Key）、最近 20 条插件报错、最新楼层状态。用户反馈时直接粘贴。
-- 统一错误提示格式：发生了什么 + 是否已写入账本 + 下一步怎么做。
-
-> **0.9.1 进展**：「复制诊断信息」已完成（最近 30 条插件报错，不含 Key）。统一错误提示格式仍待做。
-
-### 8. 手机端的后续打磨
-
-- **引擎页内弹层**（抽卡结果、物品详情）：在 iframe 里打开，这次只确认过不溢出、字号够大；键盘和滚动手感要等真机。
-- **横屏导航**：左侧竖栏现在有 20 个入口，要滚动才能看全。可以考虑“常用 6 个 + 更多”。
-- **低端机性能**：世界主题装饰和演出动画在低端 Android 上可能掉帧。可以按 `prefers-reduced-motion` 或帧率检测自动降级；现在只能手动开「减少动态效果」。
-- **启动速度**：`vendor/original` 约 1.6 MB，在酒馆启动时一起加载。可以把终端引擎、聊天群、图谱改成第一次打开时再加载，并实测手机上酒馆的启动时间。
-
-### 9. 安装包瘦身
-
-- `docs/evidence/` 有 8 MB 截图和日志。酒馆是用 `git clone` 安装扩展的，每个用户都会下载这些文件。建议放到单独的 `evidence` 分支或 Release 附件里，主分支只留报告文字。
-
-### 10. 工程化
-
-- **CI**：每次推送跑 `npm run check` + `npm test`（GitHub Actions，几十秒）。浏览器套件可以手动触发或每晚跑一次（用 Docker 起隔离的酒馆）。
-- **换行符**：仓库里有 26 个 CRLF 文件、其余是 LF。加 `.gitattributes` 统一，否则每次改动都会出现整文件 diff。
-- **`FILELIST.sha256`**：改成脚本生成（`npm run filelist`），CI 检查是否最新。
-- **版本断言**：现在每个版本的测试都在断言版本号，每次升级要改好几处（0.9.0 就改了 4 个文件）。收敛成一个 `version.test.js`。
-> **0.9.1 进展**：CI、`.gitattributes`（全部改为 LF）、`npm run filelist`、`tests/version.test.js` 已完成。
-
-- **静态检查**：加 ESLint；用 JSDoc + `tsc --checkJs` 对 `src/` 做类型检查，先从桥接层和账本相关模块开始。
-- **许可证**：仓库没有 LICENSE。需要写清楚两件事：插件代码的许可，以及原版 v1.1 代码和莉莉丝立绘素材的授权边界。
+Nhóm nút trả phí của Thần thông (Sao chép, Cải biên trạng thái), Phái Đi Phân Thân, Động Thiên Tùy Thân, rút thẻ số lượt tùy chỉnh. Mỗi nút đi qua ít nhất một lượt “Bấm → ghi sổ cái → đọc lại”.
 
 ---
 
-## P2：可以放到 1.x
+## P1: Bản 1.0 nên có (Trải nghiệm và khả năng bảo trì)
 
-- 莉莉丝本人的 Live2D 模型（需要用 PSD 在 Cubism Editor 里人工绑定）。
-- 与酒馆群聊的配合（目前明确不支持）。
-- 多语言界面（目前只有中文，目标用户也以中文为主）。
-- 主题 / 配色的用户自定义（现在是 7 套固定配色）。
-- 平板专用布局（0.9.0 中平板沿用电脑版浮动窗口）。
+### 6. Lần đầu mở của người mới
+
+Lộ trình làm quen hiện tại phải đi qua khá nhiều trang: cài Sách Thế Giới, điền cổng AI, bật ký ức trong cuộc trò chuyện hiện tại, bấm lưu. Bản 1.0 đề xuất:
+
+- Thêm một **Trình hướng dẫn chạy lần đầu** (3 bước, có thể bỏ qua): Nhập hoặc cập nhật Sách Thế Giới → Cài đặt cổng AI (tái sử dụng biểu mẫu 3 bước của 0.8.5) → Bật trong cuộc trò chuyện hiện tại. Mỗi bước hoàn thành sẽ tự đánh dấu tích.
+- Trang Cài đặt hiện đã có rất nhiều mục: chia thành 3 nhóm 「Thường dùng / Nâng cao / Chẩn đoán」, nhóm Nâng cao mặc định thu gọn, thêm ô tìm kiếm.
+- README hiện dài hơn 300 dòng, quá nửa là nhật ký cập nhật từng phiên bản. Đổi thành Cài đặt → Làm quen → Câu hỏi thường gặp; chuyển lịch sử phiên bản sang `CHANGELOG.md`.
+
+> **Tiến độ ở 0.9.3**: Trình hướng dẫn chạy lần đầu đã hoàn thành (Thiết bị đầu cuối → Hướng dẫn / Cài đặt → Làm quen → Hướng dẫn tân thủ, 3 bước tự đánh dấu tích theo trạng thái thực tế, có thể bỏ qua, tự động hiện một lần khi mở thiết bị đầu cuối lần đầu). Chia nhóm cài đặt và viết lại README vẫn chờ thực hiện.
+
+### 7. Người dùng có thể tự báo cáo khi gặp lỗi
+
+- Trong Chẩn đoán tương thích thêm nút **「Sao chép thông tin chẩn đoán」**: phiên bản tiện ích, phiên bản quán rượu, trình duyệt / hệ điều hành, các cài đặt quan trọng (không chứa Key), 20 lỗi tiện ích gần nhất, trạng thái tầng mới nhất. Khi người dùng gửi phản hồi chỉ cần dán trực tiếp.
+- Thống nhất định dạng thông báo lỗi: Chuyện gì đã xảy ra + Đã ghi vào sổ cái hay chưa + Bước tiếp theo làm gì.
+
+> **Tiến độ ở 0.9.1**: 「Sao chép thông tin chẩn đoán」 đã hoàn thành (30 lỗi tiện ích gần nhất, không chứa Key). Thống nhất định dạng thông báo lỗi vẫn chờ thực hiện.
+
+### 8. Trau chuốt tiếp giao diện điện thoại
+
+- **Hộp thoại bật lên bên trong trang engine** (kết quả rút thẻ, chi tiết vật phẩm): mở bên trong iframe, đợt này chỉ mới xác nhận không bị tràn khung và cỡ chữ đủ lớn; cảm giác bàn phím và cuộn trang cần đợi thử trên máy thật.
+- **Điều hướng khi xoay ngang**: cột dọc bên trái hiện có 20 lối vào, phải cuộn mới nhìn thấy hết. Có thể cân nhắc phương án “6 trang thường dùng + Thêm”.
+- **Hiệu năng trên máy cấu hình thấp**: họa tiết trang trí chủ đề thế giới và hoạt ảnh diễn xuất có thể gây tụt khung hình trên máy Android yếu. Có thể tự động giảm nhẹ theo `prefers-reduced-motion` hoặc phát hiện tốc độ khung hình; hiện tại mới chỉ có thể bật thủ công 「Giảm chuyển động」.
+- **Tốc độ khởi chạy**: `vendor/original` nặng khoảng 1.6 MB và đang được tải cùng lúc khi khởi động quán rượu. Có thể đổi engine thiết bị đầu cuối, nhóm chat và đồ phổ sang chỉ tải khi mở lần đầu tiên, đồng thời đo thực tế thời gian khởi động quán rượu trên điện thoại.
+
+### 9. Thu gọn dung lượng gói cài đặt
+
+- `docs/evidence/` chứa tới 8 MB ảnh chụp màn hình và nhật ký. Quán rượu dùng `git clone` để cài đặt tiện ích mở rộng nên mọi người dùng đều tải những tệp này về. Đề xuất chuyển sang nhánh `evidence` riêng hoặc tệp đính kèm Release, nhánh chính chỉ giữ lại văn bản báo cáo.
+
+### 10. Chuẩn hóa kỹ thuật
+
+- **CI**: mỗi lần đẩy mã lên sẽ tự chạy `npm run check` + `npm test` (GitHub Actions, mất vài chục giây). Bộ kiểm thử trình duyệt có thể kích hoạt thủ công hoặc chạy hằng đêm (dùng Docker dựng quán rượu cô lập).
+- **Ký tự xuống dòng**: trong kho lưu trữ có 26 tệp CRLF, phần còn lại là LF. Thêm `.gitattributes` để thống nhất, nếu không mỗi lần sửa sẽ xuất hiện diff toàn bộ tệp.
+- **`FILELIST.sha256`**: đổi sang tạo bằng kịch bản (`npm run filelist`), CI kiểm tra xem đã là bản mới nhất chưa.
+- **Kiểm tra phiên bản**: hiện tại bài kiểm tra của từng phiên bản đều kiểm tra số phiên bản nên mỗi lần nâng cấp phải sửa ở nhiều nơi (bản 0.9.0 đã phải sửa 4 tệp). Gom về một tệp `version.test.js` duy nhất.
+> **Tiến độ ở 0.9.1**: CI, `.gitattributes` (đổi toàn bộ sang LF), `npm run filelist` và `tests/version.test.js` đều đã hoàn thành.
+
+- **Kiểm tra tĩnh**: thêm ESLint; dùng JSDoc + `tsc --checkJs` để kiểm tra kiểu dữ liệu cho `src/`, bắt đầu từ tầng cầu nối và các mô-đun liên quan tới sổ cái trước.
+- **Giấy phép**: kho lưu trữ chưa có tệp `LICENSE`. Cần viết rõ hai việc: giấy phép của mã nguồn tiện ích, cùng ranh giới bản quyền của mã nguồn v1.1 gốc và bộ tư liệu ảnh đứng Lilith.
 
 ---
 
-## 建议的发布节奏
+## P2: Có thể để sang nhánh 1.x
 
-| 版本 | 内容 |
+- Mô hình Live2D của chính Lilith (cần dùng tệp PSD gắn xương thủ công trong Cubism Editor).
+- Phối hợp với tính năng trò chuyện nhóm của quán rượu (hiện tại quy định rõ là không hỗ trợ).
+- Giao diện đa ngôn ngữ (hiện tại chỉ có tiếng Trung, đối tượng người dùng mục tiêu cũng chủ yếu dùng tiếng Trung).
+- Người dùng tự tùy chỉnh chủ đề / bảng màu (hiện tại là 7 bảng màu cố định).
+- Bố cục chuyên biệt cho máy tính bảng (trong bản 0.9.0 máy tính bảng vẫn dùng cửa sổ nổi giống máy tính).
+
+---
+
+## Nhịp độ phát hành đề xuất
+
+| Phiên bản | Nội dung |
 | --- | --- |
-| 0.9.1 | ✅ 手机真机自检、「复制诊断信息」、整页变矮键盘识别、CI、`.gitattributes`；⏳ Android 真机结果待回传；证据文件移出主分支按决定暂缓 |
-| 0.9.2 | ✅ 真机反馈修复：莉莉丝台词重复、状态栏原文外露、代码块里的台词（见 CHANGES-0.9.2）；⏳ 真机复测 |
-| 0.9.3 | ✅ 用户反馈修复：规则 → 额外世界背景能读取世界书（不再“缺少世界书读取接口”）、星图可更正自动识别错的世界；✅ 首次运行向导（提前自 0.9.5）；⏳ 真机 / TauriTavern 复测 |
-| 0.9.4 | ✅ 小改进（用户反馈）：聊天群招募令的输入框跟随模式——选「随机世界」时打字自动改为「指定世界」，不再“填了也是随机”；⏳ 真机复测 |
-| 0.9.5 | 真实模型验收脚本，跑 3 类模型，按结果修格式容错和提示 |
-| 0.9.6 | 数据安全闭环（导出 / 导入、回滚点击验收、结构版本号）；补点剩余按钮；1.16–1.19 + 最新版全矩阵 |
-| 0.9.7 | 设置分组、README 重写、LICENSE |
-| 1.0.0-rc | 冻结功能，邀请几位用户在自己的模型和手机上玩一周，只修 bug |
-| 1.0.0 | rc 期间没有数据丢失类问题即发布 |
+| 0.9.1 | ✅ Tự kiểm tra trên điện thoại thật, 「Sao chép thông tin chẩn đoán」, nhận diện bàn phím làm thu thấp toàn trang, CI, `.gitattributes`; ⏳ Chờ gửi lại kết quả trên máy Android thật; việc chuyển tệp bằng chứng ra khỏi nhánh chính tạm hoãn theo quyết định |
+| 0.9.2 | ✅ Sửa lỗi phản hồi trên máy thật: lặp lời thoại Lilith, lộ nguyên văn thanh trạng thái, lời thoại trong khối mã (xem `CHANGES-0.9.2`); ⏳ Kiểm tra lại trên máy thật |
+| 0.9.3 | ✅ Sửa lỗi phản hồi người dùng: Quy tắc → Bối cảnh thế giới bổ sung đọc được Sách Thế Giới (không còn báo “thiếu giao diện đọc Sách Thế Giới”), Bản đồ sao đính chính được thế giới nhận diện sai; ✅ Trình hướng dẫn chạy lần đầu (đẩy sớm từ 0.9.5 lên); ⏳ Kiểm tra lại trên máy thật / TauriTavern |
+| 0.9.4 | ✅ Cải tiến nhỏ (phản hồi người dùng): ô nhập liệu lệnh chiêu mộ nhóm chat đi theo chế độ——khi đang chọn 「Thế giới ngẫu nhiên」 mà gõ chữ sẽ tự động đổi sang 「Chỉ định thế giới」, không còn bị “điền tên rồi vẫn ra ngẫu nhiên”; ⏳ Kiểm tra lại trên máy thật |
+| 0.9.5 | Kịch bản nghiệm thu mô hình thật, chạy 3 nhóm mô hình, sửa dung sai định dạng và thông báo theo kết quả |
+| 0.9.6 | Khép kín an toàn dữ liệu (Xuất / Nhập, nghiệm thu bấm hoàn tác, số phiên bản cấu trúc); bấm thử nốt các nút còn lại; toàn bộ ma trận 1.16–1.19 + bản mới nhất |
+| 0.9.7 | Chia nhóm cài đặt, viết lại README, `LICENSE` |
+| 1.0.0-rc | Đóng băng tính năng, mời một vài người dùng chơi thử một tuần trên mô hình và điện thoại của chính họ, chỉ sửa lỗi |
+| 1.0.0 | Trong thời gian `rc` không phát sinh lỗi mất dữ liệu thì chính thức phát hành |

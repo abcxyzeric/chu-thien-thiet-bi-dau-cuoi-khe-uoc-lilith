@@ -1,148 +1,148 @@
-# 诸天终端 · 莉莉丝
+# Thiết Bị Đầu Cuối Chư Thiên · Lilith
 
-**1.1.5 正式版 · 原生 SillyTavern 扩展｜支持 SillyTavern 1.16–1.19｜只装本插件即可取代「诸天万界最强系统」v1.1 的全部安装内容**
+**Bản chính thức 1.1.5 · Tiện ích mở rộng SillyTavern nguyên bản｜Hỗ trợ SillyTavern 1.16–1.19｜Chỉ cần cài tiện ích này là thay thế toàn bộ nội dung cài đặt của 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 v1.1**
 
-点莉莉丝头像（手机上是悬浮的莉莉丝，电脑上按 Alt+Z）打开「诸天终端」：总览、任务、羁绊、修行、商城、背包、外挂、神通、聊天群、图谱、莉莉丝工作台、记忆和设置都在同一个窗口里。聊天楼层不再显示状态栏，只留一个「✧ 系统已记录」小标签。
+Nhấn vào ảnh đại diện Lilith (trên điện thoại là Lilith nổi, trên máy tính nhấn `Alt+Z`) để mở 「Thiết Bị Đầu Cuối Chư Thiên」: Tổng quan, Nhiệm vụ, Gắn kết, Tu hành, Thương thành, Túi đồ, Phụ trợ, Thần thông, Nhóm chat, Đồ giám, Bàn làm việc Lilith, Ký ức và Cài đặt đều nằm trong cùng một cửa sổ. Tầng tin nhắn trò chuyện không còn hiển thị thanh trạng thái cồng kềnh nữa mà chỉ để lại một nhãn nhỏ 「✧ Hệ thống đã ghi nhận」.
 
-> **AI 功能是「实验性」的**：所有 AI 链路都在真实 SillyTavern 上配合本地**模拟模型**完整跑通，但**没有用真实模型验收**。第一次用真实模型时，请先在备份的聊天上试用（设置 → 导出 / 导入存档）。逐项状态见 [功能矩阵](docs/FEATURE_MATRIX.md)。
+> **Tính năng AI mang tính 「Thử nghiệm」**: Toàn bộ chuỗi xử lý AI đều đã được chạy thông suốt trên SillyTavern thực tế kết hợp với **model mô phỏng** cục bộ, nhưng **chưa được nghiệm thu bằng model thật**. Khi sử dụng model thật lần đầu tiên, vui lòng thử nghiệm trước trên cuộc trò chuyện đã sao lưu (Cài đặt → Xuất / Nhập bản lưu). Trạng thái từng mục xem tại [Ma trận tính năng](docs/FEATURE_MATRIX.md).
 
-![隔离酒馆中的诸天终端（商城页）](docs/evidence/t050-terminal-shop.png)
+![Thiết Bị Đầu Cuối Chư Thiên trong quán rượu cô lập (Trang Thương thành)](docs/evidence/t050-terminal-shop.png)
 
-*截图使用明确标记的隔离测试聊天和模拟模型，不是真实存档。*
+*Ảnh chụp màn hình sử dụng cuộc trò chuyện kiểm thử cô lập được đánh dấu rõ ràng và model mô phỏng, không phải bản lưu thực tế.*
 
-## 1.1.5（正式版）
+## 1.1.5 (Bản chính thức)
 
-- **系统助手人设**：设置 →「系统助手人设」。默认仍是莉莉丝（什么都不变）；可换成预设「系统光球（编号）」，或自己写名字、称呼、性格、说话方式、头像（高级里可整段替换剧情规则 / 私聊人设）。剧情里每次生成临时替换世界书的莉莉丝规则（**不改世界书文件**），私聊 / 记忆 / 工作台也换人设，界面名字、头像、语音框跟着换，随时换回。
-- **功能开关**：设置 →「功能开关」。所有功能一张表，单独开关（数据保留）；不用的页面可以从导航里拿掉。
-- **聊天群 × 世界书**：群员页「从世界书召唤」——搜索你的世界书条目，把角色召唤进群；群聊时读取 TA 的条目，正文里 TA 出场时把群聊记忆带进剧情（可关，不写世界书）。
-- 说明书同步更新（终端 → 说明书）。
+- **Thiết lập nhân vật Trợ lý hệ thống**: Cài đặt → 「Thiết lập nhân vật Trợ lý hệ thống」. Mặc định vẫn là Lilith (không thay đổi gì); có thể đổi sang định sẵn 「Quả Cầu Ánh Sáng Hệ Thống (Số hiệu)」, hoặc tự viết tên, cách xưng hô, tính cách, cách nói chuyện, ảnh đại diện (trong phần nâng cao có thể thay thế toàn bộ đoạn quy tắc cốt truyện / thiết lập trò chuyện riêng). Trong cốt truyện, mỗi lần tạo phản hồi sẽ tạm thời thay thế quy tắc Lilith của Sách Thế Giới (**không sửa tệp Sách Thế Giới**), trò chuyện riêng / ký ức / bàn làm việc cũng đổi thiết lập nhân vật, tên giao diện, ảnh đại diện, khung thoại đều đổi theo và có thể đổi lại bất cứ lúc nào.
+- **Công tắc tính năng**: Cài đặt → 「Công tắc tính năng」. Toàn bộ tính năng nằm trên một bảng, bật/tắt riêng từng mục (dữ liệu vẫn được giữ nguyên); các trang không dùng có thể ẩn khỏi thanh điều hướng.
+- **Nhóm chat × Sách Thế Giới**: Mục 「Triệu hồi từ Sách Thế Giới」 ở trang Thành viên — tìm kiếm các mục trong Sách Thế Giới của bạn và triệu hồi nhân vật vào nhóm; khi trò chuyện nhóm sẽ đọc mục từ của người đó, khi người đó xuất hiện trong chính văn sẽ mang ký ức trò chuyện nhóm vào cốt truyện (có thể tắt, không ghi vào Sách Thế Giới).
+- Hướng dẫn sử dụng được cập nhật đồng bộ (Thiết bị đầu cuối → Hướng dẫn).
 
-详见 [CHANGES-1.1.5](docs/CHANGES-1.1.5.md)、[ACCEPTANCE-1.1.5](docs/ACCEPTANCE-1.1.5.md)。
+Xem chi tiết tại [CHANGES-1.1.5](docs/CHANGES-1.1.5.md), [ACCEPTANCE-1.1.5](docs/ACCEPTANCE-1.1.5.md).
 
-用户文档：[1.1.3 → 1.1.5-r1 更新报告](docs/UPDATE-1.1.5-USERS.md) · [40章详细说明书](docs/USER-GUIDE-1.1.5.md) · [可搜索网页版（下载后打开）](docs/USER-GUIDE-1.1.5.html)。详细说明书逐项介绍按钮、输入项、费用、保存范围和恢复办法；插件内仍附快速版说明书。
+Tài liệu người dùng: [Báo cáo cập nhật 1.1.3 → 1.1.5-r1](docs/UPDATE-1.1.5-USERS.md) · [Hướng dẫn chi tiết 40 chương](docs/USER-GUIDE-1.1.5.md) · [Bản web có thể tìm kiếm (tải về rồi mở)](docs/USER-GUIDE-1.1.5.html). Bản hướng dẫn chi tiết giới thiệu từng nút bấm, ô nhập liệu, chi phí, phạm vi lưu trữ và cách khôi phục; bên trong tiện ích vẫn đính kèm bản hướng dẫn nhanh.
 
 ## 1.1.4
 
-聊天群逐条删除 / 重roll / 截断处理 / 群聊生成设置、假冻结修复与「核对并解冻账本」、记忆键清洗、思维链保护与楼层检查、说明书。详见 [CHANGES-1.1.4](docs/CHANGES-1.1.4.md)、[ACCEPTANCE-1.1.4](docs/ACCEPTANCE-1.1.4.md)。
+Xóa từng tin nhắn / Reroll / Xử lý cắt cụt / Cài đặt tạo trò chuyện nhóm, sửa lỗi đóng băng giả & 「Đối chiếu và mở khóa sổ cái」, làm sạch khóa ký ức, bảo vệ chuỗi suy nghĩ & kiểm tra tầng tin nhắn, hướng dẫn sử dụng. Xem chi tiết tại [CHANGES-1.1.4](docs/CHANGES-1.1.4.md), [ACCEPTANCE-1.1.4](docs/ACCEPTANCE-1.1.4.md).
 
 ## 1.1.3
 
-悬浮窗「切换」和「关闭」分开、悬浮窗大小最低 20%、终端 × 只关终端、经典折叠抽卡一次调用 API。详见 [CHANGES-1.1.3](docs/CHANGES-1.1.3.md)、[ACCEPTANCE-1.1.3](docs/ACCEPTANCE-1.1.3.md)。
+Tách riêng 「Chuyển đổi」 và 「Đóng」 cửa sổ nổi, kích thước cửa sổ nổi tối thiểu 20%, nút × của thiết bị đầu cuối chỉ đóng thiết bị đầu cuối, rút thẻ gộp cổ điển chỉ gọi API một lần. Xem chi tiết tại [CHANGES-1.1.3](docs/CHANGES-1.1.3.md), [ACCEPTANCE-1.1.3](docs/ACCEPTANCE-1.1.3.md).
 
 ## 1.1.2
 
-抽卡模式（经典折叠默认 / 十抽一结算）、羁绊页重做（按本世界 / 恋人 / 打手 / 群友筛选，群员「拉入羁绊」）、管理员控制台改为终端内页面（盲盒保底、羁绊与群员好感，只写改过的项）。详见 [CHANGES-1.1.2](docs/CHANGES-1.1.2.md)、[ACCEPTANCE-1.1.2](docs/ACCEPTANCE-1.1.2.md)。
+Chế độ rút thẻ (Gộp cổ điển mặc định / Kết toán mỗi 10 lượt), làm lại trang Gắn kết (lọc theo Thế giới này / Người yêu / Tay đấm / Bạn cùng nhóm, nút 「Đưa vào Gắn kết」 cho thành viên nhóm), chuyển Bảng điều khiển Quản trị viên thành trang bên trong thiết bị đầu cuối (bảo hiểm hộp mù, độ hảo cảm gắn kết & thành viên nhóm, chỉ ghi những mục đã sửa). Xem chi tiết tại [CHANGES-1.1.2](docs/CHANGES-1.1.2.md), [ACCEPTANCE-1.1.2](docs/ACCEPTANCE-1.1.2.md).
 
 ## 1.1.1
 
-神品 1000 抽保底、群红包识别与补登、数据块格式守卫、页面上移修复、10 抽以上盲盒分段结算。详见 [CHANGES-1.1.1](docs/CHANGES-1.1.1.md)。
+Bảo hiểm Thần phẩm 1000 lượt rút, nhận diện & đăng ký bù lì xì nhóm, Bảo vệ định dạng khối dữ liệu, sửa lỗi trượt trang lên trên, kết toán phân đoạn cho hộp mù từ 10 lượt rút trở lên. Xem chi tiết tại [CHANGES-1.1.1](docs/CHANGES-1.1.1.md).
 
 ## 1.1.0
 
-当前修订 1.1.0-patch4（见 [本轮修补台账](docs/PATCH-1.1.0-4.md)）：手机终端全屏 / 浮窗与圆形入口贴边、独立「剧情收纳」、多人羁绊稳定 ID、商店与盲盒定制及近期避重、操作记录勾选预览、世界书升级先备份并保留自改内容、保存结果不明时冻结写入。详见 [CHANGES-1.1.0](docs/CHANGES-1.1.0.md)、[ACCEPTANCE-1.1.0](docs/ACCEPTANCE-1.1.0.md)、[REPLACE-1.1.0](docs/REPLACE-1.1.0.md)。
+Bản hiệu đính hiện tại 1.1.0-patch4 (xem [Sổ theo dõi bản vá đợt này](docs/PATCH-1.1.0-4.md)): Toàn màn hình / cửa sổ nổi trên điện thoại & nút tròn bám mép, mục 「Thu nạp cốt truyện」 độc lập, ID ổn định cho gắn kết nhiều người, tùy chỉnh cửa hàng & hộp mù kèm tránh trùng lặp gần đây, đánh dấu xem trước nhật ký thao tác, sao lưu trước khi nâng cấp Sách Thế Giới và giữ nguyên nội dung tự sửa, đóng băng ghi dữ liệu khi kết quả lưu không rõ ràng. Xem chi tiết tại [CHANGES-1.1.0](docs/CHANGES-1.1.0.md), [ACCEPTANCE-1.1.0](docs/ACCEPTANCE-1.1.0.md), [REPLACE-1.1.0](docs/REPLACE-1.1.0.md).
 
 ## 1.0.0
 
-悬浮莉莉丝立绘、设置分组与搜索、导出 / 导入存档、账本结构版本、品阶鉴定、分功能 API 与接口预设、一键关闭插件。详见 [CHANGES-1.0.0](docs/CHANGES-1.0.0.md)、[ACCEPTANCE-1.0.0](docs/ACCEPTANCE-1.0.0.md)，以前的版本见 [CHANGELOG](CHANGELOG.md)。
+Tranh đứng Lilith nổi, phân nhóm & tìm kiếm cài đặt, xuất / nhập bản lưu, phiên bản cấu trúc sổ cái, giám định phẩm giai, API theo từng tính năng & cấu hình cổng định sẵn, tắt tiện ích một chạm. Xem chi tiết tại [CHANGES-1.0.0](docs/CHANGES-1.0.0.md), [ACCEPTANCE-1.0.0](docs/ACCEPTANCE-1.0.0.md), các phiên bản trước xem tại [CHANGELOG](CHANGELOG.md).
 
-## 它替代了什么
+## Tiện ích này thay thế những gì
 
-v1.1 需要装世界书、4 个正则脚本和 1 个酒馆助手脚本；现在全部由本插件原生完成，**不需要酒馆助手，也不需要正则脚本**：
+Bản v1.1 cần cài Sách Thế Giới, 4 kịch bản Regex và 1 kịch bản Tavern Helper; hiện tại tất cả đều được tiện ích này thực hiện nguyên bản, **không cần Tavern Helper, cũng không cần kịch bản Regex**:
 
-- 原版状态栏 8 个分页及其全部 AI 功能（现在在终端里）；
-- 莉莉丝助手、私聊、触摸互动和可开关的语音美化；
-- 旧楼层面板不发给 AI；变量宏；外挂世界书的自动安装和绑定。
+- 8 phân trang của thanh trạng thái bản gốc cùng toàn bộ tính năng AI của nó (nay nằm trong thiết bị đầu cuối);
+- Trợ lý Lilith, trò chuyện riêng, chạm tương tác và làm đẹp khung thoại có thể bật/tắt;
+- Không gửi bảng dữ liệu tầng cũ cho AI; macro biến số; tự động cài đặt và gắn kết Sách Thế Giới ngoại vi.
 
-另外还有：诸天万界聊天群、图谱（事件线 / 羁绊图 / 星图 / 能力树）、仙侠 / 赛博 / 诡异世界主题、可跳过的短演出、真 Live2D 与 AI 差分立绘、API 中心（独立接口或酒馆主 API）、手机全屏布局、新手引导。
+Ngoài ra còn có: Nhóm Chat Chư Thiên Vạn Giới, Đồ giám (Dòng sự kiện / Sơ đồ gắn kết / Tinh đồ / Cây năng lực), chủ đề thế giới Tiên hiệp / Cyberpunk / Quỷ dị, trình diễn ngắn có thể bỏ qua, Live2D thật & tranh đứng biến thể AI, Trung tâm API (cổng độc lập hoặc API chính của quán rượu), bố cục toàn màn hình trên điện thoại, Hướng dẫn tân thủ.
 
-## 安装
+## Cài đặt
 
-在 SillyTavern 的「扩展 → 安装扩展」中粘贴：
+Trong 「Tiện ích mở rộng → Cài đặt tiện ích」 của SillyTavern, hãy dán:
 
 ```text
-https://github.com/falingzhi1-boop/zhutianxitongchajianban
+https://github.com/abcxyzeric/chu-thien-thiet-bi-dau-cuoi-khe-uoc-lilith
 ```
 
-- 在隔离的真实宿主上验证过 **SillyTavern 1.16.0、1.17.0、1.18.0、1.19.0**；低于 1.16 拒绝加载，高于 1.19 按接口能力探测运行。**1.17.0 以前的酒馆有已公开的安全问题，建议升级到 1.17 或更高。**
-- 安装后刷新页面，打开单角色聊天。需要 HTTPS 或 localhost 安全上下文；账本写入要求浏览器支持 Web Locks。
-- 前端运行不需要 `npm install`，也不需要酒馆助手。请勿同时安装旧的 `zhutian-covenant-terminal` 手动副本和这个 Git 仓库副本。
+- Đã xác minh trên môi trường cô lập với **SillyTavern 1.16.0, 1.17.0, 1.18.0, 1.19.0**; thấp hơn 1.16 sẽ từ chối tải, cao hơn 1.19 sẽ dò năng lực giao diện để hoạt động. **Các bản quán rượu trước 1.17.0 có lỗ hổng bảo mật đã công bố, khuyên bạn nên nâng cấp lên 1.17 trở lên.**
+- Sau khi cài đặt hãy làm mới trang, mở cuộc trò chuyện đơn nhân vật. Cần ngữ cảnh bảo mật HTTPS hoặc localhost; việc ghi sổ cái yêu cầu trình duyệt hỗ trợ Web Locks.
+- Chạy trên trình duyệt không cần `npm install`, cũng không cần Tavern Helper. Vui lòng không cài đặt đồng thời bản sao thủ công `zhutian-covenant-terminal` cũ và bản kho Git này.
 
-**更新**：「扩展 → 管理扩展」里找到「诸天 · 莉莉丝契约终端」，点更新按钮，完成后刷新网页（只刷新网页不会下载新代码）。
+**Cập nhật**: Trong 「Tiện ích mở rộng → Quản lý tiện ích」 tìm 「Chư Thiên · Thiết Bị Đầu Cuối Khế Ước Lilith」, nhấn nút cập nhật, hoàn tất xong hãy làm mới trang web (chỉ làm mới trang web sẽ không tải mã mới).
 
-**卸载**：见 [docs/UNINSTALL.md](docs/UNINSTALL.md)（先导出存档、解绑世界书，再删除扩展）。
+**Gỡ cài đặt**: Xem [docs/UNINSTALL.md](docs/UNINSTALL.md) (xuất bản lưu và gỡ liên kết Sách Thế Giới trước, sau đó mới xóa tiện ích).
 
-## 从 v1.1 迁移（一键接管）
+## Di chuyển từ v1.1 (Tiếp quản một chạm)
 
-1. 安装本插件并刷新页面，打开诸天聊天。插件会自动安装并绑定外挂世界书；已存在的不覆盖。
-2. 终端 → 设置 →「**一键接管旧版**」：停用旧的 4 个正则和旧的酒馆助手脚本（只停用、不删除），写盘后自动刷新。想回到旧版时点「恢复旧版」；终端打不开时，扩展设置抽屉里还有「紧急恢复旧版」。
-3. 终端 →「连接」页设置 AI 接口：独立 OpenAI 兼容接口，或直接用酒馆当前的主 API。状态栏的 AI 按钮和莉莉丝读同一份配置。
-4. 「兼容诊断」提示“世界书预算不足”时，点「一键调整」（ST 默认只给世界书 25% 的上下文）。
+1. Cài đặt tiện ích này và làm mới trang, mở cuộc trò chuyện Chư Thiên. Tiện ích sẽ tự động cài đặt và gắn kết Sách Thế Giới ngoại vi; nếu đã tồn tại sẽ không ghi đè.
+2. Thiết bị đầu cuối → Cài đặt → 「**Tiếp quản bản cũ một chạm**」: Tắt 4 kịch bản Regex cũ và kịch bản Tavern Helper cũ (chỉ tắt, không xóa), ghi đĩa xong sẽ tự động làm mới. Khi muốn quay lại bản cũ hãy nhấn 「Khôi phục bản cũ」; khi không mở được thiết bị đầu cuối, trong ngăn kéo cài đặt tiện ích mở rộng vẫn có nút 「Khôi phục khẩn cấp bản cũ」.
+3. Thiết bị đầu cuối → trang 「Kết nối」 để thiết lập cổng AI: cổng tương thích OpenAI độc lập, hoặc dùng trực tiếp API chính hiện tại của quán rượu. Các nút AI của thanh trạng thái và Lilith đọc cùng một cấu hình này.
+4. Khi 「Chẩn đoán tương thích」 nhắc “Ngân sách Sách Thế Giới không đủ”, hãy nhấn 「Điều chỉnh một chạm」 (mặc định ST chỉ cấp 25% ngữ cảnh cho Sách Thế Giới).
 
-逐项替代关系见 [CHANGES-0.4.0](docs/CHANGES-0.4.0.md)。
+Quan hệ thay thế từng mục xem tại [CHANGES-0.4.0](docs/CHANGES-0.4.0.md).
 
-## 常用命令
+## Các lệnh thường dùng
 
-| 命令 | 作用 |
+| Lệnh | Tác dụng |
 |---|---|
-| `/zt open [页面]` | 打开终端（`status`、`shop`、`bag` 是常用页的快捷方式） |
-| `/zt init` | 初始化 / 补齐当前聊天的诸天账本 |
-| `/zt backup` | 旧存档迁移 / 账本回滚 |
-| `/zt export` | 导出 / 导入存档 |
-| `/zt world` | 世界书安装、绑定、解绑 |
-| `/zt diag`、`/zt copydiag` | 兼容诊断、复制诊断信息（密钥自动遮挡） |
-| `/zt selftest` | 手机真机自检 |
+| `/zt open [trang]` | Mở thiết bị đầu cuối (`status`, `shop`, `bag` là lối tắt tới các trang thường dùng) |
+| `/zt init` | Khởi tạo / bù đủ sổ cái Chư Thiên cho cuộc trò chuyện hiện tại |
+| `/zt backup` | Di chuyển bản lưu cũ / Hoàn tác sổ cái |
+| `/zt export` | Xuất / Nhập bản lưu |
+| `/zt world` | Cài đặt, gắn kết, gỡ liên kết Sách Thế Giới |
+| `/zt diag`, `/zt copydiag` | Chẩn đoán tương thích, sao chép thông tin chẩn đoán (khóa API tự động che) |
+| `/zt selftest` | Tự kiểm tra trên điện thoại thật |
 
-## 尚未完成 / 未验证
+## Chưa hoàn thành / Chưa xác minh
 
-- **真实模型**：所有 AI 功能（商城进货 / 许愿 / 抽取、工作台、自动记忆、私聊、聊天群口吻、AI 自动写入当前世界）只用模拟模型验收，标为「实验性」。不会用预设对白冒充 AI 回答。1.1.1 的数据块补记同样只用模拟模型验收；角色卡 MVU / 酒馆助手和插件同一回合抢写变量导致的状态栏消失没有复现条件，未确认修复。
-- **真机**：手机布局、悬浮莉莉丝、横屏导航、动态效果自动降级只在无头 Chromium 的手机模拟里验收；真实 iOS Safari / Android Chrome 的输入法、安全区、长按和帧率未测。设置里的「手机真机自检」可以在自己手机上检查。
-- **TauriTavern 等其他宿主**：未测。
-- **1.1.4**：聊天群截断识别只对独立 API 有效（酒馆主 API 不返回结束原因）；玩家截图里非诸天聊天的思维链标签丢失未复现，判断为预设 / 其他扩展 / 正则冲突，可用「检查最新楼层」确认。
-- **1.1.5**：自定义人设 / 系统光球的扮演效果、从世界书召唤与群员记忆只用模拟模型验收；世界书其他条目里的「莉莉丝」会机械改成人设名（含原版成人向内容），要彻底换掉请用「整段替换」或编辑世界书。
-- **未逐项点击**：神通的支付类按钮（复制、状态）、分身派遣、随身洞天、自定义次数抽卡。
-- **莉莉丝本人的 Live2D 模型**：需要用导出的 PSD 在 Cubism Editor 里人工绑定。
-- **酒馆群聊**：不支持（诸天「聊天群」是终端里的功能，和酒馆群聊无关）。
-- 停用插件自动解绑世界书需要 SillyTavern 1.17+ 的停用钩子；复制诊断信息按格式遮挡密钥，格式特殊的短密钥可能识别不到。
+- **Model thật**: Toàn bộ tính năng AI (nhập hàng thương thành / ước nguyện / rút thưởng, bàn làm việc, tự động ký ức, trò chuyện riêng, giọng điệu nhóm chat, AI tự động ghi thế giới hiện tại) mới chỉ được nghiệm thu bằng model mô phỏng và gắn nhãn 「Thử nghiệm」. Sẽ không dùng lời thoại định sẵn để giả mạo câu trả lời của AI. Tính năng ghi bổ sung khối dữ liệu của 1.1.1 cũng chỉ mới nghiệm thu bằng model mô phỏng; hiện tượng mất thanh trạng thái do MVU thẻ nhân vật / Tavern Helper tranh ghi biến số trong cùng một lượt với tiện ích chưa có điều kiện tái hiện nên chưa xác nhận đã sửa triệt để.
+- **Thiết bị thật**: Bố cục điện thoại, Lilith nổi, điều hướng màn hình ngang, tự động giảm cấp hiệu ứng động mới chỉ nghiệm thu trong trình mô phỏng di động của Chromium không giao diện; bộ gõ, vùng an toàn, nhấn giữ và tốc độ khung hình trên iOS Safari / Android Chrome thật chưa được thử nghiệm. Mục 「Tự kiểm tra trên điện thoại thật」 trong Cài đặt có thể dùng để kiểm tra ngay trên điện thoại của bạn.
+- **Các ứng dụng chủ khác như TauriTavern**: Chưa thử nghiệm.
+- **1.1.4**: Nhận diện cắt cụt trong Nhóm chat chỉ có hiệu lực với API độc lập (API chính của quán rượu không trả về nguyên nhân kết thúc); lỗi mất thẻ chuỗi suy nghĩ ở cuộc trò chuyện không phải Chư Thiên trong ảnh chụp của người chơi chưa tái hiện được, phán đoán là do xung đột preset / tiện ích khác / Regex, có thể dùng 「Kiểm tra tầng mới nhất」 để xác nhận.
+- **1.1.5**: Hiệu quả nhập vai của thiết lập nhân vật tùy chỉnh / Quả Cầu Ánh Sáng Hệ Thống, triệu hồi từ Sách Thế Giới và ký ức thành viên nhóm mới chỉ nghiệm thu bằng model mô phỏng; chữ 「Lilith」 trong các mục khác của Sách Thế Giới sẽ được đổi cơ học thành tên nhân vật mới (bao gồm cả nội dung hướng người lớn của bản gốc), muốn thay đổi triệt để vui lòng dùng 「Thay thế toàn đoạn」 hoặc chỉnh sửa Sách Thế Giới.
+- **Chưa nhấn thử từng mục**: Các nút thanh toán của Thần thông (sao chép, trạng thái), Phái Khiển Phân Thân, Động Thiên Tùy Thân, rút thẻ với số lần tùy chỉnh.
+- **Mô hình Live2D của bản thân Lilith**: Cần dùng tệp PSD xuất ra để tự gắn kết thủ công trong Cubism Editor.
+- **Trò chuyện nhóm của quán rượu**: Không hỗ trợ (tính năng 「Nhóm chat」 của Chư Thiên nằm trong thiết bị đầu cuối, không liên quan tới trò chuyện nhóm của quán rượu).
+- Tự động gỡ liên kết Sách Thế Giới khi tắt tiện ích cần hook tắt tiện ích của SillyTavern 1.17+; sao chép thông tin chẩn đoán che khóa API theo định dạng, các khóa ngắn có định dạng đặc biệt có thể không nhận diện được.
 
-## 数据位置
+## Vị trí dữ liệu
 
-| 数据 | 位置 |
+| Dữ liệu | Vị trí |
 |---|---|
-| 诸天账本（含聊天群、世界类型、万界足迹、功法同步） | `chatMetadata.variables.诸天系统` |
-| 原记忆 / 莉莉丝私聊 | `chatMetadata.variables.诸天记忆助手_v1`、`…_LILITH_CHAT` |
-| 本扩展的聊天级记录：凭据、账本备份（最近 5 份）、账本结构版本 | `chatMetadata.zhutianCovenantTerminal`（`.ledgerBackups`、`.ledgerSchema`） |
-| 正文互动 / 系统凭据标记；1.1.1 数据块自动整理前的原文 / 补记标记 | `message.extra.zhutianCovenantTerminal`（`.panelRepair`、`.panelBackfill`） |
-| 插件设置（悬浮位置 / 大小、配色、超时、动态效果、世界书解绑记录、一键接管记录） | 扩展设置 `zhutian-covenant-terminal` |
-| 状态栏 API 配置 | 全局变量 `诸天系统_API`，回落 `localStorage.sys_api_config` |
-| 莉莉丝 API 配置（含密钥，**不会被导出**） | 扩展设置里的脚本变量 `诸天记忆助手_v1_API` |
-| 接口预设与分功能 API（含密钥，**不会被导出**） | 全局变量 `诸天系统_API路由` |
-| 剧情提示命名空间 | `zhutian-covenant-terminal/{memory,group,world,mastery,plugins,grade,panelguard}` |
-| 世界书备份 | 酒馆世界书 `诸天万界最强系统-备份-时间` |
+| Sổ cái Chư Thiên (gồm Nhóm chat, loại thế giới, dấu chân Vạn Giới, đồng bộ công pháp) | `chatMetadata.variables.诸天系统` |
+| Ký ức gốc / Trò chuyện riêng với Lilith | `chatMetadata.variables.诸天记忆助手_v1`, `…_LILITH_CHAT` |
+| Bản ghi cấp cuộc trò chuyện của tiện ích này: chứng từ, bản sao lưu sổ cái (5 bản gần nhất), phiên bản cấu trúc sổ cái | `chatMetadata.zhutianCovenantTerminal` (`.ledgerBackups`, `.ledgerSchema`) |
+| Tương tác chính văn / dấu hiệu chứng từ hệ thống; nguyên văn trước khi tự động chỉnh lý khối dữ liệu / dấu hiệu ghi bổ sung của 1.1.1 | `message.extra.zhutianCovenantTerminal` (`.panelRepair`, `.panelBackfill`) |
+| Cài đặt tiện ích (vị trí / kích thước cửa sổ nổi, bảng màu, thời gian chờ, hiệu ứng động, bản ghi gỡ liên kết Sách Thế Giới, bản ghi tiếp quản một chạm) | Cài đặt tiện ích mở rộng `zhutian-covenant-terminal` |
+| Cấu hình API thanh trạng thái | Biến toàn cục `诸天系统_API`, dự phòng tại `localStorage.sys_api_config` |
+| Cấu hình API của Lilith (gồm khóa API, **sẽ không bị xuất ra**) | Biến kịch bản `诸天记忆助手_v1_API` trong cài đặt tiện ích mở rộng |
+| Cấu hình cổng định sẵn & API theo từng tính năng (gồm khóa API, **sẽ không bị xuất ra**) | Biến toàn cục `诸天系统_API路由` |
+| Không gian tên gợi ý cốt truyện | `zhutian-covenant-terminal/{memory,group,world,mastery,plugins,grade,panelguard}` |
+| Bản sao lưu Sách Thế Giới | Sách Thế Giới quán rượu `诸天万界最强系统-备份-thời_gian` |
 
-已发送的消息和已执行的交易不会在停用时删除或自动回滚。
+Tin nhắn đã gửi và giao dịch đã thực thi sẽ không bị xóa hay tự động hoàn tác khi tắt tiện ích.
 
-## 开发与验收
+## Phát triển & Nghiệm thu
 
-手动放置时目录为 `public/scripts/extensions/third-party/zhutianxitongchajianban/`，其中直接包含 `manifest.json`。
+Khi đặt thủ công, thư mục là `public/scripts/extensions/third-party/zhutianxitongchajianban/`, bên trong chứa trực tiếp `manifest.json`.
 
 ```bash
-npm ci && npm run check && npm test       # 语法检查、原版提取校验、单元测试（前端运行不需要 npm）
-npm run filelist:check                    # FILELIST.sha256 是否最新
+npm ci && npm run check && npm test       # Kiểm tra cú pháp, kiểm tra trích xuất bản gốc, kiểm thử đơn vị (chạy trên trình duyệt không cần npm)
+npm run filelist:check                    # Kiểm tra FILELIST.sha256 đã mới nhất chưa
 ```
 
-浏览器验收需要 Python Playwright、Chromium 和**一次性的隔离 SillyTavern**（`tests/qa/` 有可复现的环境与本地模拟模型）：
+Nghiệm thu trên trình duyệt cần Python Playwright, Chromium và **một SillyTavern cô lập dùng một lần** (`tests/qa/` có sẵn môi trường tái lập được và model mô phỏng cục bộ):
 
 ```bash
-python3 tests/qa/setup_isolated_st.py /var/tmp/st-1.19.0 8019   # 配置隔离宿主，把本仓库链接进 third-party
-python3 tests/qa/mock_model.py &                                 # 本地模拟模型 :5001，不需要任何密钥
+python3 tests/qa/setup_isolated_st.py /var/tmp/st-1.19.0 8019   # Cấu hình host cô lập, liên kết kho này vào third-party
+python3 tests/qa/mock_model.py &                                 # Model mô phỏng cục bộ :5001, không cần bất kỳ khóa API nào
 python3 tests/native_v100.py --isolated-test-only --base-url http://127.0.0.1:8019
-tests/qa/run_matrix.sh <旧版离线包-v1.1 目录> 1.19.0             # 全部浏览器验收
+tests/qa/run_matrix.sh <thư_mục_gói_ngoại_tuyến_v1.1_cũ> 1.19.0  # Toàn bộ nghiệm thu trình duyệt
 ```
 
-**这些脚本会创建或重置测试聊天，禁止指向生产酒馆；按顺序运行，不要并行。**
+**Các kịch bản này sẽ tạo hoặc đặt lại cuộc trò chuyện kiểm thử, nghiêm cấm trỏ vào quán rượu đang dùng thực tế; hãy chạy tuần tự, không chạy song song.**
 
-## 来源与许可
+## Nguồn gốc & Giấy phép
 
-- 原版来源：[zhutian-system-v1.1/main/remote](https://github.com/falingzhi1-boop/zhutian-system-v1.1/tree/main/remote)（`3ee2db2e`）。五个原文件完整同名保留于 `vendor/original/`，提取范围和哈希见 provenance JSON。原版代码、提示词与莉莉丝立绘的权利归原权利人；素材来源见 `assets/lilith/*/PROVENANCE.md`。
-- 本插件代码：**源码可见、保留所有权利**，见 [LICENSE](LICENSE)。允许个人安装、使用和自用修改；未经书面许可，禁止再分发（含修改版）、商业使用，以及把本仓库任何内容用于 AI / 机器学习训练、微调、数据集或 RAG 知识库。许可证只能在法律上约束，无法在技术上阻止抓取。
-- 原项目的本地导入 JSON 和 v1.1 离线包不在本仓库；宿主本体、账号数据和连接凭据不随扩展交付。
+- Nguồn bản gốc: [zhutian-system-v1.1/main/remote](https://github.com/falingzhi1-boop/zhutian-system-v1.1/tree/main/remote) (`3ee2db2e`). Năm tệp gốc được giữ nguyên vẹn cùng tên trong `vendor/original/`, phạm vi trích xuất và mã băm xem tại provenance JSON. Quyền đối với mã nguồn gốc, prompt và tranh đứng Lilith thuộc về chủ sở hữu quyền ban đầu; nguồn gốc tài nguyên hình ảnh xem tại `assets/lilith/*/PROVENANCE.md`.
+- Mã nguồn tiện ích này: **Mã nguồn hiển thị công khai, bảo lưu mọi quyền**, xem [LICENSE](LICENSE). Cho phép cá nhân cài đặt, sử dụng và sửa đổi để tự dùng; nếu không có sự cho phép bằng văn bản, nghiêm cấm phân phối lại (kể cả bản sửa đổi), sử dụng thương mại, cũng như dùng bất kỳ nội dung nào của kho này cho việc huấn luyện, tinh chỉnh (fine-tune), bộ dữ liệu hoặc cơ sở tri thức RAG của AI / học máy. Giấy phép chỉ có thể ràng buộc về mặt pháp lý, không thể ngăn chặn việc thu thập tự động về mặt kỹ thuật.
+- Tệp JSON nhập cục bộ của dự án gốc và gói ngoại tuyến v1.1 không nằm trong kho này; bản thân ứng dụng chủ, dữ liệu tài khoản và thông tin xác thực kết nối không đi kèm theo tiện ích.

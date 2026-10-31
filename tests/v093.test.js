@@ -43,7 +43,7 @@ test('Bridge.getWorldbookNames: SillyTavern 1.19 getContext().getWorldInfoNames,
 test('Bridge.getWorldbookNames without getWorldInfoNames: world-info module list, else /api/settings/get, friendly errors meanwhile', async () => {
     const live = ['A'];
     const b = fakeBridge({ getRequestHeaders: () => ({}) }); b.loadWorldInfoModule = async () => ({ world_names: live });
-    assert.throws(() => b.getWorldbookNames(), /正在读取/);
+    assert.throws(() => b.getWorldbookNames(), /Đang đọc/);
     await b.prefetchWorldbooks();
     live.push('B'); assert.deepEqual(b.getWorldbookNames(), ['A', 'B'], 'live module binding');
     const realFetch = globalThis.fetch;
@@ -53,7 +53,7 @@ test('Bridge.getWorldbookNames without getWorldInfoNames: world-info module list
         await c.prefetchWorldbooks(); assert.deepEqual(c.getWorldbookNames(), ['甲', '乙']);
         globalThis.fetch = async () => { throw Error('offline'); };
         const d = fakeBridge({ getRequestHeaders: () => ({}) });
-        await d.prefetchWorldbooks(); assert.throws(() => d.getWorldbookNames(), /读取不到世界书列表/);
+        await d.prefetchWorldbooks(); assert.throws(() => d.getWorldbookNames(), /Không đọc được danh sách Sách Thế Giới/);
     } finally { globalThis.fetch = realFetch; }
 });
 test('Bridge.getWorldbook: context.loadWorldInfo → entries; missing book → clear error; never writes', async () => {
@@ -61,26 +61,26 @@ test('Bridge.getWorldbook: context.loadWorldInfo → entries; missing book → c
     const b = fakeBridge({ loadWorldInfo: async n => (n === '我的书' ? ST_BOOK : null), saveWorldInfo: async () => { saved++; } });
     const rows = await b.getWorldbook('我的书');
     assert.equal(rows.length, 3);
-    await assert.rejects(b.getWorldbook('没有'), /读取不到世界书「没有」/);
-    await assert.rejects(b.getWorldbook(''), /请先选择/);
+    await assert.rejects(b.getWorldbook('没有'), /Không đọc được Sách Thế Giới 「没有」/);
+    await assert.rejects(b.getWorldbook(''), /Vui lòng chọn/);
     assert.equal(saved, 0);
 });
 test('Bridge.getWorldbook: SillyTavern answers a missing file with an empty dummy book — reported as missing, a real empty book is []', async () => {
     const b = fakeBridge({ getWorldInfoNames: () => ['空书'], loadWorldInfo: async () => ({ entries: {} }) });
     assert.deepEqual(await b.getWorldbook('空书'), []);
-    await assert.rejects(b.getWorldbook('不存在'), /读取不到世界书「不存在」/);
+    await assert.rejects(b.getWorldbook('不存在'), /Không đọc được Sách Thế Giới 「不存在」/);
 });
 test('assistant host hands getWorldbookNames / getWorldbook to the original page (the toast text came from their absence)', () => {
     const host = src('src/assistant-host.js');
     assert.match(host, /getWorldbookNames: \(\) => b\.getWorldbookNames\(\), getWorldbook: name => b\.getWorldbook\(name\)/);
-    assert.match(src('vendor/original/assistant-runtime.js'), /typeof root\.getWorldbookNames!=='function'\)throw Error\('当前助手缺少世界书读取接口/);
+    assert.match(src('vendor/original/assistant-runtime.js'), /typeof root\.getWorldbookNames!=='function'\)throw Error\('Trợ lý hiện tại thiếu giao diện đọc Sách Thế Giới/);
 });
 
 // ---------- 星图 correction ----------
 test('classifyWorld: 灵笼 guesses 仙侠 from the name (why a correction is needed); an explicit type wins', () => {
     assert.equal(classifyWorld({ name: '灵笼' }), 'xianxia');
     assert.equal(classifyWorld({ name: '灵笼', type: '末世' }), 'default');
-    assert.ok(WORLD_TYPES.includes('末世'));
+    assert.ok(WORLD_TYPES.includes('Mạt thế'));
 });
 test('correctFootprint: rename + type without counting a visit; merges into an existing record of the new name', () => {
     let list = recordFootprint([], { name: '灵笼', theme: 'xianxia', floor: 3, t: 100 });
@@ -99,10 +99,10 @@ test('buildStars: name guesses are marked「?」, explicit types shown as writte
     const g = buildStars(z), by = id => g.nodes.find(n => n.id === 'world:' + id);
     assert.equal(by('灵笼').theme, 'cyber', 'same as the top badge (全息), not the frozen 仙侠');
     assert.equal(by('灵笼').sub, '科幻'); assert.equal(by('灵笼').guess, false);
-    assert.equal(by('青云山').sub, '仙侠? · 2次'); assert.equal(by('青云山').guess, true);
+    assert.equal(by('青云山').sub, 'Tiên hiệp? · 2 lần'); assert.equal(by('青云山').guess, true);
     assert.equal(by('夜之城').theme, 'cyber', 'explicit 类型 beats the stored 主题');
     const s = buildStars({ 当前世界: '灵笼' }).nodes[0];
-    assert.equal(s.sub, '仙侠?'); assert.equal(s.current, true);
+    assert.equal(s.sub, 'Tiên hiệp?'); assert.equal(s.current, true);
 });
 function worldWith(ledger) {
     const vars = { 诸天系统: ledger }, notes = [];
@@ -129,14 +129,14 @@ test('World.correct / forget: other worlds only touch the footprint; current wor
     await w.correct('错世界', { name: '斗罗大陆', type: '' });
     assert.equal(vars.诸天系统.当前世界, '夜之城'); assert.equal(vars.诸天系统.世界类型, '赛博');
     assert.deepEqual(vars.诸天系统.万界足迹.map(x => x.名称), ['斗罗大陆', '夜之城']);
-    await assert.rejects(w.correct('不存在', { name: 'x' }), /已经没有这个世界/);
-    await assert.rejects(w.forget('夜之城'), /当前世界，不能删除/);
+    await assert.rejects(w.correct('不存在', { name: 'x' }), /đã không còn thế giới này nữa/);
+    await assert.rejects(w.forget('夜之城'), /thế giới hiện tại, không thể xóa/);
     await w.forget('斗罗大陆');
     assert.deepEqual(vars.诸天系统.万界足迹.map(x => x.名称), ['夜之城']);
 });
 test('星图 UI: 更正 form on world nodes, 删除 only for non-current worlds, travel form with the current name = correction', () => {
     const a = src('src/hub-atlas.js');
-    assert.match(a, /识别错了？更正这个世界/);
+    assert.match(a, /Nhận diện sai\? Đính chính thế giới này/);
     assert.match(a, /\$\{n\.current \? '' : `<button[^`]*data-forget=/);
     assert.match(a, /=== str\(this\.ledger\(\)\?\.当前世界\)\) return this\.fix\(/);
 });
@@ -145,15 +145,15 @@ test('星图 UI: 更正 form on world nodes, 删除 only for non-current worlds,
 test('guideSteps: ticks come from the real state; chat step needs an open chat, a ledger and memory (or no assistant)', () => {
     const none = guideSteps({ wb: { exists: false, current: false, count: 0 }, api: { model: '' }, chat: { open: false } });
     assert.deepEqual(none.map(s => [s.id, s.done]), [['wb', false], ['api', false], ['chat', false]]);
-    assert.match(none[2].text, /先打开一个单角色聊天/);
+    assert.match(none[2].text, /Hãy mở một cuộc trò chuyện đơn nhân vật trước/);
     const stale = guideSteps({ wb: { exists: true, current: false, count: 40 } });
-    assert.match(stale[0].text, /不是插件最新版/);
+    assert.match(stale[0].text, /chưa phải bản mới nhất của plugin/);
     const all = guideSteps({ wb: { exists: true, current: true, count: 60, chatBound: true }, api: { model: '酒馆当前主API', main: true }, chat: { open: true, ledger: true, memory: true, assistant: true } });
     assert.ok(all.every(s => s.done));
-    assert.match(all[1].text, /酒馆当前的主模型/);
+    assert.match(all[1].text, /mô hình chính hiện tại của quán rượu/);
     assert.equal(guideSteps({ chat: { open: true, ledger: true, memory: false, assistant: true } })[2].done, false);
     assert.equal(guideSteps({ chat: { open: true, ledger: true, memory: false, assistant: false } })[2].done, true);
-    assert.match(guideSteps({ wb: null })[0].text, /读取不到世界书状态/);
+    assert.match(guideSteps({ wb: null })[0].text, /Không đọc được trạng thái Sách Thế Giới/);
 });
 test('shouldAutoOpen: only once (nothing saved) and only when a step is missing', () => {
     const missing = [{ done: true }, { done: false }], done = [{ done: true }, { done: true }];
@@ -163,7 +163,7 @@ test('shouldAutoOpen: only once (nothing saved) and only when a step is missing'
 });
 test('新手引导 wiring: settings default, 设置 → 上手 entry, started after the 连接 page hook, steps reuse existing code', () => {
     assert.match(src('src/settings.js'), /guide: null,/);
-    assert.match(src('src/hub-settings.js'), /act\('guide', '新手引导…'/);
+    assert.match(src('src/hub-settings.js'), /act\('guide', 'Hướng dẫn tân thủ…'/);
     assert.match(src('src/hub-settings.js'), /guide: \(\) => app\.guide\?\.open\(\)/);
     const idx = src('index.js');
     assert.ok(idx.indexOf("p==='api'") < idx.indexOf('new Onboarding(this)'), 'strip lands on the mounted form');
@@ -172,5 +172,5 @@ test('新手引导 wiring: settings default, 设置 → 上手 entry, started af
     assert.ok(src('package.json').includes('node --check src/onboarding.js'));
 });
 test('capabilities list the three 0.9.3 items as implemented', () => {
-    for (const n of ['额外世界背景读取世界书', '星图更正当前世界', '新手引导']) assert.equal(CAPABILITIES.find(c => c.name === n)?.state, 'implemented', n);
+    for (const n of ['Đọc Sách Thế Giới cho bối cảnh thế giới bổ sung', 'Đính chính thế giới hiện tại trên Bản đồ sao', 'Hướng dẫn tân thủ']) assert.equal(CAPABILITIES.find(c => c.name === n)?.state, 'implemented', n);
 });

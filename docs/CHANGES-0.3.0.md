@@ -1,69 +1,69 @@
-# 0.3.0 变更记录
+# Bản ghi thay đổi 0.3.0
 
-基线：`main` @ `a7678dd`（0.2.0 开发检查点）。本版本在 SillyTavern **1.16.0 / 1.17.0 / 1.18.0 / 1.19.0** 四个隔离真实宿主上跑过浏览器验收，结果见 `docs/ACCEPTANCE-0.3.0.md`。
-哪些功能已经迁移、哪些还没有，以 `docs/FEATURE_MATRIX.md` 为准；本文件只记录改了什么。
+Cơ sở: `main` @ `a7678dd` (điểm kiểm tra phát triển 0.2.0). Phiên bản này đã chạy nghiệm thu trình duyệt trên bốn máy chủ thực tế cô lập SillyTavern **1.16.0 / 1.17.0 / 1.18.0 / 1.19.0**, kết quả xem tại `docs/ACCEPTANCE-0.3.0.md`.
+Những tính năng nào đã di chuyển, những tính năng nào chưa di chuyển đều lấy `docs/FEATURE_MATRIX.md` làm chuẩn; tệp này chỉ ghi lại những gì đã thay đổi.
 
-## 1. 版本兼容：1.19 独占 → 1.16–1.19
+## 1. Tương thích phiên bản: Chỉ 1.19 → 1.16–1.19
 
-- `manifest.json`：`minimum_client_version` 1.19.0 → **1.16.0**。
-- 新增 `src/compat.js`：版本解析与比较、支持级别（已验收 / 同版本线 / 新于验收范围 / 过旧）、按能力探测宿主接口；
-  用动态 `import('/script.js')` 取宿主内部导出，某个导出缺失时只停用相关功能，不会让整个扩展加载失败。
-- `index.js` 重写：1.17 起走 manifest `activate` 钩子；**1.16 没有扩展生命周期钩子**，此时自动自启动（`selfStart`），日志写“宿主无扩展生命周期钩子（<1.17），自动启动”。
-- 去掉 0.2.0 的 `HOST_VERSION === '1.19.0'` 硬门槛；`contracts.js`、`host-adapter.js`、`ledger-service.js` 改为依据能力探测结果运行。
-- 宏：1.17 起默认启用的新宏引擎走 `macros.register`；1.16 默认关闭新引擎，额外注册旧 `MacrosParser` 条目；在设置保存时重新检查，运行中切换开关宏也不会失效。
-- `terminal.js`：徽标“原生开发版 · 0.2.0”改为读取 `VERSION`，页脚显示实际宿主版本，不再写死 “SILLYTAVERN 1.19.0”。
+- `manifest.json`: `minimum_client_version` từ 1.19.0 → **1.16.0**.
+- Thêm mới `src/compat.js`: phân tích và so sánh phiên bản, mức độ hỗ trợ (Đã nghiệm thu / Cùng nhánh phiên bản / Mới hơn phạm vi nghiệm thu / Quá cũ), dò giao diện máy chủ theo năng lực;
+  dùng `import('/script.js')` động để lấy các xuất (export) nội bộ của máy chủ, khi thiếu một export nào đó chỉ tắt tính năng liên quan chứ không làm hỏng quá trình tải toàn bộ tiện ích mở rộng.
+- Viết lại `index.js`: từ bản 1.17 trở đi đi theo hook `activate` của manifest; **bản 1.16 không có hook vòng đời tiện ích mở rộng**, lúc này sẽ tự động khởi động (`selfStart`) và ghi nhật ký “Máy chủ không có hook vòng đời tiện ích mở rộng (<1.17), tự động khởi động”.
+- Loại bỏ ngưỡng cứng `HOST_VERSION === '1.19.0'` của bản 0.2.0; `contracts.js`, `host-adapter.js`, `ledger-service.js` chuyển sang chạy dựa theo kết quả dò năng lực.
+- Macro: động cơ macro mới bật mặc định từ bản 1.17 trở đi đi theo `macros.register`; bản 1.16 mặc định tắt động cơ mới nên đăng ký thêm mục `MacrosParser` cũ; kiểm tra lại khi lưu cài đặt để chuyển đổi công tắc khi đang chạy cũng không làm macro mất hiệu lực.
+- `terminal.js`: huy hiệu “Bản phát triển gốc · 0.2.0” đổi sang đọc `VERSION`, chân trang hiển thị phiên bản máy chủ thực tế, không còn gán cứng “SILLYTAVERN 1.19.0”.
 
-## 2. 未迁移功能迁移
+## 2. Di chuyển các tính năng chưa di chuyển trước đó
 
-- **原版状态栏 v3.1 原生运行**（`src/statusbar-host.js` + `src/th-bridge.js`）：原生扩展直接渲染 `<ZhuTianPanel>`，不需要正则脚本，也不需要酒馆助手。
-  原版 8 个分页（基础、羁绊、任务、万象、商城、背包、外挂、神通）都在消息内的 iframe 里运行；它用到的 7 个酒馆助手接口
-  （`getVariables`、`replaceVariables`、`updateVariablesWith`、`getLastMessageId`、`getCurrentMessageId`、`generateRaw`、`SillyTavern`）
-  都由原生桥接实现，并写回同一位置 `chat_metadata.variables`。原文件经 `tools/extract_original.py` 生成，并做哈希校验。
-- **原版莉莉丝助手原生运行**（`src/assistant-host.js`）：原 v1.1 助手（工作台、记忆档案、规则藏书、连接设置、运行状态、私聊、剧情语音框、账本助理）
-  在原生桥接上运行，不需要酒馆助手；旧助手脚本里的 API、界面和私聊框配置会一次性只读导入。
-- **外挂世界书**（`features.js`）：一键安装“诸天万界最强系统”世界书（35 条内置规则），可绑定为当前聊天的聊天世界书；已存在同名世界书时只绑定、不覆盖。不依赖角色卡 MVU。
-- **新聊天初始化 / 旧存档迁移 / 账本回滚**：`/zt init`；迁移报告（账本、记忆、私聊、旧脚本配置、结算凭据）；账本自动备份，可回滚到任一份。
-- **扩展设置抽屉**（`src/settings.js`）：总开关、状态栏模式、实时层数、HUD、快捷键、立绘模式等。
+- **Thanh trạng thái v3.1 nguyên bản chạy gốc** (`src/statusbar-host.js` + `src/th-bridge.js`): tiện ích mở rộng gốc trực tiếp kết xuất `<ZhuTianPanel>`, không cần kịch bản biểu thức chính quy, cũng không cần Tavern Helper.
+  Cả 8 trang nguyên bản (Cơ bản, Gắn kết, Nhiệm vụ, Vạn Tượng, Thương thành, Túi đồ, Ngoại quải, Thần thông) đều chạy trong iframe bên trong tin nhắn; 7 giao diện Tavern Helper mà nó sử dụng
+  (`getVariables`, `replaceVariables`, `updateVariablesWith`, `getLastMessageId`, `getCurrentMessageId`, `generateRaw`, `SillyTavern`)
+  đều do cầu nối gốc triển khai và ghi về cùng vị trí `chat_metadata.variables`. Tệp gốc được tạo qua `tools/extract_original.py` và kiểm tra mã băm.
+- **Trợ lý Lilith nguyên bản chạy gốc** (`src/assistant-host.js`): trợ lý v1.1 nguyên bản (Bàn làm việc, Hồ sơ ký ức, Kho quy tắc, Cài đặt kết nối, Trạng thái vận hành, Trò chuyện riêng, Khung thoại cốt truyện, Trợ lý sổ cái)
+  chạy trên cầu nối gốc, không cần Tavern Helper; cấu hình API, giao diện và khung trò chuyện riêng trong kịch bản trợ lý cũ sẽ được nhập chỉ đọc một lần.
+- **Sách Thế Giới ngoại vi** (`features.js`): cài đặt một chạm Sách Thế Giới “Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới” (35 quy tắc tích hợp sẵn), có thể gắn kết làm Sách Thế Giới trò chuyện của cuộc trò chuyện hiện tại; khi đã tồn tại Sách Thế Giới cùng tên thì chỉ gắn kết chứ không ghi đè. Không phụ thuộc vào MVU của thẻ nhân vật.
+- **Khởi tạo cuộc trò chuyện mới / Di chuyển bản lưu cũ / Quay lui sổ cái**: `/zt init`; báo cáo di chuyển (sổ cái, ký ức, trò chuyện riêng, cấu hình kịch bản cũ, chứng từ quyết toán); tự động sao lưu sổ cái và có thể quay lui về bất kỳ bản nào.
+- **Ngăn kéo cài đặt tiện ích mở rộng** (`src/settings.js`): công tắc tổng, chế độ thanh trạng thái, số tầng thời gian thực, HUD, phím tắt, chế độ tranh đứng, v.v.
 
-## 3. 真 Live2D 与 AI 差分立绘（`src/portrait.js`）
+## 3. Live2D thật & Tranh đứng biến thể AI (`src/portrait.js`)
 
-- 三种立绘模式：`rig`（原版分层参数动画）、`variants`（AI 差分立绘）、`live2d`（真 Live2D）。
-- **真 Live2D**：PixiJS 6.5.10 + pixi-live2d-display 0.4.0（`vendor/live2d/`，MIT）。支持 Cubism 3/4/5 的 `.model3.json`。
-  - Cubism Core 是专有软件，按许可证**不打包**：用户勾选同意 Live2D Proprietary Software License 后才会加载，地址可以是官方地址或 `user/files` 里的副本。
-  - PixiJS 与其他扩展隔离：加载前后恢复其他扩展的全局 `PIXI`。
-  - 模型按高度适配、底部对齐，上下不留空白；视线跟随鼠标；点触使用模型自己的 HitArea，播放 Tap 动作和原版莉莉丝的对白气泡。
-  - 点触时完整播放原版表情时间线（例如 surprised → pout → neutral），不再只取最后一帧。
-  - 口型同步：有 TTS 音频时按音量驱动，否则按正文长度做节奏包络，写入 `ParamMouthOpenY`。
-  - Tap 动作会预加载；首次调用只预约不播放时自动重试一次。
-  - 连续应用设置时用代次令牌保证只保留最新一次加载，不会叠出两个 Pixi 实例。
-  - **表情映射表**：表情名无法自动识别的模型（例如 `f00…f07` 或其他语言命名），可逐个指定 8 种语气对应哪个表情，选中即在模型上预览，保存时不会重载模型。
-- **分层 PSD 导出**（`src/psd-export.js`）：把原版莉莉丝的分层素材导出成真正的分层 PSD（背景、左翼、右翼、尾巴、身体，外加 8 个隐藏的表情图层；RGB 8 位，图层名为 Unicode），
-  可直接用 Cubism Editor 打开，切 ArtMesh、绑定参数后导出 `.moc3`。这是把原版立绘做成真正 Live2D 模型的路线；程序本身无法凭空生成 `.moc3`。
-- **AI 差分立绘**（`assets/lilith/variants/`，来源见其中的 `PROVENANCE.md`）：
-  - 7 张 AI 表情差分（微笑、害羞、嘟嘴、惊讶、眨眼、坏笑、委屈）加原图“平静”。只改脸部，经特征点对齐、色彩匹配和羽化后合成回原图，身体和背景像素与原图完全一致；表情之间用 1 秒交叉淡入。
-  - 1 张 AI 姿势“比心”（哥特长裙，透明底），叠在原版去掉角色的静止背景 `plate` 上，背景不做任何动画。
-  - “抱臂”“侧坐”两个姿势的素材尚未生成，设置里标为“素材待补”，选中时自动回落到标准站姿。
+- Ba chế độ tranh đứng: `rig` (hoạt ảnh tham số phân lớp nguyên bản), `variants` (tranh đứng biến thể AI), `live2d` (Live2D thật).
+- **Live2D thật**: PixiJS 6.5.10 + pixi-live2d-display 0.4.0 (`vendor/live2d/`, MIT). Hỗ trợ `.model3.json` của Cubism 3/4/5.
+  - Cubism Core là phần mềm độc quyền nên theo giấy phép **không đóng gói sẵn**: chỉ tải sau khi người dùng tích chọn đồng ý Live2D Proprietary Software License, địa chỉ có thể là địa chỉ chính thức hoặc bản sao trong `user/files`.
+  - PixiJS được cô lập với các tiện ích mở rộng khác: khôi phục `PIXI` toàn cục của tiện ích khác trước và sau khi tải.
+  - Mô hình khớp theo chiều cao, căn đáy, trên dưới không để trống; ánh mắt đi theo con trỏ chuột; thao tác chạm sử dụng HitArea của chính mô hình, phát chuyển động Tap và bong bóng thoại Lilith nguyên bản.
+  - Khi chạm sẽ phát trọn vẹn dòng thời gian biểu cảm nguyên bản (ví dụ surprised → pout → neutral), không còn chỉ lấy khung hình cuối cùng.
+  - Đồng bộ khẩu hình: khi có âm thanh TTS sẽ điều khiển theo âm lượng, nếu không sẽ tạo đường bao nhịp điệu theo độ dài chính văn và ghi vào `ParamMouthOpenY`.
+  - Chuyển động Tap được tải trước; khi gọi lần đầu nếu chỉ đặt lịch mà chưa phát thì tự động thử lại một lần.
+  - Khi áp dụng cài đặt liên tiếp sẽ dùng thẻ thế hệ (epoch token) để đảm bảo chỉ giữ lại lần tải mới nhất, không bị chồng hai thực thể Pixi.
+  - **Bảng ánh xạ biểu cảm**: với các mô hình có tên biểu cảm không thể tự động nhận diện (ví dụ `f00…f07` hoặc đặt tên bằng ngôn ngữ khác), có thể chỉ định từng ngữ khí trong 8 ngữ khí tương ứng với biểu cảm nào, chọn xong sẽ xem trước ngay trên mô hình và khi lưu không cần tải lại mô hình.
+- **Xuất PSD phân lớp** (`src/psd-export.js`): xuất tài nguyên phân lớp của Lilith nguyên bản thành tệp PSD phân lớp thực sự (Phông nền, Cánh trái, Cánh phải, Đuôi, Cơ thể, cộng thêm 8 lớp biểu cảm đang ẩn; RGB 8 bit, tên lớp Unicode),
+  có thể mở trực tiếp bằng Cubism Editor, cắt ArtMesh, gắn kết tham số rồi xuất ra `.moc3`. Đây là lộ trình biến tranh đứng nguyên bản thành mô hình Live2D thật; bản thân chương trình không thể tự sinh ra `.moc3` từ hư không.
+- **Tranh đứng biến thể AI** (`assets/lilith/variants/`, nguồn gốc xem tại `PROVENANCE.md` bên trong):
+  - 7 tấm biến thể biểu cảm AI (Mỉm cười, Thẹn thùng, Dỗi hờn, Kinh ngạc, Nháy mắt, Cười xấu xa, Tủi thân) cộng với ảnh gốc “Bình tĩnh”. Chỉ sửa phần khuôn mặt, sau khi căn chỉnh điểm đặc trưng, khớp màu và làm mềm biên (feathering) thì ghép ngược vào ảnh gốc, các điểm ảnh cơ thể và phông nền khớp hoàn toàn với ảnh gốc; giữa các biểu cảm chuyển cảnh mờ dần trong 1 giây.
+  - 1 tấm tư thế AI “Thả tim” (váy dài Gothic, nền trong suốt), xếp chồng lên phông nền tĩnh `plate` nguyên bản đã tách nhân vật, phông nền không chạy bất kỳ hoạt ảnh nào.
+  - Hai tư thế “Khoanh tay” và “Ngồi nghiêng” ở bản 0.3.0 chưa tạo tài nguyên, trong cài đặt đánh dấu là “Chờ bổ sung tài nguyên”, khi chọn sẽ tự động quay về tư thế đứng chuẩn.
 
-## 4. 新功能
+## 4. Tính năng mới
 
-- 输入栏上方的账本 **HUD**（系统点、世界、货币、任务），点击打开莉莉丝窗口。
-- **快捷键**：Alt+Z 打开莉莉丝、Alt+X 打开契约终端、Alt+S 跳到最新状态栏。
-- **斜杠命令** `/zt`（别名 `/zhutian`）：`open|terminal|status|init|world|backup|diag|points|live2d [off]`。
-- **宏**：`{{zt_points}}`、`{{zt_world}}`、`{{zt_task}}`，可以在提示词、正文模板里直接引用账本。
-- **兼容诊断面板**（`/zt diag`）：宿主版本、支持级别、逐项接口状态、状态栏模式、莉莉丝助手的真实运行状态（读取原版自己的状态行）、立绘模式。
+- **HUD** sổ cái phía trên thanh nhập liệu (Điểm Hệ Thống, Thế giới, Tiền tệ, Nhiệm vụ), bấm vào sẽ mở cửa sổ Lilith.
+- **Phím tắt**: Alt+Z mở Lilith, Alt+X mở thiết bị đầu cuối khế ước, Alt+S nhảy tới thanh trạng thái mới nhất.
+- **Lệnh gạch chéo** `/zt` (bí danh `/zhutian`): `open|terminal|status|init|world|backup|diag|points|live2d [off]`.
+- **Macro**: `{{zt_points}}`, `{{zt_world}}`, `{{zt_task}}`, có thể tham chiếu trực tiếp sổ cái trong lời nhắc hoặc bản mẫu chính văn.
+- **Bảng chẩn đoán tương thích** (`/zt diag`): phiên bản máy chủ, mức độ hỗ trợ, trạng thái từng giao diện, chế độ thanh trạng thái, trạng thái vận hành thực tế của trợ lý Lilith (đọc dòng trạng thái của chính bản gốc), chế độ tranh đứng.
 
-## 5. 浏览器验收中发现并已修复的问题
+## 5. Các vấn đề phát hiện và sửa chữa trong quá trình nghiệm thu trình duyệt
 
-1. **莉莉丝助手没有真正启动**：原版代码检查的是酒馆助手 iframe 里的 `SillyTavern`（它本身就是上下文对象），而桥接传入的是宿主顶层命名空间，
-   导致原版报“当前脚本上下文缺少 SillyTavern 身份接口”并停在未启动状态（窗口能打开，但工作台、私聊、分层动画都没运行）。
-   现在改为每次读取都获取最新 `getContext()` 的实时代理（`stContextProxy`）。验收脚本也改为检查原版状态行和分层舞台，不再只看窗口是否存在。
-2. **扩展设置的嵌套修改会丢失**：`Settings.all` 每次读取都替换成新的克隆对象，`all[key] = merge(all[key], …)` 会写进已经被丢弃的对象。
-   立绘模式、Live2D 全部设置都因此无法保存。现在改为原地补默认值，保持对象身份不变（有回归测试）。
-3. **PSD 右翼缺失**：翅膀裁剪框是逻辑坐标（424×632），素材却是 636×948，右翼因此被裁空后丢掉。现在按比例缩放裁剪框，导出 13 个图层，并已用独立解析库 psd-tools 核对。
-4. 立绘模块原先针对的是 1.7.1 的舞台结构；现在直接挂在原版分层舞台（`.zt-stage > .zt-media`）上，点触各部位时 AI 差分会跟着原版表情时间线切换。
+1. **Trợ lý Lilith chưa thực sự khởi động**: Mã gốc kiểm tra `SillyTavern` bên trong iframe Tavern Helper (bản thân nó chính là đối tượng ngữ cảnh), trong khi cầu nối truyền vào không gian tên cấp cao nhất của máy chủ,
+   khiến bản gốc báo lỗi thiếu giao diện định danh SillyTavern và dừng ở trạng thái chưa khởi động.
+   Hiện đã đổi sang đại diện thời gian thực (`stContextProxy`) luôn lấy `getContext()` mới nhất mỗi lần đọc.
+2. **Sửa đổi lồng nhau trong cài đặt tiện ích mở rộng bị mất**: Mỗi lần đọc `Settings.all` đều thay bằng đối tượng nhân bản mới, nên `all[key] = merge(all[key], …)` ghi vào đối tượng đã bị loại bỏ.
+   Hiện đã đổi sang điền giá trị mặc định tại chỗ, giữ nguyên định danh đối tượng (có kiểm thử hồi quy).
+3. **PSD bị thiếu cánh phải**: Khung cắt cánh dùng tọa độ logic (424×632) trong khi tài nguyên thực tế là 636×948, khiến cánh phải bị cắt rỗng rồi bị loại bỏ. Hiện đã thu phóng khung cắt theo tỷ lệ, xuất đủ 13 lớp và đối chiếu bằng thư viện phân tích độc lập psd-tools.
+4. Mô-đun tranh đứng trước đây nhắm vào cấu trúc sân khấu 1.7.1; hiện gắn trực tiếp vào sân khấu phân lớp nguyên bản (`.zt-stage > .zt-media`), khi chạm vào các bộ phận thì biến thể AI sẽ chuyển đổi theo đúng dòng thời gian biểu cảm nguyên bản.
 
-## 6. 测试与工具
+## 6. Kiểm thử & Công cụ
 
-- `tests/native030.test.js`：版本门槛、设置持久化回归、SillyTavern 代理、Live2D 辅助函数、AI 差分清单、PSD 编码器、四处版本号一致性。
-- `package.json` 的 `check` 覆盖全部新增源文件、两个原版运行时，并执行 `tools/extract_original.py --check`。
-- `tools/lilith_variants_compose.py`、`tools/lilith_variants_key.py`：AI 差分的对齐合成脚本和抠像脚本，可重复生成。
+- `tests/native030.test.js`: ngưỡng phiên bản, hồi quy lưu trữ cài đặt, đại diện SillyTavern, hàm phụ trợ Live2D, danh sách biến thể AI, bộ mã hóa PSD, tính đồng nhất số phiên bản ở bốn nơi.
+- Kịch bản `check` của `package.json` bao phủ toàn bộ tệp nguồn mới, hai runtime nguyên bản, đồng thời thực thi `tools/extract_original.py --check`.
+- `tools/lilith_variants_compose.py`, `tools/lilith_variants_key.py`: kịch bản căn chỉnh ghép ảnh và tách nền cho biến thể AI, có thể tạo lặp lại.

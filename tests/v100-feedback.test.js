@@ -13,9 +13,9 @@ const src = f => readFileSync(new URL('../' + f, import.meta.url), 'utf8');
 
 // ---------- 接口预设 ----------
 test('preset: a name is required, the address too; same name replaces', () => {
-    assert.throws(() => R.withPreset({}, '', { url: 'https://a.example/v1' }), /预设名称/);
-    assert.throws(() => R.withPreset({}, '   ', { url: 'https://a.example/v1' }), /预设名称/);
-    assert.throws(() => R.withPreset({}, '公益站', { url: '' }), /接口地址/);
+    assert.throws(() => R.withPreset({}, '', { url: 'https://a.example/v1' }), /tên thiết lập sẵn/);
+    assert.throws(() => R.withPreset({}, '   ', { url: 'https://a.example/v1' }), /tên thiết lập sẵn/);
+    assert.throws(() => R.withPreset({}, '公益站', { url: '' }), /địa chỉ cổng API/);
     let s = R.withPreset({}, '公益站A', { url: 'https://a.example/v1', key: 'k1', model: 'm1' });
     s = R.withPreset(s, '公益站A', { url: 'https://b.example/v1', key: 'k2', model: 'm2' });
     assert.equal(s.presets.length, 1); assert.equal(s.presets[0].url, 'https://b.example/v1');
@@ -25,7 +25,7 @@ test('preset: a name is required, the address too; same name replaces', () => {
 test('preset: at most MAX_PRESETS, broken ones dropped on read', () => {
     let s = {};
     for (let i = 0; i < R.MAX_PRESETS; i++) s = R.withPreset(s, 'p' + i, { url: 'https://x.example/' + i });
-    assert.throws(() => R.withPreset(s, 'one more', { url: 'https://y.example' }), /最多/);
+    assert.throws(() => R.withPreset(s, 'one more', { url: 'https://y.example' }), /Tối đa/);
     const n = R.normalizeStore({ presets: [{ name: '', url: 'https://a' }, { name: 'ok', url: 'https://a' }, { name: 'ok', url: 'https://b' }, { name: 'nourl' }], routes: { nope: '@main', chat: '@main', shop: 'preset:ok', gacha: { url: '' } } });
     assert.deepEqual(n.presets.map(p => p.name), ['ok']);
     assert.deepEqual(n.routes, { chat: '@main', shop: 'preset:ok' });
@@ -40,15 +40,15 @@ test('routes: default / 酒馆主 API / preset / own config, deleted preset fall
     let s = R.withPreset({}, '公益站A', { url: 'https://a.example/v1', key: 'sk-a', model: 'm-a' });
     assert.equal(R.resolveRoute(s, 'gacha'), null);
     s = R.withRoute(s, 'gacha', 'preset:公益站A');
-    assert.deepEqual(R.resolveRoute(s, 'gacha'), { url: 'https://a.example/v1', key: 'sk-a', model: 'm-a', via: '预设「公益站A」' });
+    assert.deepEqual(R.resolveRoute(s, 'gacha'), { url: 'https://a.example/v1', key: 'sk-a', model: 'm-a', via: 'Thiết lập sẵn 「公益站A」' });
     s = R.withRoute(s, 'chat', R.MAIN); assert.equal(R.resolveRoute(s, 'chat').main, true);
     s = R.withRoute(s, 'group', { url: 'https://g.example/v1', key: 'sk-g', model: 'big', maxTokens: 4096 });
     assert.equal(R.resolveRoute(s, 'group').maxTokens, 4096);
-    assert.throws(() => R.withRoute(s, 'shop', 'preset:没有'), /没有名为/);
-    assert.throws(() => R.withRoute(s, 'xx', R.MAIN), /未知/);
+    assert.throws(() => R.withRoute(s, 'shop', 'preset:没有'), /Không có thiết lập sẵn nào tên là/);
+    assert.throws(() => R.withRoute(s, 'xx', R.MAIN), /không xác định/);
     s = R.withoutPreset(s, '公益站A');
     assert.equal(R.resolveRoute(s, 'gacha'), null);
-    assert.equal(R.routeText(s, 'gacha'), '跟随默认');
+    assert.equal(R.routeText(s, 'gacha'), 'Theo mặc định');
     s = R.withRoute(s, 'group', ''); assert.equal(R.resolveRoute(s, 'group'), null);
 });
 test('routes: the key never appears in the description text', () => {
@@ -61,8 +61,9 @@ test('classify: every original status-bar prompt maps to its feature; the connec
     const vendor = src('vendor/original/statusbar-v3.1-part2.js');
     const found = [...vendor.matchAll(/sysFetchAPI\(\w+,"([^"]+)"/g)].map(m => m[1]);
     assert.ok(found.length >= 8, String(found.length));
-    for (const p of found) if (p !== '你是一个测试助手。') assert.ok(R.classifyStatus(p), p);
+    for (const p of found) if (p !== '你是一个测试助手。' && p !== 'Bạn là trợ lý kiểm tra kết nối.') assert.ok(R.classifyStatus(p), p);
     assert.equal(R.classifyStatus('你是一个测试助手。'), '');
+    assert.equal(R.classifyStatus('Bạn là trợ lý kiểm tra kết nối.'), '');
     assert.equal(R.classifyStatus('严格执行格式要求，只输出一行'), 'assess');
     assert.equal(R.classifyStatus('严格执行格式要求'), 'wish');
     assert.equal(R.classifyAssistant([{ role: 'system', content: '你是诸天系统外挂世界书的事实记录员……' }]), 'memory');
@@ -111,16 +112,16 @@ test('appraise: only things the system did not make are candidates', () => {
 });
 test('appraise: the prompt states the scale, the entry and asks for one line', () => {
     const e = candidates(ledger()).skills[0], p = appraisePrompt(e, { 当前世界: '斗破' });
-    assert.match(p.system, /品阶鉴定官/); assert.match(p.system, /只输出一行/); assert.doesNotMatch(p.system, /禁忌/);
-    assert.match(p.user, /太虚剑意/); assert.match(p.user, /一剑开天门/); assert.match(p.user, /斗破/); assert.match(p.user, /神品：行星级/);
+    assert.match(p.system, /Quan Giám Định Phẩm Giai|品阶鉴定官/); assert.match(p.system, /chỉ xuất một dòng duy nhất|只输出一行/); assert.doesNotMatch(p.system, /禁忌/);
+    assert.match(p.user, /太虚剑意/); assert.match(p.user, /一剑开天门/); assert.match(p.user, /斗破/); assert.match(p.user, /神品 \(Thần phẩm\): Sức mạnh cấp Hành tinh/);
     assert.match(src('tests/qa/mock_model.py'), /品阶鉴定官/);
 });
 test('appraise: the answer is parsed, 禁忌 is capped at 神品, garbage throws', () => {
     assert.deepEqual(parseAppraisal('仙品|大陆级剑意'), { grade: '仙品', reason: '大陆级剑意' });
     assert.deepEqual(parseAppraisal('思考中……\n**灵品**｜宗师级'), { grade: '灵品', reason: '宗师级' });
     assert.equal(parseAppraisal('禁忌|毁天灭地').grade, '神品');
-    assert.throws(() => parseAppraisal('我不知道'), /没有给出品阶/);
-    assert.throws(() => parseAppraisal(''), /没有改动/);
+    assert.throws(() => parseAppraisal('我不知道'), /không đưa ra phẩm giai/);
+    assert.throws(() => parseAppraisal(''), /Không thay đổi/);
 });
 test('regrade skill: raise only, cap follows, 圆满 cleared, receipt stamped; system skills refused', () => {
     const z = ledger(), e = candidates(z).skills[0];
@@ -130,8 +131,8 @@ test('regrade skill: raise only, cap follows, 圆满 cleared, receipt stamped; s
     assert.deepEqual(s.鉴定, { 品阶: '仙品', 原品阶: '凡品', 方式: 'AI 鉴定', 时间: 1, 理由: '大陆级' });
     assert.equal(regrade(z, { ...e, grade: '仙品' }, '灵品').changed, false);           // never down
     assert.equal(z.功法库[0].品阶, '仙品');
-    assert.throws(() => regrade(z, { kind: 'skill', key: '基础吐纳', name: '基础吐纳' }, '神品'), /系统给的/);
-    assert.throws(() => regrade(z, e, '禁忌'), /只能是/);
+    assert.throws(() => regrade(z, { kind: 'skill', key: '基础吐纳', name: '基础吐纳' }, '神品'), /do hệ thống cấp/);
+    assert.throws(() => regrade(z, e, '禁忌'), /chỉ có thể là/);
 });
 test('regrade item: raise only, recycle value frozen, does not absorb differently valued stacks', () => {
     const z = ledger(), [low] = candidates(z).items;
@@ -144,14 +145,14 @@ test('regrade item: raise only, recycle value frozen, does not absorb differentl
     const z2 = ledger(), [l2] = candidates(z2).items;
     regrade(z2, l2, '灵品');
     const it = z2.背包[0]; assert.equal(it.品级, '灵品'); assert.equal(it.价格, TIER_PRICE.凡品);   // recycles like the 凡品 it was
-    assert.throws(() => regrade(z2, { kind: 'item', key: '引气丹|凡品', name: '引气丹' }, '神品'), /系统给的/);
+    assert.throws(() => regrade(z2, { kind: 'item', key: '引气丹|凡品', name: '引气丹' }, '神品'), /do hệ thống cấp/);
 });
 test('收录 line with a higher grade raises an outside skill (never a system one, never down)', () => {
     const z = ledger();
     assert.deepEqual(gradeRaises(z, '收录:太虚剑意[仙品]；收录:基础吐纳[神品]；收录:新功法[灵品]').map(u => [u.name, u.from, u.to]), [['太虚剑意', '凡品', '仙品']]);
     assert.deepEqual(gradeRaises(z, '收录:太虚剑意'), []);
     assert.deepEqual(gradeRaises(z, '收录:太虚剑意【凡品】'), []);
-    assert.match(GRADE_RULE, /收录:功法名\[品阶\]/);
+    assert.match(GRADE_RULE, /收录:Tên công pháp\[Phẩm giai\]/);
 });
 
 // ---------- 一键关闭插件 ----------
@@ -166,19 +167,19 @@ test('disablePlugin: asks first; cancel does nothing; calls disableExtension wit
     const load = async () => ({ disableExtension: async (n, r) => calls.push([n, r]) });
     let asked = '';
     assert.deepEqual(await disablePlugin(null, { moduleUrl: u, load, ask: async t => { asked = t; return false; } }), { done: false, cancelled: true });
-    assert.match(asked, /管理扩展/); assert.equal(calls.length, 0);
+    assert.match(asked, /Quản lý tiện ích mở rộng/); assert.equal(calls.length, 0);
     assert.deepEqual(await disablePlugin(null, { moduleUrl: u, load, reload: false, ask: async () => true }), { done: true, name: 'third-party/zt' });
     assert.deepEqual(calls, [['third-party/zt', false]]);
     const r = await disablePlugin(null, { moduleUrl: u, load: async () => ({}), ask: async () => true });
-    assert.equal(r.manual, true); assert.match(r.reason, /管理扩展/);
+    assert.equal(r.manual, true); assert.match(r.reason, /Quản lý tiện ích mở rộng/);
 });
 // ---------- 关闭悬浮莉莉丝 ----------
 test('closing the float says the console is reachable from the SillyTavern extensions panel', () => {
-    assert.match(CLOSE_TEXT(false), /「扩展」面板/); assert.match(CLOSE_TEXT(false), /打开诸天终端/);
-    assert.match(CLOSE_TEXT(), /头像都不再显示/);   // 1.1.3: 关闭 closes every floating entry; 切换 is separate
-    assert.match(CLOSED_TEXT, /扩展/);
+    assert.match(CLOSE_TEXT(false), /bảng 「Tiện ích mở rộng」/); assert.match(CLOSE_TEXT(false), /Mở Thiết Bị Đầu Cuối Chư Thiên/);
+    assert.match(CLOSE_TEXT(), /ảnh đại diện đều không hiển thị nữa/);   // 1.1.3: 关闭 closes every floating entry; 切换 is separate
+    assert.match(CLOSED_TEXT, /Tiện ích mở rộng/);
     const f = src('src/lilith-float.js');
-    assert.match(f, /拖到这里关闭悬浮窗/); assert.match(f, /'floatLilith', 'none'/);
+    assert.match(f, /Kéo vào đây để đóng cửa sổ nổi/); assert.match(f, /'floatLilith', 'none'/);
     assert.match(src('src/settings.js'), /data-act="float"/);
 });
 test('settings: 品阶鉴定 and 一键关闭插件 are reachable', () => {

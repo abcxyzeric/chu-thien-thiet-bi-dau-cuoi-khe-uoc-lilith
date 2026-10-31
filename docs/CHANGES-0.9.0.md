@@ -1,101 +1,81 @@
-# 0.9.0 变更（手机端适配）
+# Thay đổi 0.9.0 (Thích ứng thiết bị di động)
 
-0.9.0 只做一件事：让诸天终端在手机上好用。验收结果见 [ACCEPTANCE-0.9.0](ACCEPTANCE-0.9.0.md)，距离 1.0 还要做的事见 [ROADMAP-1.0](ROADMAP-1.0.md)。
+Bản 0.9.0 tập trung vào một mục tiêu duy nhất: giúp Thiết Bị Đầu Cuối Chư Thiên sử dụng mượt mà và thuận tiện trên điện thoại. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.9.0](ACCEPTANCE-0.9.0.md), các công việc tiếp theo hướng tới bản 1.0 xem tại [ROADMAP-1.0](ROADMAP-1.0.md).
 
-- 账本字段、世界书条目、存储键都没有变化，**不需要重新导入世界书**。
-- 原版 v1.1 代码（`vendor/original`）没有修改。全屏是 CSS 覆盖（`dialog[data-zt-mobile]`），原版窗口管理器照常运行。
-- 只在 Playwright Chromium 的手机触摸模拟里验收，**没有在真实 iOS / Android 手机上测试**。
+- Các trường sổ cái, mục từ Sách Thế Giới và khóa lưu trữ đều không thay đổi, **không cần nhập lại Sách Thế Giới**.
+- Mã nguồn v1.1 nguyên bản (`vendor/original`) giữ nguyên cấu trúc. Chế độ toàn màn hình hoạt động bằng lớp phủ CSS (`dialog[data-zt-mobile]`), trình quản lý cửa sổ nguyên bản vẫn chạy bình thường.
+- Mới nghiệm thu trong trình mô phỏng cảm ứng điện thoại của Playwright Chromium, **chưa kiểm thử trên điện thoại iOS / Android thực tế**.
 
-## 一、0.8.5 在手机上的问题（实测）
+## I. Các vấn đề của bản 0.8.5 trên điện thoại (Kiểm thử thực tế)
 
-0.8.5 在手机上沿用电脑版的浮动窗口：四周留 8 px 边，窗口大小会被记住。在 1.19 隔离环境里用 390×844（竖屏）、844×390（横屏）、360×640（小屏）实测：
+Bản 0.8.5 trên điện thoại vẫn dùng chung cửa sổ nổi của bản máy tính: chừa lề 8 px bốn phía và ghi nhớ kích thước cửa sổ. Khi kiểm thử thực tế trong môi trường cô lập 1.19 với các kích thước 390×844 (dọc), 844×390 (ngang), 360×640 (màn hình nhỏ):
 
-| 现象 | 0.8.5 实测 |
+| Hiện tượng | Đo thực tế trên bản 0.8.5 |
 | --- | --- |
-| 竖屏 390×844，内容区高度 | 548 px（顶栏 + 导航 + 账本条 + 状态行占掉三分之一） |
-| 横屏 844×390，内容区高度 | **122 px**，大约只能看到两行 |
-| 横屏用过之后回到竖屏 | 窗口仍是横屏时记住的 380×354，内容区 148 px |
-| 手机会话之后回到电脑 | 电脑上的终端变成手机大小（手机上记住的窗口尺寸覆盖了电脑的） |
-| 输入法键盘弹出 | 键盘盖住聊天群的输入框；终端不会变矮 |
-| 点按目标 | 窗口按钮 28 px、小按钮 28 px、聊天群标签 30 px（建议 ≥ 44 px） |
-| 输入框字号 | 小于 16 px，iOS 一点输入框就放大整个页面，而且不会自动缩回 |
-| 私聊 | 浮在终端上的 374×426 小面板，聊天记录区只剩一条缝 |
-| 悬浮莉莉丝 | 终端打开时停在内容中间，台词气泡盖住正在看的内容 |
+| Màn hình dọc 390×844, chiều cao vùng nội dung | 548 px (thanh đỉnh + điều hướng + thanh sổ cái + dòng trạng thái chiếm mất 1/3) |
+| Màn hình ngang 844×390, chiều cao vùng nội dung | **122 px**, chỉ nhìn thấy được khoảng hai dòng chữ |
+| Sau khi dùng ở màn hình ngang rồi xoay về dọc | Cửa sổ vẫn giữ kích thước 380×354 đã nhớ lúc xoay ngang, vùng nội dung chỉ còn 148 px |
+| Sau phiên làm việc trên điện thoại quay lại máy tính | Thiết bị đầu cuối trên máy tính bị biến thành kích thước điện thoại (kích thước cửa sổ nhớ trên điện thoại ghi đè mất của máy tính) |
+| Khi bàn phím bộ gõ bật lên | Bàn phím che khuất ô nhập liệu của nhóm chat; thiết bị đầu cuối không tự thu thấp lại |
+| Mục tiêu chạm | Nút cửa sổ 28 px, nút nhỏ 28 px, nhãn nhóm chat 30 px (khuyến nghị ≥ 44 px) |
+| Cỡ chữ ô nhập liệu | Nhỏ hơn 16 px, trên iOS vừa chạm vào ô nhập liệu là toàn bộ trang bị phóng to và không tự thu nhỏ lại |
+| Trò chuyện riêng | Bảng nhỏ 374×426 nổi trên thiết bị đầu cuối, vùng lịch sử trò chuyện chỉ còn lại một khe hẹp |
+| Lilith nổi | Khi thiết bị đầu cuối đang mở lại đứng ở giữa vùng nội dung, bong bóng thoại che mất nội dung đang xem |
 
-## 二、0.9.0 的做法
+## II. Giải pháp của bản 0.9.0
 
-新模块 `src/mobile.js`（`MobileLayout`），只改布局，不碰聊天数据和账本。
+Mô-đun mới `src/mobile.js` (`MobileLayout`), chỉ điều chỉnh bố cục, không chạm tới dữ liệu trò chuyện hay sổ cái.
 
-### 1. 终端全屏
+### 1. Thiết bị đầu cuối toàn màn hình
 
-- 手机上终端铺满可见区域，四周不留边，不显示调整大小的边框和「重置窗口」按钮；顶部的「拖动窗口」提示隐藏，竖屏隐藏版本号小标签。
-- 尊重刘海 / 底部手势条的安全区（`env(safe-area-inset-*)`）。
-- 「手机」的判断：窗口宽度 ≤ 720 px，或触摸屏且短边 ≤ 600 px。平板（如 1024×768 触摸屏）保留浮动窗口。
+- Trên điện thoại, thiết bị đầu cuối trải kín vùng nhìn thấy, bốn phía không chừa lề, ẩn viền thay đổi kích thước và nút 「Đặt lại cửa sổ」; ẩn gợi ý 「Kéo cửa sổ」 ở trên cùng, màn hình dọc ẩn luôn nhãn nhỏ số phiên bản.
+- Tôn trọng vùng an toàn của tai thỏ / thanh cử chỉ đáy màn hình (`env(safe-area-inset-*)`).
+- Phán đoán 「Điện thoại」: chiều rộng cửa sổ ≤ 720 px, hoặc màn hình cảm ứng có cạnh ngắn ≤ 600 px. Máy tính bảng (như màn hình cảm ứng 1024×768) vẫn giữ cửa sổ nổi.
 
-### 2. 跟随输入法键盘
+### 2. Đi theo bàn phím bộ gõ
 
-- 用 `visualViewport` 读出键盘之上的可见区域，终端高度跟着变；键盘高度 > 120 px 视为键盘已弹出。
-- 键盘弹出时，账本条（`.zt-hub-top`）和底部状态行让开，把空间留给输入框和聊天记录；横屏时连顶栏也让开。键盘收起后恢复。
-- 输入框获得焦点约 0.4 秒后（等键盘动画结束）滚动到可见位置，只在终端自己的滚动区内滚动。
+- Dùng `visualViewport` để đọc vùng nhìn thấy phía trên bàn phím, chiều cao thiết bị đầu cuối tự động co giãn theo; khi chiều cao bàn phím > 120 px sẽ coi là bàn phím đang bật lên.
+- Khi bàn phím bật lên, thanh sổ cái (`.zt-hub-top`) và dòng trạng thái dưới cùng sẽ nhường chỗ để dành không gian cho ô nhập liệu và lịch sử trò chuyện; khi ở màn hình ngang thì cả thanh đỉnh cũng nhường chỗ. Sau khi thu bàn phím xuống sẽ khôi phục lại như cũ.
+- Khoảng 0.4 giây sau khi ô nhập liệu nhận tiêu điểm (đợi hoạt ảnh bàn phím kết thúc) sẽ tự cuộn tới vị trí nhìn thấy, chỉ cuộn bên trong vùng cuộn riêng của thiết bị đầu cuối.
 
-### 3. 横屏：左侧导航栏
+### 3. Màn hình ngang: Thanh điều hướng dọc bên trái
 
-- 横屏（宽 > 高且高 ≤ 520 px）时，顶部导航改为 78 px 宽的左侧竖栏，内容区高度从 122 px 提高到 250 px（844×390）。
-- 导航栏里当前页的按钮会自动滚到可见处（从其他页面跳转时不会停在看不见的位置）。
+- Khi xoay ngang (rộng > cao và cao ≤ 520 px), thanh điều hướng phía trên chuyển thành cột dọc rộng 78 px ở bên trái, giúp chiều cao vùng nội dung tăng từ 122 px lên 250 px (ở 844×390).
+- Nút của trang hiện tại trên thanh điều hướng sẽ tự động cuộn tới vùng nhìn thấy.
 
-### 4. 私聊全屏
+### 4. Trò chuyện riêng toàn màn hình
 
-- 手机上私聊（`#lc-panel`）同样全屏，跟随键盘；拖动条和调整大小的边框隐藏。
-- 横屏或键盘弹出时，私聊顶部的莉莉丝面部特写让开。
+- Trên điện thoại, bảng trò chuyện riêng (`#lc-panel`) cũng hiển thị toàn màn hình và co giãn theo bàn phím; thanh kéo và viền thay đổi kích thước được ẩn đi.
+- Khi xoay ngang hoặc khi bàn phím bật lên, dải cận cảnh khuôn mặt Lilith ở đầu khung trò chuyện riêng sẽ tự động nhường chỗ.
 
-### 5. 点按目标与输入框
+### 5. Mục tiêu chạm & Ô nhập liệu
 
-- 窗口按钮 42 px，导航按钮 46 px 高，小按钮 36 px，聊天群标签 40 px，聊天群发送按钮 44 px，私聊顶栏按钮 42 px。
-- 触摸屏上（包括选择「浮动窗口」时）所有输入框、下拉框、多行输入框使用 16 px 字号，包括终端里的引擎页面（`src/hub.js` 的 `ENGINE_CSS`）。
+- Nút cửa sổ 42 px, nút điều hướng cao 46 px, nút nhỏ 36 px, nhãn nhóm chat 40 px, nút gửi nhóm chat 44 px, nút thanh đỉnh trò chuyện riêng 42 px.
+- Trên màn hình cảm ứng (bao gồm cả khi chọn 「Cửa sổ nổi」), toàn bộ ô nhập liệu, hộp chọn thả xuống và ô văn bản nhiều dòng đều sử dụng cỡ chữ 16 px, kể cả các trang động cơ bên trong thiết bị đầu cuối (`ENGINE_CSS` trong `src/hub.js`).
 
-### 6. 悬浮莉莉丝
+### 6. Lilith nổi
 
-- 终端全屏时，她收到所在一侧的下角等着（`parkSpot()`）；横屏时固定在右侧，不挡左侧导航栏。终端关闭后回到你放她的位置。
-- 点她的台词气泡即收起；在终端里滚动时台词也会收起。
+- Khi thiết bị đầu cuối ở chế độ toàn màn hình, cô ấy sẽ lùi về góc dưới ở phía tương ứng để chờ (`parkSpot()`); khi ở màn hình ngang sẽ cố định ở bên phải để không che thanh điều hướng bên trái. Sau khi đóng thiết bị đầu cuối, cô ấy sẽ quay về đúng vị trí bạn đã đặt.
+- Bấm vào bong bóng thoại của cô ấy sẽ thu gọn ngay; khi cuộn trang bên trong thiết bị đầu cuối, bong bóng thoại cũng tự thu gọn.
 
-### 7. 电脑上记住的窗口大小不再被手机覆盖
+### 7. Kích thước cửa sổ ghi nhớ trên máy tính không còn bị điện thoại ghi đè
 
-- 原版窗口管理器每次放置窗口都会保存窗口尺寸。0.9.0 在桥接层（`Bridge.addScriptFilter`）加了一个过滤：全屏会话写入 `*_UI` 偏好时，保留之前保存的 `window` 尺寸，其他字段照常保存。
-- 手机上切到「浮动窗口」时照常保存。
+- Trình quản lý cửa sổ nguyên bản lưu kích thước cửa sổ mỗi lần đặt vị trí. Bản 0.9.0 đã thêm bộ lọc ở tầng cầu nối (`Bridge.addScriptFilter`): khi phiên toàn màn hình ghi tùy chọn `*_UI` sẽ giữ nguyên kích thước `window` đã lưu trước đó, các trường khác vẫn lưu bình thường.
+- Khi chuyển sang chế độ 「Cửa sổ nổi」 trên điện thoại thì vẫn lưu kích thước như bình thường.
 
-### 8. 设置
+### 8. Cài đặt
 
-设置 →「手机上的终端与私聊窗口」：
+Cài đặt → 「Cửa sổ thiết bị đầu cuối & trò chuyện riêng trên điện thoại」:
 
-| 选项 | 效果 |
+| Tùy chọn | Hiệu quả |
 | --- | --- |
-| 自动：手机上全屏（推荐，默认） | 按上面的条件判断 |
-| 总是全屏 | 电脑上也全屏（窗口较矮时用横屏布局） |
-| 浮动窗口（0.8.5 及以前的样子） | 关闭全屏；16 px 输入框仍然生效 |
+| Tự động: Toàn màn hình trên điện thoại (Khuyên dùng, Mặc định) | Phán đoán theo điều kiện nêu trên |
+| Luôn toàn màn hình | Trên máy tính cũng toàn màn hình (khi cửa sổ thấp sẽ dùng bố cục màn hình ngang) |
+| Cửa sổ nổi (Kiểu của bản 0.8.5 trở về trước) | Tắt toàn màn hình; cỡ chữ 16 px cho ô nhập liệu vẫn có hiệu lực |
 
-## 三、顺带修正
+## III. Các chỉnh sửa đi kèm
 
-- `manifest.json`：`homepage` 改为酒馆读取的字段名 `homePage`。
-- `npm run check`：补上 0.8.x 起漏掉的 `src/lilith-float.js`、`src/wb-unbind.js`、`src/worldbook.js`，加入 `src/mobile.js`。
-- 版本测试：`tests/v083.test.js`、`v084.test.js`、`v085.test.js` 的版本断言改成「≥ 该版本且各处一致」（原来的写法只接受 0.8.x，0.9.0 会误报失败）；`v080.test.js` 改为 0.9.0。
-
-## 文件
-
-| 文件 | 改动 |
-| --- | --- |
-| `src/mobile.js` | **新增**：`MobileLayout`、`phoneLayout()`、`viewportBox()`、`keepWindowBox()`、`MOBILE_LAYOUTS` |
-| `styles/hub.css` | 末尾新增「0.9.0 手机端适配」一节（全屏、键盘、横屏导航栏、私聊全屏、点按目标、16 px 输入框） |
-| `src/hub.js` | `ENGINE_CSS`：触摸屏上引擎页输入框 16 px |
-| `src/lilith-float.js` | `parkSpot()`、`speaking`；点台词收起；终端全屏时停在下角 |
-| `src/th-bridge.js` | `addScriptFilter()`：脚本变量写入前的过滤钩子 |
-| `src/settings.js` | 默认值 `mobileLayout: 'auto'` |
-| `src/hub-settings.js` | 设置项「手机上的终端与私聊窗口」 |
-| `index.js` | 启动 / 释放 `MobileLayout`（终端之后、悬浮莉莉丝之前） |
-| `src/contracts.js` | 版本号 0.9.0；能力表新增「手机端适配」 |
-| `manifest.json` | 版本号 0.9.0；`homePage` |
-| `package.json` | 版本号 0.9.0；`check` 脚本补全 |
-| `package-lock.json` | 版本号 0.9.0（两处） |
-| `tests/v090.test.js`、`tests/native_v090.py`、`tests/qa/mobile_audit.py` | 新增测试 / 手机版面检查工具 |
-| `tests/v080.test.js`、`tests/v083.test.js`、`tests/v084.test.js`、`tests/v085.test.js` | 版本断言更新 |
-| `README.md`、`docs/FEATURE_MATRIX.md`、`docs/CHANGES-0.9.0.md`、`docs/ACCEPTANCE-0.9.0.md`、`docs/ROADMAP-1.0.md` | 文档 |
-| `FILELIST.sha256` | 按仓库里文件的实际字节重新生成（180 项）。旧清单有 32 项是按 CRLF 换行的本地副本计算的，和 GitHub 上的文件对不上 |
+- `manifest.json`: đổi `homepage` thành tên trường `homePage` mà SillyTavern đọc.
+- `npm run check`: bổ sung `src/lilith-float.js`, `src/wb-unbind.js`, `src/worldbook.js` và thêm `src/mobile.js`.
+- Kiểm thử phiên bản: cập nhật khẳng định phiên bản trong `tests/v083.test.js`, `v084.test.js`, `v085.test.js` thành 「≥ phiên bản đó và đồng nhất ở mọi nơi」.
+- `FILELIST.sha256`: tạo lại theo đúng số byte thực tế của các tệp trong kho lưu trữ (180 mục).

@@ -1,64 +1,64 @@
-# 0.9.2 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.9.2
 
-## 环境
+## Môi trường
 
-- SillyTavern 1.19.0（官方 tag 全新安装，commit `7e8663cd9c184a550b37238218bdd32c6efc68e9`），隔离数据目录；
-- 两轮：
-  - **装了酒馆助手**（JS-Slash-Runner 4.11.2，GitHub 官方仓库，未改动）——全部套件；
-  - **没装酒馆助手**——和楼层渲染有关的套件（`native_v092`、`native_v084`、`native_v082`、`native_terminal050`）；
-- Playwright Chromium（无头），手机 390×844 触摸模拟（Android 14 / Chrome UA）；
-- 模拟模型：5001 普通，5002 不发 CORS 头。
+- SillyTavern 1.19.0 (cài đặt mới hoàn toàn theo tag chính thức, commit `7e8663cd9c184a550b37238218bdd32c6efc68e9`), thư mục dữ liệu cô lập;
+- Hai lượt:
+  - **Có cài đặt Tavern Helper** (JS-Slash-Runner 4.11.2, kho lưu trữ GitHub chính thức, không chỉnh sửa) — chạy toàn bộ các bộ kiểm thử;
+  - **Không cài đặt Tavern Helper** — chạy các bộ kiểm thử liên quan tới kết xuất tầng (`native_v092`, `native_v084`, `native_v082`, `native_terminal050`);
+- Playwright Chromium (headless), mô phỏng cảm ứng điện thoại 390×844 (UA Android 14 / Chrome);
+- Mô hình mô phỏng: cổng 5001 thông thường, cổng 5002 không gửi tiêu đề CORS.
 
-全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。**没有装 MVU**：截图里的变量扩展用“追加更新块、不重画楼层”的方式模拟；关键词高亮也是模拟的，因为不知道真机上具体是哪个扩展。
+Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1. **Không cài đặt MVU**: tiện ích mở rộng biến số trong ảnh chụp màn hình được mô phỏng theo cách “nối thêm khối cập nhật mà không vẽ lại tầng”; việc tô sáng từ khóa cũng được mô phỏng vì không rõ trên máy thật cụ thể là tiện ích mở rộng nào.
 
-## 真机复测
+## Kiểm thử lại trên máy thật
 
-**待补。**请在出过问题的那段聊天里更新到 0.9.2 后重新打开，看：
+**Chờ bổ sung.** Vui lòng cập nhật lên bản 0.9.2 rồi mở lại đoạn trò chuyện từng gặp lỗi để kiểm tra:
 
-- 【莉莉丝】台词只剩语音框；
-- 楼层里没有 `系统点: … / 好感度: …` 原文；
-- 有角色卡状态栏的楼层里，语音框的位置和消息里写的一致。
+- Lời thoại 【Lilith】 chỉ còn lại khung thoại;
+- Trong tầng không còn nguyên văn `系统点: … / 好感度: …`;
+- Ở những tầng có thanh trạng thái thẻ nhân vật, vị trí của khung thoại khớp với thứ tự viết trong tin nhắn.
 
-## 复现：0.9.1 vs 0.9.2（`native_v092.py`）
+## Tái hiện: So sánh 0.9.1 và 0.9.2 (`native_v092.py`)
 
-| 场景（按真机截图构造） | 0.9.1 | 0.9.2 |
+| Kịch bản (dựng theo ảnh chụp màn hình máy thật) | 0.9.1 | 0.9.2 |
 | --- | --- | --- |
-| A 关键词高亮在插件处理前改了台词段落 | ❌ 原文 + 语音框各一份 | ✅ 只有语音框，位置不变；别的段落的高亮保留 |
-| B 消息在酒馆画完后被追加更新块（不重画） | ❌ 台词两份 + 3 行 `系统点/子系统/好感度` 原文 | ✅ 只有语音框和「系统已记录」 |
-| C 前端卡代码里有 `莉莉丝：…` | ✅ | ✅ 代码原样，只有正文那句成为语音框 |
-| E 台词 → 前端卡（模拟渲染器）→ 台词 | ❌ `原文台词 → 前端卡 → 语音框 → 语音框`，重渲染后还露出代码原文 | ✅ `语音框 → 前端卡 → 语音框 → 小标签`，重渲染后不变 |
-| D 同上，换成**真实酒馆助手** 4.11.2 的状态栏 iframe | ❌ 同 E（就是截图 4：语音框在状态栏下面，原文在上面） | ✅ 顺序正确，重渲染后不变 |
-| 插件整体重渲染 / 重新载入聊天（高亮与前端卡重新执行） | ❌ 仍有重复 | ✅ |
+| A Tiện ích tô sáng từ khóa sửa đoạn văn lời thoại trước khi plugin xử lý | ❌ Nguyên văn + khung thoại mỗi thứ một bản | ✅ Chỉ có khung thoại, vị trí không đổi; phần tô sáng ở các đoạn văn khác được giữ nguyên |
+| B Tin nhắn sau khi SillyTavern vẽ xong bị nối thêm khối cập nhật (không vẽ lại) | ❌ Lời thoại bị nhân đôi + lộ nguyên văn 3 dòng `系统点/子系统/好感度` | ✅ Chỉ có khung thoại và nhãn 「Hệ thống đã ghi nhận」 |
+| C Trong mã thẻ giao diện có chứa `莉莉丝：…` | ✅ | ✅ Mã giữ nguyên, chỉ có câu trong chính văn mới trở thành khung thoại |
+| E Lời thoại → Thẻ giao diện (bộ kết xuất mô phỏng) → Lời thoại | ❌ `Lời thoại nguyên văn → Thẻ giao diện → Khung thoại → Khung thoại`, sau khi kết xuất lại còn làm lộ mã nguồn thô | ✅ `Khung thoại → Thẻ giao diện → Khung thoại → Nhãn nhỏ`, sau khi kết xuất lại không thay đổi |
+| D Giống trên, nhưng đổi thành iframe thanh trạng thái của **Tavern Helper 4.11.2 thực tế** | ❌ Giống E (chính là ảnh chụp 4: khung thoại nằm dưới thanh trạng thái, còn nguyên văn nằm ở trên) | ✅ Thứ tự chính xác, sau khi kết xuất lại không thay đổi |
+| Plugin kết xuất lại toàn bộ / tải lại cuộc trò chuyện (tô sáng và thẻ giao diện thực thi lại) | ❌ Vẫn bị lặp | ✅ |
 
-0.9.1 在 17 项中失败 10 项，0.9.2 全部通过（没装酒馆助手时 D 的 3 项跳过，14/14）。
+Bản 0.9.1 thất bại 10 trên 17 hạng mục, còn bản 0.9.2 đạt toàn bộ (khi không cài Tavern Helper thì 3 hạng mục của D được bỏ qua, đạt 14/14).
 
-截图（未放进 `docs/evidence/`）：`/var/tmp/qa/shots092th/v092-D-tavern-helper.png`、`v092-A-highlighter.png`。人工看图：卡片顺序与消息一致，没有原文重复。
+Ảnh chụp màn hình (không đưa vào `docs/evidence/`): `/var/tmp/qa/shots092th/v092-D-tavern-helper.png`, `v092-A-highlighter.png`. Kiểm tra ảnh thủ công: thứ tự thẻ khớp với tin nhắn, không bị lặp nguyên văn.
 
-## 结果总览（1.19）
+## Tổng quan kết quả (1.19)
 
-| 套件 | 装酒馆助手 | 不装酒馆助手 |
+| Bộ kiểm thử | Có cài Tavern Helper | Không cài Tavern Helper |
 | --- | --- | --- |
-| `native_v092.py`（0.9.2 新增） | 17/17 | 14/14（D 跳过） |
+| `native_v092.py` (Mới thêm bản 0.9.2) | 17/17 | 14/14 (bỏ qua D) |
 | `native_v091.py` | 35/35 | — |
 | `native_v090.py` | 24/24 | — |
 | `native_v085.py` | 20/20 | — |
-| `native_v084.py`（0.8.4 美化兼容） | 29/29 | 29/29 |
+| `native_v084.py` (Tương thích làm đẹp 0.8.4) | 29/29 | 29/29 |
 | `native_v083.py` | 13/13 | — |
-| `native_v082.py`（角色卡状态栏） | **25/25**（含真实酒馆助手一段） | 24/24（该段跳过） |
+| `native_v082.py` (Thanh trạng thái thẻ nhân vật) | **25/25** (gồm đoạn Tavern Helper thực tế) | 24/24 (bỏ qua đoạn đó) |
 | `native_v081.py` | 20/20 | — |
 | `native_v080.py` | 33/33 | — |
 | `native_group060.py` | 44/44 | — |
 | `native_world070.py` | 40/40 | — |
 | `native_terminal050.py` | 58/58 | 58/58 |
-| `native_guards.py` | ✅（`docs/evidence/guards.json` 重新生成为 0.9.2） | — |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | |
+| `native_guards.py` | ✅ (`docs/evidence/guards.json` tạo lại cho bản 0.9.2) | — |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | |
 | `npm run check` | ✅ | |
-| `npm test` | 186/186（0.9.1 为 180，新增 `v092.test.js` 6 项） | |
+| `npm test` | 186/186 (bản 0.9.1 là 180, thêm mới `v092.test.js` 6 hạng mục) | |
 | `npm run filelist:check` | ✅ | |
 
-## 未验证
+## Chưa xác minh
 
-- 真机复测（见上）。
-- 真机上那个关键词高亮扩展的真实实现、真实 MVU 的改写方式：用模拟复现，判断规则不依赖具体扩展。
-- 美化扩展在插件处理**之前**改了含台词 / 数据块的那一段时，那一段的美化会被插件版本替换（设计如此，见 CHANGES）。
-- 1.16 / 1.17 / 1.18 本轮未运行。
+- Kiểm thử lại trên máy thật (xem ở trên).
+- Cách triển khai thực tế của tiện ích tô sáng từ khóa trên máy thật và cách viết lại của MVU thực tế: được tái hiện bằng mô phỏng, quy tắc phán đoán không phụ thuộc vào tiện ích mở rộng cụ thể.
+- Khi tiện ích mở rộng làm đẹp sửa đổi đoạn văn có chứa lời thoại / khối dữ liệu **trước khi** plugin xử lý, phần làm đẹp của đoạn đó sẽ bị thay thế bằng phiên bản của plugin (thiết kế có chủ đích, xem CHANGES).
+- Bản 1.16 / 1.17 / 1.18 đợt này không chạy.

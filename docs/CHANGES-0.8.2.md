@@ -1,160 +1,137 @@
-# 0.8.2 变更
+# Thay đổi 0.8.2
 
-0.8.2 处理用户反馈的四个问题，并合入「优化第一组」：
+Bản 0.8.2 xử lý bốn vấn đề do người dùng phản hồi và hợp nhất 「Nhóm tối ưu hóa thứ nhất」:
 
-- 停用插件后，角色卡上还挂着诸天世界书；
-- 手机上看不到莉莉丝立绘；
-- 手机上立绘不显示时，台词也看不到；
-- 开启插件后，角色卡自带的状态栏很慢甚至不显示；
-- 优化第一组：背包物品带来历、自动闲聊限流、红包与扩群的经济平衡。
+- Sau khi tắt plugin, trên thẻ nhân vật vẫn còn gắn Sách Thế Giới Chư Thiên;
+- Trên điện thoại không nhìn thấy tranh đứng của Lilith;
+- Khi tranh đứng không hiển thị trên điện thoại thì lời thoại cũng không nhìn thấy;
+- Sau khi bật plugin, thanh trạng thái riêng của thẻ nhân vật hiển thị rất chậm hoặc thậm chí không hiển thị;
+- Nhóm tối ưu hóa thứ nhất: vật phẩm trong túi đồ mang theo lai lịch, giới hạn tần suất tán gẫu tự động, cân bằng kinh tế cho lì xì và mở rộng nhóm.
 
-验收见 [ACCEPTANCE-0.8.2](ACCEPTANCE-0.8.2.md)。
+Kết quả nghiệm thu xem tại [ACCEPTANCE-0.8.2](ACCEPTANCE-0.8.2.md).
 
-**世界书内容没有变化**，插件版仍是 0.8.1 的 36 条，不需要重新导入或更新。
+**Nội dung Sách Thế Giới không thay đổi**, bản plugin vẫn gồm 36 mục từ của bản 0.8.1, không cần nhập lại hay cập nhật.
 
-## 一、解绑世界书
+## I. Gỡ gắn kết Sách Thế Giới
 
-### 一键解绑
+### Gỡ gắn kết 1 chạm
 
-位置：终端 → 设置 → 世界书安装 / 绑定 →「一键解绑世界书」，会先弹出确认。
+Vị trí: Thiết bị đầu cuối → Cài đặt → Cài đặt / Gắn kết Sách Thế Giới → 「Gỡ gắn kết Sách Thế Giới 1 chạm」, sẽ bật hộp thoại xác nhận trước.
 
-诸天世界书可能挂在四个地方，这个按钮会全部取下：
+Sách Thế Giới Chư Thiên có thể đang được gắn ở bốn nơi, nút này sẽ tháo toàn bộ ra:
 
-| 位置 | 酒馆里的存储 | 解绑方式 |
+| Vị trí | Nơi lưu trong SillyTavern | Phương thức gỡ gắn kết |
 |---|---|---|
-| 角色卡的主世界书 | 角色卡文件 `data.extensions.world` | 酒馆自己的 `writeExtensionField`，会写回角色卡文件 |
-| 角色卡的附加世界书 | `world_info.charLore[].extraBooks` | 从列表里移除，随设置保存 |
-| 全局世界书 | `selected_world_info` | 酒馆自己的 `onWorldInfoChange` |
-| 当前聊天 | `chat_metadata.world_info`（插件的自动绑定写在这里） | 删除后保存聊天元数据 |
+| Sách Thế Giới chính của thẻ nhân vật | Tệp thẻ nhân vật `data.extensions.world` | Hàm `writeExtensionField` của chính SillyTavern, ghi ngược về tệp thẻ nhân vật |
+| Sách Thế Giới phụ của thẻ nhân vật | `world_info.charLore[].extraBooks` | Gỡ khỏi danh sách và lưu cùng cài đặt |
+| Sách Thế Giới toàn cục | `selected_world_info` | Hàm `onWorldInfoChange` của chính SillyTavern |
+| Cuộc trò chuyện hiện tại | `chat_metadata.world_info` (tự động gắn kết của plugin ghi tại đây) | Xóa xong lưu lại siêu dữ liệu trò chuyện |
 
-几点说明：
+Một vài lưu ý:
 
-- 别的聊天里的绑定不会去改，它们只在那些诸天聊天里才生效。
-- **世界书本身不会删除**，只解除绑定。其他世界书都不会被碰。
-- 解绑后，「自动绑定」会一并关闭。否则打开诸天聊天时，下一条消息又会自动绑回去。
-- 每次解绑都会记录在设置里，同一处会出现「恢复绑定」按钮，可以把**这次取下的那些绑定**原样放回。
-  - 如果角色卡已经被删除，或你在这期间给它换了别的世界书，恢复时会跳过它，并告诉你跳过了几处。
+- Các gắn kết trong những cuộc trò chuyện khác sẽ không bị chạm tới, chúng chỉ có hiệu lực bên trong các cuộc trò chuyện Chư Thiên đó.
+- **Bản thân Sách Thế Giới không bị xóa**, chỉ gỡ bỏ gắn kết. Các Sách Thế Giới khác hoàn toàn không bị động chạm.
+- Sau khi gỡ gắn kết, tính năng 「Tự động gắn kết」 cũng sẽ được tắt đi cùng lúc để tránh tự động gắn lại ở tin nhắn tiếp theo.
+- Mỗi lần gỡ gắn kết đều được ghi lại trong cài đặt, tại cùng vị trí đó sẽ xuất hiện nút 「Khôi phục gắn kết」 giúp đưa **những gắn kết vừa tháo ra trong lần này** trở về nguyên trạng.
+  - Nếu thẻ nhân vật đã bị xóa, hoặc trong thời gian đó bạn đã đổi sang Sách Thế Giới khác cho thẻ, khi khôi phục sẽ bỏ qua thẻ đó và báo rõ đã bỏ qua mấy nơi.
 
-### 停用插件时自动解绑
+### Tự động gỡ gắn kết khi tắt plugin
 
-- 在扩展列表里停用本插件（或删除本插件）时，会自动执行上面的解绑。
-- 开关：设置 →「关闭插件时自动解绑世界书」，默认开启。
-- 这依赖 SillyTavern 的扩展钩子 `manifest.hooks.disable`。**1.17 起才有这个钩子**，1.16 不会调用它，在 1.16 上请手动点「一键解绑」。
-- 酒馆最多等这个钩子 5 秒，插件把解绑限制在 4.5 秒内完成。
-- 下次重新启用插件后，会提示一次这次解绑了哪些地方，以及恢复入口在哪里。
+- Khi tắt plugin này (hoặc xóa plugin này) trong danh sách tiện ích mở rộng, hệ thống sẽ tự động thực thi việc gỡ gắn kết nêu trên.
+- Công tắc: Cài đặt → 「Tự động gỡ gắn kết Sách Thế Giới khi tắt plugin」, mặc định bật.
+- Tính năng này dựa vào hook tiện ích mở rộng `manifest.hooks.disable` của SillyTavern (**có từ bản 1.17 trở đi**; trên bản 1.16 vui lòng bấm 「Gỡ gắn kết 1 chạm」 thủ công).
+- SillyTavern đợi hook này tối đa 5 giây, plugin giới hạn việc gỡ gắn kết hoàn tất trong vòng 4.5 giây.
+- Lần tới khi bật lại plugin, hệ thống sẽ thông báo một lần những nơi đã được gỡ gắn kết cùng vị trí của nút khôi phục.
 
-## 二、悬浮莉莉丝（手机）
+## II. Lilith nổi (Điện thoại)
 
-手机布局下终端窗口放不下立绘，所以原来手机用户完全看不到莉莉丝。现在左下角的唤醒按钮换成了**莉莉丝本人**（表情立绘裁成小卡片），新文件是 `src/lilith-float.js`。
+Dưới bố cục điện thoại, cửa sổ thiết bị đầu cuối không đủ chỗ đặt tranh đứng nên trước đây người dùng điện thoại hoàn toàn không nhìn thấy Lilith. Giờ đây nút đánh thức ở góc dưới bên trái được đổi thành **chính Lilith** (tranh đứng biểu cảm cắt thành thẻ nhỏ), tệp mới là `src/lilith-float.js`.
 
-| 操作 | 效果 |
+| Thao tác | Hiệu quả |
 |---|---|
-| 点一下 | 打开诸天终端。终端已打开时，她说一句剧情台词 |
-| 双击 | 戳她，她会换个表情回应 |
-| 长按约 0.4 秒后拖动 | 拿起来移动（手机会轻震一下） |
-| 拖到屏幕左 / 右边缘松手 | 播放躲藏动画，缩进边缘，只露出一角，并且一直待在那里 |
-| 点露出的那一角 | 她出来 |
-| 位置 | 自动记住，刷新后保持 |
+| Bấm 1 lần | Mở Thiết Bị Đầu Cuối Chư Thiên. Khi thiết bị đầu cuối đang mở, cô ấy sẽ nói một câu thoại theo cốt truyện |
+| Nhấn đúp | Chọc cô ấy, cô ấy sẽ đổi biểu cảm để đáp lại |
+| Nhấn giữ khoảng 0.4 giây rồi kéo | Nhấc lên để di chuyển (điện thoại sẽ rung nhẹ một cái) |
+| Kéo tới mép trái / phải màn hình rồi thả tay | Phát hoạt ảnh ẩn nấp, rụt vào trong mép, chỉ để lộ một góc và đứng yên ở đó |
+| Bấm vào góc lộ ra | Cô ấy bước ra |
+| Vị trí | Tự động ghi nhớ, giữ nguyên sau khi làm mới trang |
 
-- 没有长按的快速划动不会拖动她，也就不会和翻页、滚动冲突。
-- 打开终端时，她会暂时退到最近的边缘，不挡终端；关掉终端后回到原位。
+- Vuốt nhanh mà không nhấn giữ sẽ không làm kéo cô ấy đi, nhờ đó không bị xung đột với thao tác lật trang hay cuộn trang.
+- Khi mở thiết bị đầu cuối, cô ấy sẽ tạm thời lùi về mép gần nhất để không che khuất thiết bị đầu cuối; sau khi đóng thiết bị đầu cuối sẽ quay về vị trí cũ.
 
-设置 →「悬浮莉莉丝」有三个选项：
+Cài đặt → 「Lilith nổi」 có ba tùy chọn:
 
-- **自动**（默认）：触屏或窄屏（≤720px）开启，电脑上仍是原来的唤醒按钮。
-- **总是开启**。
-- **关闭**。
+- **Tự động** (mặc định): bật trên màn hình cảm ứng hoặc màn hình hẹp (≤720px), trên máy tính vẫn là nút đánh thức nguyên bản.
+- **Luôn bật**.
+- **Tắt**.
 
-## 三、立绘看不到时，台词照样弹出
+## III. Khi không nhìn thấy tranh đứng, lời thoại vẫn bật lên bình thường
 
-以下情况，莉莉丝的反应和系统播报都会在**悬浮莉莉丝旁边的气泡**里弹出：
+Trong các trường hợp dưới đây, phản ứng của Lilith và thông báo hệ thống đều sẽ bật lên trong **bong bóng thoại bên cạnh Lilith nổi**:
 
-- 手机布局；
-- 窗口太小、立绘被隐藏；
-- 终端关着。
+- Bố cục điện thoại;
+- Cửa sổ quá nhỏ khiến tranh đứng bị ẩn đi;
+- Thiết bị đầu cuối đang đóng.
 
-即使她正躲在边缘，说话时也会探出来，说完再缩回去。以前在这些情况下，台词要等下次打开终端才说，或者只出现在终端里的一条提示。
+Ngay cả khi cô ấy đang nấp ở mép màn hình, lúc nói chuyện cô ấy cũng sẽ ló ra, nói xong lại rụt vào.
 
-设成「关闭」或在电脑上（立绘可见）时，行为和 0.8.1 一样。
+## IV. Thanh trạng thái riêng của thẻ nhân vật không hiển thị / hiển thị rất chậm (Lỗi, đã sửa)
 
-## 四、角色卡自带状态栏不显示 / 很慢（Bug，已修复）
+**Đây là lỗi (bug), không phải vấn đề hiệu năng.**
 
-**这是 bug，不是性能问题。**
+### Nguyên nhân
 
-### 原因
+Khi Tavern Helper kết xuất thanh trạng thái giao diện của thẻ nhân vật, nó sẽ bọc mỗi khối mã HTML trong tầng vào một `div.TH-render` và gắn một iframe bên trong. Nó chỉ gắn **đúng một lần** trong sự kiện kết xuất tầng.
 
-酒馆助手（Tavern Helper）渲染角色卡的前端状态栏时，会把楼层里每个 HTML 代码块包进 `div.TH-render`，并在里面挂一个 iframe。它只在楼层渲染事件里挂**一次**。
+Để hiển thị khung thoại Lilith, khối dữ liệu Chư Thiên và thay thế macro, plugin sẽ dựng lại `.mes_text` của tầng đó. Trước đây plugin dùng cách thay thế toàn khối (`replaceChildren`), vô tình xóa mất luôn iframe mà Tavern Helper vừa gắn vào.
 
-插件为了显示莉莉丝语音框、诸天数据块和宏替换，会重建这条楼层的 `.mes_text`。以前用的是整块替换（`replaceChildren`），会把酒馆助手刚挂好的 iframe 一起删掉。酒馆助手不会再挂第二次，于是：
+### Cách sửa (`src/statusbar-host.js`)
 
-- 状态栏消失，或者变回一段原始代码；
-- 偶尔在下一次滚动、编辑触发重渲染时才出现，看起来就像「很慢」。
+- Khi dựng lại tầng, tìm lại khối bao bọc `div.TH-render` và iframe bên trong dựa theo nội dung mã nguồn rồi giữ nguyên tại chỗ: cùng một nút DOM, không tải lại, trạng thái kịch bản bên trong thanh trạng thái cũng không bị mất.
+- Plugin chỉ thay thế những phần do chính nó phụ trách.
+- Khi văn bản đã bị macro sửa đổi, thực hiện khớp thêm một lần nữa theo tiêu chí 「là mã giao diện frontend」.
+- Thanh trạng thái nằm lồng bên trong khối thu gọn hoặc khối trích dẫn cũng được giữ nguyên.
+- Khi macro của Tavern Helper đã bật, plugin không xử lý lặp lại các macro dạng `{{get_chat_variable::…}}` nữa, tránh việc cùng một tầng bị sửa hai lần.
 
-### 修复（`src/statusbar-host.js`）
+### Kiểm thử thực tế (1.19 + Tavern Helper 4.11.2, 13 tầng, 12 thanh trạng thái thẻ nhân vật)
 
-- 重建楼层时，按代码内容找回原来的 `div.TH-render` 包装和里面的 iframe，原地保留：同一个节点，不刷新，状态栏里的脚本状态也不丢。
-- 插件只替换它自己负责的部分。
-- 文本被宏改动过时，按「是前端代码」再匹配一次。
-- 嵌套在折叠块、引用块里的状态栏同样会保留。
-- 酒馆助手的宏已启用时，插件不再重复处理 `{{get_chat_variable::…}}` 这类宏，避免同一楼层被改两次。
-
-### 实测（1.19 + 酒馆助手 4.11.2，13 层、12 个角色卡状态栏）
-
-| | 修复前 | 修复后 |
+| | Trước khi sửa | Sau khi sửa |
 |---|---|---|
-| 关闭插件 | 12/12 渲染 | 12/12 渲染 |
-| 开启插件 | **0/12** | **12/12**，0.8 秒内全部出现 |
+| Tắt plugin | Kết xuất 12/12 | Kết xuất 12/12 |
+| Bật plugin | **0/12** | **12/12**, xuất hiện toàn bộ trong vòng 0.8 giây |
 
-## 五、优化第一组
+## V. Nhóm tối ưu hóa thứ nhất
 
-### 物品来历存在背包物品上
+### Lưu lai lịch vật phẩm ngay trên vật phẩm trong túi đồ
 
-- 抢红包、领赠礼、集市购买得到的物品，`背包[].来源` 写为 `聊天群·名称@世界·红包 / 赠礼 / 集市购买`。
-- 剧情提示里「宿主从聊天群得到的东西」改为从**背包**读取：只要物品还在，不论多久以前得到的，来历都会告诉正文模型，最多 12 件。
-- 系统点类的入账（红包点数、签到）不进背包，仍取最近 4 条入库记录。
+- Các vật phẩm nhận được từ giật lì xì, nhận quà tặng, mua ở chợ nhóm sẽ có `背包[].来源` được ghi thành `聊天群·Tên@Thế giới·红包 / 赠礼 / 集市购买`.
+- Mục 「Vật phẩm Ký chủ nhận được từ nhóm chat」 trong lời nhắc cốt truyện chuyển sang đọc trực tiếp từ **túi đồ**: chỉ cần vật phẩm vẫn còn trong túi, bất kể nhận được từ bao lâu trước đó, lai lịch của nó đều sẽ được báo cho mô hình chính văn biết (tối đa 12 món).
+- Các khoản thu thuộc nhóm Điểm Hệ Thống (điểm lì xì, điểm danh) không đi vào túi đồ nên vẫn lấy 4 bản ghi nhập kho gần nhất.
 
-### 自动闲聊限流
+### Giới hạn tần suất tán gẫu tự động
 
-- 以前开启「自动闲聊」后，**每次**正文回复都会让群员聊一次，也就是每条消息额外多一次模型请求。
-- 现在改为每 N 次正文回复聊一次：
-  - 新设置 `聊天群.设置.闲聊间隔`，默认 3；
-  - 可选 1 / 2 / 3 / 4 / 5 / 6 / 8 / 10；
-  - 位置：聊天群 → 群设置；
-  - 计数器在 `聊天群.节奏.闲聊`。
+- Trước đây sau khi bật 「Tự động tán gẫu」, **mỗi lần** có phản hồi chính văn đều khiến thành viên nhóm tán gẫu một lượt, tức mỗi tin nhắn đều phát sinh thêm một yêu cầu mô hình.
+- Hiện đổi thành cứ mỗi N lần phản hồi chính văn mới tán gẫu một lần:
+  - Cài đặt mới `聊天群.设置.闲聊间隔`, mặc định là 3;
+  - Có thể chọn 1 / 2 / 3 / 4 / 5 / 6 / 8 / 10;
+  - Vị trí: Nhóm chat → Cài đặt nhóm;
+  - Bộ đếm nằm tại `聊天群.节奏.闲聊`.
 
-### 经济平衡
+### Cân bằng kinh tế
 
-| 项目 | 0.8.1 | 0.8.2 |
+| Hạng mục | 0.8.1 | 0.8.2 |
 |---|---|---|
-| 群员点数红包总额上限 | min（实力档价格，商城等级上限） | 再加一条：**不超过该群员的入群费**（至少 100）。宿主只抢其中一份 |
-| 扩建 +5 人 | 当前容量 × 2,000（5 → 10 人：10,000） | 当前容量 × 1,000（5 → 10 人：5,000），与 300 起的入群费曲线相称 |
+| Giới hạn tổng điểm lì xì của thành viên | min(giá bậc thực lực, giới hạn cấp độ thương thành) | Thêm một điều kiện: **không vượt quá phí vào nhóm của thành viên đó** (ít nhất là 100). Ký chủ chỉ giật một phần trong đó |
+| Mở rộng nhóm +5 người | Sức chứa hiện tại × 2.000 (5 → 10 người: 10.000) | Sức chứa hiện tại × 1.000 (5 → 10 người: 5.000), cân xứng với đường cong phí vào nhóm khởi điểm từ 300 |
 
-改红包上限的原因：以前 1 档群员（入群费 300）可以发上千点的红包，群就成了印钞机。
+## Các trường & cài đặt thêm mới / sửa đổi
 
-物品红包、赠礼的品级上限不变（仍按实力档和商城等级）。
-
-### 已知限制
-
-背包按名称合并：如果背包里已经有同名物品，聊天群得到的这一件会并进原有那一格，保留原来的来历。
-
-## 新增 / 修改的字段与设置
-
-| 名称 | 说明 |
+| Tên | Thuyết minh |
 |---|---|
-| 扩展设置 `wbUnbindOnDisable` | 停用插件时自动解绑，默认 `true` |
-| 扩展设置 `wbUnbound` | 最近一次解绑记录 `{name, chars[], extra[], global, chat, count, auto, noticed}`，供「恢复绑定」使用 |
-| 扩展设置 `floatLilith` | `auto` / `on` / `off` |
-| 扩展设置 `floatPos` | `{x, y, edge, tucked}`，悬浮莉莉丝的位置 |
-| `诸天系统.聊天群.设置.闲聊间隔` | 自动闲聊间隔，默认 3 |
-| `诸天系统.聊天群.节奏.闲聊` | 距上次自动闲聊的正文回复数 |
-| `诸天系统.背包[].来源` | 聊天群物品为 `聊天群·来源·方式` |
-
-## 修改的文件
-
-- 新增：`src/wb-unbind.js`、`src/lilith-float.js`、`tests/v082.test.js`、`tests/native_v082.py`、本文档、`docs/ACCEPTANCE-0.8.2.md`
-- 修改：
-  - 根目录：`index.js`、`manifest.json`、`package.json`、`package-lock.json`
-  - `src/`：`contracts.js`、`features.js`、`hub-group.js`、`hub-settings.js`、`lilith-stage.js`、`settings.js`、`statusbar-host.js`
-  - `tests/`：`group060.test.js`、`native_group060.py`、`native_v080.py`、`v080.test.js`
-  - 文档：`README.md`、`docs/FEATURE_MATRIX.md`、`docs/evidence/guards.json`
-- `vendor/original/*` 未改动（字节级不变）。
+| Cài đặt tiện ích mở rộng `wbUnbindOnDisable` | Tự động gỡ gắn kết khi tắt plugin, mặc định `true` |
+| Cài đặt tiện ích mở rộng `wbUnbound` | Bản ghi gỡ gắn kết gần nhất `{name, chars[], extra[], global, chat, count, auto, noticed}`, dùng cho nút 「Khôi phục gắn kết」 |
+| Cài đặt tiện ích mở rộng `floatLilith` | `auto` / `on` / `off` |
+| Cài đặt tiện ích mở rộng `floatPos` | `{x, y, edge, tucked}`, vị trí của Lilith nổi |
+| `诸天系统.聊天群.设置.闲聊间隔` | Khoảng cách tán gẫu tự động, mặc định 3 |
+| `诸天系统.聊天群.节奏.闲聊` | Số lần phản hồi chính văn kể từ lần tán gẫu tự động trước |
+| `诸天系统.背包[].来源` | Vật phẩm nhóm chat có dạng `聊天群·Nguồn·Phương thức` |

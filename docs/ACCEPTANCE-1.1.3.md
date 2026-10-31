@@ -1,71 +1,71 @@
-# 1.1.3 验收记录
+# Bản ghi nghiệm thu 1.1.3
 
-环境：
-- 一次性隔离 SillyTavern 1.19.0（`tests/qa/setup_isolated_st.py`）+ 确定性模拟模型。
-- 手机项用 Playwright 的 **Pixel 7 设备模拟**（412×839，触屏、`pointer: coarse`）。
-- **不是**实体手机，也**不是**真实模型验收。
+Môi trường:
+- SillyTavern 1.19.0 cô lập dùng một lần (`tests/qa/setup_isolated_st.py`) + mô hình mô phỏng tất định.
+- Hạng mục điện thoại dùng **mô phỏng thiết bị Pixel 7** của Playwright (412×839, màn hình cảm ứng, `pointer: coarse`).
+- **Không phải** điện thoại vật lý, cũng **không phải** nghiệm thu bằng mô hình thực tế.
 
-## 静态与单元测试
+## Kiểm tra tĩnh & Kiểm thử đơn vị
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 |---|---|
-| `npm run check` | 通过（运行时重建、来源哈希一致） |
+| `npm run check` | Đạt (dựng lại runtime, mã băm nguồn đồng nhất) |
 | `npm test` | 410/410 |
-| `npm run filelist:check` | 279 个文件，一致 |
-| `tests/v113.test.js`（新增） | 7 项通过：四种模式、关闭也隐藏头像、关闭先确认、两个拖放目标、大小 20%、设置与扩展面板入口、× 不改悬浮窗设置 |
-| `tests/v112.test.js` | 改为断言「经典折叠整次一次请求、输出上限随件数增加」，并新增上限计算一项 |
+| `npm run filelist:check` | 279 tệp, đồng nhất |
+| `tests/v113.test.js` (mới) | 7 hạng mục đạt: bốn chế độ, khi đóng cũng ẩn cả ảnh đại diện, hỏi xác nhận trước khi đóng, hai mục tiêu kéo thả, kích thước 20%, lối vào trong Cài đặt và bảng tiện ích mở rộng, nút × không làm thay đổi cài đặt cửa sổ nổi |
+| `tests/v112.test.js` | Đổi sang khẳng định 「Gộp cổ điển gửi 1 yêu cầu cho cả lượt, giới hạn đầu ra tăng theo số lượng món」, và thêm mới 1 hạng mục tính giới hạn trần |
 
-## 浏览器（`tests/native_v113.py`，34/34）
+## Trình duyệt (`tests/native_v113.py`, 34/34)
 
-手机（模拟 Pixel 7）：
+Điện thoại (mô phỏng Pixel 7):
 
-1. 默认（自动）：悬浮莉莉丝显示，头像隐藏。
-2. 拖动莉莉丝：屏幕底部出现两个目标「拖到这里换成头像」「拖到这里关闭悬浮窗」，悬停时只高亮对应的那个。
-3. 丢到「换成头像」：`floatLilith=off`，莉莉丝消失、头像出现（是切换，不是关闭）。
-4. 拖动头像：出现「拖到这里换成莉莉丝」「拖到这里关闭悬浮窗」。丢到「换成莉莉丝」后，莉莉丝回来；头像的位置不变，因为丢到目标上不算移动。
-5. 莉莉丝丢到「关闭」：先确认，「先不关」会保留她；确认后 `floatLilith=none`，莉莉丝**和**头像都不显示。
-6. 关闭状态下：
-   - 终端照常能打开，标题栏里的头像正常，「浮窗」按钮在；
-   - 按 × 只关闭终端，页面上不会冒出头像。
-7. 头像丢到「关闭」（确认后）：`none`，头像消失。
-8. 「浮窗 / 全屏」按钮：
-   - 全屏时显示「浮窗」，浮窗时显示「全屏」，关闭后重开也一样；
-   - × 在两种布局下都关闭终端，莉莉丝还是莉莉丝。
-9. 大小：
-   - 莉莉丝 20% 时 30 px 宽，在屏幕内；
-   - 头像 20% 时约 13 px，在屏幕内，能拖动，松手位置和保存的位置一致（误差 ≤2 px）；
-   - 改回 100% 时 64 px。
-10. 设置页：
-    - 「悬浮窗（切换样子）」有四个选项（auto / on / off / none）；
-    - 单独的「关闭悬浮窗…」按钮可用；
-    - 两个大小选项都从 20% 开始。
-11. 扩展面板：「显示头像」显示头像，「显示悬浮莉莉丝」显示莉莉丝。没有页面错误。
+1. Mặc định (Tự động): Lilith nổi hiển thị, ảnh đại diện ẩn đi.
+2. Kéo Lilith: dưới đáy màn hình xuất hiện hai mục tiêu 「Kéo vào đây để đổi thành ảnh đại diện」 và 「Kéo vào đây để đóng cửa sổ nổi」, khi di qua chỉ làm sáng mục tiêu tương ứng.
+3. Thả vào 「Đổi thành ảnh đại diện」: `floatLilith=off`, Lilith biến mất, ảnh đại diện xuất hiện (là chuyển đổi chứ không phải đóng).
+4. Kéo ảnh đại diện: xuất hiện 「Kéo vào đây để đổi thành Lilith」 và 「Kéo vào đây để đóng cửa sổ nổi」. Sau khi thả vào 「Đổi thành Lilith」, Lilith quay trở lại; vị trí của ảnh đại diện không đổi vì thả vào mục tiêu không tính là di chuyển.
+5. Thả Lilith vào 「Đóng」: hỏi xác nhận trước, bấm 「Khoan đóng」 sẽ giữ cô ấy lại; sau khi xác nhận thì `floatLilith=none`, cả Lilith **lẫn** ảnh đại diện đều không hiển thị.
+6. Ở trạng thái đã đóng:
+   - Thiết bị đầu cuối vẫn mở được bình thường, ảnh đại diện trong thanh tiêu đề hiển thị bình thường, nút 「Cửa sổ nổi」 vẫn có mặt;
+   - Bấm nút × chỉ đóng thiết bị đầu cuối, trên trang không tự dưng mọc ra ảnh đại diện.
+7. Thả ảnh đại diện vào 「Đóng」 (sau khi xác nhận): `none`, ảnh đại diện biến mất.
+8. Nút 「Cửa sổ nổi / Toàn màn hình」:
+   - Khi đang toàn màn hình thì hiển thị 「Cửa sổ nổi」, khi đang ở cửa sổ nổi thì hiển thị 「Toàn màn hình」, sau khi đóng rồi mở lại vẫn giữ nguyên;
+   - Nút × ở cả hai bố cục đều đóng thiết bị đầu cuối, Lilith vẫn là Lilith.
+9. Kích thước:
+   - Khi Lilith ở mức 20% thì rộng 30 px, nằm trong màn hình;
+   - Khi ảnh đại diện ở mức 20% thì rộng khoảng 13 px, nằm trong màn hình, kéo được, vị trí thả tay khớp với vị trí đã lưu (sai số ≤2 px);
+   - Đổi về lại 100% thì rộng 64 px.
+10. Trang Cài đặt:
+    - Mục 「Cửa sổ nổi (Chuyển đổi kiểu dáng)」 có bốn tùy chọn (auto / on / off / none);
+    - Nút 「Đóng cửa sổ nổi…」 riêng biệt hoạt động bình thường;
+    - Cả hai tùy chọn kích thước đều bắt đầu từ mức 20%.
+11. Bảng tiện ích mở rộng: bấm 「Hiển thị ảnh đại diện」 sẽ hiển thị ảnh đại diện, bấm 「Hiển thị Lilith nổi」 sẽ hiển thị Lilith. Không có lỗi trang.
 
-桌面（1280×860）：
+Máy tính (1280×860):
 
-12. 默认显示原版唤醒按钮。拖到「换成莉莉丝」后变成 `on`，悬浮莉莉丝出现。
-13. 右键莉莉丝：菜单有「切换成头像」「关闭悬浮窗」；选「切换成头像」后唤醒按钮回来。
-14. 唤醒按钮按 40% 缩放，仍在屏幕内。
+12. Mặc định hiển thị nút đánh thức nguyên bản. Sau khi kéo vào 「Đổi thành Lilith」 sẽ chuyển thành `on`, Lilith nổi xuất hiện.
+13. Nhấp chuột phải vào Lilith: menu có 「Đổi thành ảnh đại diện」 và 「Đóng cửa sổ nổi」; sau khi chọn 「Đổi thành ảnh đại diện」, nút đánh thức quay trở lại.
+14. Nút đánh thức thu phóng ở mức 40% vẫn nằm gọn trong màn hình.
 
-经典折叠（模拟模型统计请求次数）：
+Gộp cổ điển (mô hình mô phỏng thống kê số lần yêu cầu):
 
-| 抽数 | 模型请求 | 这次请求里的件数 | 折叠（只计数） | 输出上限 |
+| Số lượt rút | Yêu cầu mô hình | Số món trong yêu cầu lần này | Gộp (chỉ đếm số lượng) | Giới hạn đầu ra |
 |---|---|---|---|---|
 | 49 | **1** | 49 | — | 12784 |
-| 60 | **1** | 32 | 凡品 ×28 | 8704 |
-| 120 | **1** | 3 | 凡品 ×76、灵品 ×41 | 8192 |
+| 60 | **1** | 32 | Phàm phẩm ×28 | 8704 |
+| 120 | **1** | 3 | Phàm phẩm ×76, Linh phẩm ×41 | 8192 |
 
-上表每一行都核对过：Σ数量 = 抽数、一次扣费，折叠的品级没有发给模型。
+Mọi dòng trong bảng trên đều đã được đối chiếu: Σsố lượng = số lượt rút, trừ phí 1 lần, phẩm cấp đã gộp không gửi cho mô hình.
 
-## 回归（同一隔离酒馆）
+## Hồi quy (cùng SillyTavern cô lập)
 
-| 套件 | 结果 |
+| Bộ kiểm thử | Kết quả |
 |---|---|
-| native_v113（新增） | 34/34 |
-| native_v112 | 40/40（「≤20 件一批」改为「一次请求」） |
-| native_v100_feedback | 44/44（关闭 = `none`；真实触摸长按拖到「关闭」目标） |
+| native_v113 (mới) | 34/34 |
+| native_v112 | 40/40 (đổi 「≤20 món mỗi lô」 thành 「1 yêu cầu duy nhất」) |
+| native_v100_feedback | 44/44 (đóng = `none`; chạm giữ thực tế kéo vào mục tiêu 「Đóng」) |
 | native_v082 | 24/24 |
-| native_v083 | 13/13（大小选项检查改为看取值） |
+| native_v083 | 13/13 (kiểm tra tùy chọn kích thước đổi sang xem giá trị) |
 | native_v111 | 32/32 |
 | native_v111_audit | 34/34 |
 | native_v111_mobile | 12/12 |
@@ -76,13 +76,13 @@
 | native_group060 | 44/44 |
 | native_world070 | 40/40 |
 | native_v110_patch3 | 19/19 |
-| native_v110_review | 11/12（1 项是以前就有的失败） |
-| native_terminal050 | 49/58（9 项失败，和 1.1.2 交付时相同；扩展面板检查已加入「显示头像」） |
+| native_v110_review | 11/12 (1 mục là thất bại đã có từ trước) |
+| native_terminal050 | 49/58 (9 mục thất bại giống hệt khi bàn giao 1.1.2; kiểm tra bảng tiện ích mở rộng đã thêm 「Hiển thị ảnh đại diện」) |
 
-`native_v113` 会在结束时把它改过的插件设置（演出、悬浮窗、大小、位置、布局、抽卡模式）恢复原样。之后紧接着跑 `native_v100_feedback`，44/44 通过。
+Khi kết thúc, `native_v113` sẽ khôi phục toàn bộ cài đặt plugin mà nó đã thay đổi (trình diễn, cửa sổ nổi, kích thước, vị trí, bố cục, chế độ rút thẻ) về nguyên trạng. Ngay sau đó chạy tiếp `native_v100_feedback` đạt 44/44.
 
-## 没有验收的部分
+## Những phần chưa nghiệm thu
 
-- **实体手机**：只做了 Pixel 7 设备模拟。玩家说看不到「浮窗 / 全屏」按钮，在模拟上没能复现。
-- **真实模型**：一次请求输出 40+ 件物品没有验收。如果接口上限太小或模型中途截断，会自动减半重试，这时请求次数会多于一次。
-- 20% 的头像（约 13 px）在手机上比常见的最小点击区域（约 44 px）小很多，是按玩家要求提供的。
+- **Điện thoại vật lý**: Mới chỉ chạy mô phỏng thiết bị Pixel 7. Việc người chơi phản ánh không nhìn thấy nút 「Cửa sổ nổi / Toàn màn hình」 chưa tái hiện được trên môi trường mô phỏng.
+- **Mô hình thực tế**: Việc xuất hơn 40 món vật phẩm trong một yêu cầu duy nhất chưa được nghiệm thu trên mô hình thực tế. Nếu giới hạn trần của cổng kết nối quá nhỏ hoặc mô hình bị cắt cụt giữa chừng, plugin sẽ tự động giảm một nửa rồi thử lại, khi đó số lần yêu cầu sẽ nhiều hơn 1 lần.
+- Ảnh đại diện ở mức 20% (khoảng 13 px) trên điện thoại nhỏ hơn rất nhiều so với vùng chạm tối thiểu thông thường (khoảng 44 px), được cung cấp theo đúng yêu cầu của người chơi.

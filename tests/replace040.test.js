@@ -112,7 +112,7 @@ test('main-API sentinel is routed to SillyTavern generateRaw and never fetched',
         assert.equal(await b.generateRaw({ user_input: 'hi', ordered_prompts: [{ role: 'system', content: 'SYS' }, 'user_input'], custom_api: { apiurl: MAIN_API_URL, key: 'st-main', max_tokens: 900 } }), '主API回复');
         assert.deepEqual(cap.main, { prompt: 'hi', systemPrompt: 'SYS', responseLength: 900 });
         assert.equal((await b.customChat({ url: MAIN_API_URL, key: 'x' }, [{ role: 'user', content: '回复两个字：成功' }])).text, '主API回复');
-        assert.deepEqual(await b.listModels(MAIN_API_URL, ''), ['酒馆当前主API']);
+        assert.deepEqual(await b.listModels(MAIN_API_URL, ''), ['API chính hiện tại của SillyTavern']);
         assert.equal(validateUrl(MAIN_API_URL), '');
         assert.notEqual(validateUrl('http://evil.example/v1'), '');
     } finally { globalThis.fetch = realFetch; }
@@ -156,5 +156,5 @@ test('touch strokes: rubbing escalates, a straight short move is not a stroke', 
 });
 
 test('capability list declares the replaced v1.1 pieces', () => {
-    for (const n of ['原版 4 个正则全部原生取代', '世界书变量宏 {{get_chat_variable::…}}', '真实触摸互动', 'API 中心与酒馆主 API', '一键接管 / 恢复旧版']) assert.ok(CAPABILITIES.some(c => c.name === n), n);
+    for (const n of ['Thay thế nguyên bản toàn bộ 4 Regex gốc', 'Macro biến Sách Thế Giới {{get_chat_variable::…}}', 'Tương tác chạm thực tế', 'Trung tâm API & API chính của SillyTavern', 'Tiếp quản / Khôi phục bản cũ một chạm']) assert.ok(CAPABILITIES.some(c => c.name === n), n);
 });

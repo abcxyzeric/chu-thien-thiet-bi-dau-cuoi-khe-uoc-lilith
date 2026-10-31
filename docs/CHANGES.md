@@ -1,34 +1,34 @@
-# 0.1.0 阶段文件与交付范围（历史记录）
+# Các tệp giai đoạn 0.1.0 và phạm vi bàn giao (Hồ sơ lịch sử)
 
-## 新增的原生扩展文件
+## Các tệp tiện ích mở rộng nguyên bản thêm mới
 
-- `manifest.json`：原生扩展声明、精确适配范围对应的最小客户端门槛、生命周期钩子。
-- `index.js`：等待宿主的异步启动、快速启停防重、实例清理。
-- `src/contracts.js`：身份、快照、意图规范化、能力矩阵。
-- `src/host-adapter.js`：真实宿主适配、原变量只读、原回忆提示、明确确认后的玩家发送及服务器读回。
-- `src/terminal.js`：六视图、原版立绘挂载、正文惰性标记、移动面板、交互草稿。
-- `styles/host.css`、`styles/shell.css`：宿主入口、聊天标记、隔离终端的完整样式。
-- `assets/original/lilith.webp`、`avatar.webp`：从原素材中提取。
-- `assets/star-sea.jpg`：沿用前一轮星海概念背景。
-- `vendor/original/runtime.js`：提取的原版模块私有封装。
-- `vendor/original/provenance.json`：来源、基线及哈希。
-- `tests/contracts.test.js`：15 项纯逻辑/来源测试。
-- `tests/native_acceptance.py`、`native_guards.py`、`native_views.py`：真实隔离宿主验收，需明确隔离运行参数。
-- `tools/extract_original.py`：可复现的原模块提取。
-- `package.json`、`.gitignore`、`README.md`、本目录文档、原始验收 JSON、四张宿主截图。
-- `FILELIST.sha256`：包内文件校验清单，不包含自身。
+- `manifest.json`: khai báo tiện ích mở rộng nguyên bản, ngưỡng phiên bản trình khách tối thiểu tương ứng với phạm vi tương thích chính xác, các hook vòng đời.
+- `index.js`: khởi chạy bất đồng bộ chờ máy chủ, chống chạy trùng khi bật/tắt nhanh, dọn dẹp thực thể.
+- `src/contracts.js`: danh tính, ảnh chụp nhanh, chuẩn hóa ý định, ma trận năng lực.
+- `src/host-adapter.js`: tương thích máy chủ thật, chỉ đọc biến gốc, lời nhắc hồi tưởng gốc, gửi tin nhắn người chơi sau khi xác nhận rõ ràng và đọc lại từ máy chủ.
+- `src/terminal.js`: 6 khung nhìn, gắn ảnh đứng nguyên bản, làm trơ thẻ đánh dấu trong chính văn, bảng di động, bản nháp tương tác.
+- `styles/host.css`, `styles/shell.css`: kiểu dáng đầy đủ cho lối vào máy chủ, nhãn trò chuyện và thiết bị đầu cuối cô lập.
+- `assets/original/lilith.webp`, `avatar.webp`: trích xuất từ bộ tư liệu gốc.
+- `assets/star-sea.jpg`: kế thừa hình nền ý tưởng biển sao từ vòng trước.
+- `vendor/original/runtime.js`: gói đóng gói riêng tư các mô-đun nguyên bản đã trích xuất.
+- `vendor/original/provenance.json`: nguồn gốc, cơ sở và mã băm.
+- `tests/contracts.test.js`: 15 bài kiểm tra logic thuần túy / nguồn gốc.
+- `tests/native_acceptance.py`, `native_guards.py`, `native_views.py`: nghiệm thu máy chủ cô lập thực tế, yêu cầu tham số chạy cô lập rõ ràng.
+- `tools/extract_original.py`: kịch bản trích xuất mô-đun gốc có thể tái lập.
+- `package.json`, `.gitignore`, `README.md`, tài liệu trong thư mục này, JSON nghiệm thu gốc, 4 ảnh chụp màn hình máy chủ.
+- `FILELIST.sha256`: danh sách kiểm tra mã băm các tệp trong gói, không bao gồm chính nó.
 
-## 原五文件
+## 5 tệp gốc
 
-`assistant-v1.1.js`、`statusbar-v3.1.css`、`statusbar-v3.1-part1.js`、`statusbar-v3.1-part2.js`、`statusbar-v3.1-part3.js`：完整同名保留于 `vendor/original/`，字节未改动；不是把零散补丁当作原文件交付。它们是迁移基线，不在此检查点中整体执行旧宿主脚本。
+`assistant-v1.1.js`, `statusbar-v3.1.css`, `statusbar-v3.1-part1.js`, `statusbar-v3.1-part2.js`, `statusbar-v3.1-part3.js`: giữ nguyên đầy đủ cùng tên trong `vendor/original/`, không coi các bản vá rời rạc là tệp gốc để bàn giao. Chúng là cơ sở đối chiếu di chuyển, không thực thi toàn bộ kịch bản máy chủ cũ tại điểm kiểm tra này.
 
-## 未发生的操作
+## Những thao tác không xảy ra
 
-- 未改写原 GitHub 仓库，未推送到任何新仓库，未发布。
-- 未修改原状态栏匹配规则/正则加载 HTML，未改动或上传那两个本地导入 JSON。
-- 未迁移、重置用户旧存档，未接入模型密钥，未进行模型计费请求。
-- 未把隔离酒馆本体、其运行配置、测试账号目录、MCP 连接文件或任何依赖缓存打入扩展包。
+- Chưa viết lại kho lưu trữ GitHub gốc, chưa đẩy lên bất kỳ kho lưu trữ mới nào, chưa phát hành.
+- Chưa sửa đổi quy tắc khớp thanh trạng thái gốc / HTML tải qua regex, chưa sửa đổi hay tải lên hai tệp JSON nhập cục bộ đó.
+- Chưa di chuyển hay đặt lại bản lưu cũ của người dùng, chưa kết nối khóa mô hình, chưa thực hiện yêu cầu gọi mô hình có tính phí.
+- Không đóng gói bản thân quán rượu cô lập, cấu hình chạy của nó, thư mục tài khoản thử nghiệm, tệp kết nối MCP hay bất kỳ bộ nhớ đệm phụ thuộc nào vào gói tiện ích mở rộng.
 
-## 另一个旧交付物
+## Một sản phẩm bàn giao cũ khác
 
-前一轮独立 HTML 概念样机的莉莉丝资源也已恢复原图。它仍是独立模拟样机，不计作本原生扩展的功能验收，也没有被混装进新扩展 ZIP。
+Tài nguyên Lilith của bản mẫu ý tưởng HTML độc lập ở vòng trước cũng đã được khôi phục về ảnh gốc. Nó vẫn là bản mẫu mô phỏng độc lập, không tính vào nghiệm thu tính năng của tiện ích mở rộng nguyên bản này, và cũng không bị trộn lẫn vào tệp ZIP tiện ích mở rộng mới.

@@ -1,126 +1,126 @@
-# 0.9.1 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.9.1
 
-## 环境
+## Môi trường
 
-- SillyTavern 1.19.0（官方 tag 全新安装，commit `7e8663cd9c184a550b37238218bdd32c6efc68e9`），隔离数据目录，**没有安装酒馆助手**；
-- Playwright Chromium（无头）：
-  - 手机：390×844，`has_touch` + `is_mobile`，Android 14 / Chrome 129 的 UA，授予剪贴板读写权限；
-  - 电脑：1400×900，鼠标；
-- 模拟模型：5001 普通，5002 不发 CORS 头。
+- SillyTavern 1.19.0 (cài đặt mới hoàn toàn theo tag chính thức, commit `7e8663cd9c184a550b37238218bdd32c6efc68e9`), thư mục dữ liệu cô lập, **không cài đặt Tavern Helper**;
+- Playwright Chromium (headless):
+  - Điện thoại: 390×844, `has_touch` + `is_mobile`, UA của Android 14 / Chrome 129, cấp quyền đọc/ghi bộ nhớ tạm (clipboard);
+  - Máy tính: 1400×900, chuột;
+- Mô hình mô phỏng: cổng 5001 thông thường, cổng 5002 không gửi tiêu đề CORS.
 
-全程没有使用真实 API Key、真实聊天记录或 v1.1 原版导入文件。测试用的“密钥”是写死在 `tests/native_v091.py` 里的假字符串，测试结束后恢复原来的接口配置。
+Suốt quá trình không sử dụng API Key thật, lịch sử trò chuyện thật hay tệp nhập nguyên bản v1.1. “Khóa bảo mật” dùng trong kiểm thử là chuỗi giả gán cứng trong `tests/native_v091.py`, sau khi kiểm thử xong sẽ khôi phục lại cấu hình cổng kết nối ban đầu.
 
-**本轮只测了 1.19。** 1.16 / 1.17 / 1.18 没有运行；0.9.1 没有改宿主接口。
+**Đợt này chỉ kiểm thử bản 1.19.** Bản 1.16 / 1.17 / 1.18 không chạy; bản 0.9.1 không sửa đổi giao diện máy chủ.
 
-## 真机结果
+## Kết quả trên máy thật
 
-**待补。**用户的 Android 手机跑完「手机真机自检」并发回复制的结果后，填在这里：
+**Chờ bổ sung.** Sau khi điện thoại Android của người dùng chạy xong 「Tự kiểm tra trên điện thoại thật」 và gửi lại kết quả đã sao chép, sẽ điền vào đây:
 
-| 手机 / 浏览器 | 酒馆打开方式 | 结果 | 备注 |
+| Điện thoại / Trình duyệt | Cách mở SillyTavern | Kết quả | Ghi chú |
 | --- | --- | --- | --- |
-| （待回传）Android | | | |
-| iPhone / Safari | — | **未测**（手边没有设备） | |
+| (Chờ gửi về) Android | | | |
+| iPhone / Safari | — | **Chưa kiểm thử** (không có thiết bị sẵn) | |
 
-## 结果总览（1.19，Chromium 模拟）
+## Tổng quan kết quả (1.19, mô phỏng Chromium)
 
-| 套件 | 结果 |
+| Bộ kiểm thử | Kết quả |
 | --- | --- |
-| `native_v091.py`（0.9.1 新增，35 项） | 35/35 |
+| `native_v091.py` (Mới thêm bản 0.9.1, 35 hạng mục) | 35/35 |
 | `native_v090.py` | 24/24 |
 | `native_v085.py` | 20/20 |
 | `native_v084.py` | 29/29 |
 | `native_v083.py` | 13/13 |
-| `native_v082.py` | 24/24（跳过酒馆助手角色卡一段：本实例未装酒馆助手） |
+| `native_v082.py` | 24/24 (bỏ qua đoạn thẻ nhân vật Tavern Helper: thực thể này không cài Tavern Helper) |
 | `native_v081.py` | 20/20 |
 | `native_v080.py` | 33/33 |
 | `native_group060.py` | 44/44 |
 | `native_world070.py` | 40/40 |
 | `native_terminal050.py` | 58/58 |
-| `native_guards.py` | ✅ 无页面错误、无模型请求、生成期间拒绝发送（`docs/evidence/guards.json`，已重新生成为 0.9.1） |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） |
-| `npm run check` | ✅（检查范围新增 `diag-report.js`、`device-check.js`） |
-| `npm test` | 180/180（0.9.0 为 164，新增 `v091.test.js` 与 `version.test.js`） |
+| `native_guards.py` | ✅ Không có lỗi trang, không có yêu cầu mô hình, từ chối gửi trong khi đang tạo phản hồi (`docs/evidence/guards.json`, đã tạo lại cho bản 0.9.1) |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) |
+| `npm run check` | ✅ (phạm vi kiểm tra thêm mới `diag-report.js`, `device-check.js`) |
+| `npm test` | 180/180 (bản 0.9.0 là 164, thêm mới `v091.test.js` và `version.test.js`) |
 | `npm run filelist:check` | ✅ |
-| CRLF 检查 | ✅ 仓库里没有 CR 字符（`vendor/` 原本就是 LF，字节未变，`extract_original.py --check` 通过） |
+| Kiểm tra CRLF | ✅ Trong kho lưu trữ không có ký tự CR (`vendor/` vốn đã là LF, byte không đổi, `extract_original.py --check` đạt) |
 
-GitHub Actions（`.github/workflows/ci.yml`）要推送到 GitHub 后才会第一次运行；上表是在本地执行同样的命令。
+GitHub Actions (`.github/workflows/ci.yml`) cần đẩy lên GitHub mới chạy lần đầu tiên; bảng trên là kết quả thực thi các lệnh tương đương ở máy cục bộ.
 
-## native_v091.py 检查了什么
+## `native_v091.py` đã kiểm tra những gì
 
-### 复制诊断信息（手机，安全上下文）
+### Sao chép thông tin chẩn đoán (Điện thoại, ngữ cảnh bảo mật)
 
-先用插件自己的 `saveConfigs()` 写入一个假接口：`https://api.example.com/v1`、假 Key、模型 `m-test-1`；再打出一条带着假 Key 和 `https://u:pw@relay.example/v1?key=zzz` 的 `[诸天]` 警告。然后调用「复制诊断信息」，从剪贴板读回：
+Trước tiên dùng `saveConfigs()` của chính plugin để ghi một cổng kết nối giả: `https://api.example.com/v1`, Key giả, mô hình `m-test-1`; sau đó in ra một cảnh báo `[诸天]` mang theo Key giả và `https://u:pw@relay.example/v1?key=zzz`. Tiếp theo gọi 「Sao chép thông tin chẩn đoán」 và đọc lại từ bộ nhớ tạm:
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 | --- | --- |
-| 开头 `【诸天终端诊断信息】`，插件 0.9.1、SillyTavern 1.19.0 | ✅ |
-| 浏览器 UA（Android 14）、可见区域 390×844、手机布局 `port` | ✅ |
-| 宿主接口逐项、插件设置（`"mobileLayout":"auto"`） | ✅ |
-| AI 接口一行：`api.example.com · m-test-1` | ✅ |
-| 最近报错里有这条警告：`[诸天] 测试报错，带着密钥 sk-*** 和 https://***@relay.example/v1?***` | ✅ |
-| 整段文本里没有假 Key、没有 `pw@`、没有 `key=zzz` | ✅ |
-| 还没自检时写「没有运行过」 | ✅ |
+| Mở đầu bằng tiêu đề thông tin chẩn đoán Thiết Bị Đầu Cuối Chư Thiên, plugin 0.9.1, SillyTavern 1.19.0 | ✅ |
+| UA trình duyệt (Android 14), vùng nhìn thấy 390×844, bố cục điện thoại `port` | ✅ |
+| Từng hạng mục giao diện máy chủ, cài đặt plugin (`"mobileLayout":"auto"`) | ✅ |
+| Dòng cổng AI: `api.example.com · m-test-1` | ✅ |
+| Trong lỗi gần đây có cảnh báo này và thông tin nhạy cảm đã được che thành `sk-***` và `https://***@relay.example/v1?***` | ✅ |
+| Trong toàn bộ văn bản không có Key giả, không có `pw@`, không có `key=zzz` | ✅ |
+| Khi chưa chạy tự kiểm tra thì ghi 「Chưa chạy lần nào」 | ✅ |
 
-### 复制诊断信息（没有安全上下文）
+### Sao chép thông tin chẩn đoán (Không có ngữ cảnh bảo mật)
 
-把 `isSecureContext` 改成 `false`（等同手机用 `http://192.168.x.x` 打开酒馆）：走 `execCommand('copy')`，复制出的文本以 `【诸天终端诊断信息】` 开头 ✅。
+Đổi `isSecureContext` thành `false` (tương đương việc điện thoại mở SillyTavern qua `http://192.168.x.x`): đi theo nhánh `execCommand('copy')`, văn bản sao chép ra mở đầu đúng bằng tiêu đề thông tin chẩn đoán ✅.
 
-### 手机真机自检（按用户的操作方式走一遍）
+### Tự kiểm tra trên điện thoại thật (Đi qua một lượt theo đúng cách thao tác của người dùng)
 
-键盘：无头 Chromium 没有屏幕键盘，和 0.9.0 一样把 `visualViewport` 换成可控对象，点按输入框后把可见高度改为 470 px。
+Bàn phím: Chromium headless không có bàn phím ảo trên màn hình, nên giống bản 0.9.0 đã thay `visualViewport` bằng đối tượng có thể điều khiển, sau khi chạm vào ô nhập liệu thì đổi chiều cao khả kiến thành 470 px.
 
-| 步骤 | 测试里怎么做 | 结果（原始数字） |
+| Bước | Cách làm trong bài kiểm thử | Kết quả (số liệu gốc) |
 | --- | --- | --- |
-| 环境 | 自动 | ✅ 触摸屏，窗口 390×844 |
-| 全屏 | 自动 | ✅ 铺满可见区域，内容区 646 px |
-| 各页面 | 自动 | ✅ 20 页都没有超出屏幕、横向滚动、过小按钮或小字号输入框 |
-| 聊天群 + 键盘 | 触摸点按群输入框 → 可见高度 470 | ✅ 终端高 470 px，输入框在 416–460，账本条隐藏 |
-| 私聊 · 全屏 | 自动打开 | ✅ 铺满可见区域 |
-| 私聊 · 键盘 | 触摸点按私聊输入框 → 可见高度 470 | ✅ 输入框在 362–422，键盘上方 |
-| 悬浮莉莉丝 | 自动 | ✅ 停在下角（top 697） |
-| 横屏 | 视口改为 844×390，再改回 390×844 | ✅ 左侧导航 77 px，内容区 250 px |
-| 返回键 | 浏览器后退 | ✅ 终端关闭，酒馆页面还在，扩展仍在运行 |
+| Môi trường | Tự động | ✅ Màn hình cảm ứng, cửa sổ 390×844 |
+| Toàn màn hình | Tự động | ✅ Phủ kín vùng nhìn thấy, vùng nội dung 646 px |
+| Các trang | Tự động | ✅ Cả 20 trang đều không tràn màn hình, không cuộn ngang, không có nút quá nhỏ hay ô nhập liệu cỡ chữ nhỏ |
+| Nhóm chat + Bàn phím | Chạm vào ô nhập liệu nhóm → chiều cao khả kiến 470 | ✅ Thiết bị đầu cuối cao 470 px, ô nhập liệu ở 416–460, thanh sổ cái ẩn đi |
+| Trò chuyện riêng · Toàn màn hình | Tự động mở | ✅ Phủ kín vùng nhìn thấy |
+| Trò chuyện riêng · Bàn phím | Chạm vào ô nhập liệu trò chuyện riêng → chiều cao khả kiến 470 | ✅ Ô nhập liệu ở 362–422, phía trên bàn phím |
+| Lilith nổi | Tự động | ✅ Đứng ở góc dưới (top 697) |
+| Màn hình ngang | Đổi khung nhìn thành 844×390 rồi đổi về 390×844 | ✅ Điều hướng bên trái 77 px, vùng nội dung 250 px |
+| Phím quay lại | Trình duyệt lùi lại | ✅ Thiết bị đầu cuối đóng lại, trang SillyTavern vẫn còn, tiện ích mở rộng vẫn đang chạy |
 
-另外：
+Ngoài ra:
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 | --- | --- |
-| 结果第一行 `诸天 0.9.1 真机自检：✅ 9 · ⚠ 0 · ❌ 0 · 跳过 0`，保存在 `settings.deviceCheck` | ✅ |
-| 「复制结果」后剪贴板就是这段结果 | ✅ |
-| 「关闭」移除卡片 | ✅ |
-| 之后「复制诊断信息」带上「上次真机自检」 | ✅ |
-| 在第一个需要操作的步骤点「结束自检」：结果写「已手动结束」，没有 ❌ | ✅ |
-| 浮动窗口模式 +「点击终端外部时关闭 = 总是」：点步骤卡片上的按钮，按钮生效、终端不关闭 | ✅ |
-| 整页变矮的键盘：聚焦群输入框后视口 844→470（`visualViewport` 跟着变）→ `kbMode = 'resize'`，终端 470 px，账本条隐藏，输入框底部 460 | ✅ |
-| 失去焦点、恢复 844 后 → 键盘状态清除，终端 844 px | ✅ |
-| 手机两段都没有页面错误 | ✅ |
+| Dòng đầu tiên của kết quả `✅ 9 · ⚠ 0 · ❌ 0 · Bỏ qua 0`, được lưu trong `settings.deviceCheck` | ✅ |
+| Sau khi bấm 「Sao chép kết quả」, nội dung bộ nhớ tạm chính là đoạn kết quả này | ✅ |
+| Bấm 「Đóng」 gỡ bỏ thẻ | ✅ |
+| Sau đó bấm 「Sao chép thông tin chẩn đoán」 có đính kèm kết quả tự kiểm tra lần trước | ✅ |
+| Ở bước đầu tiên cần thao tác, bấm 「Kết thúc tự kiểm tra」: kết quả ghi 「Đã kết thúc thủ công」, không có ❌ | ✅ |
+| Chế độ cửa sổ nổi + 「Đóng khi bấm ra ngoài thiết bị đầu cuối = Luôn luôn」: bấm nút trên thẻ bước kiểm tra, nút có hiệu lực và thiết bị đầu cuối không bị đóng | ✅ |
+| Bàn phím làm lùn cả trang: sau khi đặt tiêu điểm vào ô nhập liệu nhóm, khung nhìn đổi từ 844→470 (`visualViewport` đổi theo) → `kbMode = 'resize'`, thiết bị đầu cuối cao 470 px, thanh sổ cái ẩn đi, đáy ô nhập liệu ở 460 | ✅ |
+| Sau khi mất tiêu điểm và khôi phục về 844 → xóa trạng thái bàn phím, thiết bị đầu cuối trở lại 844 px | ✅ |
+| Cả hai đoạn trên điện thoại đều không có lỗi trang | ✅ |
 
-截图：`/var/tmp/qa/shots091/v091-selftest-step.png`（第 4 步卡片）、`v091-selftest-done.png`（结果）。人工看图：卡片在顶部、不挡输入框；结果列表、文本框和三个按钮在 390 宽内完整显示。截图未放进 `docs/evidence/`（按决定本版不动证据目录）。
+Ảnh chụp màn hình: `/var/tmp/qa/shots091/v091-selftest-step.png` (thẻ bước 4), `v091-selftest-done.png` (kết quả). Kiểm tra ảnh thủ công: thẻ nằm ở trên cùng, không che ô nhập liệu; danh sách kết quả, ô văn bản và ba nút hiển thị đầy đủ trong chiều rộng 390. Ảnh chụp không đưa vào `docs/evidence/` (theo quyết định bản này không chạm tới thư mục bằng chứng).
 
-### 电脑（1400×900，鼠标）
+### Máy tính (1400×900, chuột)
 
-| 项目 | 结果 |
+| Hạng mục | Kết quả |
 | --- | --- |
-| 兼容诊断 弹窗有「复制诊断信息」「手机真机自检」两个按钮 | ✅ |
-| 设置页有 `copy-diag`、`selftest` 两项 | ✅ |
-| 无页面错误 | ✅ |
+| Hộp thoại Chẩn đoán tương thích có hai nút 「Sao chép thông tin chẩn đoán」 và 「Tự kiểm tra trên điện thoại thật」 | ✅ |
+| Trang Cài đặt có hai mục `copy-diag` và `selftest` | ✅ |
+| Không có lỗi trang | ✅ |
 
-## 单元测试新增（`tests/v091.test.js`、`tests/version.test.js`）
+## Kiểm thử đơn vị mới thêm (`tests/v091.test.js`, `tests/version.test.js`)
 
-- `redact`：`sk-`、`AIza`、`Bearer`、`"apiKey":… / token=`、URL 账号密码、查询参数被遮住；普通 URL、提交哈希、中文和数字原样保留；
-- `settingsSnapshot`：不导出脚本变量、接管记录、浮窗位置，列表变成条数；
-- `endpointText`：只有主机名 + 模型；酒馆主 API；未设置；无法解析；
-- `ErrorLog`：只收 `[诸天` 开头的日志（其他日志照常输出到控制台）、超过上限丢最早的（默认 30，测试用 3）、报错里的 Key 被遮住、`dispose()` 后还原 `console`；
-- `keyboardState`：`visualViewport` 缩小、整页变矮 + 聚焦、旋转（无聚焦）不算键盘；
-- `buildReport`：各部分齐全、全文无 Key，某一部分读取失败时写「读取失败」而不是整段失败；
-- `summarize`、`fillsView`；
-- 设置页、兼容诊断、斜杠命令都接上了；`.gitattributes`、CI 工作流、`tools/filelist.py` 存在且内容正确；
-- 版本：contracts / manifest / package.json / package-lock 两处 = 0.9.1；README 开头和小节、功能矩阵标题、CHANGES、ACCEPTANCE。
+- `redact`: `sk-`, `AIza`, `Bearer`, `"apiKey":… / token=`, tài khoản/mật khẩu trong URL, tham số truy vấn đều được che đi; URL thông thường, mã băm commit, chữ tiếng Trung/Việt và con số được giữ nguyên;
+- `settingsSnapshot`: không xuất biến kịch bản, bản ghi tiếp quản, vị trí cửa sổ nổi, các danh sách chuyển thành số lượng mục;
+- `endpointText`: chỉ có tên máy chủ + mô hình; API chính của SillyTavern; chưa cài đặt; không thể phân tích;
+- `ErrorLog`: chỉ thu thập nhật ký bắt đầu bằng `[诸天` / `[Chư Thiên` (các nhật ký khác vẫn xuất ra bảng điều khiển như bình thường), vượt quá giới hạn sẽ bỏ mục cũ nhất (mặc định 30, kiểm thử dùng 3), Key trong thông báo lỗi được che đi, sau khi `dispose()` sẽ khôi phục lại `console`;
+- `keyboardState`: `visualViewport` thu nhỏ, cả trang thấp đi + đang có tiêu điểm, xoay màn hình (không có tiêu điểm) không tính là bàn phím;
+- `buildReport`: đầy đủ các phần, toàn văn không có Key, khi một phần đọc thất bại sẽ ghi 「Đọc thất bại」 chứ không làm hỏng cả báo cáo;
+- `summarize`, `fillsView`;
+- Trang Cài đặt, Chẩn đoán tương thích, lệnh gạch chéo đều đã được đấu nối; `.gitattributes`, quy trình CI, `tools/filelist.py` tồn tại và có nội dung chính xác;
+- Phiên bản: contracts / manifest / package.json / hai nơi trong package-lock = 0.9.1; phần mở đầu và tiểu mục trong README, tiêu đề ma trận tính năng, CHANGES, ACCEPTANCE.
 
-## 未验证
+## Chưa xác minh
 
-- **真实手机**：Android 结果待回传；iPhone、小屏 360 宽、套壳浏览器 / Termux 未测。
-- 真实输入法（候选栏、第三方键盘、悬浮键盘）的高度变化。
-- 真实手机浏览器在非 HTTPS 下的 `execCommand('copy')` 行为（各浏览器支持程度不同；失败时会弹出文本框手动复制）。
-- 1.16 / 1.17 / 1.18。
-- GitHub Actions 第一次在 GitHub 上运行。
+- **Điện thoại thực tế**: Kết quả Android chờ người dùng gửi về; iPhone, màn hình nhỏ rộng 360, trình duyệt bọc vỏ (wrapper) / Termux chưa kiểm thử.
+- Thay đổi chiều cao của bộ gõ thực tế (thanh từ gợi ý, bàn phím bên thứ ba, bàn phím nổi).
+- Hành vi `execCommand('copy')` của trình duyệt điện thoại thực tế dưới kết nối không phải HTTPS (mức độ hỗ trợ của từng trình duyệt khác nhau; khi thất bại sẽ bật ô văn bản để sao chép thủ công).
+- Bản 1.16 / 1.17 / 1.18.
+- Lần chạy đầu tiên của GitHub Actions trên GitHub.

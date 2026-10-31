@@ -1,14 +1,25 @@
-// Ledger operations for terminal modules (聊天群, 自拟外挂, …).
+// Ledger operations for terminal modules (Nhóm chat, Phụ trợ tự tạo, …).
 // Same semantics as the original 3.1 helpers (adjustSysPoints / bagAdd): points never go negative, spending raises
 // 累计消费, identical rows (名称+品级+价格+来源+分类+效果) stack, anything else is its own row (1.1.1). Every commit is ONE locked write through the native Bridge followed by a read-back
-// check; callers show success only after `commit` resolves (the rule is: never show 已入库 before it is booked).
+// check; callers show success only after `commit` resolves (the rule is: never show Đã vào kho before it is booked).
 export const GRADES = ['凡品', '灵品', '仙品', '神品', '禁忌'];
+export const GRADE_LABELS = Object.freeze({ 凡品: 'Phàm phẩm', 灵品: 'Linh phẩm', 仙品: 'Tiên phẩm', 神品: 'Thần phẩm', 禁忌: 'Cấm kỵ', 待鉴定: 'Chờ giám định' });
+export const GRADE_ALIASES = Object.freeze({
+    '凡品': '凡品', 'phàm phẩm': '凡品', 'pham pham': '凡品', 'phàm giai': '凡品',
+    '灵品': '灵品', 'linh phẩm': '灵品', 'linh pham': '灵品', 'linh giai': '灵品',
+    '仙品': '仙品', 'tiên phẩm': '仙品', 'tien pham': '仙品', 'tiên giai': '仙品',
+    '神品': '神品', 'thần phẩm': '神品', 'than pham': '神品', 'thần giai': '神品',
+    '禁忌': '禁忌', 'cấm kỵ': '禁忌', 'cam ky': '禁忌',
+    '待鉴定': '待鉴定', 'chờ giám định': '待鉴定', 'chưa giám định': '待鉴定',
+});
+export const normGradeKey = g => GRADE_ALIASES[String(g ?? '').trim()] || GRADE_ALIASES[String(g ?? '').trim().toLowerCase()] || String(g ?? '').trim();
+export const gradeLabel = g => GRADE_LABELS[normGradeKey(g)] || String(g ?? '');
 export const TIER_PRICE = { 凡品: 100, 灵品: 1e4, 仙品: 1e7, 神品: 1e8, 禁忌: 1e10 };
-// Original ZT_TIERS (神通 实力档): name, examples, price, highest grade that tier can carry.
+// Original ZT_TIERS (Thần thông Bậc thực lực): name, examples, price, highest grade that tier can carry.
 export const TIERS = [null,
-    { n: '凡人顶尖', p: 1e3, g: '凡品' }, { n: '武道宗师', p: 1e4, g: '灵品' }, { n: '超凡', p: 1e5, g: '灵品' },
-    { n: '城市级', p: 1e6, g: '仙品' }, { n: '国家/大陆级', p: 1e7, g: '仙品' }, { n: '行星级', p: 1e8, g: '神品' },
-    { n: '星系级以上', p: 1e9, g: '神品' }, { n: '概念/全能', p: 1e11, g: '禁忌' }];
+    { n: 'Đỉnh cao phàm nhân', p: 1e3, g: '凡品' }, { n: 'Võ đạo Tông sư', p: 1e4, g: '灵品' }, { n: 'Siêu phàm', p: 1e5, g: '灵品' },
+    { n: 'Cấp thành phố', p: 1e6, g: '仙品' }, { n: 'Cấp quốc gia/đại lục', p: 1e7, g: '仙品' }, { n: 'Cấp hành tinh', p: 1e8, g: '神品' },
+    { n: 'Cấp thiên hà trở lên', p: 1e9, g: '神品' }, { n: 'Cấp khái niệm/toàn năng', p: 1e11, g: '禁忌' }];
 const num = (x, d = 0) => { const n = Number(x); return Number.isFinite(n) ? n : d; };
 
 /** Original ztShopLevel (商城等级 1–5) from a ledger object. */
@@ -24,7 +35,7 @@ export function shopLevel(z) {
     s = Math.max(s, Math.floor(num(z.商城等级下限)), Math.floor(num(z.商城等级)));
     return Math.max(1, Math.min(5, s));
 }
-export const gradeIndex = g => GRADES.indexOf(g);
+export const gradeIndex = g => GRADES.indexOf(normGradeKey(g));
 /** Highest grade allowed for something a group member hands over: ≤ shop level, ≤ member tier, never 禁忌. */
 export function giftCap(z, tier) {
     const byShop = Math.min(shopLevel(z), 5) - 1;
@@ -33,19 +44,19 @@ export function giftCap(z, tier) {
 }
 /** Clamp a grade down to the cap (auto-downgrade instead of refusing). Returns [grade, downgraded]. */
 export function clampGrade(g, cap) {
-    const i = gradeIndex(g), c = gradeIndex(cap);
+    const k = normGradeKey(g), i = gradeIndex(k), c = gradeIndex(cap);
     if (i < 0) return ['凡品', false];
-    return i > c ? [cap, true] : [g, false];
+    return i > c ? [normGradeKey(cap), true] : [k, false];
 }
 
 export function ensureLedger(v) {
-    const z = v.诸天系统; if (!z || typeof z !== 'object') throw Error('当前聊天没有诸天账本，先在「设置 → 新聊天初始化」创建。');
+    const z = v.诸天系统; if (!z || typeof z !== 'object') throw Error('Cuộc trò chuyện hiện tại chưa có sổ cái Chư Thiên, vui lòng tạo trước tại 「Cài đặt → Khởi tạo trò chuyện mới」.');
     return z;
 }
 export function spend(z, amount) {
     const a = Math.floor(num(amount)); if (a <= 0) return;
     const have = num(z.系统点);
-    if (have < a) throw Error(`系统点不足：需要 ${a.toLocaleString('zh-CN')}，现有 ${have.toLocaleString('zh-CN')}。未扣费。`);
+    if (have < a) throw Error(`Điểm Hệ Thống không đủ: cần ${a.toLocaleString('en-US')}, hiện có ${have.toLocaleString('en-US')}. Chưa trừ phí.`);
     z.系统点 = Math.floor(have - a); z.累计消费 = num(z.累计消费) + a; z.界面记账时间 = Date.now();
 }
 export function earn(z, amount) {
@@ -57,22 +68,25 @@ export function earn(z, amount) {
  *  when name, grade, price, source, category and effect are all equal; appraised / collected rows never stack. */
 export function stackKey(item) {
     const s = v => String(v ?? '').trim();
-    return JSON.stringify([s(item?.名称), s(item?.品级) || '凡品', Math.floor(num(item?.价格) || TIER_PRICE[s(item?.品级) || '凡品'] || 100), s(item?.来源), s(item?.分类) || '其他', s(item?.效果)]);
+    const g = normGradeKey(item?.品级) || '凡品';
+    return JSON.stringify([s(item?.名称), g, Math.floor(num(item?.价格) || TIER_PRICE[g] || 100), s(item?.来源), s(item?.分类) || '其他', s(item?.效果)]);
 }
 export function bagAdd(z, item, n = 1) {
     const q = Math.max(1, Math.floor(num(n, 1)));
     const bag = Array.isArray(z.背包) ? z.背包 : (z.背包 = []);
-    const key = stackKey(item);
+    const g = normGradeKey(item?.品级) || '凡品';
+    const normalizedItem = { ...item, 品级: g };
+    const key = stackKey(normalizedItem);
     const hit = !item.收纳凭据 && !item.鉴定 && bag.find(x => !x.收纳凭据 && !x.鉴定 && stackKey(x) === key);
     if (hit) hit.数量 = num(hit.数量, 1) + q;
-    else bag.push({ ...structuredClone(item), 名称: item.名称, 品级: item.品级 || '凡品', 来源: item.来源 || '', 价格: item.价格 || 0, 分类: item.分类 || '其他', 效果: item.效果 || '', 数量: q });
+    else bag.push({ ...structuredClone(item), 名称: item.名称, 品级: g, 来源: item.来源 || '', 价格: item.价格 || 0, 分类: item.分类 || '其他', 效果: item.效果 || '', 数量: q });
 }
 /** Removes n of bag[index]; returns the removed item snapshot. */
 export function bagTake(z, index, n = 1) {
     const bag = Array.isArray(z.背包) ? z.背包 : [];
-    const it = bag[index]; if (!it) throw Error('背包里没有这件物品了。');
+    const it = bag[index]; if (!it) throw Error('Trong túi đồ không còn vật phẩm này nữa.');
     const q = Math.max(1, Math.floor(num(n, 1))), have = Math.max(1, num(it.数量, 1));
-    if (have < q) throw Error(`「${it.名称}」只有 ${have} 个。`);
+    if (have < q) throw Error(`「${it.名称}」 chỉ có ${have} cái.`);
     if (have === q) bag.splice(index, 1); else it.数量 = have - q;
     return { ...it, 数量: q };
 }
@@ -92,6 +106,6 @@ export async function commit(bridge, mutate, probe = z => [z.系统点, z.界面
         return v;
     }, { type: 'chat', verify: true, expectedIdentity });
     const back = bridge.getVariables({ type: 'chat' })?.诸天系统;
-    if (!back || JSON.stringify(probe(back)) !== want) throw Error('账本读回不一致：这次操作没有确认入账。请到「设置 → 账本回滚」核对。');
+    if (!back || JSON.stringify(probe(back)) !== want) throw Error('Đọc lại sổ cái không khớp: thao tác này chưa được xác nhận vào sổ. Vui lòng vào 「Cài đặt → Hoàn tác sổ cái」 để kiểm tra.');
     return result;
 }

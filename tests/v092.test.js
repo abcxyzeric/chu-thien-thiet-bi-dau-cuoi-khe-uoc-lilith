@@ -47,5 +47,5 @@ test('renderer: a foreign card that replaced a code block goes where that code b
     assert.match(s, /if \(matchedN\.has\(j\)\) \{ last = j; if \(!gapHasDrop\.has\(j\)\) flush\(j\); \}/);
 });
 test('capability row for 0.9.2', () => {
-    assert.ok(CAPABILITIES.some(c => c.name === '楼层美化不重复' && /0\.9\.2/.test(c.scope)));
+    assert.ok(CAPABILITIES.some(c => c.name === 'Làm đẹp tầng tin nhắn không bị lặp' && /0\.9\.2/.test(c.scope)));
 });

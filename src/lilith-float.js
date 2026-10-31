@@ -21,7 +21,13 @@ import { confirmBox } from './plugin-switch.js';
 
 export const MOODS = ['neutral', 'smile', 'shy', 'pout', 'surprised', 'wink', 'smug', 'sad'];
 export const ZONE_MOOD = Object.freeze({ wing: 'smile', lower: 'sad', horn: 'smug', chest: 'neutral', cheek: 'shy', thigh: 'pout', arm: 'wink', head: 'smile', hair: 'smile', tail: 'surprised' });
-export const POKE_LINES = Object.freeze(['呀！戳哪里呢～', '再戳就收你系统点了哦。', '嗯？有事要莉莉丝帮忙？', '别闹，正在帮你盯账本呢。', '好啦好啦，我在。']);
+export const POKE_LINES = Object.freeze([
+    'Á! Chọc vào đâu đấy hả~',
+    'Chọc nữa là ta thu Điểm Hệ Thống của ngài đó nha.',
+    'Hửm? Có việc gì cần Lilith giúp sao?',
+    'Đừng nghịch nữa, ta đang giúp ngài canh chừng sổ cái đây.',
+    'Rồi rồi biết rồi, ta vẫn ở đây mà.',
+]);
 // 1.0: the cut-out figure (636×700 art box) — full size 150×165; actual size = × floatSize scale. When tucked, 36 % of
 // her (one wing, half her face) stays visible.
 const W = 150, H = 165, EDGE = 26, PEEK_K = 0.36;
@@ -118,8 +124,8 @@ const CSS = `
 `;
 
 /** 1.0 / 1.1.3: what 关闭 means (every floating entry goes: Lilith *and* the avatar), and where the terminal is afterwards. */
-export const CLOSE_TEXT = () => `悬浮窗会从页面上消失——悬浮莉莉丝和头像都不再显示（账本、设置都不受影响）。\n\n关闭后随时可以从酒馆的「扩展」面板（顶栏积木图标）→「诸天终端」→「打开诸天终端」进入控制台。\n\n想让悬浮窗回来：扩展面板里点「显示悬浮莉莉丝」或「显示头像」，或终端「设置 → 莉莉丝 → 悬浮窗」。\n只想换个样子？用「切换」：莉莉丝 ⇄ 头像。`;
-export const CLOSED_TEXT = '要进入控制台：酒馆「扩展」面板（顶栏积木图标）→「诸天终端」→「打开诸天终端」。想让悬浮窗回来：同一处点「显示悬浮莉莉丝」或「显示头像」。';
+export const CLOSE_TEXT = () => `Cửa sổ nổi sẽ biến mất khỏi trang——cả Lilith nổi và ảnh đại diện đều không hiển thị nữa (sổ cái và cài đặt không bị ảnh hưởng).\n\nSau khi đóng, bạn có thể vào bảng điều khiển bất cứ lúc nào từ bảng 「Tiện ích mở rộng」 của quán rượu (biểu tượng khối xếp hình trên thanh đỉnh) → 「Thiết Bị Đầu Cuối Chư Thiên」 → 「Mở Thiết Bị Đầu Cuối Chư Thiên」.\n\nMuốn hiện lại cửa sổ nổi: trong bảng Tiện ích mở rộng bấm 「Hiện Lilith nổi」 hoặc 「Hiện ảnh đại diện」, hoặc vào Thiết bị đầu cuối 「Cài đặt → Lilith → Cửa sổ nổi」.\nChỉ muốn đổi kiểu hiển thị? Hãy dùng 「Chuyển đổi」: Lilith ⇄ Ảnh đại diện.`;
+export const CLOSED_TEXT = 'Để vào bảng điều khiển: bảng 「Tiện ích mở rộng」 của quán rượu (biểu tượng khối xếp hình trên thanh đỉnh) → 「Thiết Bị Đầu Cuối Chư Thiên」 → 「Mở Thiết Bị Đầu Cuối Chư Thiên」. Muốn hiện lại cửa sổ nổi: tại cùng nơi đó bấm 「Hiện Lilith nổi」 hoặc 「Hiện ảnh đại diện」.';
 export const BIN_CSS = `.bin{position:fixed;left:50%;top:0;z-index:2147483099;translate:-50% 0;display:flex;gap:14px;opacity:0;scale:.9;pointer-events:none;transition:opacity .18s,scale .18s}
 .bin.show{opacity:1;scale:1}
 .bin .tgt{display:flex;align-items:center;gap:7px;padding:10px 16px;border-radius:999px;background:#140d1fe6;border:1px dashed #f0abfc88;color:#f5e8ff;font:500 13px/1.2 system-ui,'PingFang SC','Microsoft YaHei',sans-serif;white-space:nowrap;box-shadow:0 8px 28px #0008;transition:background .18s,scale .18s}
@@ -130,7 +136,7 @@ const X_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke
 const SWAP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3M20 16H7l3 3"/></svg>';
 /** 1.1.3: the drop targets shown while a floating entry is dragged — 「切换」 and 「关闭」 are two different things. */
 export function binHtml(swapLabel, cls = 'bin', id = '') {
-    return `<div class="${cls}"${id ? ` id="${id}"` : ''} aria-hidden="true"><div class="tgt" data-t="swap">${SWAP_SVG}<span>拖到这里${swapLabel}</span></div><div class="tgt" data-t="close">${X_SVG}<span>拖到这里关闭悬浮窗</span></div></div>`;
+    return `<div class="${cls}"${id ? ` id="${id}"` : ''} aria-hidden="true"><div class="tgt" data-t="swap">${SWAP_SVG}<span>Kéo vào đây để ${swapLabel}</span></div><div class="tgt" data-t="close">${X_SVG}<span>Kéo vào đây để đóng cửa sổ nổi</span></div></div>`;
 }
 /** Position the targets near the bottom (top from innerHeight — SillyTavern's phone layout transforms <html>). */
 export function showBinAt(b) {
@@ -150,9 +156,9 @@ let asking = false;
 export async function closeFloats(app, { ask = confirmBox } = {}) {
     if (asking) return false; asking = true;
     try {
-        if (!await ask(CLOSE_TEXT(), { ok: '关闭悬浮窗', cancel: '先不关', title: '关闭悬浮窗？' })) return false;
+        if (!await ask(CLOSE_TEXT(), { ok: 'Đóng cửa sổ nổi', cancel: 'Khoan đóng', title: 'Đóng cửa sổ nổi?' })) return false;
         app.settings.set('floatLilith', 'none');
-        globalThis.toastr?.info(CLOSED_TEXT, '诸天 · 悬浮窗已关闭', { timeOut: 12000, extendedTimeOut: 6000 });
+        globalThis.toastr?.info(CLOSED_TEXT, 'Chư Thiên · Đã đóng cửa sổ nổi', { timeOut: 12000, extendedTimeOut: 6000 });
         return true;
     } finally { asking = false; }
 }
@@ -177,11 +183,11 @@ export class LilithFloat {
         const A = FLOAT_ART, url = f => `${this.app.base}assets/lilith/float/${f}.webp`;
         const at = (r, cls, f) => { const b = artBox(r); return `<img class="${cls}" alt="" draggable="false" src="${url(f)}" style="left:${b.left};top:${b.top};width:${b.width};height:${b.height}">`; };
         const faces = Object.entries(A.faces).map(([k, r]) => at(r, 'face', 'face-' + k).replace('class="face"', `class="face" data-face="${k}"`)).join('');
-        sh.innerHTML = `<style>${CSS}</style><div class="fl" hidden data-side="left" data-mood="neutral"><div class="bubble" role="status" aria-live="polite"><b>莉莉丝</b><span></span></div>`
+        sh.innerHTML = `<style>${CSS}</style><div class="fl" hidden data-side="left" data-mood="neutral"><div class="bubble" role="status" aria-live="polite"><b>Lilith</b><span></span></div>`
             + `<div class="rig" aria-hidden="true"><div class="pose">${at(A.parts.wingL, 'wing l', 'wingl')}${at(A.parts.wingR, 'wing r', 'wingr')}<div class="torso">${at(A.parts.body, 'body', 'body')}${faces}</div></div></div>`
-            + `<button class="fig" type="button" aria-label="莉莉丝：点一下打开诸天终端，长按拖动，拖到屏幕边缘可以藏起来，拖到底部可以切换成头像或关闭悬浮窗"></button></div>`
-            + binHtml('换成头像')
-            + `<div class="menu" role="menu" hidden><button type="button" role="menuitem" data-m="open">打开诸天终端</button><button type="button" role="menuitem" data-m="hide">藏到屏幕边</button><button type="button" role="menuitem" data-m="swap">切换成头像</button><button type="button" role="menuitem" class="danger" data-m="close">关闭悬浮窗…</button></div>`;
+            + `<button class="fig" type="button" aria-label="Lilith: chạm một lần để mở Thiết Bị Đầu Cuối Chư Thiên, nhấn giữ để kéo, kéo ra cạnh màn hình để ẩn đi, kéo xuống đáy để chuyển thành ảnh đại diện hoặc đóng cửa sổ nổi"></button></div>`
+            + binHtml('đổi thành ảnh đại diện')
+            + `<div class="menu" role="menu" hidden><button type="button" role="menuitem" data-m="open">Mở Thiết Bị Đầu Cuối Chư Thiên</button><button type="button" role="menuitem" data-m="hide">Ẩn vào cạnh màn hình</button><button type="button" role="menuitem" data-m="swap">Chuyển thành ảnh đại diện</button><button type="button" role="menuitem" class="danger" data-m="close">Đóng cửa sổ nổi…</button></div>`;
         this.el = sh.querySelector('.fl'); this.fig = sh.querySelector('.fig'); this.bubble = sh.querySelector('.bubble'); this.text = this.bubble.querySelector('span'); this.el.dataset.lite = String(!!this.app?.perf?.lite);
         this.bin = sh.querySelector('.bin'); this.menu = sh.querySelector('.menu');
         this.pose = sh.querySelector('.pose'); this.faces = Object.fromEntries([...sh.querySelectorAll('.face')].map(i => [i.dataset.face, i]));
@@ -347,7 +353,7 @@ export class LilithFloat {
                 if (Number.isFinite(e.clientX) && (e.clientX || e.clientY)) g.last = { x: clamp(e.clientX - g.dx, -this.dims.w / 2, innerWidth - this.dims.w / 2), y: clamp(e.clientY - g.dy, 0, innerHeight - this.dims.h) };
                 const p = settle(g.last || this.cur || this.pos(), innerWidth, innerHeight, this.dims.w, this.dims.h); this.tempTuck = false;
                 this.place(p, true);
-                if (p.tucked) { f.classList.add('hide-anim'); setTimeout(() => f.classList.remove('hide-anim'), 520); setTimeout(() => this.say('躲好了～要找我就戳这里。', { mood: 'wink', ms: 2600 }), 380); vib(8); }
+                if (p.tucked) { f.classList.add('hide-anim'); setTimeout(() => f.classList.remove('hide-anim'), 520); setTimeout(() => this.say('Trốn kỹ rồi~ Muốn tìm ta thì chọc vào đây nhé.', { mood: 'wink', ms: 2600 }), 380); vib(8); }
                 this.suppressClick = true; setTimeout(() => { this.suppressClick = false; }, 60);
                 return;
             }
@@ -397,7 +403,7 @@ export class LilithFloat {
         if (this.asking) return false; this.asking = true;
         try {
             const yes = await closeFloats(this.app, { ask });
-            if (!yes) { this.say('哼，就知道你舍不得我～', { mood: 'smug', ms: 2400 }); return false; }
+            if (!yes) { this.say('Hừ, biết ngay là ngài không nỡ xa ta mà~', { mood: 'smug', ms: 2400 }); return false; }
             this.menu.hidden = true; this.quiet?.();
             return true;
         } finally { this.asking = false; }
@@ -406,14 +412,14 @@ export class LilithFloat {
     swap() {
         this.menu.hidden = true; this.quiet?.();
         swapFloat(this.app, 'avatar');
-        globalThis.toastr?.info('拖动头像到屏幕底部可以换回莉莉丝，或关闭悬浮窗。', '诸天 · 已切换成头像', { timeOut: 5000 });
+        globalThis.toastr?.info('Kéo ảnh đại diện xuống đáy màn hình để đổi lại thành Lilith, hoặc đóng cửa sổ nổi.', 'Chư Thiên · Đã chuyển thành ảnh đại diện', { timeOut: 5000 });
     }
     /** Drawer 「显示悬浮莉莉丝」 / settings: bring her back on this device. */
     show() {
-        if (this.active) { this.say('我一直都在这里呀～', { mood: 'smile', ms: 2200 }); return 'already'; }
+        if (this.active) { this.say('Ta vẫn luôn ở ngay đây mà~', { mood: 'smile', ms: 2200 }); return 'already'; }
         const mode = wantFloat('auto', { coarse: matchMedia('(pointer: coarse)').matches, width: innerWidth }) ? 'auto' : 'on';
         this.settings.set('floatLilith', mode);
-        setTimeout(() => this.say('我回来啦～', { mood: 'wink', ms: 2200 }), 200);
+        setTimeout(() => this.say('Ta quay lại rồi đây~', { mood: 'wink', ms: 2200 }), 200);
         return mode;
     }
     tap() {
@@ -423,7 +429,7 @@ export class LilithFloat {
         if (hub?.isOpen) { const l = this.storyLine(); this.say(l.text, { zone: l.zone }); return; }
         if (p.tucked) {                            // come out of hiding
             const out = { ...p, x: p.edge === 'right' ? innerWidth - this.dims.w - 8 : 8, edge: '', tucked: false };
-            this.place(out, true); this.react('hop'); this.say('被你发现了～', { mood: 'surprised', ms: 2200 }); return;
+            this.place(out, true); this.react('hop'); this.say('Bị ngài phát hiện mất rồi~', { mood: 'surprised', ms: 2200 }); return;
         }
         this.app.openTerminal();
     }

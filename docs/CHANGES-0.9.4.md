@@ -1,37 +1,36 @@
-# 0.9.4 变更（小改进：招募令输入框跟随模式）
+# Thay đổi 0.9.4 (Cải tiến nhỏ: Ô nhập liệu Lệnh Chiêu Mộ tự động chuyển theo chế độ)
 
-用户反馈（不是 bug，是一个小问题）：聊天群 → 群员 → 发布招募令，选着「随机世界」时，输入框里输入什么都不起作用，招来的还是随机世界的人。用户给了两个方案：随机时干脆不让输入，或者输入后自动改为指定。这一版用第二个。验收结果见 [ACCEPTANCE-0.9.4](ACCEPTANCE-0.9.4.md)。
+Phản hồi từ người dùng (không phải lỗi mà là một bất tiện nhỏ): Trong Nhóm chat → Thành viên → Phát Lệnh Chiêu Mộ, khi đang chọn 「Thế giới ngẫu nhiên」, dù nhập gì vào ô nhập liệu bên cạnh cũng không có tác dụng, người được chiêu mộ ra vẫn đến từ thế giới ngẫu nhiên. Người dùng đề xuất hai phương án: khi ở chế độ ngẫu nhiên thì khóa không cho nhập, hoặc khi nhập chữ vào thì tự động đổi sang chế độ chỉ định. Phiên bản này áp dụng phương án thứ hai. Kết quả nghiệm thu xem tại [ACCEPTANCE-0.9.4](ACCEPTANCE-0.9.4.md).
 
-- 账本字段、世界书条目、存储键、设置项都没有变化，**不需要重新导入世界书**。
-- 原版 v1.1 代码（`vendor/original`）没有修改。
+- Các trường sổ cái, mục từ Sách Thế Giới, khóa lưu trữ và mục cài đặt đều không thay đổi, **không cần nhập lại Sách Thế Giới**.
+- Mã nguồn v1.1 nguyên bản (`vendor/original`) giữ nguyên cấu trúc.
 
-## 原因
+## Nguyên nhân
 
-招募令有三种模式：随机世界、指定世界、指定角色。旁边的输入框一直可以输入，提示文字是“世界或角色名（随机时可空）”。但随机模式生成请求时根本不看输入框，所以在随机模式下填的名字会被悄悄丢掉，照样扣 100 点、招一个随机世界的人。
+Lệnh Chiêu Mộ có ba chế độ: Thế giới ngẫu nhiên, Chỉ định thế giới, Chỉ định nhân vật. Ô nhập liệu bên cạnh lúc nào cũng cho phép gõ chữ với gợi ý “Tên thế giới hoặc nhân vật (để trống khi ngẫu nhiên)”. Tuy nhiên khi chế độ ngẫu nhiên tạo yêu cầu gửi đi lại hoàn toàn không đọc ô nhập liệu này, khiến cái tên người dùng điền vào khi đang để chế độ ngẫu nhiên bị âm thầm bỏ qua, hệ thống vẫn trừ 100 điểm và chiêu mộ một người từ thế giới ngẫu nhiên.
 
-## 改动（`src/hub-group.js`）
+## Thay đổi (`src/hub-group.js`)
 
-- **打字自动切换**：选着「随机世界」时在输入框里输入文字，模式会立刻改为「指定世界」，已输入的文字保留。之后仍然可以手动改成「指定角色」。
-- **切回随机清空**：手动选回「随机世界」时清空输入框，因为随机模式不会用到它。
-- **提示文字跟随模式**：
-  - 随机世界：“随机时不用填；输入名字会自动改为「指定世界」”
-  - 指定世界：“世界名，例如：斗罗大陆”
-  - 指定角色：“角色名，例如：孙悟空”
-- **发布前再检查一次**（新的纯函数 `recruitMode`，在扣招募费之前执行）：
-  - 随机模式但带着名字（例如浏览器自动填充、或者用脚本改了值）：按指定世界处理。
-  - 指定世界 / 指定角色却没填名字：提示“指定世界时请填写世界名。” / “指定角色时请填写角色名。”，**不扣 100 点，也不发出模型请求**。以前这种情况会扣费后生成一个只写着“来自世界「」”的请求。
-  - 名字仍然最多 30 个字。
-- 输入框加了 `aria-label`，读屏软件能读出它的用途。
+- **Gõ chữ tự động chuyển chế độ**: Khi đang chọn 「Thế giới ngẫu nhiên」 mà nhập chữ vào ô nhập liệu, chế độ sẽ lập tức đổi thành 「Chỉ định thế giới」 và giữ nguyên văn bản vừa nhập. Sau đó bạn vẫn có thể đổi thủ công sang 「Chỉ định nhân vật」.
+- **Chuyển về ngẫu nhiên tự động xóa trống**: Khi chọn thủ công về lại 「Thế giới ngẫu nhiên」, hệ thống sẽ xóa trống ô nhập liệu vì chế độ ngẫu nhiên không dùng tới nó.
+- **Văn bản gợi ý (placeholder) thay đổi theo chế độ**:
+  - Thế giới ngẫu nhiên: “Không cần điền khi chọn ngẫu nhiên; nhập tên sẽ tự động đổi thành 「Chỉ định thế giới」”
+  - Chỉ định thế giới: “Tên thế giới, ví dụ: Đấu La Đại Lục”
+  - Chỉ định nhân vật: “Tên nhân vật, ví dụ: Tôn Ngộ Không”
+- **Kiểm tra lại một lần nữa trước khi phát hành** (hàm thuần mới `recruitMode`, thực thi trước khi trừ phí chiêu mộ):
+  - Đang ở chế độ ngẫu nhiên nhưng lại có tên (ví dụ trình duyệt tự động điền, hoặc kịch bản sửa giá trị): xử lý như Chỉ định thế giới.
+  - Đang ở chế độ Chỉ định thế giới / Chỉ định nhân vật nhưng lại không điền tên: hiện thông báo “Khi chỉ định thế giới vui lòng điền tên thế giới.” / “Khi chỉ định nhân vật vui lòng điền tên nhân vật.”, **không trừ 100 điểm, cũng không gửi yêu cầu mô hình**.
+  - Độ dài tên vẫn giới hạn tối đa 30 ký tự.
+- Ô nhập liệu được bổ sung `aria-label` để trình đọc màn hình đọc được công dụng của nó.
 
-没有采用“随机时禁用输入框”：那样用户想指定时要先改下拉框再输入，多一步；而且禁用的输入框在手机上点了没反应，容易以为坏了。
+Lý do không chọn phương án “vô hiệu hóa ô nhập liệu khi ở chế độ ngẫu nhiên”: làm vậy khi người dùng muốn chỉ định sẽ phải đổi hộp chọn thả xuống trước rồi mới được gõ, tốn thêm một bước; hơn nữa ô nhập liệu bị vô hiệu hóa trên điện thoại bấm vào không có phản ứng sẽ rất dễ khiến người dùng tưởng nhầm là giao diện bị hỏng.
 
-## 测试
+## Kiểm thử
 
-- `tests/v094.test.js`（新增，5 项）：`recruitMode` 的各种情况、随机模式带名字时请求里写的是那个世界、界面接线（提示文字、输入切换、切回清空、先检查再扣费）、能力表条目。
-- `tests/native_v094.py`（新增，9 项）：真实 SillyTavern + 模拟模型，手机 390×844，用 Playwright 真实键盘输入。
-- `tests/version.test.js`：版本号改为 0.9.4。
+- `tests/v094.test.js` (mới, 5 hạng mục): các trường hợp của `recruitMode`, khi chế độ ngẫu nhiên có kèm tên thì trong yêu cầu ghi đúng thế giới đó, đấu nối giao diện (văn bản gợi ý, gõ chữ chuyển chế độ, chuyển về xóa trống, kiểm tra trước rồi mới trừ phí), mục trong bảng năng lực.
+- `tests/native_v094.py` (mới, 9 hạng mục): SillyTavern thực tế + mô hình mô phỏng, điện thoại 390×844, sử dụng gõ bàn phím thực sự của Playwright.
+- `tests/version.test.js`: cập nhật số phiên bản lên 0.9.4.
 
-## 文档
+## Tài liệu
 
-- README、FEATURE_MATRIX（「二·六」加一行）、`src/contracts.js` 能力表加「招募令输入框跟随模式」。
-- 路线图：插入 0.9.4 这一行；真实模型验收顺延到 0.9.5，数据安全闭环 0.9.6，设置分组 / README 重写 / LICENSE 0.9.7。
+- README, FEATURE_MATRIX (thêm một dòng ở mục 「II.6」), bảng năng lực trong `src/contracts.js` thêm 「Ô nhập liệu Lệnh Chiêu Mộ đi theo chế độ」.

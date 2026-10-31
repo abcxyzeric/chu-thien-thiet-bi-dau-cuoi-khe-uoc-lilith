@@ -23,18 +23,18 @@ test('stages, next target and cumulative effects follow the original 3.1 rules',
     assert.equal(nextTarget(fixSkill({ 熟练度: 40, 品阶: '凡品' })), 100);
     assert.equal(nextTarget(fixSkill({ 熟练度: 100, 品阶: '凡品' })), null, '凡品 caps at 100: no 熟练 target');
     assert.deepEqual(effectsOf({ 熟练度: 2100 }), [STAGE_EFFECT.入门, STAGE_EFFECT.熟练, STAGE_EFFECT.精通]);
-    assert.match(effectsOf({ 熟练度: 0 })[0], /尚未入门/);
+    assert.match(effectsOf({ 熟练度: 0 })[0], /Chưa nhập môn/);
 });
 test('功法实效 prompt: main skill first, effects and next stage stated, empty library → no prompt', () => {
     const p = masteryPrompt(ledger());
     const lines = p.split('\n');
-    assert.match(lines[0], /功法实效/);
-    assert.match(lines[1], /^- 青云诀〔灵品〕480\/500【入门】/);
-    assert.match(p, /九阳神功〔神品〕2100\/10000【精通】：.*消耗永久降低30%.*威力提升100%/);
-    assert.match(p, /下一阶段「熟练」需 500/);
-    assert.match(p, /功法修炼.*功法名\+N/);
+    assert.match(lines[0], /Hiệu Quả Thực Tế Của Công Pháp/);
+    assert.match(lines[1], /^- 青云诀〔Linh phẩm〕480\/500【Nhập Môn】/);
+    assert.match(p, /九阳神功〔Thần phẩm〕2100\/10000【Tinh Thông】:.*giảm vĩnh viễn 30%.*uy lực kỹ năng tăng 100%/);
+    assert.match(p, /giai đoạn tiếp theo 「Thuần Thục」 cần 500/);
+    assert.match(p, /功法修炼.*Tên công pháp\+N/);
     assert.equal(masteryPrompt({ 功法库: [] }), '');
-    assert.ok(!/海量系统点/.test(masteryPrompt({ 功法库: [{ 名称: '道', 熟练度: 1, 入道: true }] })), 'the one-off reward is not a standing effect');
+    assert.ok(!/Điểm Hệ Thống khổng lồ/.test(masteryPrompt({ 功法库: [{ 名称: '道', 熟练度: 1, 入道: true }] })), 'the one-off reward is not a standing effect');
 });
 test('实战积累: used in the story but not in 功法修炼 → small grade-based gain, max 2, never past the cap', () => {
     const z = ledger();
@@ -83,14 +83,14 @@ test('角色卡功法 merge: adds new skills, only ever raises 熟练度 / 品�
 test('Lilith story lines come from the ledger (pending breakthrough first), idle lines without a ledger', () => {
     const z = { ...ledger(), 当前世界: '太初仙域', 任务库: { T1: { 名称: '引气入体', 状态: '进行中', 完成度: 40 } }, 功法待播报: [{ 名称: '青云诀', 阶段: '熟练', 奖励: '消耗降低30%' }], 恋爱目标: { 姓名: '柳如烟', 好感度: 60, 黑化值: 40 } };
     const lines = storyLines(z).map(l => l.text);
-    assert.match(lines[0], /青云诀到「熟练」/);
-    assert.ok(lines.some(t => /引气入体.*进度 40%/.test(t)));
-    assert.ok(lines.some(t => /青云诀离「熟练」还差 20/.test(t)));
-    assert.ok(lines.some(t => /太初仙域/.test(t)) && lines.some(t => /柳如烟.*黑化值也有 40/.test(t)));
+    assert.match(lines[0], /青云诀 đã đạt tới 「Thuần Thục」/);
+    assert.ok(lines.some(t => /引气入体.*tiến độ 40%/.test(t)));
+    assert.ok(lines.some(t => /青云诀 còn cách 「Thuần Thục」 20/.test(t)));
+    assert.ok(lines.some(t => /太初仙域/.test(t)) && lines.some(t => /柳如烟.*giá trị hắc hóa cũng lên tới 40/.test(t)));
     assert.deepEqual(storyLines(null).map(l => l.text), IDLE);
 });
 test('terminal wiring: 自拟外挂 is in the navigation, the engine Lilith row is hidden in the terminal', () => {
-    assert.ok(NAV.find(g => g.group === '能力').items.some(([id]) => id === 'plugmgr'));
+    assert.ok(NAV.find(g => g.group === 'Năng lực').items.some(([id]) => id === 'plugmgr'));
     assert.match(ENGINE_CSS, /html\[data-zt-hub\] \.mvu-msg\{display:none!important\}/);
     const src = readFileSync(new URL('../src/hub.js', import.meta.url), 'utf8');
     assert.match(src, /bridge\.onChange\(\(\) => \{ this\.refreshTop\(\); this\.scheduleEngineView\(\); \}\)/, 'outside writes refresh the engine page too');
@@ -113,7 +113,7 @@ test('自拟外挂 charge stamps 界面记账时间 so the next AI panel cannot 
     vars.诸天系统.界面记账时间 = 1;
     await p.activate('p-test2');
     assert.equal(vars.诸天系统.专属资源.因果筹码, 6); assert.ok(vars.诸天系统.界面记账时间 >= t0);
-    assert.match(ta.value, /发动外挂：时停/);
+    assert.match(ta.value, /Phát động phụ trợ: 时停/);
     delete globalThis.localStorage; delete globalThis.document;
 });
 test('0.8.0 settings defaults and version files', () => {
@@ -123,5 +123,5 @@ test('0.8.0 settings defaults and version files', () => {
     const m = JSON.parse(readFileSync(new URL('../manifest.json', import.meta.url))), p = JSON.parse(readFileSync(new URL('../package.json', import.meta.url))), l = JSON.parse(readFileSync(new URL('../package-lock.json', import.meta.url)));
     assert.match(VERSION, /^(?:0\.(?:[89]|\d{2,})\.\d+|[1-9]\d*\.\d+\.\d+)$/); assert.equal(m.version, VERSION); assert.equal(p.version, VERSION); assert.equal(l.version, VERSION); assert.equal(l.packages[''].version, VERSION);
     assert.match(p.scripts.check, /src\/skill-sync\.js/);
-    for (const n of ['修行 · 熟练度', '莉莉丝气泡播报', '管理员控制台入口']) assert.ok(CAPABILITIES.some(c => c.name.startsWith(n)), n);
+    for (const n of ['Tu hành · Độ thuần thục', 'Bong bóng thoại Lilith', 'Lối vào Bảng điều khiển Quản trị viên']) assert.ok(CAPABILITIES.some(c => c.name.startsWith(n)), n);
 });

@@ -1,66 +1,66 @@
-# 0.8.1 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.8.1
 
-## 环境
+## Môi trường
 
-与 [0.8.0](ACCEPTANCE-0.8.0.md) 相同：一次性的 SillyTavern 实例（官方仓库按 tag 全新安装，扩展以符号链接加载仓库工作区），Playwright Chromium 无头 + swiftshader，本地模拟模型 `tests/qa/mock_model.py`。所有测试聊天都是隔离测试聊天。
+Giống với [0.8.0](ACCEPTANCE-0.8.0.md): các thực thể SillyTavern dùng một lần (cài đặt mới hoàn toàn theo tag từ kho lưu trữ chính thức, tiện ích mở rộng tải không gian làm việc kho lưu trữ qua liên kết tượng trưng), Playwright Chromium headless + swiftshader, mô hình mô phỏng cục bộ `tests/qa/mock_model.py`. Tất cả các cuộc trò chuyện kiểm thử đều là cuộc trò chuyện kiểm thử cô lập.
 
-本轮新增第二个模拟供应商 `mock_model.py --no-cors`（端口 5002）：它**不发任何 CORS 头**，浏览器直连会被拦截，只有服务器端转发能拿到结果，用来模拟「中转站不允许跨域」。
+Đợt này thêm nhà cung cấp mô phỏng thứ hai `mock_model.py --no-cors` (cổng 5002): nó **không gửi bất kỳ tiêu đề CORS nào**, kết nối trực tiếp từ trình duyệt sẽ bị chặn, chỉ có chuyển tiếp qua phía máy chủ mới lấy được kết quả, dùng để mô phỏng trường hợp 「trạm trung chuyển không cho phép truy cập chéo miền (CORS)」.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.19 |
 | --- | --- | --- |
-| `native_v081.py`（0.8.1 新增，20 项） | 20/20 | 20/20 |
-| `native_group060.py`（聊天群回归，44 项；价格断言按 0.8.1 新价目更新） | 44/44 | 44/44 |
-| `native_v080.py`（0.8.0，33 项） | 本轮未重跑（0.8.0 时 33/33） | 33/33 |
-| `native_world070.py`（40 项） | 本轮未重跑（0.8.0 时 40/40） | 40/40 |
-| `native_terminal050.py`（58 项） | 本轮未运行 | 58/58 |
-| `native_guards.py` | 本轮未运行 | ✅ |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | **未运行** |
-| `node --test tests/*.test.js`（纯逻辑） | 101/101 | 101/101 |
+| `native_v081.py` (Mới thêm bản 0.8.1, 20 hạng mục) | 20/20 | 20/20 |
+| `native_group060.py` (Hồi quy nhóm chat, 44 hạng mục; khẳng định giá được cập nhật theo bảng giá mới của 0.8.1) | 44/44 | 44/44 |
+| `native_v080.py` (0.8.0, 33 hạng mục) | Đợt này không chạy lại (ở bản 0.8.0 đạt 33/33) | 33/33 |
+| `native_world070.py` (40 hạng mục) | Đợt này không chạy lại (ở bản 0.8.0 đạt 40/40) | 40/40 |
+| `native_terminal050.py` (58 hạng mục) | Đợt này không chạy | 58/58 |
+| `native_guards.py` | Đợt này không chạy | ✅ |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | **Không chạy** |
+| `node --test tests/*.test.js` (Thuần logic) | 101/101 | 101/101 |
 
-1.17 / 1.18 本轮没有测。
+Bản 1.17 / 1.18 đợt này không kiểm thử.
 
-### 关于 `native_world070` 的一次失败
+### Về một lần thất bại của `native_world070`
 
-1.19 上第一次运行在截图时超时，第二次有 2 项「莉莉丝反应」失败。原因是测试隔离：前面 `native_group060` 的手机阶段把窗口尺寸 380×764 存进了服务器端的界面偏好，终端于是进入紧凑模式，立绘隐藏，莉莉丝的气泡自然为空。这和 0.8.0 验收时 `native_v080` 遇到的是同一个问题。`native_world070.py` 现在启动时先点「重置窗口」，之后 40/40。**插件代码没有因此改动。**
+Trên bản 1.19, lần chạy đầu tiên bị hết thời gian chờ (timeout) khi chụp ảnh màn hình, lần thứ hai có 2 hạng mục 「Phản ứng của Lilith」 thất bại. Nguyên nhân là do cô lập kiểm thử: giai đoạn điện thoại của `native_group060` chạy trước đó đã lưu kích thước cửa sổ 380×764 vào tùy chọn giao diện phía máy chủ, khiến thiết bị đầu cuối đi vào chế độ thu gọn, tranh đứng bị ẩn đi nên bong bóng thoại của Lilith tất nhiên trống rỗng. Đây là cùng một vấn đề mà `native_v080` đã gặp khi nghiệm thu bản 0.8.0. Hiện tại `native_world070.py` khi khởi động sẽ bấm 「Đặt lại cửa sổ」 trước, sau đó đạt 40/40. **Mã nguồn plugin không thay đổi vì việc này.**
 
-## `native_v081.py` 覆盖项
+## Các hạng mục bao phủ của `native_v081.py`
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 1 | 前提：无 CORS 头的供应商，浏览器直连确实被拦截 |
-| 2 | 莉莉丝 → 连接 →「拉取模型」照样拿到模型列表（经酒馆服务器转发），反馈里没有「CORS」 |
-| 3 | 招募令扣 100；随机招募的提示词要求的实力档 = 宿主买得起的档（500 点 → 1 档，入群费 300） |
-| 4 | 模型无视实力档要求时，自动纠正重问一次；仍超预算的候选标记 `超预算` |
-| 5 | 买不起的候选人：邀请被拒绝，不扣成负数，没人入群，提示入群费与余额 |
-| 6 | 候选卡显示「系统点不足……放弃后再招募，会换一个人」 |
-| 7 | 放弃后再招募：提示词【不要选】里有上一个候选人，结果是另一个人 |
-| 8 | 入群费按新曲线（凡人顶尖 300） |
-| 9 | 候选人还在时再次招募：两次绝不是同一个人（第一位进入候选历史） |
-| 10 | 「贪心」模型每轮都想发红包：第 1 轮入账，第 2、3 轮提示词写明「本轮禁止」，且硬发的那行被账本丢弃 |
-| 11 | 宿主说「谁给我发红包」→ 本轮允许，红包入账 |
-| 12 | 发放后节奏重置为 3 或 4 轮 |
-| 13 | 抢红包写入 `入库记录`（来源 名称@世界、方式 红包） |
-| 14 | 剧情提示含「真实入库记录」、来源、「不得改写成……」，注入深度 2 |
-| 15 | 旧版世界书被识别为「不是最新版」 |
-| 16 | 「更新到最新版」：先存 36 条完整备份，再合并；新增 36 号聊天群条目，用户自建条目保留 |
-| 17 | 05 条改为指向设置里的管理员控制台；用户对内置条目的关闭状态保留 |
-| 18 | 更新后状态为「已是最新」 |
-| 19 | 「导出 JSON」下载的世界书文件含 36 条 |
-| 20 | 无页面错误 |
+| 1 | Tiền đề: Nhà cung cấp không có tiêu đề CORS, kết nối trực tiếp từ trình duyệt thực sự bị chặn |
+| 2 | Lilith → Kết nối → 「Lấy mô hình」 vẫn lấy được danh sách mô hình bình thường (chuyển tiếp qua máy chủ SillyTavern), trong phản hồi không có lỗi 「CORS」 |
+| 3 | Lệnh Chiêu Mộ trừ 100; bậc thực lực yêu cầu trong lời nhắc chiêu mộ ngẫu nhiên = bậc mà Ký chủ đủ tiền trả (500 điểm → bậc 1, phí vào nhóm 300) |
+| 4 | Khi mô hình phớt lờ yêu cầu bậc thực lực, tự động đính chính hỏi lại một lần; ứng viên vẫn vượt ngân sách sẽ được đánh dấu `Vượt ngân sách` |
+| 5 | Ứng viên không đủ tiền mời: lời mời bị từ chối, không trừ thành số âm, không có ai vào nhóm, thông báo rõ phí vào nhóm và số dư |
+| 6 | Thẻ ứng viên hiển thị 「Điểm Hệ Thống không đủ…… sau khi từ bỏ rồi chiêu mộ lại sẽ đổi sang người khác」 |
+| 7 | Sau khi từ bỏ rồi chiêu mộ lại: trong mục 【Không được chọn】 của lời nhắc có tên ứng viên trước đó, kết quả trả về là một người khác |
+| 8 | Phí vào nhóm tính theo đường cong mới (Đỉnh cao phàm nhân 300) |
+| 9 | Chiêu mộ lại khi ứng viên cũ vẫn còn đó: hai lần tuyệt đối không phải cùng một người (người đầu tiên đã đi vào lịch sử ứng viên) |
+| 10 | Mô hình 「tham lam」 lượt nào cũng muốn phát lì xì: lượt 1 được ghi sổ, lượt 2 và 3 trong lời nhắc ghi rõ 「Lượt này cấm phát」, và dòng cố tình phát ra bị sổ cái loại bỏ |
+| 11 | Ký chủ nói 「Ai phát lì xì cho tôi đi」 → lượt này được phép, lì xì được ghi sổ |
+| 12 | Sau khi phát, nhịp độ được đặt lại thành 3 hoặc 4 lượt |
+| 13 | Giật lì xì ghi vào `入库记录` (Nguồn gốc Tên@Thế giới, Phương thức Lì xì) |
+| 14 | Lời nhắc cốt truyện có chứa 「Bản ghi nhập kho thực tế」, nguồn gốc, 「không được sửa thành……」; tiêm ở độ sâu 2 |
+| 15 | Sách Thế Giới bản cũ được nhận diện là 「Không phải bản mới nhất」 |
+| 16 | 「Cập nhật lên bản mới nhất」: lưu bản sao lưu đầy đủ 36 mục trước rồi mới hợp nhất; thêm mới mục từ nhóm chat số 36, các mục từ do người dùng tự tạo được giữ nguyên |
+| 17 | Mục số 05 đổi sang trỏ tới Bảng điều khiển Quản trị viên trong Cài đặt; trạng thái tắt của người dùng đối với các mục tích hợp sẵn được giữ nguyên |
+| 18 | Sau khi cập nhật, trạng thái hiển thị 「Đã là bản mới nhất」 |
+| 19 | Tệp Sách Thế Giới tải xuống qua 「Xuất JSON」 có chứa đủ 36 mục |
+| 20 | Không có lỗi trang |
 
-## 人工看图
+## Kiểm tra ảnh chụp thủ công
 
-- 1.16 / 1.19 连接页截图：模型下拉框列出 `mock-zt`、`mock-zt-mini`，反馈「已找到 2 个模型」。
+- Ảnh chụp trang Kết nối trên 1.16 / 1.19: hộp chọn thả xuống liệt kê `mock-zt`, `mock-zt-mini`, phản hồi 「Đã tìm thấy 2 mô hình」.
 
-## 未验证
+## Chưa xác minh
 
-- **真实中转站**：转发逻辑只用本地无 CORS 模拟供应商验证过；用户报告的那个中转站没有实测（没有它的 Key，也不应该有）。如果它对服务器端请求也拒绝（例如按来源 IP 封禁），转发同样会失败，届时界面会显示「经酒馆服务器转发也没拿到模型列表」。
-- **真实模型**：招募是否遵守实力档、正文是否遵守「来源不得改写」都只用模拟模型验证过。账本层的强制项（红包节奏、入群扣费、重复候选人拒绝）不依赖模型。
-- 1.17 / 1.18；`native_replace040.py`。
+- **Trạm trung chuyển thực tế**: Logic chuyển tiếp mới chỉ được xác minh bằng nhà cung cấp mô phỏng không có CORS cục bộ; trạm trung chuyển mà người dùng báo cáo chưa được kiểm thử thực tế (không có Key của nó, và cũng không nên có). Nếu trạm đó từ chối cả yêu cầu từ phía máy chủ (ví dụ chặn theo IP nguồn), việc chuyển tiếp cũng sẽ thất bại, khi đó giao diện sẽ hiển thị thông báo chuyển tiếp qua máy chủ SillyTavern cũng không lấy được danh sách mô hình.
+- **Mô hình thực tế**: Việc chiêu mộ có tuân thủ bậc thực lực hay không và chính văn có tuân thủ 「không được sửa đổi nguồn gốc」 hay không mới chỉ được xác minh bằng mô hình mô phỏng. Các hạng mục cưỡng chế ở tầng sổ cái (nhịp độ lì xì, trừ phí vào nhóm, từ chối ứng viên trùng lặp) không phụ thuộc vào mô hình.
+- Bản 1.17 / 1.18; `native_replace040.py`.

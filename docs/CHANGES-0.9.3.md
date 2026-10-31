@@ -1,83 +1,76 @@
-# 0.9.3 变更（用户反馈修复：世界书读取、星图更正；新增新手引导）
+# Thay đổi 0.9.3 (Sửa lỗi từ phản hồi người dùng: Đọc Sách Thế Giới, Đính chính Bản đồ sao; Thêm mới Hướng dẫn tân thủ)
 
-这一版修两个用户反馈的问题，然后加上 [ROADMAP-1.0](ROADMAP-1.0.md) 第 6 条提的首次运行向导。验收结果见 [ACCEPTANCE-0.9.3](ACCEPTANCE-0.9.3.md)。
+Phiên bản này sửa hai vấn đề do người dùng phản hồi, đồng thời bổ sung trình hướng dẫn chạy lần đầu nêu tại mục số 6 trong [ROADMAP-1.0](ROADMAP-1.0.md). Kết quả nghiệm thu xem tại [ACCEPTANCE-0.9.3](ACCEPTANCE-0.9.3.md).
 
-- 账本字段、世界书条目、存储键都没有变化，**不需要重新导入世界书**。新增一个设置项 `guide`（新手引导的完成 / 跳过记录）。
-- 原版 v1.1 代码（`vendor/original`）没有修改。
+- Các trường sổ cái, mục từ Sách Thế Giới và khóa lưu trữ đều không thay đổi, **không cần nhập lại Sách Thế Giới**. Thêm mới một mục cài đặt `guide` (bản ghi hoàn thành / bỏ qua hướng dẫn tân thủ).
+- Mã nguồn v1.1 nguyên bản (`vendor/original`) giữ nguyên cấu trúc.
 
-## 一、规则 → 额外世界背景读不到世界书
+## I. Quy tắc → Bối cảnh thế giới bổ sung không đọc được Sách Thế Giới
 
-**现象**：点「读取书目」只提示“当前助手缺少世界书读取接口，仍可使用内置规则”。酒馆助手版可以读，插件版不行。用户用的是 TauriTavern，但这个问题和宿主无关，SillyTavern 上也一样。
+**Hiện tượng**: Bấm 「Đọc danh mục sách」 chỉ hiện thông báo “Trợ lý hiện tại thiếu giao diện đọc Sách Thế Giới, vẫn có thể dùng quy tắc tích hợp sẵn”. Bản Tavern Helper đọc được nhưng bản plugin lại không đọc được. Người dùng đang sử dụng TauriTavern, nhưng vấn đề này không phụ thuộc máy chủ mà trên SillyTavern cũng bị y hệt.
 
-**原因**：原版这一页调用的是酒馆助手的两个函数：`getWorldbookNames()`（同步返回书名数组）和 `getWorldbook(书名)`（返回条目）。插件的原生桥接替原版提供了变量、楼层、提示词注入等接口，唯独漏了这两个，所以原版代码判断“没有接口”。
+**Nguyên nhân**: Trang này của bản gốc gọi hai hàm của Tavern Helper: `getWorldbookNames()` (trả về đồng bộ mảng tên sách) và `getWorldbook(tên_sách)` (trả về các mục từ). Cầu nối gốc của plugin đã cung cấp các giao diện biến số, tầng tin nhắn, tiêm lời nhắc v.v. cho bản gốc nhưng lại bỏ sót đúng hai hàm này, khiến mã gốc phán đoán là “thiếu giao diện”.
 
-**修复**（`src/th-bridge.js`、`src/assistant-host.js`）：
+**Cách sửa** (`src/th-bridge.js`, `src/assistant-host.js`):
 
-- 原生桥接补上这两个同名接口，**只读**，不保存、不绑定、不解绑任何世界书。
-- 书名按顺序从这几处取：`getContext().getWorldInfoNames()`（SillyTavern 1.19 起）→ 酒馆 `world-info.js` 模块的实时列表 → `/api/settings/get`。莉莉丝窗口启动时会预读一次，所以点「读取书目」时马上就有结果。
-- 条目按顺序从这几处取：`getContext().loadWorldInfo` → `world-info.js` 的 `loadWorldInfo` → `/api/worldinfo/get`。条目按世界书编辑器里的顺序转换成酒馆助手的格式，交给原版 `normalizeBook`，禁用的条目照原版规则跳过。
-- 读取得到的是复制出来的数据，不会把酒馆缓存里的对象交给原版代码。
-- 读不到时给出明确提示：
-  - 书已被删除或改名：酒馆对不存在的文件会返回一本空书，插件会把它和真正的空书区分开。
-  - 宿主既没有世界书模块也没有设置接口：照样提示，并说明仍可使用内置规则。
-- SillyTavern 和 TauriTavern 用的都是同一套酒馆前端接口。
+- Cầu nối gốc bổ sung hai giao diện cùng tên này ở chế độ **chỉ đọc**, không lưu, không gắn kết, không gỡ gắn kết bất kỳ Sách Thế Giới nào.
+- Tên sách được lấy lần lượt từ các nơi sau: `getContext().getWorldInfoNames()` (từ SillyTavern 1.19 trở đi) → danh sách thời gian thực của mô-đun `world-info.js` trong SillyTavern → `/api/settings/get`. Khi cửa sổ Lilith khởi động sẽ đọc trước một lần, nên khi bấm 「Đọc danh mục sách」 sẽ có kết quả ngay lập tức.
+- Các mục từ được lấy lần lượt từ: `getContext().loadWorldInfo` → `loadWorldInfo` của `world-info.js` → `/api/worldinfo/get`. Các mục từ được chuyển đổi sang định dạng của Tavern Helper theo đúng thứ tự trong trình chỉnh sửa Sách Thế Giới rồi chuyển giao cho hàm `normalizeBook` nguyên bản, các mục từ đang tắt sẽ được bỏ qua theo đúng quy tắc gốc.
+- Dữ liệu đọc về là bản sao độc lập, không đưa trực tiếp đối tượng trong bộ nhớ đệm của SillyTavern cho mã gốc.
+- Khi không đọc được sẽ đưa ra thông báo rõ ràng (phân biệt sách đã bị xóa/đổi tên với sách trống thực sự).
+- Cả SillyTavern và TauriTavern đều sử dụng chung bộ giao diện frontend SillyTavern này.
 
-## 二、星图自动识别错了改不了
+## II. Bản đồ sao tự động nhận diện sai nhưng không có chỗ sửa
 
-**现象**：截图里当前世界是「灵笼」，星图节点却写着「仙侠」，顶栏又显示「全息」，而且没有地方能改。
+**Hiện tượng**: Trong ảnh chụp màn hình, thế giới hiện tại là 「Linh Lung」, nhưng nút trên Bản đồ sao lại ghi là 「Tiên hiệp」, thanh đỉnh lại hiển thị 「Toàn ảnh」, và không có chỗ nào để sửa.
 
-**原因**：
+**Nguyên nhân**:
 
-- 世界类型是按世界名里的关键字猜的。「灵笼」里有“灵”字，所以被猜成仙侠。
-- 足迹记录时会把当时猜的主题存下来。之后账本里的 `世界类型` 变了，节点仍显示旧主题，所以和顶栏（按当前 `世界类型` 判断）对不上。
-- 星图只有「记录穿越」一种写入方式。对当前世界再记录一次会报“已经在这个世界了”，所以既不能改类型，也不能改名。
+- Loại thế giới được đoán dựa theo từ khóa trong tên thế giới. Trong tên 「Linh Lung」 (`灵笼`) có chữ “Linh” (`灵`) nên bị đoán nhầm thành Tiên hiệp.
+- Khi ghi dấu chân đã lưu lại chủ đề đoán được lúc đó. Sau này khi `世界类型` trong sổ cái thay đổi, nút trên đồ phổ vẫn hiển thị chủ đề cũ nên bị lệch với thanh đỉnh (vốn phán đoán theo `世界类型` hiện tại).
+- Bản đồ sao trước đây chỉ có duy nhất một cách ghi là 「Ghi nhận xuyên không」. Nếu ghi nhận lại tên thế giới hiện tại sẽ báo lỗi “Đã ở trong thế giới này rồi”, nên vừa không đổi được loại thế giới, vừa không đổi được tên.
 
-**修复**（`src/world.js`、`src/hub-atlas.js`、`src/fx.js`、`styles/atlas.css`）：
+**Cách sửa** (`src/world.js`, `src/hub-atlas.js`, `src/fx.js`, `styles/atlas.css`):
 
-- 在星图里选中一个世界，详情下方有一个「识别错了？更正这个世界」区块：
-  - 可以改世界名和世界类型（仙侠 / 赛博 / 诡异 / 都市 / 西幻 / 末世 / 其他 / 自动判断；账本里原有的自定义类型也会列出来）。
-  - 当前世界的类型是猜出来的时，这个区块默认展开。
-- 「保存更正」在一次加锁提交里同时改 `当前世界` / `世界类型`（如果改的是当前世界）和对应的足迹，然后读回确认：
-  - 不算一次穿越，不增加次数，不播放穿越演出。
-  - 如果改成的名字已经有足迹，两条会合并：次数相加，保留最早的首次到访和最晚的最近到访。
-- 不是当前世界的足迹可以「从足迹删除」，会先确认。当前世界不能删除，只能更正。
-- 在「记录穿越」里填当前世界的名字，现在会改成更正类型，不再报错。
-- 星图节点的显示：
-  - 按名称猜出来的类型会标「?」（例如「仙侠?」）。
-  - 写明了的类型按原文显示（例如「末世」）。
-  - 当前世界按账本里的 `世界类型` 判断，和顶栏主题一致。
-  - 其他世界如果写明了类型，以类型为准，不再用记录时存下的旧主题。
-- 更正时如果账本刚好有写入，页面会重画，但你在更正框里填到一半的内容会保留。
+- Khi chọn một thế giới trên Bản đồ sao, phía dưới phần chi tiết sẽ có khối 「Nhận diện sai? Đính chính thế giới này」:
+  - Có thể sửa tên thế giới và loại thế giới (Tiên hiệp / Cyber / Quỷ dị / Đô thị / Kỳ ảo phương Tây / Tận thế / Khác / Tự động phán đoán; các loại tùy chỉnh có sẵn trong sổ cái cũng sẽ được liệt kê).
+  - Khi loại của thế giới hiện tại là do đoán ra, khối này sẽ mặc định mở sẵn.
+- Nút 「Lưu đính chính」 sẽ sửa đồng thời `当前世界` / `世界类型` (nếu đang sửa thế giới hiện tại) và dấu chân tương ứng trong cùng một lần ghi có khóa, sau đó đọc lại để xác nhận:
+  - Không tính là một lần xuyên không, không cộng thêm số lần, không phát trình diễn xuyên không.
+  - Nếu cái tên sửa thành đã có sẵn trong dấu chân, hai mục sẽ được hợp nhất: cộng gộp số lần, giữ lại lần đầu đặt chân sớm nhất và lần gần nhất muộn nhất.
+- Những dấu chân không phải là thế giới hiện tại có thể 「Xóa khỏi dấu chân」 (sẽ hỏi xác nhận trước). Thế giới hiện tại không thể xóa, chỉ có thể đính chính.
+- Điền tên thế giới hiện tại vào ô 「Ghi nhận xuyên không」 giờ đây sẽ chuyển thành đính chính loại thế giới chứ không còn báo lỗi nữa.
+- Hiển thị nút trên Bản đồ sao:
+  - Loại thế giới đoán theo tên sẽ có dấu 「?」 (ví dụ 「Tiên hiệp?」).
+  - Loại thế giới đã được xác định rõ sẽ hiển thị nguyên văn (ví dụ 「Tận thế」).
+  - Thế giới hiện tại phán đoán theo `世界类型` trong sổ cái, đồng nhất với chủ đề trên thanh đỉnh.
+  - Các thế giới khác nếu đã ghi rõ loại thì lấy theo loại đó làm chuẩn, không còn dùng chủ đề cũ lưu lúc mới ghi nhận nữa.
 
-## 三、新手引导（新功能）
+## III. Hướng dẫn tân thủ (Tính năng mới)
 
-**入口**（`src/onboarding.js`，在 `index.js` 里启动）：
+**Lối vào** (`src/onboarding.js`, khởi động trong `index.js`):
 
-- 第一次**直接**打开终端（点头像、悬浮莉莉丝、快捷键），并且三步里还有没完成的，就自动进入「新手引导」页。整个过程只自动出现一次。
-- 从楼层小标签、「查看星图」这类指定了页面的入口打开时，不会打断。
-- 导航「终端」组里有一个「引导」按钮，完成或跳过后隐藏。
-- 「设置 → 上手 → 新手引导」随时可以重新打开。
+- Lần đầu tiên mở **trực tiếp** thiết bị đầu cuối (bấm ảnh đại diện, Lilith nổi, phím tắt) mà trong ba bước vẫn còn bước chưa hoàn thành, hệ thống sẽ tự động mở trang 「Hướng dẫn tân thủ」. Toàn bộ quá trình chỉ tự động bật lên đúng một lần.
+- Khi mở từ các lối vào chỉ định sẵn trang như nhãn nhỏ trên tầng hay nút 「Xem Bản đồ sao」, hướng dẫn sẽ không làm gián đoạn.
+- Trong nhóm điều hướng 「Thiết bị đầu cuối」 có nút 「Hướng dẫn」, sau khi hoàn thành hoặc bỏ qua sẽ ẩn đi.
+- Bất cứ lúc nào cũng có thể mở lại từ 「Cài đặt → Làm quen → Hướng dẫn tân thủ」.
 
-**三步**（是否打勾每次都按真实状态重新读取，不是记住的）：
+**Ba bước** (trạng thái đánh dấu tích mỗi lần đều được đọc lại từ trạng thái thực tế):
 
-1. **导入或更新世界书**：
-   - 没装过：「安装并绑定到当前聊天」。没打开聊天时只安装。已有同名世界书时不会覆盖。
-   - 已装但不是最新版：「更新到最新版」，会先另存一份备份，你自己加的条目和开关会保留。
-2. **设置 AI 接口**：
-   - 「用酒馆当前的主模型」一键完成。这和 0.8.4 的“酒馆当前主API”是同一个选项，请求不会发到别处。
-   - 也可以选「填写独立 API」，跳到连接页（0.8.5 的三步表单）。这时页面顶部有「‹ 回到新手引导」，方便填完回来。
-3. **在当前聊天启用**：
-   - 当前聊天没有账本时，按原版规则建立账本。
-   - 打开莉莉丝记忆：走原版记忆页的「保存当前聊天设置」，原版的检查照常执行。
-   - 如果还没有 AI 接口，就不打开“自动整理”（原版会因为没有模型而拒绝保存）。
+1. **Nhập hoặc cập nhật Sách Thế Giới**:
+   - Chưa từng cài đặt: 「Cài đặt và gắn kết vào cuộc trò chuyện hiện tại」. Khi chưa mở cuộc trò chuyện thì chỉ cài đặt. Khi đã có Sách Thế Giới cùng tên sẽ không ghi đè.
+   - Đã cài nhưng chưa phải bản mới nhất: 「Cập nhật lên bản mới nhất」, sẽ lưu một bản sao lưu trước, các mục từ bạn tự thêm và trạng thái công tắc đều được giữ nguyên.
+2. **Cài đặt cổng AI**:
+   - 「Dùng mô hình chính hiện tại của SillyTavern」 hoàn tất chỉ bằng một chạm.
+   - Hoặc chọn 「Điền API độc lập」 để nhảy tới trang Kết nối (biểu mẫu 3 bước của bản 0.8.5). Lúc này trên đầu trang sẽ có nút 「‹ Quay lại hướng dẫn tân thủ」 để điền xong quay về ngay.
+3. **Bật trong cuộc trò chuyện hiện tại**:
+   - Khi cuộc trò chuyện hiện tại chưa có sổ cái, tạo sổ cái theo quy tắc nguyên bản.
+   - Bật ký ức Lilith: đi qua nút 「Lưu cài đặt trò chuyện hiện tại」 của trang Ký ức nguyên bản.
+   - Nếu chưa cài đặt cổng AI thì sẽ không bật “Tự động chỉnh lý” (vì bản gốc sẽ từ chối lưu khi chưa có mô hình).
 
-**底部按钮**：「跳过引导」、「先这样，以后再说」，三步都完成后显示「完成」。
+**Nút dưới cùng**: 「Bỏ qua hướng dẫn」, 「Để vậy đã, tính sau」; sau khi hoàn thành cả ba bước sẽ hiển thị 「Hoàn tất」.
 
-每一步调用的都是现有按钮背后的代码（`features.installWorldbook / updateWorldbook / initChat`、`api-center saveConfigs`、原版保存按钮），没有另写一套逻辑。
+## IV. Khác
 
-## 四、其他
-
-- 版本号 0.9.3：contracts、manifest、package.json、package-lock（两处）、README、功能矩阵、`tests/version.test.js`。
-- 路线图：首次运行向导从 0.9.5 提前到 0.9.3。真实模型验收顺延到 0.9.4，后面的版本依次顺延。设置分组和 README 重写留在 0.9.6。
-- 浏览器测试的公共启动（`tests/qa/zt_common.py`）会预先把新手引导标为“已跳过”，免得它打断旧的测试；`native_v093` 会清掉这个标记，专门测试引导本身。
-- 新增测试：`tests/v093.test.js`（17 项）、`tests/native_v093.py`（29 项）。
+- Số phiên bản 0.9.3: contracts, manifest, package.json, package-lock (hai nơi), README, ma trận tính năng, `tests/version.test.js`.
+- Thêm bài kiểm thử mới: `tests/v093.test.js` (17 hạng mục), `tests/native_v093.py` (29 hạng mục).

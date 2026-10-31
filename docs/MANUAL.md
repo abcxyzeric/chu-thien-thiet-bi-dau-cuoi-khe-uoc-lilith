@@ -1,718 +1,718 @@
-# 诸天终端 · 莉莉丝 说明书（1.1.5 正式版）
+# Thiết Bị Đầu Cuối Chư Thiên · Lilith — Hướng dẫn sử dụng (Bản chính thức 1.1.5)
 
-这份说明书写的是插件的**全部功能、每个按钮的用途和用法**。在终端里点左侧「终端 → 说明书」就能看到，可以搜索；插件文件夹里的 `docs/MANUAL.md` 也是同一份。
+Bản hướng dẫn sử dụng này trình bày **toàn bộ tính năng của tiện ích, công dụng và cách dùng của từng nút bấm**. Trong thiết bị đầu cuối, nhấn vào cột bên trái 「Thiết bị đầu cuối → Hướng dẫn」 là sẽ thấy và có thể tìm kiếm; tệp `docs/MANUAL.md` trong thư mục tiện ích cũng chính là bản này.
 
-> **先读这一句**：所有 AI 功能（商城进货、许愿、盲盒、工作台、自动记忆、私聊、聊天群、补记）都只用模拟模型验收过，标为「实验性」。第一次用真实模型前，请先到 设置 → 账本与存档 →「导出 / 导入存档」备份。
+> **Đọc câu này trước tiên**: Tất cả tính năng AI (nhập hàng thương thành, ước nguyện, hộp mù, bàn làm việc, tự động ký ức, trò chuyện riêng, nhóm chat, ghi bổ sung) đều mới chỉ được nghiệm thu bằng model mô phỏng và được gắn nhãn 「Thử nghiệm」. Trước khi dùng với model thật lần đầu tiên, vui lòng vào Cài đặt → Sổ cái & Bản lưu → 「Xuất / Nhập bản lưu」 để sao lưu trước.
 
-阅读提示：
-- 「点 A → B」表示先点 A，再在打开的页面里点 B。
-- 「账本」指聊天里的诸天数据（系统点、背包、任务、功法……），存在聊天文件里，换聊天就换一份。
-- 标 **1.1.5** 的是这一版新增或改动的内容（标 1.1.4 的是上一版）。
-- 本说明书里的「莉莉丝」指系统助手；换了人设（第 18 章）以后，界面上会显示你设定的名字。
+Gợi ý khi đọc:
+- 「Nhấn A → B」 nghĩa là nhấn A trước, sau đó trong trang mở ra nhấn tiếp B.
+- 「Sổ cái」 chỉ dữ liệu Chư Thiên trong cuộc trò chuyện (Điểm Hệ Thống, túi đồ, nhiệm vụ, công pháp…), được lưu trong tệp trò chuyện, đổi cuộc trò chuyện là đổi sang một bản khác.
+- Đánh dấu **1.1.5** là nội dung mới thêm hoặc thay đổi ở bản này (đánh dấu 1.1.4 là của bản trước).
+- 「Lilith」 trong hướng dẫn này chỉ trợ lý hệ thống; sau khi đổi thiết lập nhân vật (Chương 18), trên giao diện sẽ hiển thị tên do bạn thiết lập.
 
 ---
 
-## 1. 快速上手
+## 1. Bắt đầu nhanh
 
-### 1.1 安装与更新
+### 1.1 Cài đặt & Cập nhật
 
-1. SillyTavern →「扩展」→「安装扩展」，粘贴：`https://github.com/falingzhi1-boop/zhutianxitongchajianban`
-2. 安装完刷新网页，打开一个**单角色**聊天（酒馆群聊不支持）。
-3. 需要 SillyTavern 1.16 或更高（已验证 1.16.0 / 1.17.0 / 1.18.0 / 1.19.0）。不需要酒馆助手，也不需要导入正则。
-4. **更新**：「扩展 → 管理扩展」里找到「诸天 · 莉莉丝契约终端」，点更新，然后刷新网页。只刷新网页不会下载新代码。
-5. **卸载**：先导出存档、解绑世界书，再删除扩展（详见 `docs/UNINSTALL.md`）。
+1. SillyTavern → 「Tiện ích mở rộng (Extensions)」 → 「Cài đặt tiện ích (Install extension)」, dán: `https://github.com/abcxyzeric/chu-thien-thiet-bi-dau-cuoi-khe-uoc-lilith`
+2. Cài đặt xong hãy làm mới trang web, mở một cuộc trò chuyện **đơn nhân vật** (không hỗ trợ trò chuyện nhóm của quán rượu).
+3. Cần SillyTavern 1.16 trở lên (đã xác minh trên 1.16.0 / 1.17.0 / 1.18.0 / 1.19.0). Không cần Tavern Helper, cũng không cần nhập kịch bản Regex.
+4. **Cập nhật**: Trong 「Tiện ích mở rộng → Quản lý tiện ích」 tìm 「Chư Thiên · Thiết Bị Đầu Cuối Khế Ước Lilith」, nhấn cập nhật, sau đó làm mới trang web. Chỉ làm mới trang web thôi sẽ không tải mã nguồn mới về.
+5. **Gỡ cài đặt**: Xuất bản lưu và gỡ liên kết Sách Thế Giới trước, sau đó mới xóa tiện ích mở rộng (xem chi tiết tại `docs/UNINSTALL.md`).
 
-### 1.2 第一次使用（新手引导）
+### 1.2 Lần đầu sử dụng (Hướng dẫn tân thủ)
 
-第一次打开终端会出现「新手引导」（左侧「引导」页），一共三步，每步完成会打 ✓：
+Lần đầu tiên mở thiết bị đầu cuối sẽ xuất hiện 「Hướng dẫn tân thủ」 (trang 「Hướng dẫn」 ở cột trái), tổng cộng có 3 bước, mỗi bước hoàn thành sẽ đánh dấu ✓:
 
-| 步骤 | 做什么 | 按钮 |
+| Bước | Làm gì | Nút bấm |
 |---|---|---|
-| 1 导入或更新世界书 | 安装并绑定「诸天万界最强系统」世界书（诸天存档会自动做） | 自动完成 |
-| 2 设置 AI 接口 | 填独立接口，或者直接用酒馆的主 API | 「修改」→ 跳到「连接」页 |
-| 3 在当前聊天启用 | 给当前聊天建账本 | 「在当前聊天启用」 |
+| 1 Nhập hoặc cập nhật Sách Thế Giới | Cài đặt và gắn kết Sách Thế Giới 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 (bản lưu Chư Thiên sẽ tự động thực hiện) | Tự động hoàn thành |
+| 2 Thiết lập cổng kết nối AI | Điền cổng độc lập, hoặc dùng trực tiếp API chính của quán rượu | 「Sửa đổi」 → Chuyển tới trang 「Kết nối」 |
+| 3 Bật trong cuộc trò chuyện hiện tại | Tạo sổ cái cho cuộc trò chuyện hiện tại | 「Bật trong cuộc trò chuyện hiện tại」 |
 
-- 「跳过引导」：不再显示引导。
-- 「先这样，以后再说」：这次先关掉，以后还会提醒。
-- 随时可以在 设置 → 上手 →「新手引导 ›」重新打开。
+- 「Bỏ qua hướng dẫn」: Không hiển thị hướng dẫn nữa.
+- 「Để vậy đã, tính sau」: Lần này đóng lại trước, về sau vẫn sẽ nhắc lại.
+- Bất cứ lúc nào cũng có thể mở lại tại Cài đặt → Bắt đầu → 「Hướng dẫn tân thủ ›」.
 
-### 1.3 从旧版 v1.1（世界书 + 正则 + 酒馆助手脚本）迁移
+### 1.3 Di chuyển từ bản cũ v1.1 (Sách Thế Giới + Regex + Kịch bản Tavern Helper)
 
-1. 装好本插件，打开诸天聊天。插件会自动安装并绑定外挂世界书，已经存在的不覆盖。
-2. 设置 → 兼容与维护 →「一键接管旧版」：停用旧的 4 个正则和旧的酒馆助手脚本（只停用、不删除），保存后自动刷新。
-3. 想回到旧版：「恢复旧版」。终端打不开时，扩展设置抽屉里还有「紧急恢复旧版」。
-4. 「兼容诊断」提示「世界书预算不足」时，点「一键调整」（酒馆默认只给世界书 25% 的上下文）。
-5. 旧聊天的账本：设置 → 账本与存档 →「旧存档迁移 / 账本回滚 ›」。
-
----
-
-## 2. 怎么打开终端
-
-| 入口 | 用法 |
-|---|---|
-| 悬浮莉莉丝（手机 / 触屏默认） | **点一下**：打开终端（终端已打开时只说话）。**双击**：戳她一下，会有台词和表情。**长按拖动**（电脑上直接拖）：移动位置，拖到屏幕左右边缘会藏起来，只露一点，点露出的部分就会出来。**拖到屏幕底部**：出现「换成头像」和「关闭悬浮窗」两个目标。 |
-| 头像悬浮窗（电脑默认） | 点头像打开终端。拖到底部同样可以换成悬浮莉莉丝或关闭。 |
-| 快捷键（电脑） | `Alt+Z` / `Alt+X` 打开或关闭终端，`Alt+S` 打开总览。可在设置里关掉。 |
-| 斜杠命令 | 在聊天输入框输入 `/zt open`（见第 15 章）。 |
-| 楼层小标签 | 点聊天楼层下方的「✧ 系统已记录 … 查看 ›」，会打开终端并定位到这一层的数据。 |
-| 输入框上方账本速览（HUD） | 显示 系统点 / 当前世界 / 任务，点它打开终端。 |
-
-关掉悬浮窗以后，可以在 设置 → 莉莉丝 →「悬浮窗」里选回来。
+1. Cài đặt tiện ích này xong, mở cuộc trò chuyện Chư Thiên. Tiện ích sẽ tự động cài đặt và gắn kết Sách Thế Giới ngoại vi, nếu đã tồn tại sẽ không ghi đè.
+2. Cài đặt → Tương thích & Bảo trì → 「Tiếp quản bản cũ một chạm」: Tắt 4 kịch bản Regex cũ và kịch bản Tavern Helper cũ (chỉ tắt chứ không xóa), sau khi lưu sẽ tự động làm mới.
+3. Muốn quay về bản cũ: Nhấn 「Khôi phục bản cũ」. Khi không mở được thiết bị đầu cuối, trong ngăn kéo cài đặt tiện ích mở rộng vẫn có nút 「Khôi phục khẩn cấp bản cũ」.
+4. Khi 「Chẩn đoán tương thích」 nhắc 「Ngân sách Sách Thế Giới không đủ」, hãy nhấn 「Điều chỉnh một chạm」 (mặc định quán rượu chỉ cấp 25% ngữ cảnh cho Sách Thế Giới).
+5. Sổ cái của cuộc trò chuyện cũ: Cài đặt → Sổ cái & Bản lưu → 「Di chuyển bản lưu cũ / Hoàn tác sổ cái ›」.
 
 ---
 
-## 3. 终端窗口
+## 2. Cách mở thiết bị đầu cuối
 
-### 3.1 标题栏
-
-| 按钮 | 用途 |
+| Lối vào | Cách dùng |
 |---|---|
-| 版本号（如 1.1.4） | 当前插件版本。 |
-| ✥ 拖动窗口 | 按住拖动终端窗口（浮动窗口模式）。窗口右下角可以拖动调整大小。 |
-| 全屏 / 浮窗 | 在全屏和浮动窗口之间切换（手机上两种布局都有这个按钮）。 |
-| ↻ 窗口复位 | 把终端窗口的位置和大小恢复成默认。 |
-| — 收起 | 收起终端（再次点头像 / 悬浮莉莉丝打开）。 |
-| × | 关闭终端。只关终端，不影响悬浮窗。 |
+| Lilith nổi (Mặc định trên điện thoại / màn hình cảm ứng) | **Chạm 1 lần**: Mở thiết bị đầu cuối (khi thiết bị đầu cuối đang mở thì chỉ nói thoại). **Chạm đúp**: Chọc cô ấy một cái, sẽ có lời thoại và biểu cảm. **Nhấn giữ và kéo** (trên máy tính kéo trực tiếp): Di chuyển vị trí, kéo sát mép trái/phải màn hình sẽ ẩn đi chỉ lộ ra một chút, chạm vào phần lộ ra sẽ hiện lại. **Kéo xuống đáy màn hình**: Xuất hiện hai mục tiêu 「Đổi sang ảnh đại diện」 và 「Đóng cửa sổ nổi」. |
+| Cửa sổ nổi ảnh đại diện (Mặc định trên máy tính) | Nhấn vào ảnh đại diện để mở thiết bị đầu cuối. Kéo xuống đáy màn hình cũng có thể đổi sang Lilith nổi hoặc đóng lại. |
+| Phím tắt (Máy tính) | `Alt+Z` / `Alt+X` để mở hoặc đóng thiết bị đầu cuối, `Alt+S` để mở Tổng quan. Có thể tắt trong phần Cài đặt. |
+| Lệnh gạch chéo (Slash command) | Nhập `/zt open` vào ô nhập trò chuyện (xem Chương 15). |
+| Nhãn nhỏ ở tầng tin nhắn | Nhấn vào 「✧ Hệ thống đã ghi nhận … Xem ›」 bên dưới tầng tin nhắn trò chuyện, sẽ mở thiết bị đầu cuối và định vị tới dữ liệu của tầng đó. |
+| Thanh xem nhanh sổ cái phía trên ô nhập liệu (HUD) | Hiển thị Điểm Hệ Thống / Thế giới hiện tại / Nhiệm vụ, nhấn vào đó để mở thiết bị đầu cuối. |
 
-手机上可以用返回手势关闭终端（设置里可关）；点终端外部是否关闭，由设置「点击终端外部时关闭」决定。
-
-### 3.2 顶部数据栏
-
-依次显示：**当前世界**（带世界类型标签，比如「玉简」=仙侠）、**系统点**、五种专属资源（**天命印记 / 血脉结晶 / 因果筹码 / 名望 / 岁月沉淀**）、**商城等级**。数据来自当前聊天的账本，写入成功后自动刷新。
-
-### 3.3 左侧导航
-
-| 分组 | 页面 |
-|---|---|
-| 系统 | 总览、任务、羁绊、修行 |
-| 交易 | 商城、背包、操作日志、商品定制、剧情收纳 |
-| 能力 | 外挂、自拟、神通 |
-| 图谱 | 事件线、羁绊图、星图、能力树 |
-| 万界 | 聊天群 |
-| 莉莉丝 | 工作台、记忆、规则 |
-| 终端 | 引导、连接、状态、设置、说明书 |
-
-> 1.1.5：设置 →「功能开关」可以把不用的页面从导航里拿掉（总览、设置、连接一直保留）；导航分组「莉莉丝」在换人设后显示人设的名字。
-
-终端底部有一行莉莉丝的提示（比如「聊天切换；仅使用当前聊天的记忆」）。
+Sau khi đóng cửa sổ nổi, có thể chọn bật lại tại Cài đặt → Trợ lý hệ thống → 「Cửa sổ nổi」.
 
 ---
 
-## 4. 系统
+## 3. Cửa sổ thiết bị đầu cuối
 
-### 4.1 总览
+### 3.1 Thanh tiêu đề
 
-- **基础概览**：宿主状态、绑定目标、当前任务、资源等（原版状态栏第 1 页）。
-- 「AI 可见数据（诸天系统.实时数据）」：展开后能看到下一轮会告诉 AI 的那份数据；「复制」复制它。
-- 「查看星图 ›」：跳到 图谱 → 星图。
+| Nút bấm | Công dụng |
+|---|---|
+| Số phiên bản (như 1.1.5) | Phiên bản tiện ích hiện tại. |
+| ✥ Kéo cửa sổ | Nhấn giữ để kéo cửa sổ thiết bị đầu cuối (chế độ cửa sổ nổi). Góc dưới bên phải cửa sổ có thể kéo để thay đổi kích thước. |
+| Toàn màn hình / Cửa sổ nổi | Chuyển đổi qua lại giữa toàn màn hình và cửa sổ nổi (trên điện thoại cả hai bố cục đều có nút này). |
+| ↻ Đặt lại cửa sổ | Khôi phục vị trí và kích thước cửa sổ thiết bị đầu cuối về mặc định. |
+| — Thu gọn | Thu gọn thiết bị đầu cuối (nhấn lại vào ảnh đại diện / Lilith nổi để mở). |
+| × | Đóng thiết bị đầu cuối. Chỉ đóng thiết bị đầu cuối, không ảnh hưởng tới cửa sổ nổi. |
 
-### 4.2 任务
+Trên điện thoại có thể dùng cử chỉ quay lại (Back) để đóng thiết bị đầu cuối (có thể tắt trong Cài đặt); việc nhấn ra bên ngoài thiết bị đầu cuối có đóng cửa sổ hay không do cài đặt 「Đóng khi nhấn ra ngoài thiết bị đầu cuối」 quyết định.
 
-- **任务日志**，下拉框可以筛选：进行中 / 待接取、长期任务、短期任务、已归档、全部任务。
-- 点一条任务可以看详情和进度；「上一页 / 下一页」翻页。
-- 任务由 AI 在数据块里发布和更新，也可以来自工作台、聊天群「求助」。
-- 「查看事件线 ›」：跳到 图谱 → 事件线。
+### 3.2 Thanh dữ liệu phía trên
 
-### 4.3 羁绊
+Hiển thị lần lượt: **Thế giới hiện tại** (kèm nhãn loại thế giới, ví dụ 「Ngọc Giản」 = Tiên hiệp), **Điểm Hệ Thống**, 5 loại tài nguyên độc quyền (**Ấn Ký Thiên Mệnh / Kết Tinh Huyết Mạch / Quân Bài Nhân Quả / Danh Vọng / Năm Tháng Lắng Đọng**), **Cấp thương thành**. Dữ liệu lấy từ sổ cái của cuộc trò chuyện hiện tại, sau khi ghi thành công sẽ tự động làm mới.
 
-- **多人羁绊**：显示本世界和所有世界的人物（好感度、关系、黑化 / 悔意等）。
-- 搜索框：按人物、世界、关系搜索。
-- 筛选：本世界 / 全部 / 恋人·攻略 / 打手 / 群友（数字是人数）。
-- 「补录人物 / 更新多人关系（不扣费、不发奖）」：填 姓名、来源世界（同名人物靠世界区分）、关系、好感度（0–100）、说明，然后点「保存人物」。用来补上 AI 漏记的人物。
-- 聊天群群员默认**不进**羁绊；要加进来，在 聊天群 → 群员 点「拉入羁绊」。
+### 3.3 Điều hướng bên trái
 
-### 4.4 修行
+| Nhóm | Trang |
+|---|---|
+| Hệ thống | Tổng quan, Nhiệm vụ, Gắn kết, Tu hành |
+| Giao dịch | Thương thành, Túi đồ, Nhật ký thao tác, Tùy chỉnh hàng hóa, Thu nạp cốt truyện |
+| Năng lực | Phụ trợ, Tự tạo, Thần thông |
+| Đồ giám | Dòng sự kiện, Sơ đồ gắn kết, Tinh đồ, Cây năng lực |
+| Vạn Giới | Nhóm chat |
+| Lilith | Bàn làm việc, Ký ức, Quy tắc |
+| Thiết bị đầu cuối | Hướng dẫn, Kết nối, Trạng thái, Cài đặt, Cẩm nang |
 
-- **万象修行**：选功法和修炼时长（一个时辰 / 一天 / 七天 / 一个月 / 一年 / 十年），点「写入输入框」，会生成一句修炼指令放进聊天输入框，由你发送。
-- 功法熟练度阶段：未入门 → 熟练 → 精通 → 宗师 → 入道。可以打开「告诉 AI 每门功法当前阶段的真实效果」：熟练消耗 −30%，精通威力 +100%，宗师有专属奥义，入道无消耗瞬发。
-- 「品阶鉴定 ›」：剧情里得到、却被记成凡品的功法可以重新鉴定（见 5.6）。
-- 「阶段效果与来源 ›」：查看每门功法的阶段效果和来源。
-- 「剧情物品 / 功法收纳」：跳到「剧情收纳」。
+> 1.1.5: Cài đặt → 「Công tắc tính năng」 có thể ẩn các trang không dùng khỏi thanh điều hướng (Tổng quan, Cài đặt, Kết nối luôn được giữ lại); nhóm điều hướng 「Lilith」 sau khi đổi thiết lập nhân vật sẽ hiển thị tên nhân vật mới.
+
+Dưới đáy thiết bị đầu cuối có một dòng gợi ý của Lilith (ví dụ 「Đã chuyển cuộc trò chuyện; chỉ sử dụng ký ức của cuộc trò chuyện hiện tại」).
 
 ---
 
-## 5. 交易
+## 4. Hệ thống
 
-### 5.1 商城
+### 4.1 Tổng quan
 
-顶部有 5 个分区按钮：
+- **Tổng quan cơ bản**: Trạng thái Ký chủ, mục tiêu gắn kết, nhiệm vụ hiện tại, tài nguyên, v.v. (trang 1 của thanh trạng thái bản gốc).
+- 「Dữ liệu hiển thị cho AI (诸天系统.实时数据)」: Mở rộng ra sẽ thấy phần dữ liệu sẽ báo cho AI ở lượt tiếp theo; nhấn 「Sao chép」 để sao chép.
+- 「Xem Tinh đồ ›」: Chuyển tới Đồ giám → Tinh đồ.
 
-| 分区 | 用途 |
-|---|---|
-| **万界盲盒** | 「单抽 · 1万」「十连 · 10万」「五十连 · 50万」；输入数字后点「自定义抽数」。神品 1000 抽保底。旁边可以切换抽卡模式：**经典折叠**（默认，整次一起结算，≥50 抽时凡品合成一行，≥100 抽时灵品也合成一行，折叠的部分只计数、不生成）或**十抽一结算**。 |
-| **待处理奖励** | 抽到但还没领取 / 处理的奖励。 |
-| **万能许愿** | 在「输入愿望...」里写愿望，点「询价」，AI 定价并判定，确认后扣点。 |
-| **商城库存** | 「一键进货 · 500 系统点」让 AI 按定制进一批货，然后购买。「商品定制 / 近期避重」跳到商品定制页。 |
-| **物品回收** | 把背包物品卖回系统换系统点。 |
+### 4.2 Nhiệm vụ
 
-所有扣点 / 发奖都是**加锁写入并读回核对**的。读回不一致时会冻结账本，见第 13 章。
+- **Nhật ký nhiệm vụ**, khung thả xuống có thể lọc: Đang tiến hành / Chờ nhận, Nhiệm vụ dài hạn, Nhiệm vụ ngắn hạn, Đã lưu trữ, Toàn bộ nhiệm vụ.
+- Nhấn vào một nhiệm vụ để xem chi tiết và tiến độ; 「Trang trước / Trang sau」 để lật trang.
+- Nhiệm vụ do AI phát hành và cập nhật trong khối dữ liệu, hoặc cũng có thể đến từ Bàn làm việc, mục 「Cầu viện」 trong Nhóm chat.
+- 「Xem Dòng sự kiện ›」: Chuyển tới Đồ giám → Dòng sự kiện.
 
-### 5.2 背包
+### 4.3 Gắn kết
 
-- **随身行囊**：所有物品，按分类显示，可以使用、查看。
-- 「AI 背包整理（重新分类 + 补全功能简介）」：让 AI 整理分类、补写简介。
-- 「品阶鉴定 ›」：重新判定剧情物品的品阶。
-- 「剧情物品 / 功法收纳」：跳到「剧情收纳」。
+- **Gắn kết nhiều người**: Hiển thị nhân vật của thế giới này và tất cả thế giới (độ hảo cảm, quan hệ, hắc hóa / hối hận, v.v.).
+- Ô tìm kiếm: Tìm kiếm theo nhân vật, thế giới, mối quan hệ.
+- Bộ lọc: Thế giới này / Tất cả / Người yêu · Công lược / Tay đấm / Bạn cùng nhóm (con số là số lượng người).
+- 「Ghi bổ sung nhân vật / Cập nhật quan hệ nhiều người (không trừ phí, không phát thưởng)」: Điền Họ tên, Thế giới xuất xứ (nhân vật trùng tên được phân biệt bằng thế giới), Quan hệ, Độ hảo cảm (0–100), Mô tả, sau đó nhấn 「Lưu nhân vật」. Dùng để bổ sung những nhân vật mà AI ghi sót.
+- Thành viên nhóm chat mặc định **không tự đưa vào** trang Gắn kết; muốn thêm vào, tại Nhóm chat → Thành viên hãy nhấn 「Đưa vào Gắn kết」.
 
-### 5.3 操作日志
+### 4.4 Tu hành
 
-本机记录的操作（购买、抽卡、许愿……）。可以勾选、分类、预览。刷新后默认不放进正文；真正的账本凭据会保留。
-
-### 5.4 商品定制
-
-- **抽卡模式**：经典折叠（默认）/ 十抽一结算。
-- **商店进货定制**：
-  - 来源：诸天混合 / 当前世界 / 指定世界·作品（指定时填原作名）；
-  - 题材：科幻、都市、武侠、奇幻、历史、日常、动漫游戏、修仙玄幻；
-  - 类别：消耗品、武器、装备、服装、素材、其他；
-  - 用途：探索、生活、治疗、战斗、建造、情报；
-  - 「排除项」：用逗号分隔，填不想再出现的物品或题材；
-  - 「允许原创」；
-  - 重复策略：近期避重（含相似效果）/ 允许常用消耗品重复；
-  - 改完点「保存商店配置」。
-- **盲盒奖励定制**：选项同上，改完点「保存盲盒配置」。
-
-### 5.5 剧情收纳
-
-把正文里得到的东西正式登记进背包 / 功法库，**不扣点**：
-
-1. 填「起始楼层」「结束楼层」和「来源世界」。
-2. 可选：勾「附带当前角色卡描述（最多 6000 字）」，选一本世界书作为参考，或者在「映射」里填明确的对应关系（JSON）。
-3. 点「提取候选」，AI 列出候选物品和功法，并附带证据原文。
-4. 勾选要收纳的条目，确认后入库。
-5. 原世界的品阶会保留；判断不了的标为「待鉴定」。「待鉴定与收纳来源」里可以查看。
-
-### 5.6 品阶鉴定
-
-剧情里得到的功法 / 物品默认按凡品入账。在这里可以让 AI 鉴定，也可以手动修正，**只升不降**。相关设置在 设置 →「品阶鉴定」。
+- **Tu hành Vạn Tượng**: Chọn công pháp và thời lượng tu luyện (Một canh giờ / Một ngày / Bảy ngày / Một tháng / Một năm / Mười năm), nhấn 「Ghi vào ô nhập liệu」, sẽ tạo ra một câu chỉ lệnh tu luyện đưa vào ô nhập trò chuyện để bạn gửi đi.
+- Các giai đoạn độ thuần thục công pháp: Chưa Nhập Môn → Nhập Môn → Thuần Thục → Tinh Thông → Tông Sư → Nhập Đạo. Có thể bật 「Báo cho AI hiệu quả thực tế ở giai đoạn hiện tại của từng môn công pháp」: Thuần Thục tiêu hao −30%, Tinh Thông uy lực +100%, Tông Sư có áo nghĩa độc quyền, Nhập Đạo phát động tức thì không tiêu hao.
+- 「Giám định phẩm giai ›」: Công pháp nhận được trong cốt truyện nhưng bị ghi thành Phàm phẩm có thể giám định lại tại đây (xem 5.6).
+- 「Hiệu quả giai đoạn & Nguồn gốc ›」: Xem hiệu quả giai đoạn và nguồn gốc của từng môn công pháp.
+- 「Thu nạp vật phẩm / công pháp cốt truyện」: Chuyển tới 「Thu nạp cốt truyện」.
 
 ---
 
-## 6. 能力
+## 5. Giao dịch
 
-### 6.1 外挂（外挂工坊）
+### 5.1 Thương thành
 
-顶部分区：
+Phía trên có 5 nút phân khu:
 
-| 外挂 | 用法 |
+| Phân khu | Công dụng |
 |---|---|
-| **无限口袋** | 从背包选物品点「存入」；填数量后点「取出 ×N 个」；「清空」。 |
-| **诸天打手** | 填角色名（如：宇智波鼬）和出处（可选），点「召唤」，AI 生成招募卡，按实力档付费。 |
-| **洞察之眼** | 选目标实力档和情报深度（表层档案 / 隐秘情报 / 底牌弱点），点「支付并洞察」。 |
-| **分身派遣** | 选任务（打工赚点 / 代为修炼 / 探宝寻缘）和轮数（3 / 5 / 10），点「支付并派出」。 |
-| **随身洞天** | 选品阶，点「种下灵种」；「扩建灵田」。 |
-| **万物熔炉** | 选背包物品，点「开炉熔炼」。 |
-| **操作记录** | 外挂的使用记录。 |
+| **Hộp Mù Vạn Giới** | 「Rút 1 lần · 1 vạn」「Rút 10 lần · 10 vạn」「Rút 50 lần · 50 vạn」; nhập số lượng rồi nhấn 「Số lần rút tùy chỉnh」. Bảo hiểm Thần phẩm ở lượt rút thứ 1000. Bên cạnh có thể chuyển đổi chế độ rút thẻ: **Gộp cổ điển** (mặc định, kết toán toàn bộ cùng lúc, khi ≥50 lượt rút thì Phàm phẩm gộp thành 1 dòng, khi ≥100 lượt rút thì Linh phẩm cũng gộp thành 1 dòng, phần gộp chỉ đếm số lượng chứ không gọi tạo chi tiết) hoặc **Kết toán mỗi 10 lượt**. |
+| **Phần thưởng chờ xử lý** | Phần thưởng đã rút trúng nhưng chưa nhận / chưa xử lý. |
+| **Ước Nguyện Vạn Năng** | Viết điều ước vào ô 「Nhập điều ước...」, nhấn 「Hỏi giá」, AI sẽ định giá và phán định, sau khi xác nhận sẽ trừ điểm. |
+| **Kho hàng Thương thành** | 「Nhập hàng một chạm · 500 Điểm Hệ Thống」 để AI nhập một đợt hàng theo tùy chỉnh, sau đó mua sắm. 「Tùy chỉnh hàng hóa / Tránh trùng lặp gần đây」 chuyển tới trang Tùy chỉnh hàng hóa. |
+| **Thu hồi vật phẩm** | Bán vật phẩm trong túi đồ lại cho hệ thống để đổi lấy Điểm Hệ Thống. |
 
-- 「＋ 自拟外挂」「外挂管理 ›」：跳到「自拟」页。
+Tất cả các thao tác trừ điểm / phát thưởng đều **khóa ghi và đọc lại để đối chiếu**. Khi đọc lại không khớp sẽ đóng băng sổ cái, xem Chương 13.
 
-### 6.2 自拟（外挂管理）
+### 5.2 Túi đồ
 
-- 「‹ 返回外挂工坊」。
-- **强力模块**：对应世界书条目，对所有聊天生效，用开关启停。
-- **原版外挂**：只对本聊天生效的开关。
-- **自拟外挂**：自己写外挂，存在本机外挂库里，开关只影响本聊天。
-  - 「导出 .json」「导入 .json」：分享或备份外挂库。
-  - **新建**：填名称、品阶（凡品 ~ 禁忌）、类型（被动 / 主动 / 每日次数）、每日次数、代价（无 / 系统点 / 专属资源）和资源种类、每次消耗数量、冷却回合、规则说明（写给 AI 看：效果、限制、副作用），然后点「加入外挂库」。
-- **发动记录**：本聊天最近 30 次发动。
+- **Hành trang tùy thân**: Toàn bộ vật phẩm, hiển thị theo phân loại, có thể sử dụng và xem chi tiết.
+- 「AI chỉnh lý túi đồ (Phân loại lại + Bổ sung giới thiệu công năng)」: Để AI sắp xếp lại phân loại và viết bổ sung phần giới thiệu.
+- 「Giám định phẩm giai ›」: Phán định lại phẩm giai của vật phẩm cốt truyện.
+- 「Thu nạp vật phẩm / công pháp cốt truyện」: Chuyển tới 「Thu nạp cốt truyện」.
 
-### 6.3 神通
+### 5.3 Nhật ký thao tác
 
-| 分区 | 用法 |
-|---|---|
-| **实力设置** | 设置宿主和对手的实力档（1 档凡人顶尖 ~ 8 档概念 / 全能）。「这两个档位有什么用？」展开有说明。「AI 评估实力档」让 AI 根据剧情评估。 |
-| **图鉴复刻** | 复刻某个能力，按档位付费，点「支付并复刻」。 |
-| **状态改写** | 选改写类型（伤病痊愈、复活、对敌施加负面状态等），填对象，点「支付并改写」。 |
-| **言灵改字** | 选改字程度（无害化 / 小反转 / 结果反转），填要改的那句话，点「支付并改字」。 |
-| **神通记录** | 使用记录。 |
+Các thao tác được ghi nhận trên máy (mua sắm, rút thẻ, ước nguyện…). Có thể đánh dấu chọn, phân loại, xem trước. Sau khi làm mới mặc định không đưa vào chính văn; chứng từ sổ cái thực sự vẫn được giữ nguyên.
 
-- 「查看能力树 ›」：跳到 图谱 → 能力树。
+### 5.4 Tùy chỉnh hàng hóa
+
+- **Chế độ rút thẻ**: Gộp cổ điển (mặc định) / Kết toán mỗi 10 lượt.
+- **Tùy chỉnh nhập hàng cửa hàng**:
+  - Nguồn gốc: Hỗn hợp Chư Thiên / Thế giới hiện tại / Thế giới · Tác phẩm chỉ định (khi chỉ định hãy điền tên nguyên tác);
+  - Đề tài: Khoa học viễn tưởng, Đô thị, Võ hiệp, Kỳ ảo, Lịch sử, Đời thường, Anime & Game, Tu tiên huyền huyễn;
+  - Phân loại: Vật phẩm tiêu hao, Vũ khí, Trang bị, Trang phục, Nguyên liệu, Khác;
+  - Công dụng: Thăm dò, Đời sống, Trị liệu, Chiến đấu, Xây dựng, Tình báo;
+  - 「Mục loại trừ」: Phân cách bằng dấu phẩy, điền những vật phẩm hoặc đề tài không muốn xuất hiện lại;
+  - 「Cho phép sáng tạo gốc」;
+  - Chiến lược trùng lặp: Tránh trùng lặp gần đây (gồm cả hiệu ứng tương tự) / Cho phép vật phẩm tiêu hao thông dụng lặp lại;
+  - Sửa xong nhấn 「Lưu cấu hình cửa hàng」.
+- **Tùy chỉnh phần thưởng Hộp mù**: Các tùy chọn giống như trên, sửa xong nhấn 「Lưu cấu hình hộp mù」.
+
+### 5.5 Thu nạp cốt truyện
+
+Đăng ký chính thức những thứ nhận được trong chính văn vào túi đồ / kho công pháp, **không trừ điểm**:
+
+1. Điền 「Tầng bắt đầu」「Tầng kết thúc」 và 「Thế giới xuất xứ」.
+2. Tùy chọn: Đánh dấu chọn 「Đính kèm mô tả thẻ nhân vật hiện tại (tối đa 6000 chữ)」, chọn một cuốn Sách Thế Giới làm tham khảo, hoặc điền quan hệ ánh xạ rõ ràng (JSON) vào ô 「Ánh xạ」.
+3. Nhấn 「Trích xuất ứng viên」, AI sẽ liệt kê các vật phẩm và công pháp ứng viên kèm theo nguyên văn bằng chứng.
+4. Đánh dấu chọn các mục muốn thu nạp, xác nhận xong sẽ đưa vào kho.
+5. Phẩm giai của thế giới gốc sẽ được giữ lại; những mục không phán đoán được sẽ gắn nhãn 「Chờ giám định」. Có thể xem tại 「Chờ giám định & Nguồn gốc thu nạp」.
+
+### 5.6 Giám định phẩm giai
+
+Công pháp / vật phẩm nhận được trong cốt truyện mặc định vào sổ ở mức Phàm phẩm. Tại đây có thể để AI giám định, hoặc tự hiệu chỉnh thủ công, **chỉ tăng không giảm**. Cài đặt liên quan nằm tại Cài đặt → 「Giám định phẩm giai」.
 
 ---
 
-## 7. 图谱
+## 6. Năng lực
 
-| 页面 | 内容 |
+### 6.1 Phụ trợ (Xưởng Phụ Trợ)
+
+Các phân khu phía trên:
+
+| Phụ trợ | Cách dùng |
 |---|---|
-| **事件线** | 任务、结算凭据、万界足迹按时间排成一条线。「本次会话的演出」：只在账本读回确认后播放，被回滚的会标为「未入账」；点「查看」可以重看。 |
-| **羁绊图** | 恋爱目标、打手、群员的关系图。点人物可以跳到羁绊页；群员可以「拉入羁绊」。 |
-| **星图** | 到访过的世界。「记录穿越」：填世界名、选类型（自动 / 仙侠 / 赛博 / 诡异 / 都市 / 西幻 / 末世 / 其他），点「记录穿越」，会写入 当前世界 / 世界类型 / 万界足迹，界面主题跟着切换。 |
-| **能力树** | 实力档、功法、神通、外挂汇总成一棵树。 |
+| **Túi Không Giới Hạn** | Chọn vật phẩm từ túi đồ rồi nhấn 「Gửi vào」; điền số lượng rồi nhấn 「Lấy ra ×N cái」; 「Xóa trống」. |
+| **Tay Đấm Chư Thiên** | Điền tên nhân vật (ví dụ: Uchiha Itachi) và xuất xứ (tùy chọn), nhấn 「Triệu hồi」, AI sẽ tạo thẻ chiêu mộ, thanh toán theo bậc thực lực. |
+| **Mắt Thấu Thị** | Chọn bậc thực lực mục tiêu và độ sâu tình báo (Hồ sơ bề nổi / Tình báo bí mật / Át chủ bài & Điểm yếu), nhấn 「Thanh toán & Thấu thị」. |
+| **Phái Khiển Phân Thân** | Chọn nhiệm vụ (Làm thuê kiếm điểm / Tu luyện thay / Tầm bảo tìm cơ duyên) và số lượt (3 / 5 / 10), nhấn 「Thanh toán & Phái đi」. |
+| **Động Thiên Tùy Thân** | Chọn phẩm giai, nhấn 「Gieo linh chủng」; 「Mở rộng linh điền」. |
+| **Lò Nung Vạn Vật** | Chọn 2 vật phẩm trong túi đồ, nhấn 「Mở lò dung luyện」. |
+| **Bản ghi thao tác** | Lịch sử sử dụng các phụ trợ. |
+
+- 「＋ Phụ trợ tự tạo」「Quản lý phụ trợ ›」: Chuyển tới trang 「Tự tạo」.
+
+### 6.2 Tự tạo (Quản lý phụ trợ)
+
+- 「‹ Quay lại Xưởng Phụ Trợ」.
+- **Mô-đun mạnh**: Tương ứng với các mục trong Sách Thế Giới, có hiệu lực với mọi cuộc trò chuyện, dùng công tắc để bật/tắt.
+- **Phụ trợ bản gốc**: Công tắc chỉ có hiệu lực đối với cuộc trò chuyện này.
+- **Phụ trợ tự tạo**: Tự viết phụ trợ riêng, lưu trong kho phụ trợ trên máy, công tắc chỉ ảnh hưởng tới cuộc trò chuyện này.
+  - 「Xuất .json」「Nhập .json」: Chia sẻ hoặc sao lưu kho phụ trợ.
+  - **Tạo mới**: Điền Tên, Phẩm giai (Phàm phẩm ~ Cấm kỵ), Loại (Bị động / Chủ động / Số lần mỗi ngày), Số lần mỗi ngày, Cái giá phải trả (Không / Điểm Hệ Thống / Tài nguyên độc quyền) cùng loại tài nguyên, Số lượng tiêu hao mỗi lần, Số lượt hồi chiêu, Mô tả quy tắc (viết cho AI đọc: hiệu quả, giới hạn, tác dụng phụ), sau đó nhấn 「Thêm vào kho phụ trợ」.
+- **Lịch sử phát động**: 30 lần phát động gần nhất trong cuộc trò chuyện này.
+
+### 6.3 Thần thông
+
+| Phân khu | Cách dùng |
+|---|---|
+| **Thiết lập thực lực** | Thiết lập bậc thực lực của Ký chủ và đối thủ (Bậc 1 Đỉnh cao phàm nhân ~ Bậc 8 Khái niệm / Toàn năng). Mở rộng 「Hai bậc này có tác dụng gì?」 để xem giải thích. 「AI đánh giá bậc thực lực」 để AI đánh giá dựa theo cốt truyện. |
+| **Sao Chép Đồ Giám** | Sao chép một năng lực nào đó, trả phí theo bậc, nhấn 「Thanh toán & Sao chép」. |
+| **Cải Biên Trạng Thái** | Chọn loại cải biên (Thương bệnh bình phục, Hồi sinh, Áp đặt trạng thái tiêu cực lên kẻ địch, v.v.), điền đối tượng, nhấn 「Thanh toán & Cải biên」. |
+| **Ngôn Linh Cải Tự** | Chọn mức độ sửa chữ (Vô hại hóa / Đảo chiều nhỏ / Đảo chiều kết quả), điền câu nói muốn sửa, nhấn 「Thanh toán & Cải tự」. |
+| **Bản ghi Thần thông** | Lịch sử sử dụng. |
+
+- 「Xem Cây năng lực ›」: Chuyển tới Đồ giám → Cây năng lực.
 
 ---
 
-## 8. 万界：聊天群
+## 7. Đồ giám
 
-诸天万界聊天群是终端里的一个跨世界群聊，**和酒馆的群聊功能无关**。顶部写着群名、群员数、商城等级和红包上限（红包品阶不会超过商城等级）。
-
-分 4 个子页：**聊天 / 群员 / 集市 / 群务**。
-
-### 8.1 聊天
-
-- 在输入框写消息，按 Enter 或点「发送」。群员会按话题回复，每次几个人发言、每条多长，在 群务 →「群聊生成」里设置。
-- 工具栏：
-
-| 按钮 | 用途 |
+| Trang | Nội dung |
 |---|---|
-| 🧧 发红包 | 你给群里发红包（系统点或物品），群员抢。 |
-| 签到 | 每天一次，奖励 = 100 × 连签天数（最多 7）+ 10 × 群员数。 |
-| 求助 | 写下要求助的事，某位群员会把它变成一个任务，发到任务页（状态「待接取」）。 |
-| 群直播 | 某位群员直播自己世界此刻正在发生的事。 |
-| **↻ 重roll（1.1.4）** | 重新生成**最近一轮**群员发言，见下文。 |
-| **🗑 管理（1.1.4）** | 打开后每条消息旁边出现 🗑，可以逐条删除；点「✓ 完成」退出。 |
-| 自动闲聊（勾选） | 主聊天每过几轮，群里自动聊一轮（最多 3 人发言），间隔在群务里设置。 |
+| **Dòng sự kiện** | Nhiệm vụ, chứng từ kết toán, dấu chân Vạn Giới được xếp thành một trục thời gian. 「Trình diễn trong phiên này」: chỉ phát sau khi sổ cái đọc lại xác nhận thành công, những mục bị hoàn tác sẽ gắn nhãn 「Chưa vào sổ」; nhấn 「Xem」 để xem lại. |
+| **Sơ đồ gắn kết** | Sơ đồ quan hệ của mục tiêu tình yêu, tay đấm, thành viên nhóm. Nhấn vào nhân vật có thể chuyển tới trang Gắn kết; thành viên nhóm có thể 「Đưa vào Gắn kết」. |
+| **Tinh đồ** | Các thế giới đã ghé thăm. 「Ghi nhận xuyên việt」: Điền tên thế giới, chọn loại (Tự động / Tiên hiệp / Cyberpunk / Quỷ dị / Đô thị / Kỳ ảo phương Tây / Mạt thế / Khác), nhấn 「Ghi nhận xuyên việt」, sẽ ghi vào Thế giới hiện tại / Loại thế giới / Dấu chân Vạn Giới, chủ đề giao diện cũng chuyển đổi theo. |
+| **Cây năng lực** | Tổng hợp bậc thực lực, công pháp, thần thông, phụ trợ thành một sơ đồ cây. |
 
-- 群员的消息里可能带**红包**（点「抢」）或**赠礼**（点「领取」，入背包）。领取后会显示「已领取」。
+---
 
-#### ↻ 重roll（1.1.4）
+## 8. Vạn Giới: Nhóm chat
 
-- 作用对象是最近一轮：可以是你发消息后的回复，也可以是一次自动闲聊。输入不变，你的发言保留。
-- 会先弹窗确认，然后发请求。**新回复到达后**才替换旧的一轮；请求失败或超时，旧的一轮原样保留。
-- **不能重roll 的情况**（按钮会提示原因）：这一轮的红包你已经抢了，或者赠礼你已经领了。
-- 可以重roll 时，会一起撤回：没抢的红包、没领的赠礼、今日已收红包数、红包节奏、这一轮用掉的禁言轮数。
-- 1.1.3 及以前的消息没有轮次记录，不能重roll，但可以逐条删除。
+Nhóm Chat Chư Thiên Vạn Giới là một nhóm trò chuyện xuyên thế giới nằm trong thiết bị đầu cuối, **không liên quan tới tính năng trò chuyện nhóm của quán rượu**. Phía trên ghi tên nhóm, số lượng thành viên, cấp thương thành và giới hạn lì xì (phẩm giai lì xì sẽ không vượt quá cấp thương thành).
 
-#### 🗑 删除（1.1.4）
+Chia làm 4 trang con: **Trò chuyện / Thành viên / Chợ phiên / Việc nhóm**.
 
-- 普通消息、系统提示、你自己的发言：直接删除。
-- **不能删**：你抢过的红包、你自己发的红包（已扣账）、你领过的赠礼。
-- 没抢的红包 / 没领的赠礼：确认后和消息一起作废。
-- 删除只影响群消息，不会改动账本里的系统点和背包。
+### 8.1 Trò chuyện
 
-#### 截断提示（1.1.4）
+- Viết tin nhắn vào ô nhập liệu, nhấn Enter hoặc nhấn 「Gửi」. Các thành viên nhóm sẽ trả lời theo chủ đề; mỗi lần có mấy người phát biểu và mỗi tin dài bao nhiêu được thiết lập tại Việc nhóm → 「Tạo trò chuyện nhóm」.
+- Thanh công cụ:
 
-回复达到输出上限被截断时，最后半条会被丢掉，群里出现一条 ⚠ 提示。这时可以「↻ 重roll」，或者在 群务 →「群聊生成」调高输出上限、调低每条字数。
-
-注意：走「酒馆主 API」时，酒馆不返回结束原因，插件识别不到截断，直接调高输出上限就行。
-
-### 8.2 群员
-
-- **发布招募令**：每次 100 点（失败退回），入群费按实力档。方式有三种：
-  - 随机世界：按你的系统点挑实力档；
-  - 指定世界；
-  - 指定角色：输入名字会自动改成「指定世界」。
-  - 填好后点「发布」。
-- 「扩建 +5 · 5,000 点」：群人数上限加 5（初始 5 人）。
-- **从世界书召唤（1.1.5）**：招募令下面的卡片。
-  1. 选一本世界书（★ 是当前聊天正在用的；「诸天万界最强系统」不在列表里）；
-  2. 输入角色名或关键词（留空列出全部），点「查找」；
-  3. 在结果里点「召唤」：模型按条目内容整理出群员资料（名称 / 出处 / 实力档 / 性格 / 特产），成为候选人。费用和招募令一样：每次 100 点（失败退回），「邀请入群」时按实力档付入群费；
-  4. 入群后群员卡片上有「📖 世界书」标记，鼠标停在上面显示出自哪本书的哪个条目。
-  - 插件**只读**世界书，不会改动世界书文件；群员只记下「书名 + 条目编号 + 条目名」。条目被删除后，群员照常在群里，只是不再带条目资料。
-  - **群聊 / 私聊**时，会把召唤群员自己的条目（每人约 360 字）和对话里关键词命中的同书条目（最多 3 条）附给模型，总字数有上限（默认 1,600 字）。
-  - **群员记忆注入**：正文最近 4 层里出现了这位群员的名字或条目关键词时，发给正文 AI 的聊天群摘要里会多一段「群员记忆」：TA 最近的群聊、和你的私聊、经聊天群给你的东西、好感。这样 TA 在剧情里出场时会记得群里的交流。需要本聊天的「剧情摘要注入」开着；可在 设置 → 功能开关 → 聊天群 关掉。
-- 每位群员的按钮：
-
-| 按钮 | 用途 |
+| Nút bấm | Công dụng |
 |---|---|
-| 私聊 | 和这位群员单独聊天。 |
-| 拉入羁绊 | 把 TA 加进羁绊页（群员默认不进羁绊）。 |
-| 降临 · 100,000 | TA 通过聊天群降临到你身边，接下来 3 轮剧情里登场。同一时间只能有一位降临。 |
-| 直播 | 让 TA 开一场群直播。 |
-| 设管理 | 设为 / 取消管理员。 |
-| 禁言 | 禁言 3 轮，再点一次解除。被禁言的群员不发言。 |
-| 踢出 | 移出群聊（会确认）。 |
+| 🧧 Phát lì xì | Bạn phát lì xì cho cả nhóm (Điểm Hệ Thống hoặc vật phẩm), các thành viên nhóm sẽ giật lì xì. |
+| Điểm danh | Mỗi ngày một lần, phần thưởng = 100 × số ngày điểm danh liên tiếp (tối đa 7) + 10 × số thành viên nhóm. |
+| Cầu viện | Viết ra việc cần giúp đỡ, một thành viên nhóm sẽ biến nó thành một nhiệm vụ và gửi tới trang Nhiệm vụ (trạng thái 「Chờ nhận」). |
+| Phát sóng trực tiếp | Một thành viên nhóm phát sóng trực tiếp sự việc đang diễn ra tại thế giới của họ ngay lúc này. |
+| **↻ Reroll (1.1.4)** | Tạo lại lượt phát biểu **mới nhất** của các thành viên nhóm, xem chi tiết bên dưới. |
+| **🗑 Quản lý (1.1.4)** | Sau khi bật, bên cạnh mỗi tin nhắn sẽ xuất hiện biểu tượng 🗑 để xóa từng tin nhắn; nhấn 「✓ Hoàn tất」 để thoát. |
+| Tự động tán gẫu (Đánh dấu chọn) | Cứ sau vài lượt ở cuộc trò chuyện chính, trong nhóm sẽ tự động trò chuyện một lượt (tối đa 3 người phát biểu), khoảng cách lượt được đặt trong phần Việc nhóm. |
 
-### 8.3 集市
+- Tin nhắn của thành viên nhóm có thể kèm theo **Lì xì** (nhấn 「Giật」) hoặc **Quà tặng** (nhấn 「Nhận」, đưa vào túi đồ). Sau khi nhận sẽ hiển thị 「Đã nhận」.
 
-- **群员挂单**：「看看今天的货」，每天刷新。品阶按群规：不高于商城等级，也不高于群员实力。
-- **我的挂单**：选背包物品，填售价（空着就按估值），点「挂单」。售价高于估值 30% 时，群员会嫌贵。
+#### ↻ Reroll (1.1.4)
 
-### 8.4 群务
+- Đối tượng tác dụng là lượt mới nhất: có thể là phản hồi sau khi bạn gửi tin nhắn, hoặc một lần tự động tán gẫu. Nội dung nhập không đổi, phát biểu của bạn được giữ nguyên.
+- Sẽ bật hộp thoại xác nhận trước rồi mới gửi yêu cầu. **Sau khi phản hồi mới tới nơi** mới thay thế lượt cũ; nếu yêu cầu thất bại hoặc quá thời gian, lượt cũ vẫn được giữ nguyên vẹn.
+- **Trường hợp không thể reroll** (nút bấm sẽ báo lý do): Bạn đã giật lì xì hoặc đã nhận quà tặng của lượt này rồi.
+- Khi có thể reroll, sẽ thu hồi cùng lúc: lì xì chưa giật, quà tặng chưa nhận, số lì xì đã nhận hôm nay, nhịp độ lì xì, số lượt cấm ngôn đã tiêu hao trong lượt này.
+- Tin nhắn từ bản 1.1.3 trở về trước không có bản ghi lượt nên không thể reroll, nhưng có thể xóa từng tin một.
 
-- **群资料**：群名、公告（置顶，也会告诉群员）、群规（每行一条，每次群聊请求都会带上），改完点「保存」。
-- **规则底线**：不能关闭，比如禁忌品不得在群内流通。
-- **与剧情联动**：
-  - 「群聊摘要注入剧情」：把群员和最近群聊写进主聊天的提示；
-  - 自动闲聊间隔：每 1 / 2 / 3 / 4 / 5 / 6 / 8 / 10 轮。
-- **群聊生成（1.1.4）**：
+#### 🗑 Xóa (1.1.4)
 
-| 设置 | 选项 | 默认 |
+- Tin nhắn thông thường, gợi ý hệ thống, phát biểu của chính bạn: xóa trực tiếp.
+- **Không thể xóa**: Lì xì bạn đã giật, lì xì do chính bạn phát (đã trừ sổ cái), quà tặng bạn đã nhận.
+- Lì xì chưa giật / quà tặng chưa nhận: sau khi xác nhận sẽ hủy bỏ cùng với tin nhắn.
+- Việc xóa chỉ ảnh hưởng tới tin nhắn nhóm, không làm thay đổi Điểm Hệ Thống và túi đồ trong sổ cái.
+
+#### Gợi ý bị cắt cụt (1.1.4)
+
+Khi phản hồi chạm giới hạn đầu ra và bị cắt cụt, nửa tin nhắn cuối cùng sẽ bị loại bỏ và trong nhóm xuất hiện một dòng gợi ý ⚠. Lúc này bạn có thể nhấn 「↻ Reroll」, hoặc vào Việc nhóm → 「Tạo trò chuyện nhóm」 để tăng giới hạn đầu ra, giảm giới hạn số chữ mỗi tin.
+
+Lưu ý: Khi đi qua 「API chính của quán rượu」, quán rượu không trả về nguyên nhân kết thúc nên tiện ích không nhận diện được tình trạng cắt cụt, chỉ cần tăng trực tiếp giới hạn đầu ra là được.
+
+### 8.2 Thành viên
+
+- **Phát Lệnh Chiêu Mộ**: Mỗi lần 100 điểm (thất bại được hoàn lại), phí vào nhóm tính theo bậc thực lực. Có 3 phương thức:
+  - Thế giới ngẫu nhiên: Chọn bậc thực lực dựa theo Điểm Hệ Thống của bạn;
+  - Thế giới chỉ định;
+  - Nhân vật chỉ định: Khi nhập tên sẽ tự động chuyển sang 「Thế giới chỉ định」.
+  - Điền xong nhấn 「Phát hành」.
+- 「Mở rộng +5 · 5,000 điểm」: Tăng giới hạn số người trong nhóm thêm 5 người (khởi đầu là 5 người).
+- **Triệu hồi từ Sách Thế Giới (1.1.5)**: Thẻ nằm bên dưới Lệnh Chiêu Mộ.
+  1. Chọn một cuốn Sách Thế Giới (★ là cuốn mà cuộc trò chuyện hiện tại đang dùng; 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 không nằm trong danh sách);
+  2. Nhập tên nhân vật hoặc từ khóa (để trống sẽ liệt kê toàn bộ), nhấn 「Tìm kiếm」;
+  3. Trong kết quả nhấn 「Triệu hồi」: Model sẽ dựa theo nội dung mục từ để chỉnh lý ra hồ sơ thành viên nhóm (Tên / Xuất xứ / Bậc thực lực / Tính cách / Đặc sản) và đưa vào danh sách ứng viên. Chi phí giống hệt Lệnh Chiêu Mộ: mỗi lần 100 điểm (thất bại được hoàn lại), khi 「Mời vào nhóm」 sẽ trả phí vào nhóm theo bậc thực lực;
+  4. Sau khi vào nhóm, trên thẻ thành viên sẽ có nhãn 「📖 Sách Thế Giới」, di chuột lên sẽ hiển thị xuất xứ từ mục nào của cuốn sách nào.
+  - Tiện ích **chỉ đọc** Sách Thế Giới, không sửa đổi tệp Sách Thế Giới; thành viên nhóm chỉ ghi lại 「Tên sách + Mã mục + Tên mục」. Sau khi mục từ bị xóa, thành viên vẫn ở trong nhóm như bình thường, chỉ là không còn mang theo dữ liệu mục từ nữa.
+  - Khi **Trò chuyện nhóm / Trò chuyện riêng**, tiện ích sẽ đính kèm mục từ riêng của thành viên được triệu hồi (mỗi người khoảng 360 chữ) và các mục từ cùng cuốn sách khớp từ khóa trong cuộc hội thoại (tối đa 3 mục) gửi cho model, tổng số chữ có giới hạn trần (mặc định 1,600 chữ).
+  - **Tiêm ký ức thành viên nhóm**: Khi trong 4 tầng chính văn gần nhất xuất hiện tên của thành viên này hoặc từ khóa mục từ, trong bản tóm tắt nhóm chat gửi cho AI chính văn sẽ có thêm một đoạn 「Ký ức thành viên nhóm」: nội dung trò chuyện nhóm gần đây của người đó, trò chuyện riêng với bạn, những thứ đã tặng bạn qua nhóm chat và độ hảo cảm. Nhờ vậy khi người đó xuất hiện trong cốt truyện sẽ nhớ được những giao lưu trong nhóm. Cần bật 「Tiêm tóm tắt vào cốt truyện」 của cuộc trò chuyện này; có thể tắt tại Cài đặt → Công tắc tính năng → Nhóm chat.
+- Nút bấm của từng thành viên nhóm:
+
+| Nút bấm | Công dụng |
+|---|---|
+| Trò chuyện riêng | Trò chuyện riêng với thành viên này. |
+| Đưa vào Gắn kết | Thêm người này vào trang Gắn kết (thành viên nhóm mặc định không vào trang Gắn kết). |
+| Giáng lâm · 100,000 | Người này thông qua nhóm chat giáng lâm tới bên cạnh bạn, xuất hiện trong 3 lượt cốt truyện tiếp theo. Cùng một thời điểm chỉ có thể có 1 người giáng lâm. |
+| Phát sóng | Để người này mở một buổi phát sóng trực tiếp trong nhóm. |
+| Đặt làm Quản trị | Đặt làm / Hủy quyền quản trị viên. |
+| Cấm ngôn | Cấm ngôn 3 lượt, nhấn thêm lần nữa để gỡ. Thành viên bị cấm ngôn sẽ không phát biểu. |
+| Trục xuất | Xóa khỏi nhóm chat (có xác nhận). |
+
+### 8.3 Chợ phiên
+
+- **Gian hàng thành viên**: Nhấn 「Xem hàng hôm nay」, làm mới mỗi ngày. Phẩm giai tuân theo quy tắc nhóm: không cao hơn cấp thương thành, và cũng không cao hơn thực lực của thành viên nhóm.
+- **Gian hàng của tôi**: Chọn vật phẩm trong túi đồ, điền giá bán (để trống sẽ tính theo giá ước tính), nhấn 「Treo bán」. Khi giá bán cao hơn giá ước tính 30%, thành viên nhóm sẽ chê đắt.
+
+### 8.4 Việc nhóm
+
+- **Hồ sơ nhóm**: Tên nhóm, Thông báo (ghim đầu trang, cũng sẽ báo cho thành viên nhóm), Nội quy nhóm (mỗi dòng một mục, mỗi lần gửi yêu cầu trò chuyện nhóm đều mang theo), sửa xong nhấn 「Lưu」.
+- **Giới hạn quy tắc**: Không thể tắt, ví dụ vật phẩm Cấm kỵ không được lưu thông trong nhóm.
+- **Liên kết với cốt truyện**:
+  - 「Tiêm tóm tắt nhóm chat vào cốt truyện」: Đưa danh sách thành viên và nội dung trò chuyện nhóm gần đây vào gợi ý của cuộc trò chuyện chính;
+  - Khoảng cách tự động tán gẫu: Mỗi 1 / 2 / 3 / 4 / 5 / 6 / 8 / 10 lượt.
+- **Tạo trò chuyện nhóm (1.1.4)**:
+
+| Cài đặt | Tùy chọn | Mặc định |
 |---|---|---|
-| 每次最少几人发言 | 1–6、8、10 人 | 1 |
-| 每次最多几人发言 | 1–6、8、10 人 | 6 |
-| 每条消息字数上限 | 120 / 200 / 300 / 400 / 600 / 800 字 | 300 |
-| 带给模型的最近消息条数 | 8 / 16 / 30 / 50 条 | 16 |
-| 输出上限（max tokens） | 自动 / 1200 / 2000 / 3000 / 4000 / 6000 / 8000 | 自动 |
+| Số người phát biểu tối thiểu mỗi lần | 1–6, 8, 10 người | 1 |
+| Số người phát biểu tối đa mỗi lần | 1–6, 8, 10 người | 6 |
+| Giới hạn số chữ mỗi tin nhắn | 120 / 200 / 300 / 400 / 600 / 800 chữ | 300 |
+| Số tin nhắn gần nhất gửi kèm cho model | 8 / 16 / 30 / 50 tin | 16 |
+| Giới hạn đầu ra (max tokens) | Tự động / 1200 / 2000 / 3000 / 4000 / 6000 / 8000 | Tự động |
 
-- 下限大于上限时，另一项会跟着调整。
-- 「自动」的计算方式：600 + 最多人数 × (每条字数 + 20)，限制在 1200–6000 之间。
-- 输出上限的优先级（从高到低）：
-  1. 连接页「分功能 API」里给聊天群单独设的上限；
-  2. 这里选的具体数值；
-  3. 连接页的默认最大输出；
-  4. 自动估算。
-
----
-
-## 9. 莉莉丝
-
-### 9.1 工作台
-
-和莉莉丝商量下一步怎么走：
-
-1. 选「这次想做什么」（咨询与规划 / 拟定长期·短期任务 / 复核现有任务进展）。
-2. 选「携带多少近期消息」（4 / 6 / 10 / 12 条）。
-3. 写下你的问题或打算。
-4. 点一个按钮发出请求：「梳理未竟之事」「规划下一步」「让莉莉丝想一想」。也可以先点「先看发送资料」，看看这次会发给 AI 什么。
-5. 「莉莉丝的回信」里是建议草稿，可以编辑。建议不会被当成已经发生的剧情或任务。
-   - 「暂停自动接续」：下一轮正文不再自动承接这条建议。
-   - 「旧方式：放入聊天输入框」。
-   - 「往来记录」：查看以前的回信。
-- 「查看当前任务 · 原账本只读」「本次发送的资料」：展开查看。
-
-### 9.2 记忆
-
-- **记忆契约**（按聊天保存）：
-  - 在当前聊天启用助手与记忆注入；
-  - 正文结束后自动整理（每轮最多一次独立请求）；
-  - 下一轮正文自动承接记忆与工作台建议（不改旧楼层）；
-  - 莉莉丝监管账本与奖励。
-  - 「立即核验最新正文（不请求模型）」。
-  - 「每轮提示预算 · 字符」。
-  - 改完点「保存当前聊天设置」。
-- 「整理最新回复」「补读最近 6 条回复」：手动整理记忆。「取消当前请求」。
-- **固定提醒**：写一条一直生效的提醒（比如「张三没有被遣散前，始终作为常驻打手随行」），点「保存提醒」。
-- 「查询已保存事实」：按人物、任务、物品名搜索。
-- 「导出记忆与草稿备份」。
-- **1.1.4**：模型写出不合格的记忆键（带「·」「：」、空格、日文、全角，或者同一批重复）时，插件会先自动清洗，不再整批报「记忆键重复或不安全」。
-
-### 9.3 规则（诸天规则藏书）
-
-- **额外世界背景**：
-  - 「读取书目」列出酒馆里的世界书；
-  - 选一本，点「读取这本书」，作为莉莉丝的额外背景；
-  - 「仅用内置规则」：不用额外背景。
-- **查阅完整条目**：按关键词（任务、打手、盲盒、时光投放……）查原版规则全文。
-
-### 9.4 私聊、触摸与立绘
-
-- **私聊**：点悬浮莉莉丝或头像打开莉莉丝窗口，就能和她单独聊天（用「莉莉丝」的 API 配置）。私聊内容存在本聊天里。
-- **触摸互动**（设置里可关）：
-  - 在立绘的部位上点 / 来回抚摸：会有逐级台词和表情；
-  - 按住不动 0.65 秒：长按反应；
-  - 触屏时视线会跟随手指；
-  - 手机上会有震动反馈。
-- **立绘模式**（设置 → 系统助手；1.1.4 及以前叫「莉莉丝」分组）：
-  - 原版分层动画（伪 Live2D）；
-  - 原版 + 表情差分（随语气切换）；
-  - 真 Live2D（需要自备 Cubism 模型，在「立绘 / Live2D 设置 ›」里绑定）。
-- **换人设以后（1.1.5）**：悬浮莉莉丝、分层立绘、表情差分、触摸互动只属于莉莉丝；其他人设用圆形头像（终端左上角和唤醒按钮），立绘位置显示人设头像并轻微呼吸发光。私聊照常可用，窗口标题和对方名字换成人设名。
-- **界面角色**：进入系统页时说一句；对选中的任务 / 物品 / 功法和结算成败作出反应；镜头在系统页是半身，在工作台是全身，在私聊是面部特写（这些都可以分别关掉）。
+- Khi giới hạn dưới lớn hơn giới hạn trên, mục còn lại sẽ tự điều chỉnh theo.
+- Cách tính 「Tự động」: 600 + số người tối đa × (số chữ mỗi tin + 20), giới hạn trong khoảng 1200–6000.
+- Độ ưu tiên của giới hạn đầu ra (từ cao xuống thấp):
+  1. Giới hạn đặt riêng cho Nhóm chat trong mục 「API theo từng tính năng」 ở trang Kết nối;
+  2. Con số cụ thể chọn tại đây;
+  3. Độ dài đầu ra tối đa mặc định ở trang Kết nối;
+  4. Ước tính tự động.
 
 ---
 
-## 10. 终端页
+## 9. Lilith
 
-### 10.1 连接（AI 接口）
+### 9.1 Bàn làm việc
 
-- **接口预设**（顶部下拉框）：选一个就载入；「删除」删掉当前预设。
-- 两种方式：
-  - **单独的 API（推荐）**：填 OpenAI 兼容接口地址（一般以 /v1 结尾）、API 密钥、模型（可以点「拉取模型」或手填）；
-  - **直接用酒馆正在用的模型**：不用填地址；但每次请求会占用主聊天，主聊天生成时要等它。
-- 「测试连接」「保存」。
-- 「保存为预设」：要先填预设名称（例如「公益站 A」）。
-- **分功能 API**（可选）：每个功能可以单独选「跟随默认 / 酒馆当前主 API / 某个预设」，或点「用上面填写的」。功能包括：
-  - 万界商城 AI 进货、盲盒抽取、许愿池、诸天打手、背包整理 / 熔炼、能力档评估、品阶鉴定；
-  - 聊天群（群聊、私聊群员、招募令、降临、挂单）；
-  - 数据块补记、莉莉丝私聊、记忆整理、工作台。
-- **高级设置**：
-  - 默认 / 预设最大输出（tokens，含思考；留空由各功能决定，可以分功能覆盖）；
-  - 哪些功能用这套接口（状态栏 AI 功能 / 莉莉丝）。
-- 下半部分「与莉莉丝建立连接」是原版莉莉丝的接口表单：地址、Key、模型、最大输出长度，以及「保存连接配置」「测试连接」「取消连接请求」。
-- 密钥只存在你自己的酒馆和浏览器里，不会写进聊天记录，也不会被导出。
+Bàn bạc với Lilith xem bước tiếp theo nên đi thế nào:
 
-### 10.2 状态
+1. Chọn 「Lần này muốn làm gì」 (Tư vấn & Quy hoạch / Dự thảo nhiệm vụ Dài hạn · Ngắn hạn / Phúc tra tiến triển nhiệm vụ hiện có).
+2. Chọn 「Mang theo bao nhiêu tin nhắn gần đây」 (4 / 6 / 10 / 12 tin).
+3. Viết câu hỏi hoặc dự định của bạn.
+4. Nhấn một nút để gửi yêu cầu: 「Hệ thống lại việc dang dở」「Quy hoạch bước tiếp theo」「Để Lilith suy nghĩ」. Hoặc cũng có thể nhấn 「Xem trước dữ liệu gửi đi」 trước để xem lần này sẽ gửi những gì cho AI.
+5. Trong 「Hồi âm của Lilith」 là bản nháp đề xuất, có thể chỉnh sửa. Đề xuất sẽ không bị coi là cốt truyện hay nhiệm vụ đã xảy ra.
+   - 「Tạm dừng tự động nối tiếp」: Chính văn lượt tiếp theo sẽ không tự động nối tiếp đề xuất này nữa.
+   - 「Cách cũ: Đưa vào ô nhập trò chuyện」.
+   - 「Bản ghi qua lại」: Xem các bức thư hồi âm trước đây.
+- 「Xem nhiệm vụ hiện tại · Sổ cái gốc chỉ đọc」「Dữ liệu gửi đi lần này」: Mở rộng để xem.
 
-- 酒馆环境检测、权限边界。
-- 「下一轮有效记忆提示」：下一轮会注入的记忆。
-- 「工作台请求记录」。
+### 9.2 Ký ức
 
-### 10.3 说明书（1.1.4）
+- **Khế ước ký ức** (Lưu theo từng cuộc trò chuyện):
+  - Bật trợ lý và tiêm ký ức trong cuộc trò chuyện hiện tại;
+  - Tự động chỉnh lý sau khi kết thúc chính văn (tối đa 1 yêu cầu độc lập mỗi lượt);
+  - Chính văn lượt sau tự động nối tiếp ký ức & đề xuất bàn làm việc (không sửa tầng cũ);
+  - Lilith giám sát sổ cái & phần thưởng.
+  - 「Xác minh ngay chính văn mới nhất (không gọi model)」.
+  - 「Ngân sách gợi ý mỗi lượt · Ký tự」.
+  - Sửa xong nhấn 「Lưu cài đặt cuộc trò chuyện hiện tại」.
+- 「Chỉnh lý phản hồi mới nhất」「Đọc bù 6 phản hồi gần nhất」: Chỉnh lý ký ức thủ công. 「Hủy yêu cầu hiện tại」.
+- **Ghi nhớ cố định**: Viết một lời nhắc luôn có hiệu lực (ví dụ 「Trước khi Trương Tam bị giải tán, luôn đi theo với tư cách là tay đấm thường trực」), nhấn 「Lưu ghi nhớ」.
+- 「Tra cứu sự thật đã lưu」: Tìm kiếm theo nhân vật, nhiệm vụ, tên vật phẩm.
+- 「Xuất bản sao lưu ký ức & bản nháp」.
+- **1.1.4**: Khi model viết ra khóa ký ức không đạt chuẩn (có chứa 「·」「：」, khoảng trắng, chữ Nhật, ký tự toàn giác, hoặc bị trùng lặp trong cùng một đợt), tiện ích sẽ tự động làm sạch trước chứ không báo lỗi toàn bộ đợt là 「Khóa ký ức bị trùng lặp hoặc không an toàn」 nữa.
 
-就是这份文档。顶部搜索框可以按功能或按钮名搜索（多个词用空格分开）；目录可以折叠，点章节名就会跳过去。
+### 9.3 Quy tắc (Kho Quy Tắc Chư Thiên)
 
-### 10.4 设置
+- **Bối cảnh thế giới bổ sung**:
+  - 「Đọc danh mục sách」 liệt kê các Sách Thế Giới trong quán rượu;
+  - Chọn một cuốn, nhấn 「Đọc cuốn sách này」 để làm bối cảnh bổ sung cho Lilith;
+  - 「Chỉ dùng quy tắc tích hợp」: Không dùng bối cảnh bổ sung.
+- **Tra cứu mục từ hoàn chỉnh**: Tra cứu toàn văn quy tắc bản gốc theo từ khóa (nhiệm vụ, tay đấm, hộp mù, thả thời gian…).
 
-见第 11 章。设置页顶部有搜索框（例如搜「悬浮」「世界书」「超时」）。
+### 9.4 Trò chuyện riêng, Chạm tương tác & Tranh đứng
 
-### 10.5 功能开关（1.1.5）
-
-设置 → 上手 →「功能开关 ›」。见第 19 章。
-
-### 10.6 系统助手人设（1.1.5）
-
-设置 → 上手 →「系统助手人设 ›」。见第 18 章。
+- **Trò chuyện riêng**: Nhấn vào Lilith nổi hoặc ảnh đại diện để mở cửa sổ Lilith là có thể trò chuyện riêng với cô ấy (sử dụng cấu hình API của 「Lilith」). Nội dung trò chuyện riêng được lưu trong cuộc trò chuyện này.
+- **Chạm tương tác** (Có thể tắt trong Cài đặt):
+  - Chạm / vuốt ve qua lại trên các bộ phận của tranh đứng: sẽ có lời thoại và biểu cảm tăng dần theo từng cấp;
+  - Nhấn giữ yên 0.65 giây: phản ứng nhấn giữ;
+  - Trên màn hình cảm ứng ánh mắt sẽ dõi theo ngón tay;
+  - Trên điện thoại sẽ có phản hồi rung.
+- **Chế độ tranh đứng** (Cài đặt → Trợ lý hệ thống; bản 1.1.4 trở về trước gọi là nhóm 「Lilith」):
+  - Hoạt ảnh phân lớp bản gốc (Giả Live2D);
+  - Bản gốc + Biểu cảm biến thể (chuyển đổi theo giọng điệu);
+  - Live2D thật (cần tự chuẩn bị mô hình Cubism, gắn kết tại 「Cài đặt Tranh đứng / Live2D ›」).
+- **Sau khi đổi thiết lập nhân vật (1.1.5)**: Lilith nổi, tranh đứng phân lớp, biểu cảm biến thể và chạm tương tác chỉ thuộc về Lilith; các thiết lập nhân vật khác sử dụng ảnh đại diện tròn (ở góc trên bên trái thiết bị đầu cuối và nút đánh thức), vị trí tranh đứng hiển thị ảnh đại diện nhân vật kèm hiệu ứng phát sáng nhịp thở nhẹ nhàng. Trò chuyện riêng vẫn dùng bình thường, tiêu đề cửa sổ và tên đối phương đổi thành tên nhân vật mới.
+- **Nhân vật giao diện**: Nói một câu khi vào trang hệ thống; đưa ra phản ứng với nhiệm vụ / vật phẩm / công pháp đang chọn và kết quả kết toán thành bại; góc máy ở trang hệ thống là bán thân, ở bàn làm việc là toàn thân, ở trò chuyện riêng là cận cảnh khuôn mặt (tất cả đều có thể tắt riêng từng mục).
 
 ---
 
-## 11. 设置逐项说明
+## 10. Trang Thiết bị đầu cuối
 
-### 11.1 常用
+### 10.1 Kết nối (Cổng AI)
 
-| 分组 | 设置 / 按钮 | 用途 |
+- **Cấu hình cổng định sẵn (Preset)** (Khung thả xuống phía trên): Chọn một mục để tải lên; nhấn 「Xóa」 để xóa cấu hình định sẵn hiện tại.
+- Hai phương thức:
+  - **API riêng biệt (Khuyên dùng)**: Điền địa chỉ cổng tương thích OpenAI (thường kết thúc bằng /v1), khóa API, model (có thể nhấn 「Lấy danh sách model」 hoặc tự điền);
+  - **Dùng trực tiếp model quán rượu đang dùng**: Không cần điền địa chỉ; nhưng mỗi yêu cầu sẽ chiếm dụng cuộc trò chuyện chính, khi cuộc trò chuyện chính đang tạo phản hồi thì phải chờ nó.
+- 「Kiểm tra kết nối」「Lưu」.
+- 「Lưu thành cấu hình định sẵn」: Cần điền tên cấu hình trước (ví dụ 「Trạm API A」).
+- **API theo từng tính năng** (Tùy chọn): Mỗi tính năng có thể chọn riêng 「Theo mặc định / API chính hiện tại của quán rượu / Một cấu hình định sẵn nào đó」, hoặc nhấn 「Dùng thông tin điền ở trên」. Các tính năng bao gồm:
+  - Nhập hàng AI Thương Thành Vạn Giới, Rút Hộp mù, Hồ Ước Nguyện, Tay Đấm Chư Thiên, Chỉnh lý túi đồ / Dung luyện, Đánh giá bậc năng lực, Giám định phẩm giai;
+  - Nhóm chat (Trò chuyện nhóm, Trò chuyện riêng với thành viên, Lệnh Chiêu Mộ, Giáng lâm, Treo bán);
+  - Ghi bổ sung khối dữ liệu, Trò chuyện riêng với Lilith, Chỉnh lý ký ức, Bàn làm việc.
+- **Cài đặt nâng cao**:
+  - Đầu ra tối đa mặc định / định sẵn (tokens, bao gồm cả phần suy nghĩ; để trống sẽ do từng tính năng quyết định, có thể ghi đè theo từng tính năng);
+  - Những tính năng nào dùng bộ cổng kết nối này (Tính năng AI thanh trạng thái / Lilith).
+- Nửa dưới trang 「Thiết lập kết nối với Lilith」 là biểu mẫu cổng kết nối Lilith bản gốc: Địa chỉ, Key, Model, Độ dài đầu ra tối đa, cùng các nút 「Lưu cấu hình kết nối」「Kiểm tra kết nối」「Hủy yêu cầu kết nối」.
+- Khóa API chỉ lưu trong quán rượu và trình duyệt của riêng bạn, không ghi vào lịch sử trò chuyện và cũng không bị xuất ra ngoài.
+
+### 10.2 Trạng thái
+
+- Kiểm tra môi trường quán rượu, ranh giới quyền hạn.
+- 「Gợi ý ký ức có hiệu lực ở lượt tiếp theo」: Phần ký ức sẽ được tiêm vào ở lượt tiếp theo.
+- 「Bản ghi yêu cầu bàn làm việc」.
+
+### 10.3 Cẩm nang / Hướng dẫn (1.1.4)
+
+Chính là tài liệu này. Ô tìm kiếm phía trên có thể tìm theo tên tính năng hoặc nút bấm (nhiều từ cách nhau bằng dấu cách); mục lục có thể thu gọn, nhấn vào tên chương sẽ nhảy tới chương đó.
+
+### 10.4 Cài đặt
+
+Xem Chương 11. Phía trên trang Cài đặt có ô tìm kiếm (ví dụ tìm 「nổi」「Sách Thế Giới」「quá thời gian」).
+
+### 10.5 Công tắc tính năng (1.1.5)
+
+Cài đặt → Bắt đầu → 「Công tắc tính năng ›」. Xem Chương 19.
+
+### 10.6 Thiết lập nhân vật Trợ lý hệ thống (1.1.5)
+
+Cài đặt → Bắt đầu → 「Thiết lập nhân vật Trợ lý hệ thống ›」. Xem Chương 18.
+
+---
+
+## 11. Giải thích từng mục Cài đặt
+
+### 11.1 Thường dùng
+
+| Nhóm | Cài đặt / Nút bấm | Công dụng |
 |---|---|---|
-| 上手 | 新手引导 › | 重新打开新手引导。 |
-| 上手 | 功能开关 ›（1.1.5） | 所有功能一张表，见第 19 章。 |
-| 上手 | 系统助手人设 ›（1.1.5） | 莉莉丝 / 系统光球 / 自定义，见第 18 章。 |
-| 显示 | 聊天楼层里的系统数据块 | 「终端记账，楼层只留小标签」（推荐）或「关闭（不处理数据块）」。 |
-| 显示 | 楼层小标签「系统已记录」 | 楼层下方的小标签开关。 |
-| 显示 | 手机上的终端与私聊窗口 | 自动（手机全屏）/ 总是全屏 / 浮动窗口。 |
-| 提示词与世界书 | 世界书安装 / 绑定 / 解绑 › | 管理「诸天万界最强系统」世界书。升级前会先说明影响、自动备份；你自己改过的内容、开关、关键词和插入设置都会保留。 |
-| 提示词与世界书 | 一键解绑世界书 | 从当前角色 / 聊天解绑。 |
-| 提示词与世界书 | 诸天存档自动安装并绑定世界书 | 开关。 |
-| 提示词与世界书 | 提示 AI 记录穿越 | 每轮提醒 AI 写 当前世界 / 世界类型。 |
-| 账本与存档 | 新聊天初始化 | 给当前聊天建诸天账本或补齐缺项（`/zt init`）。 |
-| 账本与存档 | 旧存档迁移 / 账本回滚 › | 迁移 v1.1 存档；回滚到最近 5 份账本备份之一。 |
-| 账本与存档 | 品阶鉴定 › | 见 5.6。 |
-| 账本与存档 | 导出 / 导入存档 › | 导出账本、记忆、设置（不含密钥）。导入时先校验，并预览将要覆盖什么；确认后先备份当前账本再写入。 |
-| 连接 | AI 接口设置（连接页） | 跳到「连接」页。 |
-| 系统助手 | 悬浮窗（切换样子） | 自动 / 悬浮莉莉丝 / 头像 / 已关闭。 |
-| 系统助手 | 关闭悬浮窗 › | 关闭悬浮窗（会先确认）。 |
-| 系统助手 | 悬浮莉莉丝大小、头像悬浮窗大小 | 20%–100%。 |
-| 系统助手 | 立绘模式 | 见 9.4。 |
-| 世界与演出 | 界面主题 | 跟随当前世界 / 诸天 / 仙侠 / 赛博 / 诡异（只换颜色和装饰，按钮位置不变）。 |
-| 世界与演出 | 配色方案 | 紫夜、墨金、青瓷、绯樱、霜蓝、赤霞、石墨，或跟随主题。 |
-| 世界与演出 | 演出 | 完整演出（≤2 秒，可跳过）/ 只显示结果卡片 / 关闭。 |
-| 世界与演出 | 终端关闭时在聊天角落显示剧情提示卡片 | 开关。 |
-| 插件开关 | 一键关闭插件 | 停用整个插件（可以在扩展设置里重新打开）。 |
-| 修行 · 熟练度 | 告诉 AI 每门功法当前阶段的真实效果 | 见 4.4。 |
-| 修行 · 熟练度 | 实战积累 | 正文里用了功法、但数据块漏记时，自动补记少量熟练度（凡品 +3 / 灵品 +2 / 仙品·神品 +1，每层最多 2 部；重新生成时随旧回复撤回）。 |
-| 修行 · 熟练度 | 角色卡功法自动同步（只升不降） | 关掉后在修行页手动导入。 |
-| 品阶鉴定 | 提醒 AI 收录时写明品阶 | 每轮一行提示。 |
-| 品阶鉴定 | 「收录:功法名[更高品阶]」可以更正剧情功法的品阶 | 只升不降，只对不是系统给的功法生效。 |
-| 高级 · 管理员 | 管理员控制台 › | 直接修改账本（系统点、资源、盲盒保底、好感等），慎用。只写改过的项；账本在此期间有变化时会拒绝写入。 |
+| Bắt đầu | Hướng dẫn tân thủ › | Mở lại hướng dẫn tân thủ. |
+| Bắt đầu | Công tắc tính năng › (1.1.5) | Bảng tổng hợp toàn bộ tính năng, xem Chương 19. |
+| Bắt đầu | Thiết lập nhân vật Trợ lý hệ thống › (1.1.5) | Lilith / Quả Cầu Ánh Sáng Hệ Thống / Tùy chỉnh, xem Chương 18. |
+| Hiển thị | Khối dữ liệu hệ thống trong tầng trò chuyện | 「Thiết bị đầu cuối ghi sổ, tầng tin nhắn chỉ để lại nhãn nhỏ」 (khuyên dùng) hoặc 「Tắt (không xử lý khối dữ liệu)」. |
+| Hiển thị | Nhãn nhỏ ở tầng tin nhắn 「Hệ thống đã ghi nhận」 | Công tắc bật/tắt nhãn nhỏ bên dưới tầng tin nhắn. |
+| Hiển thị | Cửa sổ thiết bị đầu cuối & trò chuyện riêng trên điện thoại | Tự động (điện thoại toàn màn hình) / Luôn toàn màn hình / Cửa sổ nổi. |
+| Prompt & Sách Thế Giới | Cài đặt / Gắn kết / Gỡ liên kết Sách Thế Giới › | Quản lý Sách Thế Giới 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」. Trước khi nâng cấp sẽ giải thích ảnh hưởng và tự động sao lưu; những nội dung, công tắc, từ khóa và cài đặt chèn do bạn tự sửa đều được giữ nguyên. |
+| Prompt & Sách Thế Giới | Gỡ liên kết Sách Thế Giới một chạm | Gỡ liên kết khỏi nhân vật / cuộc trò chuyện hiện tại. |
+| Prompt & Sách Thế Giới | Bản lưu Chư Thiên tự động cài đặt và gắn kết Sách Thế Giới | Công tắc. |
+| Prompt & Sách Thế Giới | Nhắc AI ghi nhận xuyên việt | Mỗi lượt nhắc AI viết Thế giới hiện tại / Loại thế giới. |
+| Sổ cái & Bản lưu | Khởi tạo cuộc trò chuyện mới | Tạo sổ cái Chư Thiên hoặc bù đủ các mục còn thiếu cho cuộc trò chuyện hiện tại (`/zt init`). |
+| Sổ cái & Bản lưu | Di chuyển bản lưu cũ / Hoàn tác sổ cái › | Di chuyển bản lưu v1.1; hoàn tác về 1 trong 5 bản sao lưu sổ cái gần nhất. |
+| Sổ cái & Bản lưu | Giám định phẩm giai › | Xem 5.6. |
+| Sổ cái & Bản lưu | Xuất / Nhập bản lưu › | Xuất sổ cái, ký ức, cài đặt (không bao gồm khóa API). Khi nhập sẽ kiểm tra tính hợp lệ trước và xem trước những gì sắp bị ghi đè; sau khi xác nhận sẽ sao lưu sổ cái hiện tại trước rồi mới ghi. |
+| Kết nối | Cài đặt cổng AI (Trang Kết nối) | Chuyển tới trang 「Kết nối」. |
+| Trợ lý hệ thống | Cửa sổ nổi (Đổi kiểu dáng) | Tự động / Lilith nổi / Ảnh đại diện / Đã đóng. |
+| Trợ lý hệ thống | Đóng cửa sổ nổi › | Đóng cửa sổ nổi (sẽ hỏi xác nhận trước). |
+| Trợ lý hệ thống | Kích thước Lilith nổi, Kích thước cửa sổ nổi ảnh đại diện | 20%–100%. |
+| Trợ lý hệ thống | Chế độ tranh đứng | Xem 9.4. |
+| Thế giới & Trình diễn | Chủ đề giao diện | Theo thế giới hiện tại / Chư Thiên / Tiên hiệp / Cyberpunk / Quỷ dị (chỉ đổi màu sắc và trang trí, vị trí nút bấm không đổi). |
+| Thế giới & Trình diễn | Bảng màu | Tử Dạ, Mặc Kim, Thanh Từ, Phi Anh, Sương Lam, Xích Hà, Thạch Mặc, hoặc Theo chủ đề. |
+| Thế giới & Trình diễn | Trình diễn | Trình diễn đầy đủ (≤2 giây, có thể bỏ qua) / Chỉ hiện thẻ kết quả / Tắt. |
+| Thế giới & Trình diễn | Hiển thị thẻ gợi ý cốt truyện ở góc trò chuyện khi thiết bị đầu cuối đóng | Công tắc. |
+| Công tắc tiện ích | Tắt tiện ích một chạm | Tắt toàn bộ tiện ích (có thể bật lại trong phần cài đặt tiện ích mở rộng). |
+| Tu hành · Độ thuần thục | Báo cho AI hiệu quả thực tế ở giai đoạn hiện tại của từng môn công pháp | Xem 4.4. |
+| Tu hành · Độ thuần thục | Tích lũy thực chiến | Khi trong chính văn có dùng công pháp nhưng khối dữ liệu ghi sót, tự động ghi bù một lượng nhỏ độ thuần thục (Phàm phẩm +3 / Linh phẩm +2 / Tiên phẩm · Thần phẩm +1, mỗi tầng tối đa 2 môn; khi tạo lại sẽ hoàn tác theo phản hồi cũ). |
+| Tu hành · Độ thuần thục | Tự động đồng bộ công pháp thẻ nhân vật (chỉ tăng không giảm) | Sau khi tắt có thể nhập thủ công ở trang Tu hành. |
+| Giám định phẩm giai | Nhắc AI ghi rõ phẩm giai khi thu lục | Mỗi lượt thêm 1 dòng gợi ý. |
+| Giám định phẩm giai | 「收录:Tên công pháp[Phẩm giai cao hơn]」 có thể hiệu chỉnh phẩm giai công pháp cốt truyện | Chỉ tăng không giảm, chỉ có hiệu lực với công pháp không phải do hệ thống ban cho. |
+| Nâng cao · Quản trị viên | Bảng điều khiển Quản trị viên › | Sửa trực tiếp sổ cái (Điểm Hệ Thống, tài nguyên, bảo hiểm hộp mù, hảo cảm, v.v.), hãy cẩn trọng khi dùng. Chỉ ghi những mục đã sửa; nếu sổ cái có thay đổi trong thời gian đó sẽ từ chối ghi. |
 
-### 11.2 进阶设置（展开「进阶设置」）
+### 11.2 Cài đặt nâng cao (Mở rộng 「Cài đặt nâng cao」)
 
-| 设置 | 用途 |
+| Cài đặt | Công dụng |
 |---|---|
-| 点击终端外部时关闭 | 仅手机 / 总是 / 从不。 |
-| 手机返回手势关闭终端 | 开关。 |
-| 旧楼层数据块不发给 AI（省 token） | 生成时把旧楼层的数据块从提示里去掉（聊天记录本身不改）。 |
-| 保留最新几层的数据块 | 默认 2。 |
-| 独立 API 超时 | 60–600 秒（思考模型建议 300 秒以上）。 |
-| 世界书变量宏 `{{get_chat_variable::…}}` | 让世界书里的变量宏可用。 |
-| 输入框上方账本速览 | HUD 开关。 |
-| 快捷键 | Alt+Z / Alt+X / Alt+S。 |
-| 莉莉丝专属语音框（语音美化） | 把正文里「莉莉丝：“……”」渲染成语音卡片。 |
-| 真实触摸互动 / 触摸震动反馈 | 见 9.4。 |
-| 界面角色反应、镜头、页面台词、气泡播报 | 见 9.4。 |
-| 立绘 / Live2D 设置 › | 绑定 Live2D 模型、表情差分。 |
-| 动态效果 | 自动 / 完整 / 精简（低端机推荐）。 |
-| 预览演出 | 播一次演出看看效果。 |
-| 关闭插件时自动解绑世界书 | 需要 SillyTavern 1.17+。 |
+| Đóng khi nhấn ra ngoài thiết bị đầu cuối | Chỉ điện thoại / Luôn luôn / Không bao giờ. |
+| Cử chỉ quay lại trên điện thoại đóng thiết bị đầu cuối | Công tắc. |
+| Không gửi khối dữ liệu tầng cũ cho AI (tiết kiệm token) | Khi tạo phản hồi sẽ loại bỏ khối dữ liệu của các tầng cũ khỏi prompt (bản thân lịch sử trò chuyện không bị sửa). |
+| Giữ lại khối dữ liệu của mấy tầng mới nhất | Mặc định là 2. |
+| Thời gian chờ API độc lập | 60–600 giây (model suy luận khuyên dùng từ 300 giây trở lên). |
+| Macro biến số Sách Thế Giới `{{get_chat_variable::…}}` | Giúp các macro biến số trong Sách Thế Giới hoạt động được. |
+| Thanh xem nhanh sổ cái phía trên ô nhập liệu | Công tắc HUD. |
+| Phím tắt | Alt+Z / Alt+X / Alt+S. |
+| Khung thoại độc quyền của Lilith (Làm đẹp khung thoại) | Kết xuất các dòng 「【Lilith】: “……”」 trong chính văn thành thẻ giọng nói. |
+| Chạm tương tác chân thực / Phản hồi rung khi chạm | Xem 9.4. |
+| Phản ứng nhân vật giao diện, Góc máy, Lời thoại trang, Thông báo bong bóng | Xem 9.4. |
+| Cài đặt Tranh đứng / Live2D › | Gắn kết mô hình Live2D, biểu cảm biến thể. |
+| Hiệu ứng chuyển động | Tự động / Đầy đủ / Tinh giản (khuyên dùng cho máy cấu hình thấp). |
+| Xem trước trình diễn | Phát thử một lần trình diễn để xem hiệu ứng. |
+| Tự động gỡ liên kết Sách Thế Giới khi tắt tiện ích | Cần SillyTavern 1.17+. |
 
-### 11.3 数据块格式守卫
+### 11.3 Bảo vệ định dạng khối dữ liệu
 
-| 设置 / 按钮 | 用途 |
+| Cài đặt / Nút bấm | Công dụng |
 |---|---|
-| 自动修复新回复的数据块 | 只改刚生成的那一层：把正文挪回数据块外、补上结束标签、把只写在思维链里的数据块搬到正文后、改正功法收录写法。原文备份在楼层里。 |
-| 缺少数据块时自动补记 | 「只在缺失时补记」会多一次 API 调用，用「数据块补记」接口；也可以关闭。 |
-| 每轮提醒 AI 数据块格式 | 一行系统提示；上一轮出错时，提示会更具体。 |
-| **格式提醒插入深度（1.1.4）** | 默认深度 1（最新一条消息之前）。深度 0 是 1.1.3 及以前的位置，和某些预设的预填充 / 思维链开头放在一起可能打乱格式。 |
-| 剧情里学会功法但没入账时提示 | 弹提示，可以去剧情收纳登记。 |
-| 补记最新一层数据块 | 手动让 AI 按本轮正文补写数据块。 |
-| 还原最新一次自动修复 | 恢复成 AI 的原文。 |
+| Tự động sửa khối dữ liệu của phản hồi mới | Chỉ sửa tầng vừa mới tạo: chuyển chính văn ra ngoài khối dữ liệu, thêm thẻ đóng còn thiếu, chuyển khối dữ liệu chỉ viết trong chuỗi suy nghĩ ra sau chính văn, chuẩn hóa cách viết thu lục công pháp. Nguyên văn được sao lưu ngay trong tầng đó. |
+| Tự động ghi bổ sung khi thiếu khối dữ liệu | 「Chỉ ghi bổ sung khi bị thiếu」 sẽ gọi thêm 1 lần API bằng cổng 「Ghi bổ sung khối dữ liệu」; hoặc cũng có thể tắt đi. |
+| Mỗi lượt nhắc AI định dạng khối dữ liệu | Một dòng gợi ý hệ thống; khi lượt trước bị lỗi, lời nhắc sẽ cụ thể hơn. |
+| **Độ sâu chèn lời nhắc định dạng (1.1.4)** | Mặc định độ sâu là 1 (trước tin nhắn mới nhất). Độ sâu 0 là vị trí của bản 1.1.3 trở về trước, khi đặt chung với phần điền sẵn (prefill) / mở đầu chuỗi suy nghĩ của một số preset có thể làm rối định dạng. |
+| Nhắc nhở khi học được công pháp trong cốt truyện nhưng chưa vào sổ | Bật thông báo nhắc nhở, có thể vào Thu nạp cốt truyện để đăng ký. |
+| Ghi bổ sung khối dữ liệu tầng mới nhất | Để AI viết bổ sung khối dữ liệu thủ công dựa theo chính văn lượt này. |
+| Khôi phục lần tự động sửa mới nhất | Khôi phục về nguyên văn của AI. |
 
-### 11.4 诊断与维护（展开「诊断与维护」）
+### 11.4 Chẩn đoán & Bảo trì (Mở rộng 「Chẩn đoán & Bảo trì」)
 
-| 按钮 | 用途 |
+| Nút bấm | Công dụng |
 |---|---|
-| **检查最新楼层：插件动过吗？（1.1.4）** | 思维链标签不见了、楼层显示异常时用。会列出：是不是诸天存档；最新一层有没有被数据块守卫改写过（以及能不能还原）；正文里有几段思维链、推理框里有没有内容；是不是由插件渲染；当前**所有扩展**注入的提示（位置 / 深度 / 角色）。结果会复制到剪贴板，反馈问题时直接粘贴。 |
-| 兼容诊断 › | 检查酒馆版本、世界书预算、旧版残留等；「一键调整」世界书预算。 |
-| **核对并解冻账本（1.1.4）** | 出现「此前原生结算写入状态不明…已冻结」时用，见 13.2。 |
-| 复制诊断信息 | 复制环境信息，密钥会自动遮挡。 |
-| 手机真机自检 › | 在你的手机上检查布局、安全区、输入法。 |
-| 一键接管旧版 / 恢复旧版 | 见 1.3。 |
+| **Kiểm tra tầng mới nhất: Tiện ích có can thiệp không? (1.1.4)** | Dùng khi thẻ chuỗi suy nghĩ biến mất hoặc tầng tin nhắn hiển thị bất thường. Sẽ liệt kê: có phải bản lưu Chư Thiên không; tầng mới nhất có bị Bảo vệ khối dữ liệu sửa đổi không (và có khôi phục được không); trong chính văn có mấy đoạn chuỗi suy nghĩ, trong khung suy luận có nội dung không; có phải do tiện ích kết xuất không; các prompt đang được **tất cả tiện ích mở rộng** tiêm vào hiện tại (vị trí / độ sâu / vai trò). Kết quả sẽ được sao chép vào bộ nhớ tạm, khi báo lỗi chỉ cần dán trực tiếp. |
+| Chẩn đoán tương thích › | Kiểm tra phiên bản quán rượu, ngân sách Sách Thế Giới, tàn dư bản cũ, v.v.; 「Điều chỉnh một chạm」 ngân sách Sách Thế Giới. |
+| **Đối chiếu và mở khóa sổ cái (1.1.4)** | Dùng khi xuất hiện thông báo 「Trạng thái ghi kết toán nguyên bản trước đó không rõ… đã đóng băng」, xem 13.2. |
+| Sao chép thông tin chẩn đoán | Sao chép thông tin môi trường, khóa API sẽ tự động được che đi. |
+| Tự kiểm tra trên điện thoại thật › | Kiểm tra bố cục, vùng an toàn, bộ gõ ngay trên điện thoại của bạn. |
+| Tiếp quản bản cũ một chạm / Khôi phục bản cũ | Xem 1.3. |
 
 ---
 
-## 12. 聊天楼层里的东西
+## 12. Những thành phần trong tầng tin nhắn trò chuyện
 
-### 12.1 数据块 `<ZhuTianPanel>`
+### 12.1 Khối dữ liệu `<ZhuTianPanel>`
 
-AI 每轮在回复末尾写一个 `<ZhuTianPanel>…</ZhuTianPanel>` 数据块（字段: 值）。插件读取后记账，楼层里只留一个小标签「✧ 系统已记录 系统点 … 任务 … 查看 ›」。点小标签打开终端并定位到这一层。
+Mỗi lượt AI viết một khối dữ liệu `<ZhuTianPanel>…</ZhuTianPanel>` (Trường: Giá trị) ở cuối phản hồi. Tiện ích đọc xong sẽ ghi sổ, trong tầng tin nhắn chỉ để lại một nhãn nhỏ 「✧ Hệ thống đã ghi nhận Điểm Hệ Thống … Nhiệm vụ … Xem ›」. Nhấn vào nhãn nhỏ sẽ mở thiết bị đầu cuối và định vị tới tầng này.
 
-- 每层只记一次账。重新生成（swipe）时，先回滚到这一层之前的账本，再记新回复，资源不会叠加。
-- 旧楼层的数据块不发给 AI（可关）。
+- Mỗi tầng chỉ ghi sổ một lần. Khi tạo lại (swipe / reroll), trước tiên sẽ hoàn tác về sổ cái trước tầng này rồi mới ghi nhận phản hồi mới, tài nguyên sẽ không bị cộng dồn.
+- Khối dữ liệu của tầng cũ không gửi cho AI (có thể tắt).
 
-### 12.2 莉莉丝语音框
+### 12.2 Khung thoại Lilith
 
-正文里「莉莉丝：“……”」会显示成带头像的语音卡片（可关）。**1.1.4**：思维链里的台词不再被做成卡片。
+Dòng 「【Lilith】: “……”」 trong chính văn sẽ hiển thị thành thẻ giọng nói có ảnh đại diện (có thể tắt). **1.1.4**: Lời thoại nằm trong chuỗi suy nghĩ sẽ không bị biến thành thẻ nữa.
 
-### 12.3 思维链保护（1.1.4）
+### 12.3 Bảo vệ chuỗi suy nghĩ (1.1.4)
 
-如果你用的预设会输出 `<think>` / `<thinking>` 等思维链：
+Nếu preset bạn dùng có xuất chuỗi suy nghĩ như `<think>` / `<thinking>`:
 
-- 数据块守卫修复时，数据块**外面**的思维链原样保留，标签不会被补、被挪、被删。
-- 思维链里写的数据块**草稿**会被停用：标签改成全角 `＜ZhuTianPanel＞`，阅读不受影响，但不会再被当成正式数据块。以前这种草稿会和正式数据块的结束标签配对，把 `</think>`、正文和正式数据块一起吞掉，这是 1.1.3 里能「卡掉」思维链标签的真实路径。
-- 数据块只写在思维链里时，会被搬到正文后面，思维链本身不变。
-- 回复被截断、思维链没有闭合时：这一层不修复，也不补记。
-- 旧楼层（1.1.4 以前保存的）显示、记账和提示过滤时，也会跳过思维链里的草稿。
-- 非诸天聊天：插件不处理（只处理诸天存档或带数据块的楼层）。
-
----
-
-## 13. 账本安全
-
-### 13.1 加锁写入
-
-所有扣点、发奖、入库都按「加锁 → 写入 → 从服务器读回核对」进行。同一时间只有一个操作在写；两个标签页同时开着也不会重复扣点。
-
-### 13.2 冻结与「核对并解冻账本」（1.1.4）
-
-- 写入后读回的内容和写入的不一致时，账本会**冻结**，防止重复提交。提示是「此前原生结算写入状态不明，已冻结此聊天的所有账本写入」。
-- 1.1.4 修复了误冻结：以前其他卡 / 脚本的变量变化、酒馆迟到的保存，都会被当成写入失败。现在只比对这次写入改过的项；不一致时会先自动重存、重读一次。
-- 真的冻结了：设置 → 诊断与维护 →「**核对并解冻账本**」。
-  - 服务器存档和页面**一致**：直接解冻，不用刷新。如果刚才那笔操作没生效，重新做一次就行。
-  - **不一致**：会列出不同的项，并询问是否重载页面。重载后以服务器存档为准，冻结自动解除。
-
-### 13.3 备份与回滚
-
-- 每次重要写入前，自动保留最近 5 份账本备份：设置 →「旧存档迁移 / 账本回滚 ›」。
-- 导出 / 导入存档：账本、记忆、设置（不含密钥）。
+- Khi Bảo vệ khối dữ liệu sửa lỗi, chuỗi suy nghĩ nằm **bên ngoài** khối dữ liệu được giữ nguyên vẹn, các thẻ sẽ không bị chèn thêm, di chuyển hay xóa mất.
+- **Bản nháp** khối dữ liệu viết bên trong chuỗi suy nghĩ sẽ bị vô hiệu hóa: thẻ được đổi sang ký tự toàn giác `＜ZhuTianPanel＞`, việc đọc không bị ảnh hưởng nhưng sẽ không bị coi là khối dữ liệu chính thức nữa. Trước đây bản nháp kiểu này sẽ ghép cặp với thẻ đóng của khối dữ liệu chính thức, nuốt mất cả `</think>`, chính văn lẫn khối dữ liệu chính thức — đó chính là nguyên nhân thực sự gây "mất thẻ chuỗi suy nghĩ" ở bản 1.1.3.
+- Khi khối dữ liệu chỉ được viết bên trong chuỗi suy nghĩ, nó sẽ được chuyển ra sau chính văn, bản thân chuỗi suy nghĩ không thay đổi.
+- Khi phản hồi bị cắt cụt và chuỗi suy nghĩ chưa đóng thẻ: tầng này sẽ không tự sửa và cũng không ghi bổ sung.
+- Khi hiển thị, ghi sổ và lọc prompt cho các tầng cũ (lưu trước bản 1.1.4), các bản nháp trong chuỗi suy nghĩ cũng sẽ được bỏ qua.
+- Cuộc trò chuyện không phải Chư Thiên: tiện ích không xử lý (chỉ xử lý bản lưu Chư Thiên hoặc tầng có chứa khối dữ liệu).
 
 ---
 
-## 14. 常见问题
+## 13. An toàn sổ cái
 
-**提示「此前原生结算写入状态不明…已冻结」？**
-设置 → 诊断与维护 →「核对并解冻账本」。见 13.2。
+### 13.1 Khóa ghi dữ liệu
 
-**提示「记忆整理失败：记忆键重复或不安全」？**
-1.1.4 已经修复，记忆键会先自动清洗。更新后还出现，请用「复制诊断信息」反馈。
+Mọi thao tác trừ điểm, phát thưởng, nhập kho đều tiến hành theo quy trình 「Khóa → Ghi → Đọc lại từ máy chủ để đối chiếu」. Cùng một thời điểm chỉ có một thao tác được ghi; mở hai tab cùng lúc cũng không bị trừ điểm lặp lại.
 
-**思维链标签不见了 / 被「卡掉」？**
-1. 先用 设置 → 诊断与维护 →「检查最新楼层：插件动过吗？」。
-2. 如果报告说正文**没有被改写**、楼层**不是插件渲染的**，那多半是预设、其他扩展或正则造成的，逐个停用后再试。
-3. 如果是诸天存档，还有两点可以检查：
-   - 「格式提醒插入深度」保持 1；
-   - 世界书「诸天万界最强系统」里有 3 条常驻条目插在深度 0（04 状态栏数据块与实时数据、05 状态栏规则补充、34 统一实力标尺与报价口径，合计约 3,700 字），会排在最后一条消息之后。如果你的预设靠最后一条消息或预填充来开启思维链，可以在世界书里把这 3 条的深度改成 1 或 2，再试。
+### 13.2 Đóng băng & 「Đối chiếu và mở khóa sổ cái」 (1.1.4)
 
-**聊天群回复被截断？**
-群务 →「群聊生成」调高输出上限，或者调低每条字数 / 最多发言人数。截断的一轮可以「↻ 重roll」。
+- Khi nội dung đọc lại sau khi ghi không khớp với nội dung đã ghi, sổ cái sẽ **đóng băng** để ngăn gửi lặp lại. Thông báo hiển thị là 「Trạng thái ghi kết toán nguyên bản trước đó không rõ, đã đóng băng mọi thao tác ghi sổ cái của cuộc trò chuyện này」.
+- Bản 1.1.4 đã sửa lỗi đóng băng nhầm: trước đây biến số của thẻ / kịch bản khác thay đổi hoặc quá trình lưu trễ của quán rượu đều bị coi là ghi thất bại. Hiện tại chỉ đối chiếu những mục được sửa trong lần ghi này; khi không khớp sẽ tự động lưu lại và đọc lại một lần trước.
+- Nếu thực sự bị đóng băng: Vào Cài đặt → Chẩn đoán & Bảo trì → 「**Đối chiếu và mở khóa sổ cái**」.
+  - Bản lưu trên máy chủ và trang hiện tại **khớp nhau**: Mở khóa trực tiếp, không cần làm mới trang. Nếu thao tác vừa rồi chưa có hiệu lực, chỉ cần thực hiện lại một lần là được.
+  - **Không khớp**: Sẽ liệt kê các mục khác biệt và hỏi có muốn tải lại trang hay không. Sau khi tải lại sẽ lấy bản lưu trên máy chủ làm chuẩn và tự động gỡ đóng băng.
 
-**群消息想删 / 想重来？**
-「🗑 管理」逐条删除，「↻ 重roll」重来最近一轮。已经领取的红包 / 赠礼不能撤。
+### 13.3 Sao lưu & Hoàn tác
 
-**想把莉莉丝换成别的系统 / 不想要魅魔人设？**
-设置 →「系统助手人设」选「系统光球（编号）」或「自定义」，保存即生效；随时可以「换回莉莉丝」。世界书文件不会被改。
-
-**有些功能用不上、想关掉？**
-设置 →「功能开关」。关掉的功能数据都保留；不用的页面可以从导航里拿掉。
-
-**聊天群能不能拉我世界书里的角色？**
-能：聊天群 → 群员 →「从世界书召唤」（见 8.2）。
-
-**抽卡太慢？**
-用「经典折叠」模式：一次请求生成全部未折叠物品。
-
-**AI 回答没有数据块？**
-打开「缺少数据块时自动补记」，或手动点「补记最新一层数据块」。
-
-**手机上终端太小 / 太大？**
-设置 →「手机上的终端与私聊窗口」，或者用标题栏的「全屏 / 浮窗」。
+- Trước mỗi lần ghi quan trọng, tự động giữ lại 5 bản sao lưu sổ cái gần nhất: Cài đặt → 「Di chuyển bản lưu cũ / Hoàn tác sổ cái ›」.
+- Xuất / Nhập bản lưu: Sổ cái, ký ức, cài đặt (không bao gồm khóa API).
 
 ---
 
-## 15. 斜杠命令
+## 14. Câu hỏi thường gặp
 
-| 命令 | 作用 |
+**Thông báo 「Trạng thái ghi kết toán nguyên bản trước đó không rõ… đã đóng băng」?**
+Cài đặt → Chẩn đoán & Bảo trì → 「Đối chiếu và mở khóa sổ cái」. Xem 13.2.
+
+**Thông báo 「Chỉnh lý ký ức thất bại: Khóa ký ức bị trùng lặp hoặc không an toàn」?**
+Bản 1.1.4 đã sửa lỗi này, khóa ký ức sẽ được tự động làm sạch trước. Nếu sau khi cập nhật vẫn xuất hiện, vui lòng dùng 「Sao chép thông tin chẩn đoán」 để phản hồi.
+
+**Thẻ chuỗi suy nghĩ biến mất / bị "nuốt mất"?**
+1. Trước tiên hãy dùng Cài đặt → Chẩn đoán & Bảo trì → 「Kiểm tra tầng mới nhất: Tiện ích có can thiệp không?」.
+2. Nếu báo cáo nói rằng chính văn **chưa bị sửa đổi** và tầng tin nhắn **không phải do tiện ích kết xuất**, thì phần lớn là do preset, tiện ích mở rộng khác hoặc kịch bản Regex gây ra; hãy tắt từng cái một rồi thử lại.
+3. Nếu là bản lưu Chư Thiên, còn 2 điểm nữa có thể kiểm tra:
+   - Giữ 「Độ sâu chèn lời nhắc định dạng」 ở mức 1;
+   - Trong Sách Thế Giới 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 có 3 mục thường trực được chèn ở độ sâu 0 (04 Khối dữ liệu thanh trạng thái & Dữ liệu thời gian thực, 05 Bổ sung quy tắc thanh trạng thái, 34 Thước đo thực lực thống nhất & Quy chuẩn báo giá, tổng cộng khoảng 3,700 chữ), sẽ xếp sau tin nhắn cuối cùng. Nếu preset của bạn dựa vào tin nhắn cuối cùng hoặc phần điền sẵn (prefill) để mở đầu chuỗi suy nghĩ, bạn có thể đổi độ sâu của 3 mục này trong Sách Thế Giới thành 1 hoặc 2 rồi thử lại.
+
+**Phản hồi của Nhóm chat bị cắt cụt?**
+Vào Việc nhóm → 「Tạo trò chuyện nhóm」 để tăng giới hạn đầu ra, hoặc giảm số chữ mỗi tin / số người phát biểu tối đa. Lượt bị cắt cụt có thể nhấn 「↻ Reroll」.
+
+**Muốn xóa / muốn làm lại tin nhắn nhóm?**
+Dùng 「🗑 Quản lý」 để xóa từng tin, dùng 「↻ Reroll」 để tạo lại lượt mới nhất. Lì xì / quà tặng đã nhận không thể thu hồi.
+
+**Muốn đổi Lilith thành hệ thống khác / không muốn thiết lập nhân vật Succubus?**
+Cài đặt → 「Thiết lập nhân vật Trợ lý hệ thống」 chọn 「Quả Cầu Ánh Sáng Hệ Thống (Số hiệu)」 hoặc 「Tùy chỉnh」, lưu lại là có hiệu lực ngay; bất cứ lúc nào cũng có thể 「Đổi lại về Lilith」. Tệp Sách Thế Giới sẽ không bị sửa đổi.
+
+**Có một số tính năng không dùng tới, muốn tắt đi?**
+Cài đặt → 「Công tắc tính năng」. Dữ liệu của các tính năng bị tắt đều được giữ nguyên; những trang không dùng có thể ẩn khỏi thanh điều hướng.
+
+**Nhóm chat có thể kéo nhân vật trong Sách Thế Giới của tôi vào không?**
+Được: Nhóm chat → Thành viên → 「Triệu hồi từ Sách Thế Giới」 (xem 8.2).
+
+**Rút thẻ chậm quá?**
+Hãy dùng chế độ 「Gộp cổ điển」: chỉ gọi 1 yêu cầu duy nhất để tạo toàn bộ vật phẩm không bị gộp.
+
+**AI trả lời không có khối dữ liệu?**
+Hãy bật 「Tự động ghi bổ sung khi thiếu khối dữ liệu」, hoặc nhấn thủ công 「Ghi bổ sung khối dữ liệu tầng mới nhất」.
+
+**Trên điện thoại thiết bị đầu cuối quá nhỏ / quá to?**
+Vào Cài đặt → 「Cửa sổ thiết bị đầu cuối & trò chuyện riêng trên điện thoại」, hoặc dùng nút 「Toàn màn hình / Cửa sổ nổi」 trên thanh tiêu đề.
+
+---
+
+## 15. Lệnh gạch chéo (Slash commands)
+
+| Lệnh | Tác dụng |
 |---|---|
-| `/zt open [页面]` | 打开终端；`status`、`shop`、`bag` 是常用页的快捷方式 |
-| `/zt status` / `/zt shop` / `/zt bag` | 直接打开总览 / 商城 / 背包 |
-| `/zt init` | 初始化或补齐当前聊天的诸天账本 |
-| `/zt world` | 世界书安装、绑定、解绑 |
-| `/zt backup` | 旧存档迁移 / 账本回滚 |
-| `/zt export` | 导出 / 导入存档 |
-| `/zt diag` / `/zt copydiag` | 兼容诊断 / 复制诊断信息（密钥自动遮挡） |
-| `/zt selftest` | 手机真机自检 |
-| `/zt points` | 返回当前系统点（可在 STscript 里接管道使用） |
-| `/zt live2d` / `/zt live2d off` | 切到真 Live2D 立绘 / 切回原版分层动画 |
+| `/zt open [trang]` | Mở thiết bị đầu cuối; `status`, `shop`, `bag` là lối tắt tới các trang thường dùng |
+| `/zt status` / `/zt shop` / `/zt bag` | Mở trực tiếp Tổng quan / Thương thành / Túi đồ |
+| `/zt init` | Khởi tạo hoặc bù đủ sổ cái Chư Thiên cho cuộc trò chuyện hiện tại |
+| `/zt world` | Cài đặt, gắn kết, gỡ liên kết Sách Thế Giới |
+| `/zt backup` | Di chuyển bản lưu cũ / Hoàn tác sổ cái |
+| `/zt export` | Xuất / Nhập bản lưu |
+| `/zt diag` / `/zt copydiag` | Chẩn đoán tương thích / Sao chép thông tin chẩn đoán (khóa API tự động che) |
+| `/zt selftest` | Tự kiểm tra trên điện thoại thật |
+| `/zt points` | Trả về Điểm Hệ Thống hiện tại (có thể nối ống lệnh trong STscript) |
+| `/zt live2d` / `/zt live2d off` | Chuyển sang tranh đứng Live2D thật / Chuyển về hoạt ảnh phân lớp bản gốc |
 
-1.1.5：在「功能开关」里关掉「斜杠命令 /zt」后，`/zt` 只回答“已关闭”。
+1.1.5: Sau khi tắt 「Lệnh gạch chéo /zt」 trong 「Công tắc tính năng」, lệnh `/zt` sẽ chỉ trả lời “Đã tắt”.
 
 ---
 
-## 16. 数据存在哪里
+## 16. Dữ liệu được lưu ở đâu
 
-| 数据 | 位置 |
+| Dữ liệu | Vị trí |
 |---|---|
-| 诸天账本（含聊天群、世界、功法同步） | 聊天文件 `chatMetadata.variables.诸天系统` |
-| 莉莉丝记忆 / 私聊 | `chatMetadata.variables.诸天记忆助手_v1` 等 |
-| 插件的聊天级记录（凭据、最近 5 份账本备份） | `chatMetadata.zhutianCovenantTerminal` |
-| 楼层自动修复前的原文、补记标记 | 楼层 `extra.zhutianCovenantTerminal` |
-| 插件设置（含 1.1.5 的人设 `persona`、功能开关 `modules` / `navHidden`、聊天群世界书 `groupWorld`；人设头像压缩后存在这里） | 扩展设置 `zhutian-covenant-terminal` |
-| 从世界书召唤的群员来源（书名 + 条目编号 + 条目名） | 账本里聊天群群员的 `来源` 字段 |
-| API 配置（含密钥，**不会被导出**） | 全局变量 `诸天系统_API`、`诸天系统_API路由`、莉莉丝的 `诸天记忆助手_v1_API` |
+| Sổ cái Chư Thiên (gồm Nhóm chat, thế giới, đồng bộ công pháp) | Tệp trò chuyện `chatMetadata.variables.诸天系统` |
+| Ký ức / Trò chuyện riêng của Lilith | `chatMetadata.variables.诸天记忆助手_v1` v.v. |
+| Bản ghi cấp cuộc trò chuyện của tiện ích (chứng từ, 5 bản sao lưu sổ cái gần nhất) | `chatMetadata.zhutianCovenantTerminal` |
+| Nguyên văn trước khi tự động sửa tầng tin nhắn, dấu hiệu ghi bổ sung | `extra.zhutianCovenantTerminal` của tầng tin nhắn |
+| Cài đặt tiện ích (gồm thiết lập nhân vật `persona` của 1.1.5, công tắc tính năng `modules` / `navHidden`, Sách Thế Giới nhóm chat `groupWorld`; ảnh đại diện nhân vật sau khi nén cũng lưu tại đây) | Cài đặt tiện ích mở rộng `zhutian-covenant-terminal` |
+| Nguồn gốc thành viên nhóm được triệu hồi từ Sách Thế Giới (Tên sách + Mã mục + Tên mục) | Trường `来源` của thành viên nhóm chat trong sổ cái |
+| Cấu hình API (gồm khóa API, **sẽ không bị xuất ra**) | Biến toàn cục `诸天系统_API`, `诸天系统_API路由`, `诸天记忆助手_v1_API` của Lilith |
 
-插件不会把密钥写进聊天记录，也不会上传任何东西。
-
----
-
-## 17. 尚未验证 / 限制
-
-- **真实模型**：所有 AI 功能只用模拟模型验收过（实验性）。
-- **真机**：手机布局只在无头浏览器的手机模拟里验收过，真实 iOS / Android 未测。可以用「手机真机自检」检查。
-- **未逐项点击过**：神通的支付类按钮、分身派遣、随身洞天、自定义次数抽卡。
-- **TauriTavern 等其他宿主**：未测。
-- **酒馆群聊**：不支持。
-- 莉莉丝本人的 Live2D 模型需要人工绑定。
-- 聊天群截断识别只对独立 API 有效（酒馆主 API 不返回结束原因）。
-- **1.1.5**：自定义人设、系统光球、从世界书召唤、群员记忆注入的**扮演效果**只用模拟模型验收过；人设替换世界书依赖 SillyTavern 的 `WORLDINFO_ENTRIES_LOADED` 事件（1.16–1.19 都有），没有这个事件的宿主改为注入一条覆盖提示。世界书里别的条目提到「莉莉丝」的地方会机械替换成人设名（包括原版的成人向内容），想彻底去掉请在「高级：整段替换」里自己写剧情规则，或直接编辑世界书。
+Tiện ích sẽ không bao giờ ghi khóa API vào lịch sử trò chuyện, và cũng không tải lên bất kỳ dữ liệu nào.
 
 ---
 
-## 18. 系统助手人设（1.1.5）
+## 17. Chưa xác minh / Giới hạn
 
-设置 → 上手 →「系统助手人设 ›」。
+- **Model thật**: Tất cả tính năng AI mới chỉ được nghiệm thu bằng model mô phỏng (Thử nghiệm).
+- **Thiết bị thật**: Bố cục điện thoại mới chỉ được nghiệm thu trong trình mô phỏng di động của trình duyệt không giao diện (headless), chưa thử nghiệm trên iOS / Android thật. Có thể dùng 「Tự kiểm tra trên điện thoại thật」 để kiểm tra.
+- **Chưa nhấn thử từng mục**: Các nút thanh toán của Thần thông, Phái Khiển Phân Thân, Động Thiên Tùy Thân, rút thẻ với số lần tùy chỉnh.
+- **Các ứng dụng chủ khác như TauriTavern**: Chưa thử nghiệm.
+- **Trò chuyện nhóm của quán rượu**: Không hỗ trợ.
+- Mô hình Live2D của bản thân Lilith cần người dùng tự gắn kết thủ công.
+- Nhận diện cắt cụt của Nhóm chat chỉ có hiệu lực với API độc lập (API chính của quán rượu không trả về nguyên nhân kết thúc).
+- **1.1.5**: **Hiệu quả nhập vai** của thiết lập nhân vật tùy chỉnh, Quả Cầu Ánh Sáng Hệ Thống, triệu hồi từ Sách Thế Giới và tiêm ký ức thành viên nhóm mới chỉ được nghiệm thu bằng model mô phỏng; việc thay thế thiết lập nhân vật vào Sách Thế Giới phụ thuộc vào sự kiện `WORLDINFO_ENTRIES_LOADED` của SillyTavern (các bản 1.16–1.19 đều có), trên ứng dụng chủ không có sự kiện này sẽ chuyển sang tiêm một gợi ý ghi đè. Những chỗ nhắc tới 「Lilith」 trong các mục khác của Sách Thế Giới sẽ được thay thế cơ học bằng tên nhân vật mới (bao gồm cả nội dung hướng người lớn của bản gốc), nếu muốn loại bỏ triệt để vui lòng tự viết quy tắc cốt truyện trong phần 「Nâng cao: Thay thế toàn đoạn」, hoặc chỉnh sửa trực tiếp Sách Thế Giới.
 
-| 预设 | 说明 |
+---
+
+## 18. Thiết lập nhân vật Trợ lý hệ thống (1.1.5)
+
+Cài đặt → Bắt đầu → 「Thiết lập nhân vật Trợ lý hệ thống ›」.
+
+| Định sẵn | Mô tả |
 |---|---|
-| 莉莉丝（默认） | 原版：银发魅魔使魔。选这个时插件**什么都不改**，和 1.1.4 完全一样。 |
-| 系统光球（编号） | 没有人形，一颗带编号的光球；冷静、简洁、按条播报。名字默认「系统＋编号」，头像是自动生成的编号光球。 |
-| 自定义 | 名字、称呼、性格、说话方式、头像都自己写。 |
+| Lilith (Mặc định) | Bản gốc: Sứ ma Succubus tóc bạc. Khi chọn mục này tiện ích **không thay đổi bất cứ thứ gì**, giống hệt bản 1.1.4. |
+| Quả Cầu Ánh Sáng Hệ Thống (Số hiệu) | Không có hình người, là một quả cầu ánh sáng mang số hiệu; bình tĩnh, ngắn gọn, thông báo theo từng mục. Tên mặc định là 「Hệ Thống + Số hiệu」, ảnh đại diện là quả cầu ánh sáng có số hiệu được tạo tự động. |
+| Tùy chỉnh | Tên, cách xưng hô, tính cách, cách nói chuyện, ảnh đại diện đều do bạn tự viết. |
 
-页面上的项目：
+Các mục trên trang:
 
-| 项目 | 用途 |
+| Mục | Công dụng |
 |---|---|
-| 名字 | 剧情里的台词格式变成 `【名字】：“……”`，语音框、界面、私聊都用这个名字。光球留空 = 系统＋编号；自定义留空 = 系统助手。填写时至少 2 个字（1 个字会把正文里的「我说：“……”」之类误认成系统台词）。 |
-| 编号（光球） | 光球上显示的编号，最多 8 位字母 / 数字。 |
-| 怎么称呼你 | 默认「宿主」。 |
-| 英文名 | 终端标题下方的副标题（原来是 LILITH），可留空。 |
-| 上传头像 / 用默认 | 选一张图，自动裁成正方形、压缩到 256 像素；没有头像时用光球。 |
-| 性格与人设、说话方式 | 写进剧情规则和私聊人设。光球留空用默认。 |
-| 高级：整段替换 | 留空 = 自动生成。填了就整段代替剧情规则（世界书 02｜核心｜系统助手莉莉丝）或私聊系统提示词。请保留台词格式和「私聊不改账本」等约束。 |
-| 预览 | 展开看自动生成的剧情规则和私聊人设。 |
-| 保存并生效 / 放弃修改 / 换回莉莉丝 / 返回设置 | 保存后下一次生成、私聊和界面立即生效，不用刷新。 |
+| Tên | Định dạng lời thoại trong cốt truyện sẽ đổi thành `【Tên】: “……”`, khung thoại, giao diện và trò chuyện riêng đều dùng tên này. Quả cầu ánh sáng để trống = Hệ Thống + Số hiệu; Tùy chỉnh để trống = Trợ lý hệ thống. Khi điền cần ít nhất 2 ký tự (1 ký tự sẽ dễ nhận nhầm các câu như 「Ta nói: “……”」 trong chính văn thành lời thoại hệ thống). |
+| Số hiệu (Quả cầu ánh sáng) | Số hiệu hiển thị trên quả cầu ánh sáng, tối đa 8 chữ cái / chữ số. |
+| Cách xưng hô với bạn | Mặc định là 「Ký chủ」. |
+| Tên tiếng Anh | Phụ đề bên dưới tiêu đề thiết bị đầu cuối (vốn là LILITH), có thể để trống. |
+| Tải ảnh đại diện lên / Dùng mặc định | Chọn một bức ảnh, tự động cắt thành hình vuông và nén về 256 pixel; khi không có ảnh đại diện sẽ dùng hình quả cầu ánh sáng. |
+| Tính cách & Thiết lập, Cách nói chuyện | Đưa vào quy tắc cốt truyện và thiết lập trò chuyện riêng. Quả cầu ánh sáng để trống sẽ dùng mặc định. |
+| Nâng cao: Thay thế toàn đoạn | Để trống = Tự động tạo. Nếu điền vào sẽ thay thế toàn bộ đoạn quy tắc cốt truyện (mục Sách Thế Giới 02｜Cốt lõi｜Trợ lý hệ thống Lilith) hoặc prompt hệ thống trò chuyện riêng. Vui lòng giữ lại định dạng lời thoại và các ràng buộc như 「trò chuyện riêng không sửa sổ cái」. |
+| Xem trước | Mở rộng để xem quy tắc cốt truyện và thiết lập trò chuyện riêng được tạo tự động. |
+| Lưu & Áp dụng / Hủy thay đổi / Đổi lại về Lilith / Quay lại Cài đặt | Sau khi lưu, lần tạo phản hồi tiếp theo, trò chuyện riêng và giao diện sẽ có hiệu lực ngay lập tức mà không cần làm mới trang. |
 
-生效范围：
-- **剧情**：每次生成时，插件把世界书「诸天万界最强系统」里的莉莉丝规则临时换成人设规则，其他条目里的「莉莉丝」换成人设名，并在人设规则末尾附一段「称呼对照」：旧楼层、状态栏发来的消息、旧记忆里的「莉莉丝」都指当前人设。世界书文件不改；换回莉莉丝立即恢复。
-- **私聊 / 记忆 / 工作台**：发出的请求里换掉莉莉丝的系统人设（你写的内容不改）。
-- **界面**：名字、头像、语音框、私聊标题跟着换。悬浮莉莉丝、分层立绘、触摸只属于莉莉丝，其他人设用圆形头像唤醒按钮（「悬浮窗」设成自动 / 悬浮莉莉丝时也显示头像）。
-- 已经写进聊天记录的旧台词、旧私聊不会被改。
+Phạm vi có hiệu lực:
+- **Cốt truyện**: Mỗi khi tạo phản hồi, tiện ích tạm thời thay thế quy tắc Lilith trong Sách Thế Giới 「Hệ Thống Mạnh Nhất Chư Thiên Vạn Giới」 bằng quy tắc nhân vật mới, chữ 「Lilith」 trong các mục khác cũng được đổi thành tên nhân vật mới, đồng thời ở cuối quy tắc nhân vật sẽ đính kèm một đoạn 「Đối chiếu xưng hô」: chữ 「Lilith」 trong các tầng cũ, tin nhắn gửi từ thanh trạng thái hay ký ức cũ đều chỉ thiết lập nhân vật hiện tại. Tệp Sách Thế Giới không bị sửa đổi; khi đổi lại về Lilith sẽ khôi phục ngay lập tức.
+- **Trò chuyện riêng / Ký ức / Bàn làm việc**: Thay thế thiết lập hệ thống của Lilith trong các yêu cầu gửi đi (nội dung bạn viết không bị sửa).
+- **Giao diện**: Tên, ảnh đại diện, khung thoại, tiêu đề trò chuyện riêng đều đổi theo. Lilith nổi, tranh đứng phân lớp và chạm tương tác chỉ thuộc về Lilith, các thiết lập nhân vật khác sử dụng nút đánh thức dạng ảnh đại diện tròn (khi 「Cửa sổ nổi」 đặt là Tự động / Lilith nổi thì cũng hiển thị ảnh đại diện tròn).
+- Các lời thoại cũ và lịch sử trò chuyện riêng cũ đã ghi vào cuộc trò chuyện sẽ không bị sửa đổi.
 
 ---
 
-## 19. 功能开关（1.1.5）
+## 19. Công tắc tính năng (1.1.5)
 
-设置 → 上手 →「功能开关 ›」。所有功能一张表，改动立即生效（标「刷新后生效」的除外），关掉的功能**数据都保留**，重新打开就回来。顶部有搜索框和「全部开启」。
+Cài đặt → Bắt đầu → 「Công tắc tính năng ›」. Toàn bộ tính năng nằm trên một bảng, thay đổi có hiệu lực ngay lập tức (trừ các mục ghi 「Có hiệu lực sau khi làm mới」), các tính năng bị tắt **vẫn giữ nguyên toàn bộ dữ liệu**, bật lại là khôi phục như cũ. Phía trên có ô tìm kiếm và nút 「Bật tất cả」.
 
-| 分组 | 开关 | 关掉以后 |
+| Nhóm | Công tắc | Sau khi tắt |
 |---|---|---|
-| 系统助手 | 系统助手窗口（刷新后生效） | 没有原版窗口、工作台、记忆、规则、私聊和自动记忆；终端其他页照常。 |
-| 系统助手 | 悬浮窗 | 页面上不显示悬浮入口（终端仍可从扩展菜单、快捷键、楼层标签打开）。 |
-| 系统助手 | 语音框 / 触摸互动 / 震动 / 界面角色反应 / 页面台词 / 镜头 / 气泡播报 | 对应的演出不再出现。 |
-| 聊天楼层与数据块 | 系统数据块记账 | 插件不再处理剧情里的数据块，账本不会从剧情自动入账。 |
-| 聊天楼层与数据块 | 楼层小标签 / 旧楼层数据块不发给 AI / 自动修复 / 缺失补记 / 格式提醒 / 剧情功法提示 / 变量宏 / 世界书自动安装 / 关闭插件时自动解绑 | 同第 11 章对应设置。 |
-| 剧情提示 | 记录穿越 / 品阶提示 / 品阶更正 / 熟练度效果 / 实战积累 / 角色卡功法同步 | 不再给正文 AI 附加这条规则。 |
-| 剧情提示 | 自拟外挂 | 「自拟」页隐藏，已启用外挂的规则不再发给 AI（外挂本身保留）。 |
-| 聊天群 | 聊天群 | 页面隐藏，不再给正文注入群聊摘要，不再自动闲聊；插件装进诸天世界书的「36｜联动｜诸天聊天群（插件）」条目也不再发给正文（只在生成时跳过，世界书文件不改）。 |
-| 聊天群 | 剧情后自动闲聊（总开关） | 所有聊天都不自动闲聊（每个聊天里另有开关）。 |
-| 聊天群 | 读取世界书 | 没有「从世界书召唤」，群聊不再附条目资料。 |
-| 聊天群 | 群员记忆注入 | 正文不再收到「群员记忆」。 |
-| 界面与操作 | 账本速览 / 快捷键 / 斜杠命令 / 新手引导自动弹出 / 世界主题 / 演出 / 剧情提示卡片 | 对应功能停用。 |
-| 终端页面 | 每个导航页面 | 从导航里拿掉（总览、设置、连接一直保留；点到被关的页面会提示）。 |
-| 按聊天的开关 | 记忆整理、聊天群摘要注入 / 闲聊间隔、外挂启用 | 跟着聊天走，点「去设置」到对应页面。 |
+| Trợ lý hệ thống | Cửa sổ Trợ lý hệ thống (Có hiệu lực sau khi làm mới) | Không có cửa sổ bản gốc, bàn làm việc, ký ức, quy tắc, trò chuyện riêng và tự động ký ức; các trang khác của thiết bị đầu cuối vẫn hoạt động bình thường. |
+| Trợ lý hệ thống | Cửa sổ nổi | Trên trang không hiển thị lối vào nổi (vẫn có thể mở thiết bị đầu cuối từ trình đơn tiện ích mở rộng, phím tắt, nhãn nhỏ ở tầng tin nhắn). |
+| Trợ lý hệ thống | Khung thoại / Chạm tương tác / Rung / Phản ứng nhân vật giao diện / Lời thoại trang / Góc máy / Thông báo bong bóng | Các hiệu ứng trình diễn tương ứng sẽ không xuất hiện nữa. |
+| Tầng trò chuyện & Khối dữ liệu | Ghi sổ khối dữ liệu hệ thống | Tiện ích không xử lý khối dữ liệu trong cốt truyện nữa, sổ cái sẽ không tự động vào sổ từ cốt truyện. |
+| Tầng trò chuyện & Khối dữ liệu | Nhãn nhỏ ở tầng tin nhắn / Không gửi khối dữ liệu tầng cũ cho AI / Tự động sửa / Ghi bổ sung khi thiếu / Nhắc định dạng / Gợi ý công pháp cốt truyện / Macro biến số / Tự động cài đặt Sách Thế Giới / Tự động gỡ liên kết khi tắt tiện ích | Giống các cài đặt tương ứng tại Chương 11. |
+| Gợi ý cốt truyện | Ghi nhận xuyên việt / Gợi ý phẩm giai / Hiệu chỉnh phẩm giai / Hiệu quả độ thuần thục / Tích lũy thực chiến / Đồng bộ công pháp thẻ nhân vật | Không đính kèm quy tắc này cho AI chính văn nữa. |
+| Gợi ý cốt truyện | Phụ trợ tự tạo | Ẩn trang 「Tự tạo」, quy tắc của các phụ trợ đang bật không gửi cho AI nữa (bản thân phụ trợ vẫn được giữ lại). |
+| Nhóm chat | Nhóm chat | Ẩn trang Nhóm chat, không tiêm tóm tắt nhóm chat vào chính văn nữa, không tự động tán gẫu nữa; mục 「36｜Liên kết｜Nhóm Chat Chư Thiên (Tiện ích)」 mà tiện ích cài vào Sách Thế Giới Chư Thiên cũng không gửi cho chính văn nữa (chỉ bỏ qua lúc tạo phản hồi, tệp Sách Thế Giới không bị sửa). |
+| Nhóm chat | Tự động tán gẫu sau cốt truyện (Công tắc tổng) | Tất cả cuộc trò chuyện đều không tự động tán gẫu (trong từng cuộc trò chuyện vẫn có công tắc riêng). |
+| Nhóm chat | Đọc Sách Thế Giới | Không có mục 「Triệu hồi từ Sách Thế Giới」, trò chuyện nhóm không đính kèm dữ liệu mục từ nữa. |
+| Nhóm chat | Tiêm ký ức thành viên nhóm | Chính văn không nhận được 「Ký ức thành viên nhóm」 nữa. |
+| Giao diện & Thao tác | Xem nhanh sổ cái / Phím tắt / Lệnh gạch chéo / Tự động bật Hướng dẫn tân thủ / Chủ đề thế giới / Trình diễn / Thẻ gợi ý cốt truyện | Các tính năng tương ứng ngừng hoạt động. |
+| Trang thiết bị đầu cuối | Từng trang điều hướng | Ẩn khỏi thanh điều hướng (Tổng quan, Cài đặt, Kết nối luôn được giữ lại; khi nhấn vào trang bị tắt sẽ có thông báo). |
+| Công tắc theo cuộc trò chuyện | Chỉnh lý ký ức, Tiêm tóm tắt nhóm chat / Khoảng cách tán gẫu, Bật phụ trợ | Đi theo từng cuộc trò chuyện, nhấn 「Đi tới thiết lập」 để chuyển tới trang tương ứng. |

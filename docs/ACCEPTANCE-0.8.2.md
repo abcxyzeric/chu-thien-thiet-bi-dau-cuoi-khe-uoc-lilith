@@ -1,118 +1,118 @@
-# 0.8.2 真实宿主浏览器验收
+# Nghiệm thu trình duyệt trên máy chủ thực tế 0.8.2
 
-## 环境
+## Môi trường
 
-与 [0.8.1](ACCEPTANCE-0.8.1.md) 相同：
+Giống với [0.8.1](ACCEPTANCE-0.8.1.md):
 
-- 一次性的 SillyTavern 实例：按官方仓库 tag 全新安装，扩展以符号链接加载仓库工作区。
-- 浏览器：Playwright Chromium 无头 + swiftshader。
-- 模型：本地模拟模型 `tests/qa/mock_model.py`，端口 5001 为普通供应商，5002 为不发 CORS 头的供应商（`--no-cors`）。
-- 所有测试聊天、角色卡都是隔离测试数据。
+- Các thực thể SillyTavern dùng một lần: cài đặt mới hoàn toàn theo tag kho lưu trữ chính thức, tiện ích mở rộng tải không gian làm việc kho lưu trữ qua liên kết tượng trưng.
+- Trình duyệt: Playwright Chromium headless + swiftshader.
+- Mô hình: Mô hình mô phỏng cục bộ `tests/qa/mock_model.py`, cổng 5001 là nhà cung cấp thông thường, cổng 5002 là nhà cung cấp không gửi tiêu đề CORS (`--no-cors`).
+- Tất cả các cuộc trò chuyện kiểm thử và thẻ nhân vật đều là dữ liệu kiểm thử cô lập.
 
-本轮在 1.19 实例里额外安装了**真实的酒馆助手（JS-Slash-Runner）4.11.2**，用来复现「角色卡自带状态栏不显示」。1.16 实例没有安装酒馆助手。
+Đợt này trên thực thể 1.19 có cài đặt thêm **Tavern Helper (JS-Slash-Runner) 4.11.2 thực tế**, dùng để tái hiện lỗi 「thanh trạng thái riêng của thẻ nhân vật không hiển thị」. Thực thể 1.16 không cài đặt Tavern Helper.
 
-| 版本 | commit |
+| Phiên bản | commit |
 | --- | --- |
 | 1.16.0 | `e3b866b5d2bcc7fbaa889bb926fbb567cd1ed25b` |
 | 1.19.0 | `7e8663cd9c184a550b37238218bdd32c6efc68e9` |
 
-## 结果总览
+## Tổng quan kết quả
 
-| 套件 | 1.16 | 1.19 |
+| Bộ kiểm thử | 1.16 | 1.19 |
 | --- | --- | --- |
-| `native_v082.py`（0.8.2 新增） | 20/20（2 段跳过，见下） | 25/25 |
-| `native_v081.py`（20 项） | 20/20 | 20/20 |
-| `native_v080.py`（33 项） | 33/33 | 33/33 |
-| `native_group060.py`（44 项，按 0.8.2 新规则更新 3 处断言） | 44/44 | 44/44 |
-| `native_world070.py`（40 项） | 40/40 | 40/40 |
-| `native_terminal050.py`（58 项） | 58/58 | 58/58 |
-| `native_guards.py` | ✅ | ✅（`docs/evidence/guards.json`：无页面错误，无模型请求） |
-| `native_replace040.py` | **未运行**（需要不上传的 v1.1 原版文件） | **未运行** |
+| `native_v082.py` (Mới thêm bản 0.8.2) | 20/20 (bỏ qua 2 đoạn, xem bên dưới) | 25/25 |
+| `native_v081.py` (20 hạng mục) | 20/20 | 20/20 |
+| `native_v080.py` (33 hạng mục) | 33/33 | 33/33 |
+| `native_group060.py` (44 hạng mục, cập nhật 3 khẳng định theo quy tắc mới của 0.8.2) | 44/44 | 44/44 |
+| `native_world070.py` (40 hạng mục) | 40/40 | 40/40 |
+| `native_terminal050.py` (58 hạng mục) | 58/58 | 58/58 |
+| `native_guards.py` | ✅ | ✅ (`docs/evidence/guards.json`: không có lỗi trang, không có yêu cầu mô hình) |
+| `native_replace040.py` | **Không chạy** (cần tệp nguyên bản v1.1 không tải lên) | **Không chạy** |
 | `npm run check` | ✅ | ✅ |
-| `node --test tests/*.test.js`（纯逻辑） | 112/112 | 112/112 |
+| `node --test tests/*.test.js` (Thuần logic) | 112/112 | 112/112 |
 
-1.17 / 1.18 本轮没有测。
+Bản 1.17 / 1.18 đợt này không kiểm thử.
 
-1.16 上 `native_v082.py` 跳过了两段：
+Trên bản 1.16, `native_v082.py` bỏ qua hai đoạn:
 
-- 「真实酒馆助手状态栏」：该实例没装酒馆助手。模拟包装节点那两项照常通过。
-- 「停用钩子自动解绑」：1.16 没有扩展钩子，跳过的这一段共 4 项。
+- 「Thanh trạng thái Tavern Helper thực tế」: thực thể này không cài Tavern Helper. Hai hạng mục mô phỏng nút bao bọc vẫn đạt bình thường.
+- 「Hook vô hiệu hóa tự động gỡ gắn kết」: bản 1.16 không có hook tiện ích mở rộng, đoạn bỏ qua này gồm 4 hạng mục.
 
-### 旧测试为什么要改
+### Vì sao cần cập nhật các bài kiểm thử cũ
 
-| 测试 | 原断言 | 0.8.2 |
+| Bài kiểm thử | Khẳng định cũ | 0.8.2 |
 | --- | --- | --- |
-| `native_v080` 手机播报 | 播报只认终端提示条或立绘气泡 | 手机上改由悬浮莉莉丝说出，断言接受悬浮气泡（新功能 c） |
-| `native_group060` 点数红包 | 群员要 3,000 → 红包 3,000 | 叶清寒（武道宗师，入群费 1,500）要 3,000 → 封顶 1,500，标记 `downgraded`（新规则 e） |
-| `native_group060` 物品红包 / 赠礼来源 | `来源 == '白浅@青丘'` | `聊天群·白浅@青丘·红包` / `·赠礼`（新规则 e） |
-| `native_group060` 扩建、自动闲聊（上一轮已改） | 扩建 10,000；每次回复都闲聊 | 扩建 5,000；两次回复不闲聊，第三次闲聊一次 |
+| `native_v080` Phát báo trên điện thoại | Phát báo chỉ chấp nhận thanh thông báo thiết bị đầu cuối hoặc bong bóng tranh đứng | Trên điện thoại chuyển sang do Lilith nổi nói ra, khẳng định chấp nhận bong bóng nổi (tính năng mới c) |
+| `native_group060` Lì xì điểm số | Thành viên muốn phát 3.000 → lì xì 3.000 | Diệp Thanh Hàn (Võ đạo tông sư, phí vào nhóm 1.500) muốn phát 3.000 → chạm trần 1.500, đánh dấu `downgraded` (quy tắc mới e) |
+| `native_group060` Nguồn gốc lì xì vật phẩm / quà tặng | `来源 == '白浅@青丘'` | `聊天群·白浅@青丘·红包` / `·赠礼` (quy tắc mới e) |
+| `native_group060` Mở rộng nhóm, tán gẫu tự động (đã đổi từ đợt trước) | Mở rộng 10.000; mỗi lần phản hồi đều tán gẫu | Mở rộng 5.000; hai lần phản hồi không tán gẫu, lần thứ ba tán gẫu một lần |
 
-第一次运行 `native_v081` 时有 1 项失败：「无 CORS 供应商拉取模型」。原因是环境重建后 5002 端口的 `--no-cors` 模拟供应商没有启动，启动后 20/20。**插件代码没有因此改动。**
+Khi chạy `native_v081` lần đầu có 1 hạng mục thất bại: 「Nhà cung cấp không có CORS lấy mô hình」. Nguyên nhân là sau khi dựng lại môi trường, nhà cung cấp mô phỏng `--no-cors` ở cổng 5002 chưa được khởi động; sau khi khởi động thì đạt 20/20. **Mã nguồn plugin không thay đổi vì việc này.**
 
-## 角色卡自带状态栏：修复前后实测
+## Thanh trạng thái riêng của thẻ nhân vật: Kiểm thử thực tế trước và sau khi sửa
 
-测试数据：
+Dữ liệu kiểm thử:
 
-- 1.19 + 酒馆助手 4.11.2；
-- 测试角色卡 `状态栏测试卡`，13 个 AI 楼层，其中 12 个楼层带一段 HTML 前端状态栏（酒馆助手负责渲染成 iframe）；
-- 同一楼层里还有莉莉丝台词和 `<ZhuTianPanel>` 数据块，诸天插件要处理这些内容。
+- 1.19 + Tavern Helper 4.11.2;
+- Thẻ nhân vật kiểm thử `Thẻ kiểm thử thanh trạng thái`, 13 tầng AI, trong đó 12 tầng có mang một đoạn thanh trạng thái giao diện HTML (do Tavern Helper phụ trách kết xuất thành iframe);
+- Trong cùng tầng đó còn có lời thoại của Lilith và khối dữ liệu `<ZhuTianPanel>` mà plugin Chư Thiên cần xử lý.
 
-脚本是一次性的复现脚本（不在仓库里），对比「插件关」和「插件开」两种情况。
+Kịch bản là kịch bản tái hiện dùng một lần (không nằm trong kho lưu trữ), so sánh hai trường hợp 「Tắt plugin」 và 「Bật plugin」.
 
-| | 渲染出的角色卡状态栏 | 说明 |
+| | Thanh trạng thái thẻ nhân vật được kết xuất | Thuyết minh |
 | --- | --- | --- |
-| 插件关 | 12/12 | |
-| 插件开（0.8.1） | **0/12** | 楼层里只剩诸天的数据块，酒馆助手的 iframe 被插件重建楼层时删掉，之后不再出现 |
-| 插件开（0.8.2） | **12/12** | 0.8 秒内全部出现；诸天数据块 12 个照常显示；流式输出后仍是 12 个；无页面错误 |
+| Tắt plugin | 12/12 | |
+| Bật plugin (0.8.1) | **0/12** | Trong tầng chỉ còn lại khối dữ liệu Chư Thiên, iframe của Tavern Helper bị xóa mất khi plugin dựng lại tầng và không xuất hiện lại nữa |
+| Bật plugin (0.8.2) | **12/12** | Toàn bộ xuất hiện trong vòng 0.8 giây; 12 khối dữ liệu Chư Thiên hiển thị bình thường; sau khi xuất dạng luồng (stream) vẫn là 12 cái; không có lỗi trang |
 
-## `native_v082.py` 覆盖项
+## Các hạng mục bao phủ của `native_v082.py`
 
-### 角色卡状态栏
+### Thanh trạng thái thẻ nhân vật
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 1 | 楼层里的 `div.TH-render` 包装和其中的 iframe，在插件重建楼层后仍是**同一个节点**：iframe 没有重新加载，iframe 内的脚本状态保留 |
-| 2 | 同一楼层仍有莉莉丝语音框和诸天楼层标签，顺序正确 |
-| 3 | （装了酒馆助手时）真实酒馆助手渲染的角色卡状态栏在插件开启时正常显示 |
+| 1 | Khối bao bọc `div.TH-render` trong tầng và iframe bên trong nó sau khi plugin dựng lại tầng vẫn là **cùng một nút DOM**: iframe không bị tải lại, trạng thái kịch bản bên trong iframe được giữ nguyên |
+| 2 | Cùng tầng đó vẫn có khung thoại Lilith và nhãn tầng Chư Thiên theo đúng thứ tự |
+| 3 | (Khi đã cài Tavern Helper) Thanh trạng thái thẻ nhân vật do Tavern Helper thực tế kết xuất hiển thị bình thường khi bật plugin |
 
-### 解绑世界书
+### Gỡ gắn kết Sách Thế Giới
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 4 | 电脑（自动模式）不显示悬浮莉莉丝，原唤醒按钮保留 |
-| 5 | 能找到全部绑定：2 张角色卡主世界书、1 张角色卡附加世界书、全局、当前聊天 |
-| 6 | 设置 →「一键解绑世界书」后，没有任何地方再绑定，自动绑定关闭 |
-| 7 | 解绑记录包含角色卡、附加世界书、全局、当前聊天 |
-| 8 | 从服务器重新读取角色卡文件，`extensions.world` 已清空，说明修改真的写回了角色卡 |
-| 9 | 世界书本身没有被删除 |
-| 10 | 「恢复绑定」后全部 5 处回来 |
+| 4 | Trên máy tính (chế độ Tự động) không hiển thị Lilith nổi, nút đánh thức cũ được giữ nguyên |
+| 5 | Tìm thấy toàn bộ gắn kết: Sách Thế Giới chính của 2 thẻ nhân vật, Sách Thế Giới phụ của 1 thẻ nhân vật, toàn cục, cuộc trò chuyện hiện tại |
+| 6 | Sau khi bấm Cài đặt → 「Gỡ gắn kết Sách Thế Giới 1 chạm」, không còn nơi nào gắn kết nữa, tự động gắn kết được tắt đi |
+| 7 | Bản ghi gỡ gắn kết bao gồm thẻ nhân vật, Sách Thế Giới phụ, toàn cục và cuộc trò chuyện hiện tại |
+| 8 | Đọc lại tệp thẻ nhân vật từ máy chủ, `extensions.world` đã trống, chứng tỏ thay đổi thực sự đã được ghi về thẻ nhân vật |
+| 9 | Bản thân Sách Thế Giới không bị xóa |
+| 10 | Sau khi bấm 「Khôi phục gắn kết」, cả 5 nơi đều quay trở lại |
 
-### 停用钩子（1.17+）
+### Hook vô hiệu hóa (1.17+)
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 11 | 用酒馆自己的 `disableExtension` 停用插件后，插件已卸载，角色卡、全局、当前聊天都不再绑定 |
-| 12 | 解绑记录写进扩展设置（`auto: true`，`noticed: false`，5 处） |
-| 13 | 重新启用并刷新后，提示一次「上次关闭插件时……解绑」，记录标为已提示 |
-| 14 | 停用钩子之后同样可以恢复 |
-| 15 | 电脑端无页面错误 |
+| 11 | Sau khi dùng `disableExtension` của chính SillyTavern để tắt plugin, plugin đã được gỡ tải, thẻ nhân vật, toàn cục và cuộc trò chuyện hiện tại đều không còn gắn kết nữa |
+| 12 | Bản ghi gỡ gắn kết được ghi vào cài đặt tiện ích mở rộng (`auto: true`, `noticed: false`, 5 nơi) |
+| 13 | Sau khi bật lại và làm mới trang, hiện thông báo một lần 「Lần trước khi tắt plugin…… đã gỡ gắn kết」, bản ghi được đánh dấu là đã thông báo |
+| 14 | Sau khi chạy hook vô hiệu hóa vẫn có thể khôi phục lại như bình thường |
+| 15 | Phía máy tính không có lỗi trang |
 
-### 悬浮莉莉丝（手机 390×844，触摸，`is_mobile`）
+### Lilith nổi (Điện thoại 390×844, cảm ứng, `is_mobile`)
 
-| # | 项目 |
+| # | Hạng mục |
 | --- | --- |
-| 16 | 悬浮莉莉丝显示（表情立绘），原唤醒按钮隐藏 |
-| 17 | 默认躲在左边缘；点露出的一角她出来，并说「被你发现了～」 |
-| 18 | 点一下打开终端 |
-| 19 | 终端打开时（手机上立绘不可见），她的反应（「定海珠 已经收进背包」）在悬浮气泡里弹出 |
-| 20 | 终端关闭时，新的系统播报立即在她的气泡里弹出 |
-| 21 | 触摸长按（PointerEvent `pointerType: 'touch'`）后拖到右边缘：躲到右边缘，只露一角，位置保存为 `{edge: 'right', tucked: true}` |
-| 22 | 没有长按的快速划动不会移动她 |
-| 23 | 刷新后位置保持（右边缘，躲藏） |
-| 24 | 双击（戳）有回应台词 |
-| 25 | 手机端无页面错误 |
+| 16 | Lilith nổi hiển thị (tranh đứng biểu cảm), nút đánh thức cũ ẩn đi |
+| 17 | Mặc định nấp ở mép trái; bấm vào góc lộ ra cô ấy sẽ bước ra và nói 「Bị ngài phát hiện rồi~」 |
+| 18 | Bấm một cái sẽ mở thiết bị đầu cuối |
+| 19 | Khi thiết bị đầu cuối đang mở (trên điện thoại không nhìn thấy tranh đứng), phản ứng của cô ấy (「Định Hải Châu đã cất vào túi đồ」) bật lên trong bong bóng nổi |
+| 20 | Khi thiết bị đầu cuối đang đóng, thông báo hệ thống mới lập tức bật lên trong bong bóng của cô ấy |
+| 21 | Chạm nhấn giữ (PointerEvent `pointerType: 'touch'`) rồi kéo sang mép phải: nấp vào mép phải, chỉ lộ một góc, vị trí được lưu thành `{edge: 'right', tucked: true}` |
+| 22 | Vuốt nhanh không nhấn giữ sẽ không làm di chuyển cô ấy |
+| 23 | Sau khi làm mới trang, vị trí vẫn được giữ nguyên (mép phải, đang nấp) |
+| 24 | Nhấn đúp (chọc) có lời thoại phản hồi |
+| 25 | Phía điện thoại không có lỗi trang |
 
-截图在 `/var/tmp/qa/shots082/`，这是测试机上的临时目录，不在仓库里：
+Ảnh chụp màn hình nằm tại `/var/tmp/qa/shots082/`, đây là thư mục tạm trên máy kiểm thử, không nằm trong kho lưu trữ:
 
 - `01-floor-with-card-statusbar`
 - `10-phone-float-default`
@@ -120,22 +120,22 @@
 - `12-phone-broadcast`
 - `13-phone-tucked-right`
 
-## 纯逻辑测试（`tests/v082.test.js`，11 项）
+## Kiểm thử thuần logic (`tests/v082.test.js`, 11 hạng mục)
 
-- `findBindings` / `unbindAll` / `restoreBindings`：
-  - 只动诸天世界书，其他书不碰；
-  - 没有绑定时无害。
-- `deactivate` 返回解绑 Promise；`manifest.hooks.disable` 指向它；设置默认开启。
-- `settle()`：贴边躲藏、其他位置夹紧；`wantFloat()`：自动、开、关。
-- `packetCap`：红包不超过入群费；扩建费为容量 × 1,000。
-- 剧情提示从背包读取聊天群物品及其来源（不论多久以前得到）。
-- 闲聊间隔：默认 3，只接受列表里的值。
-- `swapContent`：保留 `div.TH-render` 包装，包括嵌套在其他块里的情况。
-- 版本号与能力表。
+- `findBindings` / `unbindAll` / `restoreBindings`:
+  - Chỉ tác động tới Sách Thế Giới Chư Thiên, không chạm tới các sách khác;
+  - Không gây hại khi không có gắn kết nào.
+- `deactivate` trả về Promise gỡ gắn kết; `manifest.hooks.disable` trỏ tới nó; cài đặt mặc định bật.
+- `settle()`: nấp sát mép, các vị trí khác được kẹp trong khung; `wantFloat()`: tự động, bật, tắt.
+- `packetCap`: lì xì không vượt quá phí vào nhóm; phí mở rộng bằng sức chứa × 1.000.
+- Lời nhắc cốt truyện đọc vật phẩm nhóm chat và nguồn gốc của chúng từ túi đồ (bất kể nhận được từ bao lâu trước đó).
+- Khoảng cách tán gẫu: mặc định là 3, chỉ chấp nhận các giá trị trong danh sách.
+- `swapContent`: giữ nguyên khối bao bọc `div.TH-render`, kể cả trường hợp lồng bên trong các khối khác.
+- Số phiên bản và bảng năng lực.
 
-## 未验证
+## Chưa xác minh
 
-- **真实手机浏览器**：iOS Safari、Android Chrome 上的长按、震动、和页面滚动的手势冲突，只在 Chromium 手机模拟里测过。
-- **1.17 / 1.18**：停用钩子在这两个版本上存在，但本轮没有运行。
-- **其他状态栏渲染器**：只保护酒馆助手的 `div.TH-render` 包装。其他扩展自己挂的 iframe，如果插件重建楼层，仍可能被替换。
-- **真实模型**：所有 AI 链路仍只用模拟模型验证。
+- **Trình duyệt điện thoại thực tế**: Nhấn giữ, rung và xung đột cử chỉ với cuộn trang trên iOS Safari, Android Chrome mới chỉ được kiểm thử trong trình mô phỏng điện thoại Chromium.
+- **1.17 / 1.18**: Hook vô hiệu hóa có tồn tại trên hai phiên bản này, nhưng đợt này không chạy.
+- **Các bộ kết xuất thanh trạng thái khác**: Chỉ bảo vệ khối bao bọc `div.TH-render` của Tavern Helper. Các iframe do tiện ích mở rộng khác tự gắn vào vẫn có thể bị thay thế nếu plugin dựng lại tầng.
+- **Mô hình thực tế**: Toàn bộ chuỗi AI vẫn chỉ được xác minh bằng mô hình mô phỏng.

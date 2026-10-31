@@ -1,106 +1,106 @@
-# 1.1.0-patch3 · 完整替换清单与操作
+# 1.1.0-patch3 · Danh sách thay thế đầy đủ và hướng dẫn thao tác
 
-## 当前交付
+## Bàn giao hiện tại
 
-本包替代先前的「1.1.0 复查版」。用户已授权仅交付文件；没有安装、生产覆盖、Git提交或推送。
-插件版本 **1.1.0** / 诊断修订 **1.1.0-patch3** / 账本结构 **2**。
+Gói này thay thế cho 「Bản rà soát 1.1.0」 trước đó. Người dùng đã ủy quyền chỉ bàn giao tệp; không cài đặt, không ghi đè môi trường sản xuất, không commit hay đẩy lên Git.
+Phiên bản tiện ích **1.1.0** / Bản sửa đổi chẩn đoán **1.1.0-patch3** / Cấu trúc sổ cái **2**.
 
-- 基线为指定仓库 main **ce29f61a9c254517fdf1fae2385b83b55cfa3688**；不是用旧版重做。
-- `zhutian-1.1.0-patch3-changed-files.zip` 包含相对基线所有 **61个修改/新增文件的完整内容**，继承上一份1.1.0的所有改动并加入本轮修补，不是只有几段diff。
-- ZIP根目录对应插件根目录，保留原路径/原文件名。没有删除文件。`vendor/original`及未修改资源使用基线版本，不重复打包。
-- **这是覆盖包，不是空目录可安装的完整插件**。如已有上一份1.1.0，也用本包完整覆盖全部列出路径；不要混搭新旧JS。若你自行改过源码，先对照合并。
-- 全量文件清单覆盖整个基线加补丁后的插件树，不只是ZIP内文件；只解压此覆盖包到空目录执行清单检查会缺少未改文件。
-- 旧台账里的“暂不传输”等字样是历史状态，当前以本说明及 `docs/PATCH-1.1.0-3.md` 为准。
+- Bản cơ sở là nhánh `main` **ce29f61a9c254517fdf1fae2385b83b55cfa3688** của kho lưu trữ chỉ định; không phải dùng bản cũ làm lại.
+- `zhutian-1.1.0-patch3-changed-files.zip` chứa **toàn bộ nội dung của tất cả 61 tệp sửa đổi / thêm mới** so với bản cơ sở, kế thừa mọi thay đổi của bản 1.1.0 trước đó và bổ sung các bản vá của vòng này, không phải chỉ có vài đoạn diff.
+- Thư mục gốc của tệp ZIP tương ứng với thư mục gốc của tiện ích, giữ nguyên đường dẫn gốc và tên tệp gốc. Không xóa tệp nào. `vendor/original` và các tài nguyên không sửa đổi tiếp tục dùng phiên bản cơ sở, không đóng gói lặp lại.
+- **Đây là gói ghi đè, không phải tiện ích đầy đủ có thể cài đặt vào một thư mục trống**. Nếu đã có bản 1.1.0 trước đó, hãy dùng gói này ghi đè đầy đủ toàn bộ các đường dẫn được liệt kê; đừng trộn lẫn các tệp JS cũ và mới. Nếu bạn từng tự sửa mã nguồn, hãy đối chiếu và gộp thủ công trước.
+- Danh sách mã băm toàn bộ tệp (`FILELIST.sha256`) bao phủ toàn bộ cây thư mục tiện ích sau khi đã đè bản vá lên bản cơ sở, chứ không chỉ riêng các tệp trong gói ZIP; nếu chỉ giải nén gói ghi đè này vào một thư mục trống rồi chạy kiểm tra danh sách tệp thì sẽ báo thiếu các tệp không sửa đổi.
+- Các chữ như “tạm thời chưa truyền tệp” trong sổ theo dõi cũ là trạng thái lịch sử, hiện tại lấy tài liệu này và `docs/PATCH-1.1.0-3.md` làm chuẩn.
 
-## 本轮修补
+## Bản vá vòng này
 
-聊天群四类异步回复及自动闲聊固定目标；鉴定保留来源批次和原回收价（反例1,000,001点）；核验期间改账取消旧提交（保留200，重新确认扣10得190）；诊断分别列安全上下文/连接协议/Web Locks，保存前提示本机/HTTPS办法，保存失败记录进诊断。
+Cố định cuộc trò chuyện đích cho 4 loại phản hồi bất đồng bộ của nhóm chat và tự động tán gẫu; giám định giữ nguyên lô nguồn gốc và giá thu hồi gốc (phản ví dụ 1,000,001 điểm); hủy cam kết cũ khi sổ cái bị sửa trong lúc chờ kiểm nghiệm (giữ nguyên 200, xác nhận trừ 10 lại sẽ được 190); báo cáo chẩn đoán tách riêng Ngữ cảnh bảo mật / Giao thức kết nối / Web Locks, nhắc cách dùng máy cục bộ / HTTPS trước khi lưu, và ghi nhận lỗi lưu thất bại vào chẩn đoán.
 
-## 酒馆中还需做什么
+## Những việc cần làm trong quán rượu
 
-1. **备份**当前插件目录、聊天/设置和世界书；可用终端「设置 → 导出 / 导入存档」导出无Key存档，但API Key请自行妥善保管。不要同时运行旧酒馆助手版和本原生版。
-2. 停止生成和交易，关闭其它酒馆标签页；将覆盖包内文件按相对路径复制到现有插件根目录。常见路径为 `public/scripts/extensions/third-party/zhutianxitongchajianban/`，用户级安装则使用你实际的同名扩展目录。不是复制到角色卡或世界书目录。
-3. 强制刷新酒馆页面，确认插件显示 **1.1.0**。打开已有诸天聊天，结构会先备份再升级到2；不要在新版数据上混用旧版写入器。
-4. **单独升级世界书**：设置 → 世界书安装 / 绑定 → 更新到最新版。先读影响提示；自改同名条目逐条选择覆盖或保留。取消保留后，该条旧规则不会自动变新，请从备份对照手动合并，尤其09商城。
-5. API中心检查默认/分功能配置：显式上限优先于功能默认；若你以前设置了300/1000等低上限，改为适合模型的值（可先4096，商品/收纳建议8192），或留空让各功能决定。不要把Key发在反馈/截图里。
-6. 到「商品定制」分别保存商店/盲盒偏好；已有库存不会自动改写，重新进货后才按新规则生成。旧禁忌商品若缺少获得代价凭据，需要重新进货。
-7. 「剧情收纳」选择少量正文，核对归属、数量、证据、原世界品阶，再勾选；未知先暂存待鉴定。不要为了提升回收价批量乱改品阶。
-8. 羁绊页检查迁移人物；详情查看不切当前目标，需要时点显式切换。手机端标题栏切「浮窗」，拖标题栏/右下角；圆形入口拖至左/右边缘隐藏，轻点边缘恢复。
-9. 先在**备份聊天**做一次真实模型测试和实体手机检查。出现“写入状态未确认/冻结”时重载核对库存与系统点，不反复购买、不凭猜测退款。
+1. **Sao lưu** thư mục tiện ích hiện tại, cuộc trò chuyện / cài đặt và Sách Thế Giới; có thể dùng 「Cài đặt → Xuất / Nhập bản lưu」 trong thiết bị đầu cuối để xuất bản lưu không chứa Key, nhưng vui lòng tự bảo quản kỹ API Key của mình. Đừng chạy đồng thời bản Tavern Helper cũ và bản nguyên gốc này.
+2. Dừng tạo văn bản và giao dịch, đóng các thẻ trình duyệt quán rượu khác; sao chép các tệp trong gói ghi đè vào thư mục gốc của tiện ích hiện có theo đúng đường dẫn tương đối. Đường dẫn thường gặp là `public/scripts/extensions/third-party/zhutianxitongchajianban/`, hoặc thư mục tiện ích mở rộng cùng tên theo tài khoản người dùng thực tế của bạn. Không sao chép vào thư mục thẻ nhân vật hay thư mục Sách Thế Giới.
+3. Làm mới cưỡng bức (hard refresh) trang quán rượu và xác nhận tiện ích hiển thị **1.1.0**. Khi mở cuộc trò chuyện Chư Thiên đã có, cấu trúc sổ cái sẽ tự sao lưu trước rồi nâng cấp lên 2; đừng dùng lẫn bộ ghi dữ liệu của bản cũ trên dữ liệu bản mới.
+4. **Nâng cấp riêng Sách Thế Giới**: Cài đặt → Cài đặt / Liên kết Sách Thế Giới → Cập nhật lên bản mới nhất. Hãy đọc kỹ thông báo ảnh hưởng trước; đối với các mục cùng tên do bạn tự sửa, hệ thống sẽ hỏi chọn ghi đè hay giữ lại từng mục một. Nếu hủy ghi đè để giữ lại, quy tắc cũ của mục đó sẽ không tự động đổi sang bản mới, vui lòng đối chiếu từ bản sao lưu để gộp thủ công, đặc biệt là mục `09` Thương thành.
+5. Kiểm tra cấu hình mặc định / theo tính năng trong Trung tâm API: giới hạn đầu ra điền rõ được ưu tiên hơn mặc định của tính năng; nếu trước đây bạn từng đặt giới hạn thấp như 300/1000 thì hãy đổi sang giá trị phù hợp với mô hình (có thể thử 4096 trước, hàng hóa / thu thập cốt truyện khuyên dùng 8192), hoặc để trống cho từng tính năng tự quyết định. Đừng để lộ Key trong nội dung phản hồi hay ảnh chụp màn hình.
+6. Vào 「Tùy chỉnh hàng hóa」 lưu riêng tùy chọn cho cửa hàng và hộp mù; hàng tồn kho đang có sẵn sẽ không tự động viết lại, phải sau khi nhập hàng mới thì mới tạo theo quy tắc mới. Các món hàng Cấm kỵ cũ nếu thiếu chứng từ cái giá nhận được thì cần nhập hàng lại.
+7. Trong 「Thu thập cốt truyện」, hãy chọn một phạm vi nhỏ chính văn, đối chiếu quyền sở hữu, số lượng, bằng chứng và phẩm giai thế giới gốc rồi mới tích chọn; những mục chưa rõ hãy tạm lưu chờ giám định trước. Đừng sửa bừa phẩm giai hàng loạt chỉ để đẩy giá thu hồi lên cao.
+8. Kiểm tra các nhân vật đã di chuyển ở trang Quan hệ; bấm xem chi tiết sẽ không làm chuyển đổi mục tiêu công lược hiện tại, khi cần hãy bấm nút chuyển đổi tường minh. Trên điện thoại có thể bấm nút 「Cửa sổ nổi」 trên thanh tiêu đề rồi kéo thanh tiêu đề / góc dưới bên phải; nút mở hình tròn kéo ra sát mép trái/phải sẽ ẩn đi, chạm nhẹ vào mép để hiện lại.
+9. Hãy thử nghiệm mô hình thật và kiểm tra trên điện thoại vật lý ở **cuộc trò chuyện đã sao lưu** trước. Khi xuất hiện thông báo “trạng thái ghi chưa xác nhận / đóng băng”, hãy tải lại trang để đối chiếu hàng tồn kho và Điểm Hệ Thống, đừng bấm mua lặp lại và đừng tự đoán mò để hoàn tiền.
 
-### 回退
+### Quay lại bản cũ
 
-恢复升级前的插件目录、聊天备份及世界书备份，三者配套回退。仅换回旧代码可能因结构版本2而只读；不要手工把schema降成1来绕过保护。此覆盖包未发布到上游前，留意上游自动更新可能覆盖本地修改。
+Khôi phục đồng bộ cả ba thứ: thư mục tiện ích trước khi nâng cấp, bản sao lưu cuộc trò chuyện và bản sao lưu Sách Thế Giới. Nếu chỉ đổi riêng mã nguồn về bản cũ thì sổ cái có thể bị chuyển sang chế độ chỉ đọc do đã ở phiên bản cấu trúc 2; đừng tự tay hạ `schema` xuống 1 để lách cơ chế bảo vệ. Trước khi gói ghi đè này được phát hành lên nhánh chính thức, hãy lưu ý việc cập nhật tự động từ kho gốc có thể ghi đè lên các sửa đổi cục bộ.
 
-10. 本轮升级后复制诊断，确认出现 **修订：1.1.0-patch3**。遇到非安全上下文，电脑本机使用localhost/127.0.0.1；手机访问电脑使用可信HTTPS，不要在手机把localhost当电脑地址。安全上下文却无Web Locks时换支持该API的浏览器，不关闭安全保护。
-11. 核验冲突提示时，先刷新并核对余额，再重新确认；不自动重扣、不反复点购买。若旧版已发生串档或回收抬价，请恢复操作前备份并人工核对，本包不会猜测并自动改回历史账本。
+10. Sau khi nâng cấp vòng này, hãy bấm Sao chép thông tin chẩn đoán và xác nhận có dòng **Bản sửa đổi: 1.1.0-patch3**. Khi gặp ngữ cảnh không bảo mật, trên máy tính cục bộ hãy dùng `localhost`/`127.0.0.1`; khi dùng điện thoại truy cập máy tính hãy dùng HTTPS đáng tin cậy, đừng gõ `localhost` trên điện thoại làm địa chỉ máy tính. Khi đã ở ngữ cảnh bảo mật mà vẫn không có Web Locks thì hãy đổi sang trình duyệt có hỗ trợ API này chứ đừng tắt bảo vệ an ninh.
+11. Khi hiện thông báo xung đột kiểm nghiệm, hãy làm mới dữ liệu và đối chiếu số dư trước rồi mới xác nhận lại; hệ thống không tự động trừ điểm lại và bạn cũng đừng bấm mua liên tiếp. Nếu ở bản cũ đã xảy ra lỗi ghi nhầm cuộc trò chuyện hoặc đẩy giá thu hồi lên cao, vui lòng khôi phục bản sao lưu trước khi thao tác và đối chiếu thủ công, gói này sẽ không đoán mò để tự động sửa lại sổ cái lịch sử.
 
-## 验证摘要及边界
+## Tóm tắt kiểm chứng và ranh giới
 
-**330/330单测、10套隔离浏览器301/301**；语法/原始来源/Python编译/空白检查通过；全量FILELIST、ZIP CRC/工作树一致性及基线叠加校验均核对。真实隔离SillyTavern1.19.0，模拟模型；不是用户真实安装、真实模型或实体手机验收。详细见 `docs/PATCH-1.1.0-3.md`。不要把测试通过当成零缺陷承诺。
+**330/330 bài kiểm tra đơn vị, 10 bộ trình duyệt cô lập 301/301**; vượt qua kiểm tra cú pháp / nguồn gốc nguyên bản / biên dịch Python / khoảng trắng; đã đối chiếu toàn bộ `FILELIST`, CRC của tệp ZIP / tính nhất quán với cây thư mục làm việc và kiểm tra chồng lớp trên bản cơ sở. Chạy trên SillyTavern 1.19.0 cô lập thực tế với mô hình giả lập; không phải nghiệm thu trên bản cài đặt thực tế của người dùng, mô hình thật hay điện thoại vật lý. Chi tiết xem tại `docs/PATCH-1.1.0-3.md`. Đừng coi việc vượt qua các bài kiểm tra tự động là lời cam kết không còn bất kỳ lỗi nào.
 
-## 全部替换/新增路径
+## Toàn bộ đường dẫn thay thế / thêm mới
 
-| 相对插件根目录路径 | 类型 | 改动 |
+| Đường dẫn tương đối so với thư mục gốc tiện ích | Loại | Thay đổi |
 |---|---|---|
-| `CHANGELOG.md` | 替换 | 追加1.1.0记录 |
-| `FILELIST.sha256` | 替换 | 全插件文件清单校验（不是只列改动） |
-| `README.md` | 替换 | 新版入口及概览，保留旧版本说明 |
-| `docs/ACCEPTANCE-1.1.0.md` | 新增 | 结果、复现方式与限制 |
-| `docs/CHANGES-1.1.0.md` | 新增 | 完整更新说明 |
-| `docs/FEATURE_MATRIX.md` | 替换 | 本轮能力验证范围 |
-| `docs/PATCH-1.1.0-3.md` | 新增 | 本轮复现、修补、330/301证据、失败过程及未验证边界 |
-| `docs/REPLACE-1.1.0.md` | 新增 | 本替换清单和酒馆操作 |
-| `docs/REVIEW-1.1.0.md` | 新增 | 保留第二轮历史，头部说明已被第三轮修补取代 |
-| `index.js` | 替换 | 注册新模块并纳入逆序卸载 |
-| `manifest.json` | 替换 | 插件版本1.1.0 |
-| `package-lock.json` | 替换 | 锁文件版本同步 |
-| `package.json` | 替换 | 版本及全量原生JS语法检查 |
-| `src/action-support.js` | 新增 | 生成前捕获身份、提交前校验、核验写入与本地日志 |
-| `src/api-center.js` | 替换 | 连接页保存前警告，延迟保存文案准确；继承预算修复 |
-| `src/api-stream.js` | 替换 | 保留诊断标记，不泄露思考正文 |
-| `src/appraise.js` | 替换 | 批次键识别具体来源；升阶不合并、不抬高回收价、不丢来源 |
-| `src/assistant-host.js` | 替换 | 记忆验证适配、旧连接测试预算 |
-| `src/bonds-data.js` | 新增 | 多人稳定ID、旧目标兼容迁移/隔离 |
-| `src/bonds.js` | 新增 | 列表搜索、详情、显式切换 |
-| `src/commerce-plan.js` | 新增 | 本地概率/槽位/定制/去重与产品校验 |
-| `src/commerce-rules.js` | 新增 | 商品规则、收纳和多人世界书文本 |
-| `src/commerce.js` | 新增 | 商城盲盒UI接管及一次性结算 |
-| `src/contracts.js` | 替换 | 保持1.1.0/schema2，新增1.1.0-patch3诊断修订标记 |
-| `src/data-io.js` | 替换 | 多人结构迁移 |
-| `src/diag-report.js` | 替换 | 安全上下文与协议/锁分列、修订标记、记录宿主延迟设置保存失败 |
-| `src/errors.js` | 替换 | 环境拒绝和并发冲突的准确下一步提示 |
-| `src/features.js` | 替换 | 世界书升级影响、唯一备份、服务器核验及冲突保留 |
-| `src/hub-atlas.js` | 替换 | 关系图读取多人库并跳转 |
-| `src/hub-group.js` | 替换 | 求助/私聊/群聊/直播/自动闲聊固定请求前聊天，提交前和锁内检查 |
-| `src/hub-settings.js` | 替换 | 保存前可见环境提示、失败恢复表单，不把提交当落盘 |
-| `src/hub.js` | 替换 | 无法记住页面时仍允许导航进入诊断 |
-| `src/ledger-ops.js` | 替换 | 传入预期聊天身份；公共入包隔离鉴定/收纳批次，保留来源字段 |
-| `src/ledger-plan.js` | 替换 | 备用购买路径也保留来源批次；继承1.1禁忌获得门槛修复 |
-| `src/ledger-service.js` | 替换 | 备用结算schema2及未来版本/冻结检查 |
-| `src/model-response.js` | 新增 | 空正文/截断诊断、记忆无歧义别名 |
-| `src/native-owned.js` | 新增 | 保护原生数据字段不被旧引擎/模型变量覆写 |
-| `src/operation-records.js` | 新增 | 记录筛选、预览、关键词包装精简 |
-| `src/prompt-filter.js` | 替换 | 仅对发送副本精简已知旧操作包装 |
-| `src/save-environment.js` | 新增 | 新增安全上下文/协议/Web Locks预检、分情境解决办法及安全故障记录 |
-| `src/settings.js` | 替换 | 保存前环境检查、同步失败恢复旧设置、异步失败记录 |
-| `src/statusbar-host.js` | 替换 | inline iframe增强接入及楼层标识 |
-| `src/story-collect.js` | 新增 | 正文证据候选、品阶映射/待鉴定与统一入库 |
-| `src/th-bridge.js` | 替换 | 不可变账本快照，核验后/更新器后检查页面变化；统一保存预检和故障记录 |
-| `src/window-controls.js` | 新增 | 触屏拖缩/全屏切换/复位、圆形入口贴边及清理 |
-| `src/worldbook.js` | 替换 | 1.1规则叠加、保留条目自定义设置 |
-| `tests/native_v084.py` | 替换 | 连接保存文案断言改为提交给宿主，不删原保存数据断言 |
-| `tests/native_v090.py` | 替换 | 手机布局回归显式初始化立绘状态 |
-| `tests/native_v091.py` | 替换 | 诊断/键盘回归显式初始化立绘状态 |
-| `tests/native_v100.py` | 替换 | 旧回归schema2与独立布局前提 |
-| `tests/native_v100_feedback.py` | 替换 | 鉴定来源批次键/可见条目定位，保留原44项验收 |
-| `tests/native_v110.py` | 新增 | 37项隔离浏览器专项/故障注入，可复跑 |
-| `tests/native_v110_patch3.py` | 新增 | 19项真实隔离宿主/浏览器专项，含落盘金额和非安全上下文 |
-| `tests/native_v110_review.py` | 新增 | 12项真实切聊天/生命周期等负向浏览器验收 |
-| `tests/v084.test.js` | 替换 | 世界书当前版本断言 |
-| `tests/v100-feedback.test.js` | 替换 | 纠正旧测试中错误合并的期望，验证两批次和冻结价格 |
-| `tests/v100.test.js` | 替换 | 当前schema升级断言 |
-| `tests/v110-patch3.test.js` | 新增 | 本轮25项单测，含3项P1反例/正常路径/环境和宿主保存日志 |
-| `tests/v110-review.test.js` | 新增 | 本轮新增20项负向回归单测 |
-| `tests/v110.test.js` | 新增 | 35项新增单测 |
-| `tests/version.test.js` | 替换 | 1.1.0版本与文档一致性 |
+| `CHANGELOG.md` | Thay thế | Nối thêm bản ghi 1.1.0 |
+| `FILELIST.sha256` | Thay thế | Danh sách kiểm tra mã băm toàn bộ tệp tiện ích (không chỉ liệt kê các tệp thay đổi) |
+| `README.md` | Thay thế | Lối vào và tổng quan bản mới, giữ nguyên thuyết minh các bản cũ |
+| `docs/ACCEPTANCE-1.1.0.md` | Thêm mới | Kết quả, cách tái lập và giới hạn |
+| `docs/CHANGES-1.1.0.md` | Thêm mới | Thuyết minh cập nhật đầy đủ |
+| `docs/FEATURE_MATRIX.md` | Thay thế | Phạm vi kiểm chứng năng lực vòng này |
+| `docs/PATCH-1.1.0-3.md` | Thêm mới | Tái hiện, vá lỗi, bằng chứng 330/301, quá trình xử lý lỗi và ranh giới chưa kiểm chứng của vòng này |
+| `docs/REPLACE-1.1.0.md` | Thêm mới | Danh sách thay thế này và hướng dẫn thao tác trong quán rượu |
+| `docs/REVIEW-1.1.0.md` | Thêm mới | Giữ lại lịch sử rà soát vòng hai, phần đầu ghi rõ đã được thay thế bởi bản vá vòng ba |
+| `index.js` | Thay thế | Đăng ký các mô-đun mới và đưa vào quy trình gỡ cài đặt theo thứ tự ngược lại |
+| `manifest.json` | Thay thế | Phiên bản tiện ích 1.1.0 |
+| `package-lock.json` | Thay thế | Đồng bộ phiên bản tệp khóa |
+| `package.json` | Thay thế | Phiên bản và kiểm tra cú pháp JS nguyên bản toàn diện |
+| `src/action-support.js` | Thêm mới | Bắt cố định danh tính trước khi tạo, kiểm tra trước khi cam kết, ghi có kiểm nghiệm và nhật ký cục bộ |
+| `src/api-center.js` | Thay thế | Cảnh báo trước khi lưu ở trang Kết nối, văn bản lưu trễ chuẩn xác; kế thừa bản sửa lỗi ngân sách |
+| `src/api-stream.js` | Thay thế | Giữ lại cờ chẩn đoán, không làm lộ chính văn suy nghĩ |
+| `src/appraise.js` | Thay thế | Khóa lô nhận diện nguồn gốc cụ thể; nâng phẩm giai không gộp chung, không đẩy giá thu hồi, không làm mất nguồn gốc |
+| `src/assistant-host.js` | Thay thế | Tương thích kiểm tra ký ức, ngân sách kiểm tra kết nối cũ |
+| `src/bonds-data.js` | Thêm mới | ID ổn định cho nhiều người, di chuyển / cô lập tương thích mục tiêu cũ |
+| `src/bonds.js` | Thêm mới | Tìm kiếm danh sách, chi tiết, chuyển đổi tường minh |
+| `src/commerce-plan.js` | Thêm mới | Xác suất / ô hàng / tùy chỉnh / khử trùng lặp cục bộ và kiểm tra sản phẩm |
+| `src/commerce-rules.js` | Thêm mới | Văn bản Sách Thế Giới cho quy tắc hàng hóa, thu thập và quan hệ nhiều người |
+| `src/commerce.js` | Thêm mới | Tiếp quản giao diện hộp mù Thương thành và kết toán một lần |
+| `src/contracts.js` | Thay thế | Giữ 1.1.0 / schema 2, thêm nhãn bản sửa đổi chẩn đoán `1.1.0-patch3` |
+| `src/data-io.js` | Thay thế | Di chuyển cấu trúc quan hệ nhiều người |
+| `src/diag-report.js` | Thay thế | Tách dòng ngữ cảnh bảo mật & giao thức / khóa, nhãn bản sửa đổi, ghi nhận lỗi lưu cài đặt trễ của máy chủ |
+| `src/errors.js` | Thay thế | Gợi ý bước tiếp theo chuẩn xác khi môi trường từ chối hoặc xung đột đồng thời |
+| `src/features.js` | Thay thế | Ảnh hưởng khi nâng cấp Sách Thế Giới, bản sao lưu duy nhất, kiểm nghiệm máy chủ và giữ lại mục xung đột |
+| `src/hub-atlas.js` | Thay thế | Sơ đồ quan hệ đọc kho nhiều người và chuyển trang |
+| `src/hub-group.js` | Thay thế | Cầu viện / trò chuyện riêng / trò chuyện nhóm / phát trực tiếp / tự động tán gẫu cố định cuộc trò chuyện trước khi gửi yêu cầu, kiểm tra trước khi cam kết và bên trong khóa |
+| `src/hub-settings.js` | Thay thế | Hiển thị cảnh báo môi trường trước khi lưu, khôi phục biểu mẫu khi thất bại, không coi gửi lệnh là đã ghi đĩa |
+| `src/hub.js` | Thay thế | Khi không thể ghi nhớ trang vẫn cho phép điều hướng vào phần chẩn đoán |
+| `src/ledger-ops.js` | Thay thế | Truyền danh tính cuộc trò chuyện dự kiến; nhập túi chung cô lập lô giám định / thu thập, giữ nguyên trường nguồn gốc |
+| `src/ledger-plan.js` | Thay thế | Đường dẫn mua hàng dự phòng cũng giữ nguyên lô nguồn gốc; kế thừa bản sửa lỗi điều kiện nhận hàng Cấm kỵ của 1.1 |
+| `src/ledger-service.js` | Thay thế | Kết toán dự phòng schema 2 cùng kiểm tra phiên bản tương lai / đóng băng |
+| `src/model-response.js` | Thêm mới | Chẩn đoán chính văn rỗng / cắt cụt, bí danh ký ức không nhập nhằng |
+| `src/native-owned.js` | Thêm mới | Bảo vệ các trường dữ liệu nguyên bản không bị engine cũ / chỉ thị biến mô hình ghi đè |
+| `src/operation-records.js` | Thêm mới | Lọc bản ghi, xem trước, tinh giản vỏ bọc từ khóa |
+| `src/prompt-filter.js` | Thay thế | Chỉ tinh giản vỏ bọc thao tác cũ đã biết trên bản sao gửi đi |
+| `src/save-environment.js` | Thêm mới | Thêm kiểm tra trước ngữ cảnh bảo mật / giao thức / Web Locks, cách giải quyết theo từng tình huống và ghi nhật ký lỗi lưu |
+| `src/settings.js` | Thay thế | Kiểm tra môi trường trước khi lưu, khôi phục cài đặt cũ khi thất bại đồng bộ, ghi nhận khi thất bại bất đồng bộ |
+| `src/statusbar-host.js` | Thay thế | Kết nối bộ tăng cường iframe nội tuyến và định danh tầng tin nhắn |
+| `src/story-collect.js` | Thêm mới | Ứng viên bằng chứng chính văn, ánh xạ phẩm giai / chờ giám định và nhập kho thống nhất |
+| `src/th-bridge.js` | Thay thế | Ảnh chụp nhanh sổ cái bất biến, kiểm tra thay đổi trên trang sau khi kiểm nghiệm / sau khi chạy hàm cập nhật; kiểm tra trước khi lưu thống nhất và ghi nhận lỗi |
+| `src/window-controls.js` | Thêm mới | Kéo thu phóng cảm ứng / chuyển đổi toàn màn hình / đặt lại, nút mở tròn bám mép và dọn dẹp |
+| `src/worldbook.js` | Thay thế | Chồng lớp quy tắc 1.1, giữ nguyên cài đặt tùy chỉnh của mục từ điển |
+| `tests/native_v084.py` | Thay thế | Đổi kiểm tra văn bản lưu kết nối sang đã giao cho máy chủ, không xóa kiểm tra dữ liệu lưu gốc |
+| `tests/native_v090.py` | Thay thế | Hồi quy bố cục điện thoại khởi tạo tường minh trạng thái ảnh đứng |
+| `tests/native_v091.py` | Thay thế | Hồi quy chẩn đoán / bàn phím khởi tạo tường minh trạng thái ảnh đứng |
+| `tests/native_v100.py` | Thay thế | Hồi quy cũ tương thích schema 2 và tiền đề bố cục độc lập |
+| `tests/native_v100_feedback.py` | Thay thế | Định vị theo khóa lô nguồn gốc giám định / mục hiển thị, giữ nguyên 44 mục nghiệm thu gốc |
+| `tests/native_v110.py` | Thêm mới | 37 mục kiểm tra chuyên biệt trình duyệt cô lập / tiêm lỗi, có thể chạy lại |
+| `tests/native_v110_patch3.py` | Thêm mới | 19 mục kiểm tra chuyên biệt máy chủ cô lập / trình duyệt thực tế, gồm số tiền ghi đĩa và ngữ cảnh không bảo mật |
+| `tests/native_v110_review.py` | Thêm mới | 12 mục nghiệm thu trình duyệt hướng phủ định cho chuyển cuộc trò chuyện thật / vòng đời |
+| `tests/v084.test.js` | Thay thế | Kiểm tra phiên bản Sách Thế Giới hiện tại |
+| `tests/v100-feedback.test.js` | Thay thế | Đính chính kỳ vọng gộp nhầm trong bài kiểm tra cũ, xác minh tách hai lô và đóng băng giá |
+| `tests/v100.test.js` | Thay thế | Kiểm tra nâng cấp schema hiện tại |
+| `tests/v110-patch3.test.js` | Thêm mới | 25 bài kiểm tra đơn vị vòng này, gồm 3 phản ví dụ P1 / luồng bình thường / môi trường và nhật ký lưu máy chủ |
+| `tests/v110-review.test.js` | Thêm mới | 20 bài kiểm tra đơn vị hồi quy hướng phủ định thêm mới |
+| `tests/v110.test.js` | Thêm mới | 35 bài kiểm tra đơn vị thêm mới |
+| `tests/version.test.js` | Thay thế | Tính nhất quán giữa phiên bản 1.1.0 và tài liệu |
