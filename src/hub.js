@@ -143,11 +143,40 @@ export class Hub {
         for (const b of originals.values()) frag.append(b);        // unknown future original tabs stay reachable
         nav.replaceChildren(frag);
         this.groupBox = g => nav.querySelector(`.zt-nav-group[data-group="${GROUP_ALIASES[g] || g}"] .zt-nav-items`);
+        this.on(nav, 'wheel', e => {
+            if (nav.scrollWidth > nav.clientWidth) {
+                const dy = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+                if (dy) {
+                    e.preventDefault();
+                    nav.scrollLeft += dy;
+                }
+            }
+        }, { passive: false });
+        let isDown = false, startX = 0, scrollStart = 0, dragged = false;
+        this.on(nav, 'pointerdown', e => {
+            if (e.button !== 0) return;
+            isDown = true;
+            dragged = false;
+            startX = e.clientX;
+            scrollStart = nav.scrollLeft;
+        });
+        this.on(nav, 'pointermove', e => {
+            if (!isDown) return;
+            const dx = e.clientX - startX;
+            if (Math.abs(dx) > 4) {
+                dragged = true;
+                nav.scrollLeft = scrollStart - dx;
+            }
+        });
+        const endDrag = () => { isDown = false; };
+        this.on(nav, 'pointerup', endDrag);
+        this.on(nav, 'pointercancel', endDrag);
         this.on(nav, 'click', e => {
+            if (dragged) { dragged = false; e.preventDefault(); e.stopImmediatePropagation(); return; }
             const b = e.target.closest('.nav-button[data-page]'); if (!b) return;
             if (b.classList.contains('zt-nav-orig')) { this.page = b.dataset.page; this.afterGo(); return; }   // original handler switches the page
             e.preventDefault(); this.go(b.dataset.page);
-        });
+        }, true);
         // Arrow keys across all groups (the original handler only knows its five tabs).
         this.on(nav, 'keydown', e => {
             if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;

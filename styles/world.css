@@ -3,7 +3,7 @@
    control based on the theme (positions stay fixed across worlds). Motion is off under prefers-reduced-motion. */
 
 /* ---------- shell surfaces as variables (defaults = the original Lilith window colours) ---------- */
-:host{--zt-win:#15101e;--zt-win-line:#ac79c064;--zt-head:linear-gradient(110deg,#281c32,#1b1425);--zt-side:#1b1325;--zt-main:radial-gradient(ellipse at 100% 0,#7e426315,transparent 60%);--zt-deco:#c59bee;--zt-deco2:#d2b992;--zt-title-font:Georgia,"Songti SC",serif}
+:host{--zt-win:#15101e;--zt-win-line:#ac79c064;--zt-head:linear-gradient(110deg,#281c32,#1b1425);--zt-side:#1b1325;--zt-main:radial-gradient(ellipse at 100% 0,#7e426315,transparent 60%);--zt-deco:#c59bee;--zt-deco2:#d2b992;--zt-title-font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
 :host([data-zt-world]) dialog{background:var(--zt-win)!important;border-color:var(--zt-win-line)!important;transition:background-color .5s,border-color .5s}
 :host([data-zt-world]) #drag-handle{background:var(--zt-head)!important}
 :host([data-zt-world]) .sidebar{background:var(--zt-side)!important}
@@ -16,7 +16,7 @@
 /* ---------- Tiên hiệp · Ngọc giản / Tinh đồ / Trận văn (0.8.4: Mặc Ngọc Kim — ink + gold, jade only as the second colour; was mint green) ---------- */
 :host([data-zt-world=xianxia]){--accent:#d4b46c;--gold:#9fcfbf;--ink:#f1ece0;--muted:#b0aa98;--line:#e8d9b01a;
   --zt-win:#111315;--zt-win-line:#d4b46c55;--zt-head:linear-gradient(110deg,#1d1f1f,#121416);--zt-side:#141618;--zt-main:radial-gradient(ellipse at 100% 0,#d4b46c10,transparent 60%),radial-gradient(ellipse at 0 100%,#9fcfbf0a,transparent 55%);
-  --zt-surface:#1f2222;--zt-surface-h:#2a2d2b;--zt-input:#0b0c0d;--zt-top-a:#1a1c1c;--zt-top-b:#121415;--zt-bar:#151718;--zt-primary-a:#8a6f36;--zt-primary-b:#4f7f72;--zt-nav:#b9b19c;--zt-ink2:#f5efe2;--zt-text2:#d9d2c0;--zt-panel2:#181a1b;--zt-sel:#d4b46c;--zt-sel-bar:#9fcfbf;--zt-switch:#a2853f;--zt-switch-off:#2a2c2b;--zt-deco:#d4b46c;--zt-deco2:#9fcfbf;--zt-title-font:"Songti SC","STKaiti","KaiTi",Georgia,serif}
+  --zt-surface:#1f2222;--zt-surface-h:#2a2d2b;--zt-input:#0b0c0d;--zt-top-a:#1a1c1c;--zt-top-b:#121415;--zt-bar:#151718;--zt-primary-a:#8a6f36;--zt-primary-b:#4f7f72;--zt-nav:#b9b19c;--zt-ink2:#f5efe2;--zt-text2:#d9d2c0;--zt-panel2:#181a1b;--zt-sel:#d4b46c;--zt-sel-bar:#9fcfbf;--zt-switch:#a2853f;--zt-switch-off:#2a2c2b;--zt-deco:#d4b46c;--zt-deco2:#9fcfbf;--zt-title-font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
 :host([data-zt-world=xianxia]) .zt-card{background:linear-gradient(180deg,#d4b46c08,#9fcfbf04);border-color:#dcc48a26;border-radius:4px 14px 4px 14px}
 :host([data-zt-world=xianxia]) .zt-card h3{font-family:var(--zt-title-font)}
 :host([data-zt-world=xianxia]) .zt-hub-top{border-bottom-color:#dcc48a2e}

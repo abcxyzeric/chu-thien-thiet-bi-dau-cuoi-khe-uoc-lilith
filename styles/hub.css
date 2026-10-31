@@ -12,7 +12,7 @@ dialog.zt-closing{animation:zt-out .15s ease-in forwards;pointer-events:none}
 
 /* ---- navigation: fixed groups, compact three-column; the portrait keeps the original aspect (no blank bands) ---- */
 .sidebar{overflow-y:auto!important;scrollbar-width:thin}
-@media (min-width:721px){.shell{grid-template-columns:236px minmax(0,1fr)!important}}
+@media (min-width:721px){.shell{grid-template-columns:275px minmax(0,1fr)!important}}
 .sidebar .portrait{flex:none!important;height:auto!important;aspect-ratio:424/632;min-height:0!important}
 .sidebar .sidebar-footer{display:none}
 .sidebar nav.zt-hub-nav{display:block!important;padding:4px 8px 10px!important;flex:none}
@@ -21,10 +21,10 @@ dialog.zt-closing{animation:zt-out .15s ease-in forwards;pointer-events:none}
 .zt-nav-title{display:none}
 .zt-nav-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
 .zt-nav-items:empty,.zt-nav-group:has(.zt-nav-items:empty){display:none}
-.zt-hub-nav .nav-button{padding:6px 4px!important;gap:4px!important;font-size:12.5px;min-height:32px;border-radius:8px;justify-content:flex-start}
-.zt-hub-nav .nav-button svg{width:14px;height:14px;flex:none}
+.zt-hub-nav .nav-button{padding:5px 4px!important;gap:3px!important;font-size:11.5px;min-height:32px;height:auto;border-radius:8px;justify-content:flex-start;align-items:center}
+.zt-hub-nav .nav-button svg{width:13px;height:13px;flex:none}
 .zt-hub-nav .nav-button em{display:none}
-.zt-hub-nav .nav-button span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.zt-hub-nav .nav-button span{white-space:normal;line-height:1.15;word-break:break-word;overflow:visible;text-overflow:clip;text-align:left;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .zt-nav-own{border:1px solid transparent;background:transparent;text-align:left;display:flex;align-items:center;color:var(--zt-nav);position:relative;cursor:pointer;font:inherit}
 .zt-nav-own:hover,.zt-nav-orig:hover{color:var(--zt-ink2);background:#ffffff08}
 .zt-nav-own[aria-selected=true]{background:linear-gradient(90deg,color-mix(in srgb,var(--zt-sel) 17%,transparent),color-mix(in srgb,var(--zt-sel) 2%,transparent));border-color:color-mix(in srgb,var(--zt-sel) 20%,transparent);color:var(--zt-ink2)}
@@ -35,8 +35,8 @@ dialog.zt-closing{animation:zt-out .15s ease-in forwards;pointer-events:none}
 .zt-hub-top{display:flex;align-items:center;gap:14px;padding:9px 18px;border-bottom:1px solid var(--zt-line);background:linear-gradient(90deg,var(--zt-top-a),var(--zt-top-b));flex:none;min-height:44px;overflow-x:auto;scrollbar-width:none}
 .zt-hub-top::-webkit-scrollbar{display:none}
 .zt-hub-top small{display:block;font-size:10px;letter-spacing:1px;color:var(--zt-muted);line-height:1.2}
-.zt-hub-top b{font:600 14px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink);white-space:nowrap}
-.zt-top-world{min-width:0;max-width:30%}.zt-top-world b{display:block;overflow:hidden;text-overflow:ellipsis}
+.zt-hub-top b{font:600 14px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--zt-ink);white-space:nowrap}
+.zt-top-world{min-width:max-content;max-width:none}.zt-top-world b{display:block;white-space:nowrap;overflow:visible;text-overflow:clip}
 .zt-top-pts b{color:var(--zt-gold);font-size:16px}
 .zt-top-pts,.zt-top-res,.zt-top-shop{cursor:pointer}
 .zt-top-res{display:flex;gap:12px;margin-left:auto}
@@ -52,7 +52,7 @@ dialog.zt-closing{animation:zt-out .15s ease-in forwards;pointer-events:none}
 .zt-engine-tools:empty{display:none}
 .zt-engine-tools{flex:none;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:9px 18px;border-bottom:1px solid var(--zt-line);background:var(--zt-bar)}
 .zt-empty{padding:40px 24px;text-align:center;color:var(--zt-muted);line-height:1.9}
-.zt-hub-page h2.zt-h{font:600 22px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink);margin:0 0 4px}
+.zt-hub-page h2.zt-h{font:600 22px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--zt-ink);margin:0 0 4px}
 .zt-hub-page .zt-eyebrow{font-size:10px;letter-spacing:3px;color:var(--zt-gold);margin-bottom:6px}
 .zt-hub-page .zt-sub{color:var(--zt-muted);font-size:12.5px;margin:0 0 16px;line-height:1.7}
 .zt-card{border:1px solid var(--zt-line);background:#ffffff05;border-radius:14px;padding:14px 16px;margin-bottom:12px}
@@ -102,7 +102,12 @@ dialog[data-compact=true] .sidebar{overflow:visible!important}
 :host dialog[data-compact=true] .shell .sidebar .portrait{display:none!important}
 :host([data-zt-page="work"]) dialog[data-compact=true] .shell .sidebar .portrait,:host([data-zt-page="memory"]) dialog[data-compact=true] .shell .sidebar .portrait,:host([data-zt-page="rules"]) dialog[data-compact=true] .shell .sidebar .portrait{display:flex!important;aspect-ratio:auto;height:auto!important}
 dialog[data-compact=true] .zt-top-world{min-width:64px}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav{max-height:none;display:flex!important;gap:4px;overflow-x:auto!important;overflow-y:hidden;padding:6px 8px!important;white-space:nowrap;scrollbar-width:none}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav{max-height:none;display:flex!important;gap:4px;overflow-x:auto!important;overflow-y:hidden;padding:6px 8px 10px!important;white-space:nowrap;scrollbar-width:thin!important;scrollbar-color:color-mix(in srgb,var(--zt-deco,#c59bee) 50%,transparent) transparent;cursor:grab;user-select:none}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav:active{cursor:grabbing}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar{height:5px!important;display:block!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-track{background:rgba(255,255,255,0.06);border-radius:3px}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--zt-deco,#c59bee) 50%,transparent);border-radius:3px}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb:hover{background:var(--zt-deco,#c59bee)}
 dialog[data-compact=true] .zt-hub-top small{white-space:nowrap}
 dialog[data-compact=true] .zt-nav-group{margin:0;display:contents}
 dialog[data-compact=true] .zt-nav-title{display:none}
@@ -283,7 +288,7 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 /* ---- 1.1.2 Gắn kết nhiều người (two panes; one column in narrow windows) ---- */
 .zt-bd{container-type:inline-size;display:flex;flex-direction:column;gap:12px}
 .zt-bd-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.zt-bd-head h3{margin:0;font:600 20px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink)}
+.zt-bd-head h3{margin:0;font:600 20px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--zt-ink)}
 .zt-bd-head small{color:var(--zt-muted);font-size:11.5px}
 .zt-bd-head input{flex:0 1 240px;min-width:150px;background:var(--zt-input);border:1px solid #ffffff1c;color:var(--zt-ink);border-radius:999px;padding:7px 14px;font:inherit;font-size:12.5px}
 .zt-bd-filters{display:flex;gap:6px;flex-wrap:wrap}
@@ -308,10 +313,10 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 .zt-bd-bar{display:block;height:3px;border-radius:2px;background:#ffffff14;margin-top:5px;position:relative;overflow:hidden}
 .zt-bd-bar::after{content:"";position:absolute;inset:0 auto 0 0;width:var(--v);background:var(--k,var(--zt-sel))}
 .zt-bd-av{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;color:#fff;background:radial-gradient(circle at 30% 25%,hsl(var(--h) 70% 68%),hsl(var(--h) 55% 38%));border:1px solid #ffffff2e;box-shadow:0 2px 8px #0005}
-.zt-bd-av.big{width:64px;height:64px;font-size:28px;font-family:Georgia,"Songti SC",serif}
+.zt-bd-av.big{width:64px;height:64px;font-size:28px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .zt-bd-detail{--k:var(--zt-sel);border:1px solid color-mix(in srgb,var(--k) 30%,transparent);border-radius:16px;padding:16px 18px;background:linear-gradient(160deg,color-mix(in srgb,var(--k) 10%,transparent),transparent 55%),#ffffff04;display:flex;flex-direction:column;gap:14px;min-width:0}
 .zt-bd-hero{display:flex;align-items:center;gap:14px}
-.zt-bd-hero h3{margin:0 0 6px;font:600 20px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink)}
+.zt-bd-hero h3{margin:0 0 6px;font:600 20px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--zt-ink)}
 .zt-bd-tags{display:flex;flex-wrap:wrap;gap:6px}
 .zt-bd-rel{border-color:color-mix(in srgb,var(--k) 55%,transparent);color:var(--zt-ink2)}
 .zt-bd-meters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
@@ -339,7 +344,7 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 /* ---- 1.1.2 Bảng điều khiển Quản trị viên ---- */
 .zt-adm{display:flex;flex-direction:column;gap:2px;padding-bottom:4px}
 .zt-adm-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap}
-.zt-adm-head h3{margin:0 0 4px;font:600 20px/1.3 Georgia,"Songti SC",serif;color:var(--zt-ink)}
+.zt-adm-head h3{margin:0 0 4px;font:600 20px/1.3 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--zt-ink)}
 .zt-adm-head small{color:var(--zt-muted);font-size:11.5px;line-height:1.6}
 .zt-adm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
 .zt-adm-field{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--zt-muted);min-width:0}

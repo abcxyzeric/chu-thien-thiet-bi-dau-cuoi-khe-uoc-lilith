@@ -141,6 +141,7 @@ const HINT = {
     tree: '',
 };
 const TYPE_LABEL = { cause: 'Khởi nguồn', task: 'Nhiệm vụ', receipt: 'Chứng từ quyết toán', fail: 'Thất bại', pending: 'Chờ quyết toán', reward: 'Phần thưởng', host: 'Ký chủ', lilith: 'Lilith', love: 'Đối tượng ràng buộc', summon: 'Tay đấm', member: 'Thành viên nhóm', world: 'Thế giới', rumor: 'Thế giới đồn đại', root: 'Ký chủ', branch: 'Nhánh', leaf: 'Bản ghi' };
+const KEY_MAP = { '身份': 'Thân phận', '系统点': 'Điểm Hệ Thống', '当前世界': 'Thế giới hiện tại', '宿主实力档': 'Thực lực Ký chủ', '名称': 'Tên', '姓名': 'Họ tên', '好感': 'Hảo cảm', '好感度': 'Hảo cảm', '黑化值': 'Hắc hóa', '悔意值': 'Hối hận', '世界': 'Thế giới', '实力档': 'Bậc thực lực', '性格': 'Tính cách', '特产': 'Đặc sản', '忠诚': 'Độ trung thành', '奖励': 'Phần thưởng', '状态': 'Trạng thái', '完成度': 'Tiến độ', '点数': 'Điểm', '楼层': 'Tầng', '时间': 'Thời gian', '首次': 'Lần đầu', '最近': 'Gần nhất', '次数': 'Số lần', '来源': 'Nguồn gốc', '依据': 'Căn cứ', '类型': 'Loại', '说明': 'Mô tả', '群员': 'Thành viên nhóm', 'ID': 'ID', 'id': 'ID' };
 
 export class HubAtlas {
     constructor(app) { this.app = app; this.sel = {}; this.els = {}; this.disposers = []; this.graphs = {}; }
@@ -226,11 +227,12 @@ ${id === 'events' ? this.historyList() : ''}${id === 'stars' ? this.travelForm(z
         const n = g.nodes.find(x => x.id === this.sel[id]);
         if (!n) return `<div class="zt-atlas-tip"><b>Chọn một nút</b><p>Bấm chuột hoặc dùng phím Tab / phím mũi tên để chọn nút, nơi này sẽ hiển thị bản ghi sổ cái gốc tương ứng và các lối tắt chuyển trang.</p></div>`;
         const rows = Object.entries(obj(n.rec)).filter(([k, v]) => v !== '' && v != null && typeof v !== 'function').slice(0, 14)
-            .map(([k, v]) => `<div class="zt-kv"><span>${esc(k)}</span><b>${esc(typeof v === 'object' ? JSON.stringify(v) : k === '首次' || k === '最近' || k === '时间' ? (num(v) ? new Date(num(v)).toLocaleString('zh-CN') : v) : String(v))}</b></div>`).join('');
+            .map(([k, v]) => `<div class="zt-kv"><span>${esc(KEY_MAP[k] || k)}</span><b>${esc(typeof v === 'object' ? JSON.stringify(v) : k === '首次' || k === '最近' || k === '时间' ? (num(v) ? new Date(num(v)).toLocaleString('vi-VN') : v) : String(v))}</b></div>`).join('');
         const by = new Map(g.nodes.map(x => [x.id, x]));
         const links = [...g.edges.filter(e => e.to === n.id).map(e => ['←', e, by.get(e.from)]), ...g.edges.filter(e => e.from === n.id).map(e => ['→', e, by.get(e.to)])].filter(x => x[2]);
         const acts = this.actions(id, n, z);
-        return `<div class="zt-atlas-rec"><small>${esc(TYPE_LABEL[n.type] || '')}${n.src ? ` · <code>${esc(n.src)}</code>` : ''}</small><h4>${esc(n.rec?.名称 || n.rec?.姓名 || n.label)}</h4>
+        const displaySrc = n.src ? n.src.replace(/诸天系统/g, 'Hệ Thống Chư Thiên') : '';
+        return `<div class="zt-atlas-rec"><small>${esc(TYPE_LABEL[n.type] || '')}${displaySrc ? ` · <code>${esc(displaySrc)}</code>` : ''}</small><h4>${esc(n.rec?.名称 || n.rec?.姓名 || n.label)}</h4>
 <div class="zt-kvs">${rows || '<p class="zt-sub">Không có thêm trường nào khác.</p>'}</div>
 ${links.length ? `<div class="zt-atlas-links"><small>Nhân quả / Liên kết</small>${links.map(([d, e, o]) => `<button type="button" class="zt-chip" data-focus="${esc(o.id)}">${d} ${esc(e.label || TYPE_LABEL[o.type] || '')}: ${esc(o.label)}</button>`).join('')}</div>` : ''}
 ${n.tasks?.length ? `<div class="zt-atlas-links"><small>Nhiệm vụ liên quan</small>${n.tasks.slice(0, 6).map(t => `<button type="button" class="zt-chip" data-jump-task="${esc(t.id)}">${esc(cut(t.名称, 10))}</button>`).join('')}</div>` : ''}

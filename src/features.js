@@ -25,7 +25,9 @@ export function buildWorldbook(rules) {
 export function ledgerSummary(v) {
     const s = v?.诸天系统; if (!s || typeof s !== 'object') return null;
     const tasks = s.任务库 && typeof s.任务库 === 'object' ? Object.values(s.任务库).filter(t => t && t.状态 !== '已完成' && t.状态 !== '已失败' && t.状态 !== 'Đã hoàn thành' && t.状态 !== 'Đã thất bại') : [];
-    return { points: s.系统点 ?? 0, world: s.当前世界 || '', tasks: tasks.length, task: tasks[0]?.名称 || '', currency: s.当前货币 || '', amount: s.持有金额 ?? '' };
+    const rawCur = String(s.当前货币 || '').trim();
+    const cur = /^(|暂无|无|none|chưa có|không)$/i.test(rawCur) ? '' : rawCur;
+    return { points: s.系统点 ?? 0, world: s.当前世界 || '', tasks: tasks.length, task: tasks[0]?.名称 || '', currency: cur, amount: s.持有金额 ?? '' };
 }
 
 

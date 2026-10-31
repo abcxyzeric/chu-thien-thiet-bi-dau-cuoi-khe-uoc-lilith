@@ -9,7 +9,7 @@
 .zt-fx.zt-fx-leave{animation:fx-out .2s ease-in forwards}
 .zt-fx-stage{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;pointer-events:none;max-width:86%}
 .zt-fx-svg{width:min(220px,46vw);height:auto;overflow:visible;fill:none;stroke:var(--fx-a);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--fx-a) 60%,transparent))}
-.zt-fx-title{font:700 28px/1.2 var(--zt-title-font,Georgia,"Songti SC",serif);color:var(--fx-ink);letter-spacing:.3em;text-indent:.3em;animation:fx-rise .5s .25s both;text-shadow:0 0 18px color-mix(in srgb,var(--fx-a) 70%,transparent)}
+.zt-fx-title{font:700 28px/1.2 var(--zt-title-font,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif);color:var(--fx-ink);letter-spacing:.3em;text-indent:.3em;animation:fx-rise .5s .25s both;text-shadow:0 0 18px color-mix(in srgb,var(--fx-a) 70%,transparent)}
 .zt-fx-detail{font-size:14px;color:var(--fx-g);animation:fx-rise .5s .45s both;max-width:36em}
 .zt-fx-skip{position:absolute;right:16px;bottom:14px;background:#00000066;border:1px solid #ffffff33;color:#fff;border-radius:999px;padding:5px 14px;font:inherit;font-size:12px;cursor:pointer}
 .zt-fx[data-grade=神品] .zt-fx-svg,.zt-fx[data-grade=禁忌] .zt-fx-svg,.zt-fx[data-grade="Thần phẩm"] .zt-fx-svg,.zt-fx[data-grade="Cấm kỵ"] .zt-fx-svg{stroke:var(--fx-g)}

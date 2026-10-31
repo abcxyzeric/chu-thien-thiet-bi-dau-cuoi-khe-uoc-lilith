@@ -5,7 +5,7 @@
     "assistant-v1.1.js": "70c88e981cd5284b7afe39d3a387a77309ad1575d06a4bb73428b7da47c193e1",
     "statusbar-v3.1.css": "5ccb62fe6e68aab3540baa7f3659a67acdb609f64021c577bec636c86601d999",
     "statusbar-v3.1-part1.js": "3098cc58964974b7eaea6061e213e35149b04f3249cd4ee0fef55060d33f1061",
-    "statusbar-v3.1-part2.js": "c170c8cfd230aacb72f192e835047dd4ad1b23d2fcddca372381782d386c4688",
+    "statusbar-v3.1-part2.js": "59a4c6c70aac88ba5ec22b70ec99be3334566a40736f5e8051b7fe41a6fdc8f3",
     "statusbar-v3.1-part3.js": "825d9b4b285266cf04e8ea76eaef0aa1a8961d6a6728c31707ad84cdb3bdfabe"
   },
   "extraction": "Original pure modules inside a private closure; old Tavern Helper adapter is not executed.",
