@@ -265,6 +265,7 @@ export class Hub {
         if (!silent) try { this.settings.set('hubPage', this.page); } catch { /* save failure already logged by Settings */ }
         this.shadow.host?.setAttribute?.('data-zt-page', this.page);
         this.onPage?.(this.page);
+        try { this.app.mobile?.showNav(); } catch { /* ignore */ }
     }
     open(page, opts = {}) {
         this.openedWith = page || null;          // 0.9.3: the first-run guide never replaces a page that was asked for

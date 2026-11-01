@@ -106,17 +106,50 @@ dialog[data-compact=true] .sidebar{overflow:visible!important}
 :host dialog[data-compact=true] .shell .sidebar .portrait{display:none!important}
 :host([data-zt-page="work"]) dialog[data-compact=true] .shell .sidebar .portrait,:host([data-zt-page="memory"]) dialog[data-compact=true] .shell .sidebar .portrait,:host([data-zt-page="rules"]) dialog[data-compact=true] .shell .sidebar .portrait{display:flex!important;aspect-ratio:auto;height:auto!important}
 dialog[data-compact=true] .zt-top-world{min-width:64px}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav{max-height:none;display:flex!important;gap:4px;overflow-x:auto!important;overflow-y:hidden;padding:6px 8px 10px!important;white-space:nowrap;scrollbar-width:thin!important;scrollbar-color:color-mix(in srgb,var(--zt-deco,#c59bee) 50%,transparent) transparent;cursor:grab;user-select:none}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav:active{cursor:grabbing}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar{height:5px!important;display:block!important}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-track{background:rgba(255,255,255,0.06);border-radius:3px}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--zt-deco,#c59bee) 50%,transparent);border-radius:3px}
-dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb:hover{background:var(--zt-deco,#c59bee)}
-dialog[data-compact=true] .zt-hub-top small{white-space:nowrap}
-dialog[data-compact=true] .zt-nav-group{margin:0;display:contents}
-dialog[data-compact=true] .zt-nav-title{display:none}
-dialog[data-compact=true] .zt-nav-items{display:flex;gap:4px}
-dialog[data-compact=true] .zt-hub-nav .nav-button{min-height:32px;padding:6px 10px!important;flex:none}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav{max-height:none;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;justify-content:flex-start!important;gap:4px!important;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch!important;padding:6px 8px 10px!important;width:100%!important;box-sizing:border-box!important;white-space:nowrap!important;scrollbar-width:thin!important;scrollbar-color:color-mix(in srgb,var(--zt-deco,#c59bee) 50%,transparent) transparent;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:pan-x}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav:active,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav:active,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav:active{cursor:grabbing}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav::-webkit-scrollbar,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav::-webkit-scrollbar{height:5px!important;display:block!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-track,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav::-webkit-scrollbar-track,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav::-webkit-scrollbar-track{background:rgba(255,255,255,0.06);border-radius:3px}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--zt-deco,#c59bee) 50%,transparent);border-radius:3px}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb:hover,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb:hover,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav::-webkit-scrollbar-thumb:hover{background:var(--zt-deco,#c59bee)}
+dialog[data-compact=true] .zt-hub-top small,
+dialog[data-zt-mobile=port] .zt-hub-top small,
+dialog[data-zt-mobile=""] .zt-hub-top small{white-space:nowrap}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .zt-nav-group,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .zt-nav-group,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .zt-nav-group{margin:0!important;padding:0!important;border:none!important;display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;flex:0 0 auto!important;flex-shrink:0!important;flex-grow:0!important;width:auto!important;min-width:max-content!important;max-width:none!important;gap:4px!important}
+dialog[data-compact=true] .zt-nav-title,
+dialog[data-zt-mobile] .zt-nav-title{display:none!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .zt-nav-items,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .zt-nav-items,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .zt-nav-items{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;align-items:center!important;flex:0 0 auto!important;flex-shrink:0!important;flex-grow:0!important;width:auto!important;min-width:max-content!important;max-width:none!important;margin:0!important;padding:0!important;border:none!important;gap:4px!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .nav-button,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .nav-button,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .nav-button{display:inline-flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;flex:0 0 auto!important;flex-shrink:0!important;flex-grow:0!important;width:auto!important;min-width:max-content!important;max-width:none!important;height:auto!important;min-height:44px!important;padding:6px 10px!important;border-radius:8px!important;gap:2px!important;box-sizing:border-box!important;text-align:center!important;cursor:pointer!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .nav-button svg,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .nav-button svg,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .nav-button svg{width:16px!important;height:16px!important;flex:none!important;margin:0 auto!important;display:block!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .nav-button span,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .nav-button span,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .nav-button span{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all!important;overflow-wrap:normal!important;display:block!important;text-align:center!important;font-size:11px!important;line-height:1.2!important;width:auto!important;min-width:max-content!important;max-width:none!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .nav-button em,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .nav-button em,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .nav-button em{display:none!important}
+dialog[data-compact=true] .sidebar nav.zt-hub-nav .nav-button[aria-selected=true]::before,
+dialog[data-zt-mobile=port] .sidebar nav.zt-hub-nav .nav-button[aria-selected=true]::before,
+dialog[data-zt-mobile=""] .sidebar nav.zt-hub-nav .nav-button[aria-selected=true]::before{display:none!important}
 dialog[data-compact=true] .zt-hub-top{gap:10px;padding:7px 12px}
 dialog[data-compact=true] .zt-top-res{gap:9px}
 dialog[data-compact=true] .zt-top-world{max-width:40%}
@@ -222,8 +255,9 @@ dialog[data-zt-mobile=port] .version-pill{display:none!important}
 dialog[data-zt-mobile] .window-tools{gap:2px!important}
 dialog[data-zt-mobile] .window-tools button{width:42px!important;height:42px!important;padding:12px!important;border-radius:10px}
 dialog[data-zt-mobile] .page-scroll,dialog[data-zt-mobile] .sidebar,dialog[data-zt-mobile] nav.zt-hub-nav,dialog[data-zt-mobile] .zt-hub-top,dialog[data-zt-mobile] .zt-g-log,dialog[data-zt-mobile] .zt-g-scroll{overscroll-behavior:contain}
-dialog[data-zt-mobile] .zt-hub-nav .nav-button{min-height:46px!important;min-width:48px;font-size:11px!important}
-dialog[data-zt-mobile] .zt-hub-nav .nav-button svg{width:17px;height:17px}
+dialog[data-zt-mobile] .zt-hub-nav .nav-button{min-height:44px!important;width:auto!important;min-width:max-content!important;flex:0 0 auto!important;flex-shrink:0!important;font-size:11px!important}
+dialog[data-zt-mobile] .zt-hub-nav .nav-button svg{width:16px!important;height:16px!important}
+dialog[data-zt-mobile] .zt-hub-nav .nav-button span{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;word-break:keep-all!important;display:block!important;text-align:center!important}
 dialog[data-zt-mobile] .zt-hub-top{min-height:0;padding-top:6px!important;padding-bottom:6px!important}
 dialog[data-zt-mobile] .statusbar{min-height:0!important;padding:6px 14px!important}
 dialog[data-zt-mobile] .zt-engine-tools{padding:6px 10px!important}
@@ -413,3 +447,186 @@ dialog[data-zt-mobile=land] nav.zt-hub-nav.zt-more-open .zt-nav-more{background:
 .zt-sw-table td small{display:block;color:var(--zt-muted);font-size:11px;line-height:1.5;margin-top:2px}
 .zt-sw-tag{display:inline-block;font-size:10.5px;border-radius:6px;padding:1px 6px;margin-left:6px;background:#f59e0b22;color:#fbbf24;vertical-align:1px}
 .zt-sw-sum{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+
+/* Mobile & Narrow Container Navigation Safety Net */
+@container (max-width: 720px) {
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 4px !important;
+        padding: 6px 8px 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        white-space: nowrap !important;
+        scrollbar-width: thin !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .zt-nav-group {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: max-content !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 4px !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .zt-nav-title {
+        display: none !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .zt-nav-items {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: max-content !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 4px !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: max-content !important;
+        height: auto !important;
+        min-height: 44px !important;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        gap: 2px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button svg {
+        width: 16px !important;
+        height: 16px !important;
+        flex: none !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button span {
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        display: block !important;
+        text-align: center !important;
+        font-size: 11px !important;
+        line-height: 1.2 !important;
+        width: auto !important;
+        min-width: max-content !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button em,
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button[aria-selected=true]::before {
+        display: none !important;
+    }
+}
+
+@media (max-width: 720px) {
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 4px !important;
+        padding: 6px 8px 10px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        white-space: nowrap !important;
+        scrollbar-width: thin !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .zt-nav-group {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: max-content !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 4px !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .zt-nav-title {
+        display: none !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .zt-nav-items {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: max-content !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        gap: 4px !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button {
+        display: inline-flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: max-content !important;
+        height: auto !important;
+        min-height: 44px !important;
+        padding: 6px 10px !important;
+        border-radius: 8px !important;
+        gap: 2px !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button svg {
+        width: 16px !important;
+        height: 16px !important;
+        flex: none !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button span {
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        word-break: keep-all !important;
+        overflow-wrap: normal !important;
+        display: block !important;
+        text-align: center !important;
+        font-size: 11px !important;
+        line-height: 1.2 !important;
+        width: auto !important;
+        min-width: max-content !important;
+    }
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button em,
+    dialog:not([data-zt-mobile=land]) .sidebar nav.zt-hub-nav .nav-button[aria-selected=true]::before {
+        display: none !important;
+    }
+}

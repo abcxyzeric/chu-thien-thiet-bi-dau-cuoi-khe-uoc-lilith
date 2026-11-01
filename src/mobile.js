@@ -133,11 +133,10 @@ export class MobileLayout {
     }
     /** The navigation strip / rail scrolls: keep the current page's button in sight (links jump to pages far down it). */
     showNav() {
-        if (!this.full) return;
         const nav = this.app.hub?.shell?.nav, b = nav?.querySelector('.nav-button[aria-selected=true]'); if (!b) return;
         const n = nav.getBoundingClientRect(), r = b.getBoundingClientRect();
         if (this.mode === 'land') { const box = nav.closest('.sidebar') || nav, s = box.getBoundingClientRect(); if (r.top < s.top || r.bottom > s.bottom) box.scrollTop += r.top - s.top - (s.height - r.height) / 2; }
-        else if (r.left < n.left || r.right > n.right) nav.scrollLeft += r.left - n.left - (n.width - r.width) / 2;
+        else if (nav.scrollWidth > nav.clientWidth && (r.left < n.left || r.right > n.right)) nav.scrollLeft += r.left - n.left - (n.width - r.width) / 2;
     }
     /** A text field inside the terminal / private chat has the focus. */
     typing() {
