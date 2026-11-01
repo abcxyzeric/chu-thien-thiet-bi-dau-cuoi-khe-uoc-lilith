@@ -53,6 +53,22 @@ const PATCHES = [
     { comment: '11｜Thương thành｜Hộp Mù Vạn Giới', since: '1.1.1',
       from: 'Rút ra Thần phẩm chỉ ghi nhận số lần, không đặt lại bảo hiểm Tiên phẩm. Phẩm giai Cấm kỵ tuyệt đối không thể rút ra từ hộp mù.',
       to: 'Rút ra Thần phẩm không đặt lại bảo hiểm Tiên phẩm; khi liên tiếp 1000 lượt chưa ra Thần phẩm thì lượt thứ 1000 chắc chắn ra Thần phẩm (đặt lại bảo hiểm Thần phẩm, bảo hiểm Tiên phẩm vẫn cộng dồn bình thường). Phẩm giai Cấm kỵ tuyệt đối không thể rút ra từ hộp mù.' },
+    // Điều chỉnh điểm thưởng nhiệm vụ & thang độ khó
+    { comment: '06｜Cốt lõi｜Nhiệm vụ hệ thống',
+      from: '🎁 **Phần thưởng dự kiến**: 1000 Điểm Hệ Thống',
+      to: '🎁 **Phần thưởng dự kiến**: 3000 Điểm Hệ Thống' },
+    { comment: '06｜Cốt lõi｜Nhiệm vụ hệ thống',
+      from: '"奖励":"8000 Điểm Hệ Thống"',
+      to: '"奖励":"24000 Điểm Hệ Thống"' },
+    { comment: '06｜Cốt lõi｜Nhiệm vụ hệ thống',
+      from: '"奖励":"100 Điểm Hệ Thống"',
+      to: '"奖励":"300 Điểm Hệ Thống"' },
+    { comment: '06｜Cốt lõi｜Nhiệm vụ hệ thống',
+      from: '"结算点数":100',
+      to: '"结算点数":300' },
+    { comment: '06｜Cốt lõi｜Nhiệm vụ hệ thống',
+      from: '  - Đánh giá độ khó nhiệm vụ: Đơn giản, Bình thường, Nguy hiểm, Chí mạng, Cửu tử nhất sinh\n  - Phần thưởng dự kiến của nhiệm vụ:',
+      to: '  - Đánh giá độ khó nhiệm vụ: Đơn giản, Bình thường, Nguy hiểm, Chí mạng, Cửu tử nhất sinh\n  - Thang điểm thưởng khuyến nghị theo độ khó (tránh cho quá ít):\n    * Đơn giản / Nhỏ nhặt (việc vặt, đối thoại, tuyến phụ ngắn hạn): 300 – 500 Điểm Hệ Thống\n    * Bình thường / Cốt truyện thường: 1,000 – 3,000 Điểm Hệ Thống\n    * Nguy hiểm / Cao trào, chiến đấu gay cấn: 5,000 – 10,000 Điểm Hệ Thống\n    * Chí mạng / Trùm thế giới, chuyển biến vận mệnh lớn: 20,000 – 50,000 Điểm Hệ Thống\n    * Cửu tử nhất sinh / Nhiệm vụ chính dài hạn thay đổi toàn cục: 24,000 – 100,000+ Điểm Hệ Thống\n  - Phần thưởng dự kiến của nhiệm vụ:' },
 ];
 
 const GROUP_RULE = `<rule_setting_simple>

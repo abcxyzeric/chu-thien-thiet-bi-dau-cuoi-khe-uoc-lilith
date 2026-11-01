@@ -5,7 +5,7 @@
     "assistant-v1.1.js": "70c88e981cd5284b7afe39d3a387a77309ad1575d06a4bb73428b7da47c193e1",
     "statusbar-v3.1.css": "5ccb62fe6e68aab3540baa7f3659a67acdb609f64021c577bec636c86601d999",
     "statusbar-v3.1-part1.js": "3098cc58964974b7eaea6061e213e35149b04f3249cd4ee0fef55060d33f1061",
-    "statusbar-v3.1-part2.js": "5c1756faba78e82d9db14806ae99a85058b45d713932e7223d0365340e295d9c",
+    "statusbar-v3.1-part2.js": "d9fc54fd5747d385b1bcd51ae004dcfa0b70fd4be355f0e20bff82fca9bf724f",
     "statusbar-v3.1-part3.js": "825d9b4b285266cf04e8ea76eaef0aa1a8961d6a6728c31707ad84cdb3bdfabe"
   },
   "extraction": "Original pure modules inside a private closure; old Tavern Helper adapter is not executed.",
@@ -37,7 +37,7 @@
     "derivedFrom": "regex 诸天万界最强系统状态栏 3.1 (online import, findRegex /<ZhuTianPanel>([\\s\\S]*?)<\\/ZhuTianPanel>/gm) replaceString",
     "sourceReplaceStringSha256": "8b2ff49126185ad169f86cc2c7added3c3ae35ac0dbf7a19b0262a73c1758d9e",
     "transform": "strip ```html fence; replace the 4 pinned jsDelivr @7609dd1 URLs with __ZT_VENDOR__/ (same bytes as the vendored part files); $1 kept as the single panel slot",
-    "sha256": "d21c45a18be648285ba6a2baee769020f341b33f1ec9b62f1377455db78b6188",
+    "sha256": "21ddc19d898f3ad4667b60f6ff2f8ebc88655bea0b1962143717554bfd273657",
     "note": "The import JSON itself is local-only and is not uploaded."
   },
   "assistantWrapperAdaptation": "0.8.4: the assistant factory prefix also binds `setTimeout` to env.setTimeout (host timer). Original sections stay byte-for-byte; the host uses it only to stretch the four fixed 60 s request aborts to the user's 独立 API 超时 setting.",

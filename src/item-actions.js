@@ -21,7 +21,7 @@ export function recycleValue(it) {
 /** Original Giữ lại row: the fields the 3.1 handler copied, with the same defaults. */
 export function keptItem(r) {
     const g = L.normGradeKey(r.品级) || '凡品';
-    return { 名称: r.名称, 品级: g, 来源: r.来源 || '盲盒', 价格: num(r.价格) || L.TIER_PRICE[g] || 100, 分类: r.分类 || '其他', 效果: r.效果 || '' };
+    return { 名称: r.名称, 品级: g, 来源: r.来源 || 'Hộp mù', 价格: num(r.价格) || L.TIER_PRICE[g] || 100, 分类: r.分类 || '其他', 效果: r.效果 || '' };
 }
 
 /** Button → plan, read from the ledger as the player sees it. Pure apart from reading `button` / `doc`. */

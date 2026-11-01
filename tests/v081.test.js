@@ -50,7 +50,7 @@ test('bridge.listModels: direct blocked → ST status relay, bare domain also tr
 
 test('入群费: own curve starting at 300; budget picks the highest affordable tier', () => {
     assert.equal(RECRUIT_FEE, 100);
-    assert.deepEqual(JOIN_PRICE.slice(1, 4), [300, 1500, 6000]);
+    assert.deepEqual(JOIN_PRICE.slice(1, 4), [300, 1000, 3000]);
     assert.ok(JOIN_PRICE[7] < 1e8, 'no more billions for a 星系级 member');
     assert.equal(affordableTier(0), 1); assert.equal(affordableTier(450), 1); assert.equal(affordableTier(1600), 2); assert.equal(affordableTier(5e8), 8);
 });
@@ -61,7 +61,7 @@ test('random recruit: genre and target tier drawn locally, never above budget, r
     const a = recruitPrompt(g, { mode: 'rand', budget: 400, maxTier: affordableTier(400), rand: () => seq[r++] });
     assert.equal(a.target, 1); assert.match(a.text, /Bắt buộc phải là 1/); assert.match(a.text, /【Không được chọn】叶清寒, 孙悟空/);
     const b = recruitPrompt(g, { mode: 'rand', budget: 1e6, maxTier: affordableTier(1e6), rand: () => seq[r++] });
-    assert.ok(b.target >= 3 && b.target <= 5, String(b.target)); assert.notEqual(a.seed, b.seed);
+    assert.ok(b.target >= 3 && b.target <= 6, String(b.target)); assert.notEqual(a.seed, b.seed);
     const prompts = new Set(Array.from({ length: 20 }, () => recruitPrompt(g, { budget: 1e6, maxTier: 5 }).text));
     assert.ok(prompts.size > 3, 'consecutive random recruits send different prompts');
     const c = recruitPrompt(g, { mode: 'char', hint: '孙悟空', budget: 100, maxTier: 1 });
@@ -88,7 +88,7 @@ test('story prompt carries the real source of what came through the group', () =
 
 test('worldbook: original 35 kept, outdated admin/TH notes patched, 聊天群 entry added', () => {
     const base = original.ZhuTianBuiltinRules, { rules, applied, skipped } = latestRules(base);
-    assert.equal(base.length, 35); assert.equal(rules.length, 36); assert.equal(skipped.length, 0); assert.equal(applied.length, 4);   // 1.1.1: +2 神品保底
+    assert.equal(base.length, 35); assert.equal(rules.length, 36); assert.equal(skipped.length, 0); assert.equal(applied.length, 9);   // 1.1.5: +5 điểm thưởng nhiệm vụ & thang độ khó
     const e05 = rules.find(r => r.comment === '05｜Cốt lõi｜Bổ sung quy tắc thanh trạng thái').content;
     assert.ok(!e05.includes('bấm liên tiếp 5 lần vào biểu tượng ◆') && e05.includes('Bảng điều khiển Quản trị viên」') && e05.includes('không cần Tavern Helper'));
     const g = rules[35]; assert.equal(g.comment, '36｜Liên kết｜Nhóm Chat Chư Thiên (Tiện ích)'); assert.equal(g.uid, 35); assert.equal(g.constant, true);

@@ -1321,7 +1321,7 @@ Thế giới ngẫu nhiên sẽ chọn phạm vi thực lực phù hợp theo Đ
 | Từ bỏ | Bỏ ứng viên hiện tại | Không hoàn lại 100 điểm đã phát hành thành công; lần chiêu mộ sau sẽ đổi ứng viên khác |
 | Mở rộng +5 · Số_tiền điểm | Trả (Dung lượng hiện tại × 1000) Điểm Hệ Thống | Dung lượng tăng thêm 5, ban đầu 5 người, tối đa 30 người |
 
-Phí vào nhóm lần lượt là: Bậc 1: 300, Bậc 2: 1500, Bậc 3: 6000, Bậc 4: 30000, Bậc 5: 200000, Bậc 6: 2000000, Bậc 7: 30000000, Bậc 8: 500000000 Điểm Hệ Thống. Lần mở rộng đầu tiên là 5000 điểm, từ dung lượng 10 người mở rộng tiếp là 10000 điểm và các lần sau cũng tăng dần theo dung lượng, không nên hiểu 5000 điểm là mức phí cố định mãi mãi.
+Phí vào nhóm lần lượt là: Bậc 1: 300, Bậc 2: 1000, Bậc 3: 3000, Bậc 4: 10000, Bậc 5: 50000, Bậc 6: 500000, Bậc 7: 30000000, Bậc 8: 500000000 Điểm Hệ Thống. Lần mở rộng đầu tiên là 5000 điểm, từ dung lượng 10 người mở rộng tiếp là 10000 điểm và các lần sau cũng tăng dần theo dung lượng, không nên hiểu 5000 điểm là mức phí cố định mãi mãi.
 
 ### 29.2 Triệu hồi từ Sách Thế Giới
 

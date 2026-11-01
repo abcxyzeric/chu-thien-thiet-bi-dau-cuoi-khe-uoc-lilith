@@ -220,7 +220,9 @@ test('1.1.5 说明书: title version, persona / switches chapters and the worldb
 
 // ---------- 1.1.5 self-check fixes ----------
 import { aliasNote } from '../src/persona.js';
-import { dropGroupRule, GROUP_RULE_COMMENT, HubGroup } from '../src/hub-group.js';
+import { dropGroupRule, GROUP_RULE_COMMENT, HubGroup, JOIN_PRICE } from '../src/hub-group.js';
+import { latestRules } from '../src/worldbook.js';
+import original from '../vendor/original/runtime.js';
 import { voiceSourceFor } from '../src/voice-box.js';
 import { Bridge } from '../src/th-bridge.js';
 import { identity, STORAGE } from '../src/contracts.js';
@@ -283,4 +285,28 @@ test('1.1.5 self-check: a group round is marked busy BEFORE the worldbook read (
         assert.equal(g.busy, '', 'busy cleared afterwards');
         assert.deepEqual(disk.variables.诸天系统.聊天群.消息.map(m => m.text), ['在']);
     } finally { for (const [k, d] of keep) d ? Object.defineProperty(globalThis, k, d) : delete globalThis[k]; }
+});
+
+test('1.1.5 economics & farm & task balance: join prices, farm turns, task rewards', () => {
+    // 1. Join prices: tier 4 (Nami) is 10,000 instead of 30,000
+    assert.deepEqual(JOIN_PRICE, [0, 300, 1000, 3000, 10000, 50000, 500000, 3e7, 5e8]);
+
+    // 2. Task rewards in worldbook
+    const { rules } = latestRules(original.ZhuTianBuiltinRules);
+    const r06 = rules.find(r => r.comment === '06｜Cốt lõi｜Nhiệm vụ hệ thống');
+    assert.ok(r06.content.includes('"奖励":"24000 Điểm Hệ Thống"'), 'long-term main task reward increased to 24,000');
+    assert.ok(r06.content.includes('"奖励":"300 Điểm Hệ Thống"'), 'short-term side task reward increased to 300');
+    assert.ok(r06.content.includes('"结算点数":300'), 'task settlement points increased to 300');
+    assert.ok(r06.content.includes('🎁 **Phần thưởng dự kiến**: 3000 Điểm Hệ Thống'), 'popup expected points increased to 3,000');
+    assert.ok(r06.content.includes('Thang điểm thưởng khuyến nghị theo độ khó'), 'difficulty guidance included');
+
+    // 3. Farm turns & translation in statusbar-v3.1-part2.js
+    const p2 = readFileSync(new URL('../vendor/original/statusbar-v3.1-part2.js', import.meta.url), 'utf8');
+    assert.ok(p2.includes('"凡品":{cost:5,turns:1'), 'fan turns is 1');
+    assert.ok(p2.includes('"灵品":{cost:500,turns:2'), 'ling turns is 2');
+    assert.ok(p2.includes('"仙品":{cost:5e5,turns:3'), 'xian turns is 3');
+    assert.ok(p2.includes('"神品":{cost:5e6,turns:5'), 'shen turns is 5');
+    assert.ok(p2.includes('zt-farm-boost') && p2.includes('⚡ Thúc chín'), 'instant harvest button wired');
+    assert.ok(p2.includes('ZT_SRC_LABELS') && p2.includes('"盲盒":"Hộp mù"'), 'source dictionary wired');
+    assert.ok(p2.includes('ztSrcLabel(String(e.来源))'), 'item detail translates source');
 });

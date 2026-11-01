@@ -21,10 +21,10 @@ export function foldGrades(count) { return count >= 100 ? ['凡品', '灵品'] :
 /** One 待处理 row standing for `n` folded pulls of `grade` — worth exactly n single items (price × 数量). Pure. */
 export function foldedRow(grade, n) {
     const gl = L.gradeLabel(grade);
-    return { 名称: `Tạp vật ${gl}`, 品级: grade, 分类: '其他', 效果: `${n} món vật tư lẻ tẻ ${gl} mở ra từ hộp mù lần này (Gộp cổ điển: gộp bản ghi, không tạo từng món)`, 来源: '盲盒', 价格: L.TIER_PRICE[grade], 数量: n };
+    return { 名称: `Tạp vật ${gl}`, 品级: grade, 分类: '其他', 效果: `${n} món vật tư lẻ tẻ ${gl} mở ra từ hộp mù lần này (Gộp cổ điển: gộp bản ghi, không tạo từng món)`, 来源: 'Hộp mù', 价格: L.TIER_PRICE[grade], 数量: n };
 }
 /** A generated product as a 待处理 row. Pure. */
-export const pendingRow = it => ({ 名称: it.name, 品级: it.grade, 分类: it.category, 效果: `${it.effect} (Nguồn: ${it.world}; ${it.origin})`, 来源: '盲盒', 价格: L.TIER_PRICE[it.grade], 数量: 1 });
+export const pendingRow = it => ({ 名称: it.name, 品级: it.grade, 分类: it.category, 效果: `${it.effect} (Nguồn: ${it.world}; ${it.origin})`, 来源: 'Hộp mù', 价格: L.TIER_PRICE[it.grade], 数量: 1 });
 /** Was this model answer cut off? finish_reason length / max_tokens, or a JSON array that never closes. Pure. */
 export function looksTruncated(text, finish = '') {
     if (/^(length|max_tokens)$/i.test(String(finish || ''))) return true;

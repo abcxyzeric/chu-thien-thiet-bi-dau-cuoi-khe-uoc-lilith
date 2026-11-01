@@ -40,7 +40,7 @@ export async function planOperation(vars,chat,kind,index){
   // Same original buy handler rules: reputation discount, ceil, one unit, stable sold flag.
   if(forbidden){s.专属资源.因果筹码--;for(const p of Object.values(s.面板账本||{}))if(p?.snap?.专属资源)p.snap.专属资源.因果筹码=Math.max(0,(Number(p.snap.专属资源.因果筹码)||0)-1);}
   s.系统点-=price;s.累计消费=(k.toNum(s.累计消费)||0)+price;s.界面记账时间=Date.now();
-  bagAdd(s,{名称:item.名称,品级:normGradeKey(item.品阶)||'凡品',来源:'商城',价格:price,分类:item.分类||'其他',效果:item.效果||''},1);item.已购=true;
+  bagAdd(s,{名称:item.名称,品级:normGradeKey(item.品阶)||'凡品',来源:'Thương thành',价格:price,分类:item.分类||'其他',效果:item.效果||''},1);item.已购=true;
   title='Vạn Giới Thương Thành · Mua hàng';detail=`${item.名称} ×1; giá gốc ${item.价格}; giảm giá Danh Vọng ${discount}%; thực trả ${price} Điểm Hệ Thống${forbidden?', trả thêm 1 Nhân Quả Trù Mã một lần duy nhất, sau khi nhận không có giới hạn sử dụng':''}.`;
  }else if(['use','recycle'].includes(kind)){
   const item=s.背包?.[index];if(!item)throw Error('Mục trong túi đồ đã thay đổi.');

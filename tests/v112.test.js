@@ -28,7 +28,7 @@ test('1.1.2 fold thresholds: <50 nothing, ≥50 凡品, ≥100 凡品 + 灵品; 
 });
 test('1.1.2 a folded row is worth exactly its single items (price × 数量 → 回收 / 分解 unchanged)', () => {
     const r = foldedRow('灵品', 37);
-    assert.deepEqual([r.名称, r.品级, r.数量, r.价格, r.来源], ['Tạp vật Linh phẩm', '灵品', 37, TIER_PRICE.灵品, '盲盒']);
+    assert.deepEqual([r.名称, r.品级, r.数量, r.价格, r.来源], ['Tạp vật Linh phẩm', '灵品', 37, TIER_PRICE.灵品, 'Hộp mù']);
     assert.equal(recycleValue(r) * r.数量, recycleValue({ 品级: '灵品', 价格: TIER_PRICE.灵品 }) * 37);
 });
 

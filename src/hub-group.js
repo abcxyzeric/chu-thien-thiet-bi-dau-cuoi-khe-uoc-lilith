@@ -27,7 +27,7 @@ export const POINTS_CAP_BY_SHOP = [0, 2000, 20000, 200000, 2e6, 2e7];
 export const QTY_CAP = { 凡品: 5, 灵品: 5, 仙品: 2, 神品: 1, 禁忌: 0 };
 export const RECRUIT_FEE = 100;
 // Phí vào nhóm (0.8.1): đường cong giá riêng. Bản 0.6–0.8 dùng chung giá Sao chép Thần thông (1e3…1e11) nên thành viên cấp Tinh hệ tốn hàng tỷ điểm.
-export const JOIN_PRICE = [0, 300, 1500, 6000, 30000, 200000, 2e6, 3e7, 5e8];
+export const JOIN_PRICE = [0, 300, 1000, 3000, 10000, 50000, 500000, 3e7, 5e8];
 /** Highest 实力档 whose 入群费 fits the budget (at least 1). */
 export function affordableTier(points) { let t = 1; for (let i = 1; i < JOIN_PRICE.length; i++) if (JOIN_PRICE[i] <= num(points)) t = i; return t; }
 // Inspiration for random recruits, picked locally so two recruits never send the model the same prompt.

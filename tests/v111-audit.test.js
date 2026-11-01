@@ -121,7 +121,7 @@ test('audit #1: 保留 / 分解 / 品阶分解 / 全部保留 / 回收 are one p
     // a stale index finds the identical row, never a look-alike
     z = fresh(); plan = planFromButton(btn('btn-keep-item', { idx: '2' }), z); z.待处理物品.unshift({ 名称: '新', 品级: '凡品', 数量: 1 });
     applyItemPlan(z, plan); assert.equal(z.背包.at(-1).名称, '果');
-    assert.deepEqual(keptItem({ 名称: 'x', 品级: '灵品' }), { 名称: 'x', 品级: '灵品', 来源: '盲盒', 价格: 1e4, 分类: '其他', 效果: '' });
+    assert.deepEqual(keptItem({ 名称: 'x', 品级: '灵品' }), { 名称: 'x', 品级: '灵品', 来源: 'Hộp mù', 价格: 1e4, 分类: '其他', 效果: '' });
     assert.equal(ITEM_BUTTONS.split(',').length, 5);
 });
 function commerceApp({ failSaveAfter = Infinity, uncertainOnFail = true } = {}) {

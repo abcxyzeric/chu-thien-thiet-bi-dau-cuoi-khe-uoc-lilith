@@ -91,7 +91,7 @@ test('floating Lilith: auto = touch or narrow; on / off are forced', () => {
 
 test('red packet total is capped by the member’s own 入群费 (no money printer)', () => {
     assert.equal(packetCap(1, 5), JOIN_PRICE[1]);
-    assert.equal(packetCap(2, 5), 1500);
+    assert.equal(packetCap(2, 5), 1000);
     assert.equal(packetCap(6, 1), 2000, 'shop Lv1 cap still applies');
     const r = parseGroupReply('@甲: [红包] 系统点 999999 3 | 拿去', [{ id: 'm1', 名称: '甲', 世界: '某界', 档: 1 }], { shop: 3 });
     assert.equal(r[0].packet.amount, 300); assert.equal(r[0].packet.downgraded, true);
