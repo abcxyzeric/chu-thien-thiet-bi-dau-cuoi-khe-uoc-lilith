@@ -133,7 +133,7 @@ export function buildTree(z, plugins = { off: [], custom: [] }) {
 }
 
 // ---------- the pages ----------
-const PAGES = [['events', 'Dòng sự kiện', 'task'], ['bonds', 'Sơ đồ ràng buộc', 'heart'], ['stars', 'Tinh đồ', 'atlas'], ['tree', 'Cây năng lực', 'lotus']];
+const PAGES = [['events', 'Dòng sự kiện', 'task'], ['bonds', 'Sơ đồ', 'heart'], ['stars', 'Tinh đồ', 'atlas'], ['tree', 'Cây năng lực', 'lotus']];
 const HINT = {
     events: 'Chưa có bản ghi nhiệm vụ nào. Sau khi AI phát hành nhiệm vụ, nơi này sẽ vẽ theo từng tầng: Khởi nguồn → Nhiệm vụ → Quyết toán.',
     bonds: 'Hiện chỉ có bạn và Lilith. Sau khi khóa mục tiêu ràng buộc, triệu hồi tay đấm hoặc mời thành viên nhóm chat sẽ xuất hiện tại đây (thành viên nhóm có thể bấm 「Kéo vào Ràng buộc」 ngay tại đây).',
@@ -149,7 +149,7 @@ export class HubAtlas {
     ledger() { try { const z = this.app.bridge.getVariables({ type: 'chat' })?.诸天系统; return z && typeof z === 'object' ? z : null; } catch { return null; } }
     start() {
         const hub = this.hub; if (!hub) return this;
-        for (const [id, label, ic] of PAGES) hub.addNav('Đồ phổ', id, label, ic, { title: label, render: el => { this.els[id] = el; this.paint(id, true); } });
+        for (const [id, label, ic] of PAGES) hub.addNav('Đồ phổ', id, label, ic, { title: id === 'bonds' ? 'Sơ đồ ràng buộc' : label, render: el => { this.els[id] = el; this.paint(id, true); } });
         const repaint = () => { const p = hub.page; if (hub.isOpen && this.els[p]) this.paint(p); };
         this.disposers.push(this.app.bridge.onChange(k => { if (k === 'chat') repaint(); }));
         this.disposers.push(this.app.adapter.subscribe(() => { this.sel = {}; repaint(); }));

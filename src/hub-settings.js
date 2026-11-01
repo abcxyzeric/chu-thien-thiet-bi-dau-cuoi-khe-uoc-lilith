@@ -123,9 +123,10 @@ export class HubSettings {
             if (it.type === 'switch') return `<label class="zt-switch"><input type="checkbox" data-k="${it.k}" ${v !== false && v ? 'checked' : ''} aria-label="${esc(it.label)}"><i></i></label>`;
             if (it.type === 'select') return `<select data-k="${it.k}" aria-label="${esc(it.label)}">${it.options.map(([val, t]) => `<option value="${val}" ${String(v) === val ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>`;
             if (it.type === 'number') return `<input type="number" data-k="${it.k}" min="${it.min}" max="${it.max}" value="${esc(v)}" aria-label="${esc(it.label)}">`;
-            return `<button type="button" class="zt-btn ${it.cls || ''}" data-act="${it.id}">${esc(it.label.replace(/…$/, ''))}${it.label.endsWith('…') ? ' ›' : ''}</button>`;
+            const btnText = it.cls === 'danger' ? 'Thực hiện' : it.label.endsWith('…') ? 'Mở ›' : 'Thực hiện';
+            return `<button type="button" class="zt-btn ${it.cls || ''}" data-act="${it.id}">${btnText}</button>`;
         };
-        const row = it => `<div class="zt-row" data-search="${esc((it.label + ' ' + (it.desc || '')).toLowerCase())}"><span>${it.type === 'action' ? `<b style="font-weight:500">${esc(it.label.replace(/…$/, ''))}</b>` : esc(it.label)}${it.desc ? `<span class="zt-desc">${esc(it.desc)}</span>` : ''}</span>${control(it)}</div>`;
+        const row = it => `<div class="zt-row zt-row-${it.type}" data-search="${esc((it.label + ' ' + (it.desc || '')).toLowerCase())}"><span>${it.type === 'action' ? `<b style="font-weight:500">${esc(it.label.replace(/…$/, ''))}</b>` : esc(it.label)}${it.desc ? `<span class="zt-desc">${esc(it.desc)}</span>` : ''}</span>${control(it)}</div>`;
         const grid = secs => `<div class="zt-grid2">${secs.map(sec => `<section class="zt-card"><h3>${esc(sec.title)}${sec.sub ? ` <small>${esc(sec.sub)}</small>` : ''}</h3>${sec.items.map(row).join('')}</section>`).join('')}</div>`;
         const all = this.sections();
         const groups = SETTING_GROUPS.map(([tier, title]) => {

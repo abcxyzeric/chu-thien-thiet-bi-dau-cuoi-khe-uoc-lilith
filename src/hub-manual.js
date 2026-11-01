@@ -75,7 +75,7 @@ export class HubManual {
     get hub() { return this.app.hub; }
     start() {
         const hub = this.hub; if (!hub) return this;
-        hub.addNav('Thiết bị đầu cuối', 'man', 'Sách hướng dẫn', 'book', { title: 'Sách hướng dẫn', render: el => this.render(el) });
+        hub.addNav('Thiết bị đầu cuối', 'man', 'Hướng dẫn', 'book', { title: 'Sách hướng dẫn', render: el => this.render(el) });
         return this;
     }
     dispose() { /* the hub removes its pages and buttons */ }

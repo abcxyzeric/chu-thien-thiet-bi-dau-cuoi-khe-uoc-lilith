@@ -32,7 +32,7 @@ const PRACTICE_MAX = 2;
 const num = (x, d = 0) => { const n = Number(String(x ?? '').replace(/[,，\s]/g, '')); return Number.isFinite(n) ? n : d; };
 
 // ---------- pure helpers (same rules as the original engine) ----------
-export const normName = t => String(t || '').replace(/[（(【\[〔][^）)】\]〕]*[）)】\]〕]/g, '').replace(/[「」《》“”"'\s]/g, '').trim();
+export const normName = t => String(t || '').replace(/[（(【\[〔][^）)】\]〕]*[）)】\]〕]/g, '').replace(/[「」《》“”"']/g, '').replace(/\s+/g, ' ').trim();
 export const normGrade = t => {
     const s = String(t || '').trim();
     const low = s.toLowerCase();

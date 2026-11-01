@@ -42,7 +42,7 @@ export class OperationRecords {
     start() {
         const sb = this.app.statusbar; if (sb) { const prev = sb.enhanceFrame, enhance = (f, d) => { prev?.(f, d); this.mount(f, d); }; sb.enhanceFrame = enhance; this.off.push(() => { if (sb.enhanceFrame === enhance) sb.enhanceFrame = prev; }); }
         this.app.hub?.hook('onEngine', (frame, doc) => this.mount(frame, doc));
-        this.app.hub?.addNav('Giao dịch', 'records', 'Nhật ký thao tác', 'flag', { title: 'Nhật ký thao tác cục bộ', render: el => {
+        this.app.hub?.addNav('Giao dịch', 'records', 'Nhật ký', 'flag', { title: 'Nhật ký thao tác cục bộ', render: el => {
             const rows = this.app.adapter.ledger()?.操作日志 || [];
             el.innerHTML = `<h3>Nhật ký thao tác cục bộ</h3><p class="zt-note">100 mục gần nhất, chỉ dùng để đối chiếu, không tự động gửi cho mô hình. Đây không phải nơi hoàn tác giao dịch.</p>${rows.slice().reverse().map(r => `<article class="zt-card"><small>${esc(new Date(r.at).toLocaleString())} · ${esc(r.kind)}</small><p>${esc(r.text)}</p></article>`).join('') || '<p>Chưa có nhật ký.</p>'}`;
         } }); return this;

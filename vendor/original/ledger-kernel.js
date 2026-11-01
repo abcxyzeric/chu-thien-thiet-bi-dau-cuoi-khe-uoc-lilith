@@ -26,7 +26,7 @@ function ztGetPath(t,e){if(ztSafePath(e))return String(e).split(".").reduce((t,e
 function ztSetPath(t,e,n){if(!ztSafePath(e))return;const r=String(e).split(".");let s=t;for(let t=0;t<r.length-1;t++)s[r[t]]&&"object"==typeof s[r[t]]||(s[r[t]]={}),s=s[r[t]];void 0===n?delete s[r[r.length-1]]:s[r[r.length-1]]=n}
 function ztNormGrade(t){const s=String(t||"").toLowerCase();return s.indexOf("禁")>=0||s.indexOf("cấm kỵ")>=0||s.indexOf("cam ky")>=0?"禁忌":s.indexOf("神")>=0||s.indexOf("thần")>=0||s.indexOf("than pham")>=0?"神品":s.indexOf("仙")>=0||s.indexOf("tiên")>=0||s.indexOf("tien pham")>=0?"仙品":s.indexOf("灵")>=0||s.indexOf("linh")>=0?"灵品":s.indexOf("凡")>=0||s.indexOf("phàm")>=0||s.indexOf("pham")>=0?"凡品":""}
 function ztGradeOfCap(t){return t>=1e4?"神品":t>=2e3?"仙品":t>=500?"灵品":"凡品"}
-function ztNormName(t){return String(t||"").replace(/[（(【\[〔][^）)】\]〕]*[）)】\]〕]/g,"").replace(/[「」《》“”"'\s]/g,"").trim()}
+function ztNormName(t){return String(t||"").replace(/[（(【\[〔][^）)】\]〕]*[）)】\]〕]/g,"").replace(/[「」《》“”"']/g,"").replace(/\s+/g," ").trim()}
 function ztParsePanel(t){const e={};let n=null;if(String(t||"").replace(/\r/g,"").split("\n").forEach(function(t){const r=t.match(/^\s*[-*•]?\s*([^:：\n]{2,28}?)\s*[:：]\s*(.*)$/),k=r&&(ZT_FIELDS.indexOf(r[1].trim())>=0?r[1].trim():ZT_FIELD_ALIASES[r[1].trim()]);k?(n=k,e[n]=r[2].trim()):n&&t.trim()&&(e[n]+="\n"+t.trim())}),e["系统播报"]){const t=e["系统播报"].match(/(?:(?:专属)?资源|Tài nguyên(?:\s*độc quyền)?)\s*[:：]\s*((?:天命印记|血脉结晶|因果筹码|名望|岁月沉淀|Ấn Ký Thiên Mệnh|Kết Tinh Huyết Mạch|Chip Nhân Quả|Danh Vọng|Năm Tháng Lắng Đọng)[^\n]*)/i);t&&(e["专属资源"]||(e["专属资源"]=t[1]),e["系统播报"]=e["系统播报"].replace(t[0],"").trim())}return e["资源"]&&!e["专属资源"]&&(e["专属资源"]=e["资源"]),e}
 function ztIsEmpty(t){return null==t||/^\s*(暂无任务|无任务|暂无|无|没有|Chưa có nhiệm vụ|Không có nhiệm vụ|Chưa có|Không có|Không|Trống|—|-|0\/0|null|undefined)?\s*$/i.test(String(t))}
 function ztRes(t){const e=t&&"object"==typeof t["专属资源"]&&t["专属资源"]?t["专属资源"]:{},n={};return ZT_RES_KEYS.forEach(function(t){n[t]=Math.max(0,Math.floor(ztNum(e[t]??e[ZT_RES_LABELS[t]],0)))}),n}
@@ -37,7 +37,7 @@ function ztDiscount(t){return Math.min(30,Math.floor(ztRes(t)["名望"]/1e3))}
 function ztTier(t,e,n){return Math.max(1,Math.min(8,Math.floor(ztNum(t[e],n))))}
 function ztFixSkill(t){t.名称=String(t.名称||"Công pháp vô danh").trim();const e=Math.floor(ztNum(t.上限,0)),n=ztNormGrade(t.品阶)||(e?ztGradeOfCap(e):"凡品");return t.品阶=n,t.上限=e>0?e:ZT_GRADE_CAP[n],t.熟练度=Math.max(0,Math.floor(ztNum(t.熟练度,0))),t}
 function ztLib(t){return Array.isArray(t["功法库"])||(t["功法库"]=[]),t["功法库"].forEach(ztFixSkill),t["功法库"]}
-function ztFindSkill(t,e){const n=ztNormName(e);return n&&t.find(function(t){return ztNormName(t.名称)===n})||null}
+function ztFindSkill(t,e){const n=ztNormName(e);return n&&t.find(function(t){const a=ztNormName(t.名称);return a===n||a.toLowerCase().replace(/\s+/g,"")===n.toLowerCase().replace(/\s+/g,"")})||null}
 function ztStageOf(t){if(!t)return"未入门";if(t.入道)return"入道";const e=Math.min(t.熟练度,1e4);return e>=1e4?"宗师":e>=2e3?"精通":e>=500?"熟练":e>=100?"入门":"未入门"}
 function ztNextTarget(t){const e={"未入门":100,"入门":500,"熟练":2e3,"精通":1e4}[ztStageOf(t)];return e?e>t.上限?null:e:null}
 function ztSetMain(t,e){t["功法"]={"名称":e.名称,"品阶":e.品阶,"境界":ztStageOf(e),"熟练度":e.熟练度,"上限":e.上限}}

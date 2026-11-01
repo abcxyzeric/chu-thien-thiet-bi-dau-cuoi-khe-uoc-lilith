@@ -50,7 +50,7 @@ export class StoryCollect {
     constructor(app) { this.app = app; this.busy = false; this.draft = null; }
     start() {
         const h = this.app.hub; if (!h) return this;
-        h.addNav('Giao dịch', 'collect', 'Thu thập cốt truyện', 'bag', { title: 'Thu thập cốt truyện', render: el => { this.el = el; this.render(); } });
+        h.addNav('Giao dịch', 'collect', 'Thu thập', 'bag', { title: 'Thu thập cốt truyện', render: el => { this.el = el; this.render(); } });
         h.hook('onEngineTab', (n, tools) => {
             tools.querySelector('.zt-collect-link')?.remove(); if (![4, 6].includes(n)) return;
             const b = document.createElement('button'); b.className = 'zt-btn small zt-collect-link'; b.textContent = 'Thu thập vật phẩm / công pháp cốt truyện'; b.onclick = () => h.go('collect'); tools.append(b);

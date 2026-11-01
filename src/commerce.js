@@ -36,7 +36,7 @@ export class Commerce {
     constructor(app) { this.app = app; this.off = []; this.mounted = new WeakSet(); this.busy = false; }
     start() {
         const h = this.app.hub; if (!h) return this;
-        h.addNav('Giao dịch', 'commerce', 'Tùy chỉnh hàng hóa', 'gear', { title: 'Tùy chỉnh hàng hóa', render: el => this.render(el) });
+        h.addNav('Giao dịch', 'commerce', 'Tùy chỉnh', 'gear', { title: 'Tùy chỉnh hàng hóa', render: el => this.render(el) });
         const sb = this.app.statusbar; if (sb) { const prev = sb.enhanceFrame, enhance = (f, d) => { prev?.(f, d); this.mount(f, d); }; sb.enhanceFrame = enhance; this.off.push(() => { if (sb.enhanceFrame === enhance) sb.enhanceFrame = prev; }); }
         h.hook('onEngine', (f, doc) => this.mount(f, doc));
         h.hook('onEngineView', () => { try { const d = h.engineFrame?.contentDocument; this.paintShenPity(d); this.paintGachaMode(d); } catch { /* engine gone */ } });
